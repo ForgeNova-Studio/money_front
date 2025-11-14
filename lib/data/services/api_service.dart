@@ -111,6 +111,51 @@ class ApiService {
   Future<void> deleteExpense(String expenseId) async {
     await _dio.delete('${ApiConstants.expenses}/$expenseId');
   }
+
+  // Statistics APIs
+  Future<Map<String, dynamic>> getMonthlyStatistics({
+    required int year,
+    required int month,
+  }) async {
+    final response = await _dio.get(
+      ApiConstants.statisticsMonthly,
+      queryParameters: {
+        'year': year,
+        'month': month,
+      },
+    );
+    return response.data;
+  }
+
+  // Couple APIs
+  Future<Map<String, dynamic>> generateInviteCode() async {
+    final response = await _dio.post('/api/couples/invite');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> joinCouple(String inviteCode) async {
+    final response = await _dio.post(
+      '/api/couples/join',
+      data: {'inviteCode': inviteCode},
+    );
+    return response.data;
+  }
+
+  Future<void> unlinkCouple() async {
+    await _dio.delete('/api/couples/unlink');
+  }
+
+  Future<Map<String, dynamic>?> getCurrentCouple() async {
+    try {
+      final response = await _dio.get('/api/couples/me');
+      return response.data;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        return null; // 커플이 없는 경우
+      }
+      rethrow;
+    }
+  }
 }
 
 class _AuthInterceptor extends Interceptor {

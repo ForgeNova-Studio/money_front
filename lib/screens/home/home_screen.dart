@@ -4,11 +4,14 @@ import 'package:intl/intl.dart';
 import '../../core/constants/color_constants.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/expense_provider.dart';
-import '../auth/login_screen.dart';
+import '../../providers/couple_provider.dart';
 import '../expense/add_expense_screen.dart';
 import '../expense/expense_detail_screen.dart';
 import '../expense/expense_list_screen.dart';
 import '../statistics/statistics_screen.dart';
+import '../settings/settings_screen.dart';
+import '../couple/couple_invite_screen.dart';
+import '../couple/couple_join_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,9 +24,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // 최근 지출 내역 로드
+    // 최근 지출 내역 및 커플 정보 로드
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ExpenseProvider>().fetchRecentExpenses();
+      context.read<CoupleProvider>().loadCurrentCouple();
     });
   }
 
@@ -90,18 +94,15 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: _navigateToStatistics,
             tooltip: '통계',
           ),
-          // 로그아웃 버튼
+          // 설정 버튼
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await context.read<AuthProvider>().logout();
-              if (context.mounted) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                );
-              }
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              );
             },
-            tooltip: '로그아웃',
+            tooltip: '설정',
           ),
         ],
       ),
@@ -142,6 +143,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
                 const SizedBox(height: 32),
+
+                // 커플 연동 안내 카드
+                Consumer<CoupleProvider>(
+                  builder: (context, coupleProvider, child) {
+                    final couple = coupleProvider.couple;
+                    final isLinked = couple?.linked ?? false;
+
+                    // 커플이 연동되지 않은 경우에만 안내 카드 표시
+                    if (!isLinked && coupleProvider.status != CoupleStatus.loading) {
+                      return Column(
+                        children: [
+                          _buildCoupleMatchingCard(),
+                          const SizedBox(height: 24),
+                        ],
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
 
                 // 최근 지출 내역
                 Row(
@@ -324,5 +344,120 @@ class _HomeScreenState extends State<HomeScreen> {
       default:
         return '기타';
     }
+  }
+
+  /// 커플 매칭 안내 카드
+  Widget _buildCoupleMatchingCard() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primary.withValues(alpha: 0.1),
+            AppColors.primary.withValues(alpha: 0.05),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.favorite,
+                    color: AppColors.primary,
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '커플 모드',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '파트너와 함께 가계부를 관리하세요',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      final result = await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const CoupleInviteScreen(),
+                        ),
+                      );
+                      // 커플 연동 후 새로고침
+                      if (result == true && mounted) {
+                        context.read<CoupleProvider>().loadCurrentCouple();
+                      }
+                    },
+                    icon: const Icon(Icons.person_add, size: 20),
+                    label: const Text('초대하기'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: BorderSide(color: AppColors.primary),
+                      foregroundColor: AppColors.primary,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      final result = await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const CoupleJoinScreen(),
+                        ),
+                      );
+                      // 커플 연동 후 새로고침
+                      if (result == true && mounted) {
+                        context.read<CoupleProvider>().loadCurrentCouple();
+                      }
+                    },
+                    icon: const Icon(Icons.link, size: 20),
+                    label: const Text('가입하기'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

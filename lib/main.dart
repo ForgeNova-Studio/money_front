@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'providers/auth_provider.dart';
 import 'providers/expense_provider.dart';
 import 'providers/statistics_provider.dart';
+import 'providers/couple_provider.dart';
 import 'screens/auth/login_screen.dart';
 
 void main() {
@@ -22,6 +23,7 @@ class MoneyFlowApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ExpenseProvider()),
         ChangeNotifierProvider(create: (_) => StatisticsProvider()),
+        ChangeNotifierProvider(create: (_) => CoupleProvider()),
       ],
       child: MaterialApp(
         title: 'MoneyFlow',
