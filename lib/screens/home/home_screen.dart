@@ -5,6 +5,7 @@ import '../../core/constants/color_constants.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/expense_provider.dart';
 import '../../providers/couple_provider.dart';
+import '../../providers/budget_provider.dart';
 import '../expense/add_expense_screen.dart';
 import '../expense/expense_detail_screen.dart';
 import '../expense/expense_list_screen.dart';
@@ -12,6 +13,7 @@ import '../statistics/statistics_screen.dart';
 import '../settings/settings_screen.dart';
 import '../couple/couple_invite_screen.dart';
 import '../couple/couple_join_screen.dart';
+import '../budget/budget_setting_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,10 +26,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // 최근 지출 내역 및 커플 정보 로드
+    // 최근 지출 내역, 커플 정보, 예산 로드
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ExpenseProvider>().fetchRecentExpenses();
       context.read<CoupleProvider>().loadCurrentCouple();
+      // 현재 월의 예산 조회
+      final now = DateTime.now();
+      context.read<BudgetProvider>().fetchBudget(now.year, now.month);
     });
   }
 
@@ -142,7 +147,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
+
+                // 월간 목표 예산 카드
+                Consumer<BudgetProvider>(
+                  builder: (context, budgetProvider, child) {
+                    return _buildBudgetCard(budgetProvider);
+                  },
+                ),
+                const SizedBox(height: 24),
 
                 // 커플 연동 안내 카드
                 Consumer<CoupleProvider>(
@@ -456,6 +469,248 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// 월간 목표 예산 카드
+  Widget _buildBudgetCard(BudgetProvider budgetProvider) {
+    final now = DateTime.now();
+    final budget = budgetProvider.budget;
+
+    // 예산이 없는 경우
+    if (budget == null) {
+      return Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: AppColors.border),
+        ),
+        child: InkWell(
+          onTap: () async {
+            final result = await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BudgetSettingScreen(
+                  initialYear: now.year,
+                  initialMonth: now.month,
+                ),
+              ),
+            );
+            if (result == true && mounted) {
+              context.read<BudgetProvider>().fetchBudget(now.year, now.month);
+            }
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.account_balance_wallet,
+                    color: AppColors.primary,
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '이번 달 목표 예산',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        '목표를 설정해보세요',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: AppColors.textSecondary,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // 예산이 있는 경우
+    final usagePercentage = budget.usagePercentage.clamp(0, 100);
+    Color progressColor = AppColors.primary;
+    if (budget.usagePercentage >= 80) {
+      progressColor = AppColors.error;
+    } else if (budget.usagePercentage >= 50) {
+      progressColor = Colors.orange;
+    }
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: AppColors.border),
+      ),
+      child: InkWell(
+        onTap: () async {
+          final result = await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => BudgetSettingScreen(
+                initialYear: budget.year,
+                initialMonth: budget.month,
+              ),
+            ),
+          );
+          if (result == true && mounted) {
+            context.read<BudgetProvider>().fetchBudget(now.year, now.month);
+          }
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 헤더
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: progressColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.account_balance_wallet,
+                          color: progressColor,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        '${budget.year}년 ${budget.month}월 예산',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Icon(
+                    Icons.edit,
+                    size: 18,
+                    color: Colors.grey[600],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // 금액 정보
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '현재 소비',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${NumberFormat('#,###').format(budget.currentSpending)}원',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: progressColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      const Text(
+                        '목표 금액',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${NumberFormat('#,###').format(budget.targetAmount)}원',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // 진행 바
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: LinearProgressIndicator(
+                      value: usagePercentage / 100,
+                      backgroundColor: Colors.grey[200],
+                      valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+                      minHeight: 8,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${usagePercentage.toStringAsFixed(1)}% 사용',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      Text(
+                        '${NumberFormat('#,###').format(budget.remainingAmount)}원 남음',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
