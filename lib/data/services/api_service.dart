@@ -217,6 +217,30 @@ class ApiService {
   Future<void> deleteIncome(String incomeId) async {
     await _dio.delete('${ApiConstants.incomes}/$incomeId');
   }
+
+  // Budget APIs
+  Future<Map<String, dynamic>> createOrUpdateBudget(Map<String, dynamic> data) async {
+    final response = await _dio.post(ApiConstants.budgets, data: data);
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getBudget({
+    required int year,
+    required int month,
+  }) async {
+    final response = await _dio.get(
+      ApiConstants.budgets,
+      queryParameters: {
+        'year': year,
+        'month': month,
+      },
+    );
+    return response.data;
+  }
+
+  Future<void> deleteBudget(String budgetId) async {
+    await _dio.delete('${ApiConstants.budgets}/$budgetId');
+  }
 }
 
 class _AuthInterceptor extends Interceptor {

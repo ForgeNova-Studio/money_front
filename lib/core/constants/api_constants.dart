@@ -15,6 +15,9 @@ class ApiConstants {
   // Income endpoints
   static const String incomes = '/api/incomes';
 
+  // Budget endpoints
+  static const String budgets = '/api/budgets';
+
   // Statistics endpoints
   static const String statisticsUrl = '/api/statistics';
   static const String statisticsMonthly = '/api/statistics/monthly';

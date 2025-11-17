@@ -8,6 +8,7 @@ import 'providers/expense_provider.dart';
 import 'providers/income_provider.dart';
 import 'providers/statistics_provider.dart';
 import 'providers/couple_provider.dart';
+import 'providers/budget_provider.dart';
 import 'screens/auth/login_screen.dart';
 
 void main() {
@@ -26,6 +27,7 @@ class MoneyFlowApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => IncomeProvider()),
         ChangeNotifierProvider(create: (_) => StatisticsProvider()),
         ChangeNotifierProvider(create: (_) => CoupleProvider()),
+        ChangeNotifierProvider(create: (_) => BudgetProvider()),
       ],
       child: MaterialApp(
         title: 'MoneyFlow',
