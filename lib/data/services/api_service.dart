@@ -127,6 +127,18 @@ class ApiService {
     return response.data;
   }
 
+  Future<Map<String, dynamic>> getWeeklyStatistics({
+    required DateTime startDate,
+  }) async {
+    final response = await _dio.get(
+      ApiConstants.statisticsWeekly,
+      queryParameters: {
+        'startDate': startDate.toIso8601String().split('T')[0],
+      },
+    );
+    return response.data;
+  }
+
   // Couple APIs
   Future<Map<String, dynamic>> generateInviteCode() async {
     final response = await _dio.post('/api/couples/invite');

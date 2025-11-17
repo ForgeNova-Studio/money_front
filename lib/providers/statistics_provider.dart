@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../data/models/monthly_statistics_model.dart';
+import '../data/models/weekly_statistics_model.dart';
 import '../data/services/api_service.dart';
 
 /// 통계 상태
@@ -22,6 +23,10 @@ class StatisticsProvider with ChangeNotifier {
   /// 월간 통계 데이터
   MonthlyStatisticsModel? _monthlyStatistics;
   MonthlyStatisticsModel? get monthlyStatistics => _monthlyStatistics;
+
+  /// 주간 통계 데이터
+  WeeklyStatisticsModel? _weeklyStatistics;
+  WeeklyStatisticsModel? get weeklyStatistics => _weeklyStatistics;
 
   /// 에러 메시지
   String? _errorMessage;
@@ -66,10 +71,45 @@ class StatisticsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// 주간 통계 조회
+  ///
+  /// @param startDate 조회 시작일 (이 날짜부터 7일간의 통계)
+  Future<void> fetchWeeklyStatistics(DateTime startDate) async {
+    try {
+      _status = StatisticsStatus.loading;
+      _errorMessage = null;
+      notifyListeners();
+
+      final data = await _apiService.getWeeklyStatistics(
+        startDate: startDate,
+      );
+
+      _weeklyStatistics = WeeklyStatisticsModel.fromJson(data);
+      _status = StatisticsStatus.success;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        _errorMessage = '인증이 만료되었습니다. 다시 로그인해주세요.';
+      } else if (e.response?.statusCode == 403) {
+        _errorMessage = '통계 접근 권한이 없습니다. 다시 로그인해주세요.';
+      } else if (e.response?.statusCode == 404) {
+        _errorMessage = '통계 데이터를 찾을 수 없습니다';
+      } else {
+        _errorMessage = '네트워크 오류가 발생했습니다: ${e.message}';
+      }
+      _status = StatisticsStatus.error;
+    } catch (e) {
+      _errorMessage = '알 수 없는 오류가 발생했습니다: $e';
+      _status = StatisticsStatus.error;
+    }
+
+    notifyListeners();
+  }
+
   /// 상태 초기화
   void reset() {
     _status = StatisticsStatus.idle;
     _monthlyStatistics = null;
+    _weeklyStatistics = null;
     _errorMessage = null;
     notifyListeners();
   }
