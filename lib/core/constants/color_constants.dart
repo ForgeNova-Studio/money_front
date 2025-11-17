@@ -39,6 +39,10 @@ class AppColors {
   static const Color warning = Color(0xFFFFC107);
   static const Color info = Color(0xFF17A2B8);
 
+  // Income/Expense
+  static const Color income = Color(0xFF00D9A0);  // 수입 색상
+  static const Color expense = Color(0xFFFF6B6B);  // 지출 색상
+
   // Get category color by code
   static Color getCategoryColor(String categoryCode) {
     switch (categoryCode) {

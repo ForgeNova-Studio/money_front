@@ -12,6 +12,9 @@ class ApiConstants {
   static const String expenses = '/api/expenses';
   static const String expensesOcr = '/api/expenses/ocr';
 
+  // Income endpoints
+  static const String incomes = '/api/incomes';
+
   // Statistics endpoints
   static const String statisticsUrl = '/api/statistics';
   static const String statisticsMonthly = '/api/statistics/monthly';

@@ -156,6 +156,55 @@ class ApiService {
       rethrow;
     }
   }
+
+  // Income APIs
+  Future<Map<String, dynamic>> createIncome(Map<String, dynamic> data) async {
+    final response = await _dio.post(ApiConstants.incomes, data: data);
+    return response.data;
+  }
+
+  Future<dynamic> getRecentIncomes() async {
+    final response = await _dio.get('${ApiConstants.incomes}/recent');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getIncomes({
+    required DateTime startDate,
+    required DateTime endDate,
+    String? source,
+  }) async {
+    final queryParams = {
+      'startDate': startDate.toIso8601String().split('T')[0],
+      'endDate': endDate.toIso8601String().split('T')[0],
+      if (source != null && source.isNotEmpty) 'source': source,
+    };
+
+    final response = await _dio.get(
+      ApiConstants.incomes,
+      queryParameters: queryParams,
+    );
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getIncome(String incomeId) async {
+    final response = await _dio.get('${ApiConstants.incomes}/$incomeId');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> updateIncome(
+    String incomeId,
+    Map<String, dynamic> data,
+  ) async {
+    final response = await _dio.put(
+      '${ApiConstants.incomes}/$incomeId',
+      data: data,
+    );
+    return response.data;
+  }
+
+  Future<void> deleteIncome(String incomeId) async {
+    await _dio.delete('${ApiConstants.incomes}/$incomeId');
+  }
 }
 
 class _AuthInterceptor extends Interceptor {
