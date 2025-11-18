@@ -4,11 +4,15 @@ import 'package:intl/intl.dart';
 import '../../core/constants/color_constants.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/expense_provider.dart';
+import '../../providers/income_provider.dart';
 import '../../providers/couple_provider.dart';
 import '../../providers/budget_provider.dart';
 import '../expense/add_expense_screen.dart';
 import '../expense/expense_detail_screen.dart';
 import '../expense/expense_list_screen.dart';
+import '../income/add_income_screen.dart';
+import '../income/income_detail_screen.dart';
+import '../income/income_list_screen.dart';
 import '../statistics/statistics_screen.dart';
 import '../settings/settings_screen.dart';
 import '../couple/couple_invite_screen.dart';
@@ -26,14 +30,108 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // 최근 지출 내역, 커플 정보, 예산 로드
+    // 최근 지출 내역, 최근 수입 내역, 커플 정보, 예산 로드
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ExpenseProvider>().fetchRecentExpenses();
+      context.read<IncomeProvider>().fetchRecentIncomes();
       context.read<CoupleProvider>().loadCurrentCouple();
       // 현재 월의 예산 조회
       final now = DateTime.now();
       context.read<BudgetProvider>().fetchBudget(now.year, now.month);
     });
+  }
+
+  /// + 버튼 클릭 시 액션 선택 다이얼로그 표시
+  Future<void> _showAddActionDialog() async {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 제목
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    children: [
+                      Text(
+                        '추가하기',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // 지출 등록
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.arrow_downward, color: AppColors.error),
+                  ),
+                  title: const Text('지출 등록', style: TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: const Text('지출 내역을 추가합니다', style: TextStyle(fontSize: 12)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _navigateToAddExpense();
+                  },
+                ),
+
+                // 수입 등록
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.arrow_upward, color: AppColors.primary),
+                  ),
+                  title: const Text('수입 등록', style: TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: const Text('수입 내역을 추가합니다', style: TextStyle(fontSize: 12)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _navigateToAddIncome();
+                  },
+                ),
+
+                // 예산 설정
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.account_balance_wallet, color: Colors.orange),
+                  ),
+                  title: const Text('예산 설정', style: TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: const Text('월별 목표 예산을 설정합니다', style: TextStyle(fontSize: 12)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _navigateToBudgetSetting();
+                  },
+                ),
+
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   /// 지출 등록 화면으로 이동
@@ -45,6 +143,39 @@ class _HomeScreenState extends State<HomeScreen> {
     // 지출이 추가되면 목록 새로고침
     if (result == true && mounted) {
       context.read<ExpenseProvider>().fetchRecentExpenses();
+      // 예산 정보도 새로고침 (지출이 추가되면 예산 사용액 변경됨)
+      final now = DateTime.now();
+      context.read<BudgetProvider>().fetchBudget(now.year, now.month);
+    }
+  }
+
+  /// 수입 등록 화면으로 이동
+  Future<void> _navigateToAddIncome() async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const AddIncomeScreen()),
+    );
+
+    // 수입이 추가되면 목록 새로고침
+    if (result == true && mounted) {
+      context.read<IncomeProvider>().fetchRecentIncomes();
+    }
+  }
+
+  /// 예산 설정 화면으로 이동
+  Future<void> _navigateToBudgetSetting() async {
+    final now = DateTime.now();
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BudgetSettingScreen(
+          initialYear: now.year,
+          initialMonth: now.month,
+        ),
+      ),
+    );
+
+    // 예산 설정이 완료되면 새로고침
+    if (result == true && mounted) {
+      context.read<BudgetProvider>().fetchBudget(now.year, now.month);
     }
   }
 
@@ -74,6 +205,37 @@ class _HomeScreenState extends State<HomeScreen> {
     // 목록 화면에서 수정/삭제가 발생하면 홈 화면도 새로고침
     if (result == true && mounted) {
       context.read<ExpenseProvider>().fetchRecentExpenses();
+      // 예산 정보도 새로고침
+      final now = DateTime.now();
+      context.read<BudgetProvider>().fetchBudget(now.year, now.month);
+    }
+  }
+
+  /// 수입 상세 화면으로 이동
+  Future<void> _navigateToIncomeDetail(income) async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => IncomeDetailScreen(income: income),
+      ),
+    );
+
+    // 수정 또는 삭제가 완료되면 목록 새로고침
+    if (result == true && mounted) {
+      context.read<IncomeProvider>().fetchRecentIncomes();
+    }
+  }
+
+  /// 수입 목록 화면으로 이동
+  Future<void> _navigateToIncomeList() async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const IncomeListScreen(),
+      ),
+    );
+
+    // 목록 화면에서 수정/삭제가 발생하면 홈 화면도 새로고침
+    if (result == true && mounted) {
+      context.read<IncomeProvider>().fetchRecentIncomes();
     }
   }
 
@@ -266,10 +428,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               leading: CircleAvatar(
                                 backgroundColor:
-                                    AppColors.primary.withValues(alpha: 0.1),
+                                    AppColors.error.withValues(alpha: 0.1),
                                 child: Icon(
                                   _getCategoryIcon(expense.category),
-                                  color: AppColors.primary,
+                                  color: AppColors.error,
                                 ),
                               ),
                               title: Text(
@@ -300,13 +462,140 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                 ),
+
+                const SizedBox(height: 32),
+
+                // 최근 수입 내역
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '최근 수입',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    TextButton(
+                      onPressed: _navigateToIncomeList,
+                      child: const Text('전체보기'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // 수입 목록
+                Consumer<IncomeProvider>(
+                  builder: (context, incomeProvider, child) {
+                    if (incomeProvider.status == IncomeStatus.loading) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(32),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+
+                    if (incomeProvider.recentIncomes.isEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.account_balance_wallet,
+                                size: 64,
+                                color: AppColors.textSecondary.withValues(alpha: 0.5),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                '아직 수입 내역이 없습니다',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                '+ 버튼을 눌러 첫 수입을 등록해보세요',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: incomeProvider.recentIncomes.length,
+                      itemBuilder: (context, index) {
+                        final income = incomeProvider.recentIncomes[index];
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          // 수입 항목 클릭 시 상세 화면으로 이동
+                          child: InkWell(
+                            onTap: () => _navigateToIncomeDetail(income),
+                            borderRadius: BorderRadius.circular(12),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              leading: CircleAvatar(
+                                backgroundColor:
+                                    AppColors.primary.withValues(alpha: 0.1),
+                                child: Icon(
+                                  _getIncomeSourceIcon(income.source),
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                              title: Text(
+                                income.description ?? _getIncomeSourceName(income.source),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              subtitle: Text(
+                                DateFormat('yyyy.MM.dd').format(income.date),
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              trailing: Text(
+                                '+${NumberFormat('#,###').format(income.amount)}원',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ],
             ),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _navigateToAddExpense,
+        onPressed: _showAddActionDialog,
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -354,6 +643,36 @@ class _HomeScreenState extends State<HomeScreen> {
         return '교육';
       case 'EVENT':
         return '경조사';
+      default:
+        return '기타';
+    }
+  }
+
+  IconData _getIncomeSourceIcon(String source) {
+    switch (source) {
+      case 'SALARY':
+        return Icons.work;
+      case 'SIDE_INCOME':
+        return Icons.attach_money;
+      case 'BONUS':
+        return Icons.card_giftcard;
+      case 'INVESTMENT':
+        return Icons.trending_up;
+      default:
+        return Icons.more_horiz;
+    }
+  }
+
+  String _getIncomeSourceName(String source) {
+    switch (source) {
+      case 'SALARY':
+        return '급여';
+      case 'SIDE_INCOME':
+        return '부수입';
+      case 'BONUS':
+        return '상여금';
+      case 'INVESTMENT':
+        return '투자수익';
       default:
         return '기타';
     }
