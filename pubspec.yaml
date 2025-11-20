@@ -45,6 +45,7 @@ dependencies:
   share_plus: ^10.0.3
 
   cupertino_icons: ^1.0.8
+  lottie: ^3.3.2
 
 
 dev_dependencies:
@@ -69,6 +70,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  assets:
+    - assets/animation/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
