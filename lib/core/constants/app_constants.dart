@@ -113,4 +113,16 @@ class AppColors {
   static const Color white24 = Colors.white24;
   static const Color white12 = Colors.white12;
   static const Color white10 = Colors.white10;
+
+  // Backward Compatibility Aliases
+  static const Color primary = primaryPink;
+  static const Color primaryDark = primaryPinkDark;
+  static const Color primaryLight = primaryPinkLight;
+  static const Color secondary = success; // 보조 색상은 success 색상 사용
+  static const Color background = backgroundGray;
+  static const Color surface = backgroundWhite;
+  static const Color textHint = textTertiary;
+  static const Color borderLight = divider;
+  static const Color income = success; // 수입 색상은 success(녹색) 사용
+  static const Color expense = error; // 지출 색상은 error(빨강) 사용
 }

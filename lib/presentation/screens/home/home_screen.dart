@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:moneyflow/features/budget/presentation/providers/budget_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../../core/constants/color_constants.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../features/auth/presentation/providers/auth_provider.dart';
 import '../../../features/expense/presentation/providers/expense_provider.dart';
 import '../../../features/income/presentation/providers/income_provider.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/constants/color_constants.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../domain/entities/income_model.dart';
 import '../providers/income_provider.dart';
 import 'income_detail_screen.dart';

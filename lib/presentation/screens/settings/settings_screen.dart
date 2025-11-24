@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/constants/color_constants.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../features/auth/presentation/providers/auth_provider.dart';
 import '../../../features/couple/presentation/providers/couple_provider.dart';
 import '../../../features/couple/presentation/screens/couple_invite_screen.dart';
