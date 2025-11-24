@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:moneyflow/screens/onBoarding/onboarding_screen.dart';
-import 'package:moneyflow/features/budget/presentation/providers/budget_provider.dart';
+import 'package:moneyflow/core/theme/theme.dart';
 import 'package:provider/provider.dart';
-import 'core/constants/color_constants.dart';
-import 'package:google_fonts/google_fonts.dart';
+
+import 'screens/onBoarding/onboarding_screen.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
+import 'features/budget/presentation/providers/budget_provider.dart';
 import 'features/expense/presentation/providers/expense_provider.dart';
 import 'features/income/presentation/providers/income_provider.dart';
 import 'features/statistics/presentation/providers/statistics_provider.dart';
@@ -33,6 +33,10 @@ class MoneyFlowApp extends StatelessWidget {
         title: 'MoneyFlow',
         debugShowCheckedModeBanner: false,
 
+        // 테마 설정
+        theme: buildLightTheme(),
+        // darkTheme: buildDarkTheme(), // 다크모드 (선택사항)
+
         // 다국어 지원 설정
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
@@ -43,55 +47,9 @@ class MoneyFlowApp extends StatelessWidget {
           Locale('ko', 'KR'), // 한국어
           Locale('en', 'US'), // 영어
         ],
-        locale: const Locale('ko', 'KR'), // 기본 언어를 한국어로 설정
+        locale: const Locale('ko', 'KR'), // 기본 언어
 
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.light(
-            primary: AppColors.primary,
-            secondary: AppColors.secondary,
-            surface: AppColors.surface,
-            error: AppColors.error,
-          ),
-          scaffoldBackgroundColor: AppColors.background,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            elevation: 0,
-          ),
-          textTheme: GoogleFonts.notoSansTextTheme().copyWith(
-            displayLarge:
-                const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-            displayMedium:
-                const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-            displaySmall:
-                const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            headlineMedium:
-                const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-            titleLarge:
-                const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            bodyLarge:
-                const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-            bodyMedium:
-                const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-            labelLarge:
-                const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 52),
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              textStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ),
+        // 시작 화면
         home: const OnboardingScreen(),
       ),
     );
