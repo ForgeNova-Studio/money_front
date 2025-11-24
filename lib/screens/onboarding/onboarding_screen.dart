@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:moneyflow/screens/auth/login_screen.dart';
+import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -47,7 +47,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(63, 82, 160, 1),
+      backgroundColor: const Color.fromRGBO(63, 82, 160, 1),
       body: Stack(children: [
         Center(
           child: LottieBuilder.asset('assets/animation/programmer_and_cat.json',
