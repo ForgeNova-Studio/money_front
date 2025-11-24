@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:moneyflow/screens/onBoarding/onboarding_screen.dart';
+import 'package:moneyflow/features/budget/presentation/providers/budget_provider.dart';
 import 'package:provider/provider.dart';
 import 'core/constants/color_constants.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'providers/auth_provider.dart';
-import 'providers/expense_provider.dart';
-import 'providers/income_provider.dart';
-import 'providers/statistics_provider.dart';
-import 'providers/couple_provider.dart';
-import 'providers/budget_provider.dart';
+import 'features/auth/presentation/providers/auth_provider.dart';
+import 'features/expense/presentation/providers/expense_provider.dart';
+import 'features/income/presentation/providers/income_provider.dart';
+import 'features/statistics/presentation/providers/statistics_provider.dart';
+import 'features/couple/presentation/providers/couple_provider.dart';
 
 void main() {
   runApp(const MoneyFlowApp());
