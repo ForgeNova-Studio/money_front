@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:moneyflow/core/theme/theme.dart';
+import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
+import 'package:moneyflow/presentation/screens/onboarding/on_boarding_screen.dart';
 
 import 'package:provider/provider.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
@@ -37,7 +39,8 @@ class MoneyFlowApp extends StatelessWidget {
         // 테마 설정
         theme: buildLightTheme(),
         // darkTheme: buildDarkTheme(), // 다크모드 (선택사항)
-        home: const SplashScreen(),
+        // home: const SplashScreen(),
+        home: const OnboardingScreen(),
       ),
     );
   }
