@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:moneyflow/core/theme/theme.dart';
+import 'package:moneyflow/presentation/screens/splashScreen/splash_screen.dart';
 import 'package:provider/provider.dart';
-
-import 'screens/onBoarding/onboarding_screen.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/budget/presentation/providers/budget_provider.dart';
 import 'features/expense/presentation/providers/expense_provider.dart';
@@ -50,7 +49,7 @@ class MoneyFlowApp extends StatelessWidget {
         locale: const Locale('ko', 'KR'), // 기본 언어
 
         // 시작 화면
-        home: const OnboardingScreen(),
+        home: const SplashScreen(),
       ),
     );
   }
