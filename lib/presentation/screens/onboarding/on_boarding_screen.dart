@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:moneyflow/presentation/screens/onboarding/widgets/page1.dart';
+import 'package:moneyflow/presentation/screens/onboarding/widgets/page2.dart';
+import 'package:moneyflow/presentation/screens/onboarding/widgets/page3.dart';
+import 'package:moneyflow/presentation/screens/onboarding/widgets/page4.dart';
+import 'package:moneyflow/presentation/screens/onboarding/widgets/page5.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -36,9 +40,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   });
                 },
                 children: [
-                  Page1(currentPage: _currentPage)
-                  // _OnboardingPage1(currentPage: _currentPage), // 첫 번째 슬라이드만 구현
-                  // TODO: 나머지 슬라이드 추가
+                  Page1(currentPage: _currentPage),
+                  Page2(currentPage: _currentPage),
+                  Page3(currentPage: _currentPage),
+                  Page4(currentPage: _currentPage),
+                  Page5(currentPage: _currentPage),
                 ],
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moneyflow/presentation/screens/onboarding/widgets/onboarding_bottom_indicator.dart';
 
 class Page1 extends StatefulWidget {
   const Page1({super.key, required this.currentPage});
@@ -142,23 +143,10 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
 
           const SizedBox(height: 32),
 
-          // 페이지 인디케이터 (설명 아래로 이동)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              4,
-              (index) => Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: widget.currentPage == index ? 24 : 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  color: widget.currentPage == index
-                      ? AppColors.primaryPink
-                      : AppColors.gray200,
-                ),
-              ),
-            ),
+          // 페이지 인디케이터
+          OnboardingBottomIndicator(
+            currentPage: widget.currentPage,
+            totalPage: 5,
           ),
 
           const Spacer(),
