@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../../../core/constants/color_constants.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../providers/statistics_provider.dart';
 
 /// 주간 통계 화면

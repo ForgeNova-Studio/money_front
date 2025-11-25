@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:moneyflow/features/budget/presentation/providers/budget_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/constants/color_constants.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../domain/entities/budget_model.dart';
 
 /// 예산 설정 화면
