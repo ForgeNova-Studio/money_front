@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'package:moneyflow/core/theme/theme.dart';
 import 'package:moneyflow/presentation/screens/home/home_screen.dart';
@@ -13,7 +14,11 @@ import 'features/income/presentation/providers/income_provider.dart';
 import 'features/statistics/presentation/providers/statistics_provider.dart';
 import 'features/couple/presentation/providers/couple_provider.dart';
 
-void main() {
+void main() async {
+  // intl 패키지를 사용하는 위젯에서 한국어 등의 로케일을 사용하려면
+  // 앱 시작 전에 initializeDateFormatting()을 호출해야 함
+  await initializeDateFormatting();
+
   runApp(const MoneyFlowApp());
 }
 
