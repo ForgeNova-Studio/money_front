@@ -239,15 +239,27 @@ Future<void> clearAll()             // 전체 삭제
 ## 현재 작성 상태
 
 ### ✅ 작성 완료
-- **Remote Data Source** (`auth_remote_datasource.dart`, `auth_remote_datasource_impl.dart`)
+
+#### Remote Data Source
+- **파일**: `auth_remote_datasource.dart`, `auth_remote_datasource_impl.dart`
+- **메서드**:
   - login() - 로그인 API
   - register() - 회원가입 API
   - getCurrentUser() - 현재 사용자 정보 조회
   - refreshToken() - 토큰 갱신
   - checkEmailDuplicate() - 이메일 중복 확인
 
-### ⏳ 예정
-- Local Data Source
+#### Local Data Source
+- **파일**: `auth_local_datasource.dart`, `auth_local_datasource_impl.dart`
+- **메서드**:
+  - saveToken() - 토큰 저장
+  - getToken() - 토큰 불러오기
+  - deleteToken() - 토큰 삭제
+  - saveUser() - 사용자 정보 저장
+  - getUser() - 사용자 정보 불러오기
+  - deleteUser() - 사용자 정보 삭제
+  - clearAll() - 모든 데이터 삭제
+  - hasToken() - 토큰 존재 여부 확인
 
 ---
 
@@ -318,6 +330,143 @@ try {
 } on NetworkException catch (e) {
   print('네트워크 오류: ${e.message}');
 }
+```
+
+---
+
+## Local Data Source 상세
+
+### 인터페이스 (`auth_local_datasource.dart`)
+
+**역할**: 로컬 저장소 메서드 정의
+- 순수 Dart 인터페이스 (외부 패키지 의존 없음)
+- Data Model 사용
+- 메서드 시그니처만 정의
+
+**포함된 메서드:**
+```dart
+Future<void> saveToken(AuthTokenModel)      // 토큰 저장
+Future<AuthTokenModel?> getToken()          // 토큰 불러오기
+Future<void> deleteToken()                  // 토큰 삭제
+Future<void> saveUser(UserModel)            // 사용자 정보 저장
+Future<UserModel?> getUser()                // 사용자 정보 불러오기
+Future<void> deleteUser()                   // 사용자 정보 삭제
+Future<void> clearAll()                     // 모든 데이터 삭제
+Future<bool> hasToken()                     // 토큰 존재 여부
+```
+
+---
+
+### 구현체 (`auth_local_datasource_impl.dart`)
+
+**역할**: SharedPreferences를 사용한 실제 저장소 구현
+
+**의존성:**
+- `SharedPreferences` - 로컬 저장소
+- `dart:convert` - JSON 직렬화/역직렬화
+
+**Storage Key 상수:**
+```dart
+_keyToken = 'auth_token'    // 토큰 저장 키
+_keyUser = 'auth_user'      // 사용자 정보 저장 키
+```
+
+**데이터 저장 흐름:**
+```
+Model (AuthTokenModel/UserModel)
+    ↓
+.toJson() - Map<String, dynamic>
+    ↓
+jsonEncode() - String
+    ↓
+SharedPreferences.setString()
+    ↓
+로컬 저장소
+```
+
+**데이터 불러오기 흐름:**
+```
+SharedPreferences.getString()
+    ↓
+jsonDecode() - Map<String, dynamic>
+    ↓
+Model.fromJson() or Model.fromStorage()
+    ↓
+Model (AuthTokenModel/UserModel)
+```
+
+**주요 특징:**
+
+1. **토큰 저장 시 fromStorage 사용**
+   ```dart
+   // 저장할 때
+   token.toJson() → JSON String → Storage
+
+   // 불러올 때
+   Storage → JSON String → fromStorage() → Model
+   // fromStorage는 expiresAt(DateTime)을 처리
+   ```
+
+2. **에러 처리**
+   ```dart
+   try {
+     await prefs.setString(...);
+   } catch (e) {
+     throw StorageException('저장 실패: $e');
+   }
+   ```
+
+3. **일괄 삭제 (clearAll)**
+   ```dart
+   await Future.wait([
+     prefs.remove(_keyToken),
+     prefs.remove(_keyUser),
+   ]);
+   // 여러 작업을 병렬로 실행
+   ```
+
+**사용 예시:**
+```dart
+// 의존성 주입
+final prefs = await SharedPreferences.getInstance();
+final localDataSource = AuthLocalDataSourceImpl(prefs: prefs);
+
+// 토큰 저장
+final token = AuthTokenModel(
+  accessToken: 'abc',
+  refreshToken: 'xyz',
+  expiresAt: DateTime.now().add(Duration(hours: 1)),
+);
+await localDataSource.saveToken(token);
+
+// 토큰 불러오기
+final savedToken = await localDataSource.getToken();
+if (savedToken != null && !savedToken.toEntity().isExpired) {
+  print('유효한 토큰: ${savedToken.accessToken}');
+}
+
+// 로그아웃 (모든 데이터 삭제)
+await localDataSource.clearAll();
+```
+
+**기존 StorageService와의 차이:**
+
+| 구분 | 기존 StorageService | AuthLocalDataSource |
+|------|-------------------|-------------------|
+| **구조** | 단일 클래스 | 인터페이스 + 구현체 |
+| **데이터 타입** | String (개별 필드) | Model (전체 객체) |
+| **저장 방식** | 필드별 저장 | JSON 직렬화 |
+| **테스트** | 어려움 | 쉬움 (Mock 가능) |
+| **확장성** | 낮음 | 높음 |
+
+```dart
+// 기존 방식
+await storage.saveTokens(accessToken, refreshToken);
+await storage.saveUserId(userId);
+
+// 새 방식
+await localDataSource.saveToken(tokenModel);  // 한 번에 저장
+await localDataSource.saveUser(userModel);    // 한 번에 저장
 ```
 
 ---
