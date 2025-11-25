@@ -115,6 +115,55 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> socialLogin({
+    required String provider,
+    required String idToken,
+    required String nickname,
+  }) async {
+    _status = AuthStatus.loading;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      print('🔐 소셜 로그인 시도: $provider');
+      final response = await _apiService.socialLogin(
+        provider: provider,
+        idToken: idToken,
+        nickname: nickname,
+      );
+
+      print('✅ 소셜 로그인 API 응답 받음');
+
+      // 토큰 저장
+      await _storageService.saveTokens(
+        response['accessToken'],
+        response['refreshToken'],
+      );
+      await _storageService.saveUserId(response['userId']);
+
+      // 사용자 정보 설정
+      final profileData = Map<String, dynamic>.from(response['profile']);
+      profileData['userId'] = response['userId'];
+      _user = UserModel.fromJson(profileData);
+
+      _status = AuthStatus.authenticated;
+      notifyListeners();
+      print('✅ 소셜 로그인 완료!');
+    } on DioException catch (e) {
+      print('❌ 소셜 로그인 DioException: ${e.message}');
+      _status = AuthStatus.error;
+      _errorMessage = _handleError(e);
+      notifyListeners();
+      rethrow;
+    } catch (e) {
+      print('❌ 소셜 로그인 예외: $e');
+      _status = AuthStatus.error;
+      _errorMessage = '소셜 로그인 처리 중 오류가 발생했습니다: $e';
+      notifyListeners();
+      rethrow;
+    }
+  }
+
   Future<void> logout() async {
     await _storageService.clear();
     _user = null;

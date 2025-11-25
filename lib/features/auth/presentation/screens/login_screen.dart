@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_naver_login/flutter_naver_login.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/validators.dart';
 import '../providers/auth_provider.dart';
@@ -59,6 +61,93 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(authProvider.errorMessage ?? '로그인에 실패했습니다: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleGoogleLogin() async {
+    final authProvider = context.read<AuthProvider>();
+
+    try {
+      print('🚀 Google 로그인 시작');
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+        clientId: '886590665036-4chomeefga43fmilrkdu90ajnhblc2po.apps.googleusercontent.com',
+      );
+
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        print('❌ Google 로그인 취소됨');
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final String? idToken = googleAuth.idToken;
+
+      if (idToken == null) {
+        throw Exception('Google ID Token을 가져올 수 없습니다');
+      }
+
+      print('✅ Google ID Token 획득');
+
+      await authProvider.socialLogin(
+        provider: 'GOOGLE',
+        idToken: idToken,
+        nickname: googleUser.displayName ?? 'Google 사용자',
+      );
+
+      if (mounted && authProvider.isAuthenticated) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
+    } catch (e) {
+      print('❌ Google 로그인 에러: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Google 로그인에 실패했습니다: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleNaverLogin() async {
+    final authProvider = context.read<AuthProvider>();
+
+    try {
+      print('🚀 Naver 로그인 시작');
+
+      final NaverLoginResult result = await FlutterNaverLogin.logIn();
+
+      if (result.status == NaverLoginStatus.loggedIn) {
+        print('✅ Naver Access Token 획득');
+
+        await authProvider.socialLogin(
+          provider: 'NAVER',
+          idToken: result.accessToken.accessToken,
+          nickname: result.account.name,
+        );
+
+        if (mounted && authProvider.isAuthenticated) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
+          );
+        }
+      } else {
+        print('❌ Naver 로그인 취소됨');
+      }
+    } catch (e) {
+      print('❌ Naver 로그인 에러: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Naver 로그인에 실패했습니다: $e'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -152,6 +241,46 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
                   },
                 ),
+                const SizedBox(height: 24),
+
+                // 구분선
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: AppColors.textSecondary.withOpacity(0.3))),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        '또는',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: AppColors.textSecondary.withOpacity(0.3))),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // 소셜 로그인 버튼
+                _buildSocialLoginButton(
+                  label: 'Google로 로그인',
+                  icon: Icons.login,
+                  color: Colors.white,
+                  textColor: Colors.black87,
+                  onPressed: _handleGoogleLogin,
+                ),
+                const SizedBox(height: 12),
+                _buildSocialLoginButton(
+                  label: 'Naver로 로그인 (준비중)',
+                  icon: Icons.login,
+                  color: Colors.grey,
+                  textColor: Colors.white,
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Naver 로그인은 준비 중입니다')),
+                    );
+                  },
+                ),
                 const SizedBox(height: 16),
 
                 // 회원가입 링크
@@ -184,6 +313,27 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSocialLoginButton({
+    required String label,
+    required IconData icon,
+    required Color color,
+    required Color textColor,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: textColor,
+        elevation: 1,
+        side: BorderSide(color: Colors.grey.shade300),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+      ),
+      icon: Icon(icon, size: 24),
+      label: Text(label),
     );
   }
 }

@@ -25,4 +25,17 @@ class AuthApiService extends BaseApiService {
     });
     return response.data;
   }
+
+  Future<Map<String, dynamic>> socialLogin({
+    required String provider,
+    required String idToken,
+    required String nickname,
+  }) async {
+    final response = await dio.post(ApiConstants.socialLogin, data: {
+      'provider': provider,
+      'idToken': idToken,
+      'nickname': nickname,
+    });
+    return response.data;
+  }
 }
