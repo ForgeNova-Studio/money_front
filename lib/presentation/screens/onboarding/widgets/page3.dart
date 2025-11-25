@@ -1,7 +1,12 @@
+// packages
 import 'package:flutter/material.dart';
-import 'package:moneyflow/core/constants/app_constants.dart';
 import 'dart:math' as math;
 import 'package:intl/intl.dart';
+
+// core
+import 'package:moneyflow/core/constants/app_constants.dart';
+
+// widgets
 import 'package:moneyflow/presentation/screens/onboarding/widgets/onboarding_bottom_indicator.dart';
 
 class Page3 extends StatefulWidget {

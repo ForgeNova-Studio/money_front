@@ -1,5 +1,10 @@
+// packages
 import 'package:flutter/material.dart';
+
+// core
 import 'package:moneyflow/core/constants/app_constants.dart';
+
+// widgets
 import 'package:moneyflow/presentation/screens/onboarding/widgets/page1.dart';
 import 'package:moneyflow/presentation/screens/onboarding/widgets/page2.dart';
 import 'package:moneyflow/presentation/screens/onboarding/widgets/page3.dart';

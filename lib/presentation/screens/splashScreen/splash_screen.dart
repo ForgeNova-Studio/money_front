@@ -1,17 +1,19 @@
-import 'dart:async';
-
+// packages
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:lottie/lottie.dart';
+
+// screens
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _OnboardingScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _OnboardingScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
