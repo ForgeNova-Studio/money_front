@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:moneyflow/core/theme/theme.dart';
 
@@ -14,7 +15,13 @@ import 'features/couple/presentation/providers/couple_provider.dart';
 import 'package:moneyflow/presentation/screens/onboarding/on_boarding_screen.dart';
 
 void main() {
-  runApp(const MoneyFlowApp());
+  runApp(
+    // Riverpod ProviderScope로 앱 전체를 감싸서 Riverpod 활성화
+    // 기존 Provider와 병행 사용 가능
+    const ProviderScope(
+      child: MoneyFlowApp(),
+    ),
+  );
 }
 
 class MoneyFlowApp extends StatelessWidget {
