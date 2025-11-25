@@ -11,6 +11,9 @@ import 'package:moneyflow/presentation/screens/onboarding/widgets/page3.dart';
 import 'package:moneyflow/presentation/screens/onboarding/widgets/page4.dart';
 import 'package:moneyflow/presentation/screens/onboarding/widgets/page5.dart';
 
+// screens
+import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
+
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -62,7 +65,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 height: 56,
                 child: ElevatedButton(
                   onPressed: () {
-                    // TODO: 로그인 화면으로 이동
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const LoginScreen()));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryPink,
