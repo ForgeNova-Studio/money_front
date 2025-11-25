@@ -77,40 +77,44 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // 달력 바디 스타일 설정
           calendarStyle: CalendarStyle(
-              // 평일 텍스트 스타일
-              defaultTextStyle:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+            // 평일 텍스트 스타일
+            defaultTextStyle:
+                const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
 
-              // 주말 텍스트 스타일
-              weekendTextStyle:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+            // 주말 텍스트 스타일
+            weekendTextStyle:
+                const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
 
-              // 오늘 날짜 텍스트 스타일
-              todayTextStyle: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16.0),
+            // 오늘 날짜 텍스트 스타일
+            todayTextStyle: const TextStyle(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 16.0),
 
-              // 선택된 날짜 텍스트 스타일
-              selectedTextStyle: const TextStyle(
-                  color: AppColors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16.0),
+            // 선택된 날짜 텍스트 스타일
+            selectedTextStyle: const TextStyle(
+                color: AppColors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16.0),
 
-              // 오늘 날짜 셀 스타일
-              todayDecoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.primaryLight,
-                  width: 2.0,
-                ),
+            // 오늘 날짜 셀 스타일
+            todayDecoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: AppColors.primaryLight,
+                width: 2.0,
               ),
+            ),
 
-              // 선택된 날짜 셀 스타일
-              selectedDecoration: const BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
-              )),
+            // 선택된 날짜 셀 스타일
+            selectedDecoration: const BoxDecoration(
+              color: AppColors.primary,
+              shape: BoxShape.circle,
+            ),
+
+            // 현재 달에 속하지 않는 날짜 셀 숨기기
+            outsideDaysVisible: false,
+          ),
 
           // day : 각 날짜 셀의 날짜
           // 각 날짜를 매개변수로 전달하여 _selectedDay와 같은 날짜인지 비교, 같으면 해당 날짜 셀 강조
@@ -131,15 +135,6 @@ class _HomeScreenState extends State<HomeScreen> {
               _focusedDay = focusedDay;
             });
           },
-
-          // 달력의 모양을 커스터마이징할 수 있는 빌더
-          // outsideBuilder: 달력의 현재 달에 속하지 않는 날짜 셀을 커스터마이징
-          // - 빈 컨테이너 설정으로 현재 달 외 날짜 셀 숨김
-          calendarBuilders: CalendarBuilders(
-            outsideBuilder: (context, day, focusedDay) {
-              return Container();
-            },
-          ),
         ),
       ),
     );
