@@ -475,3 +475,16 @@ await localDataSource.saveUser(userModel);    // 한 번에 저장
 
 - [Clean Architecture - Data Layer](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - [Repository Pattern](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design)
+
+---
+
+1. Auth 기능에서 Local DataSource가 없다면?
+앱을 껐다 켤 때마다 매번 다시 로그인해야 합니다.
+
+Local이 하는 일: 로그인 성공 시 받은 
+Token
+을 기기에 저장해둠.
+앱 실행 시: 저장된 
+Token
+이 있는지 확인해서 있으면 자동 로그인 처리.
+결론: "사용자가 앱을 켤 때마다 아이디/비번을 치게 할 것인가?" → 아니라면 Local DataSource(토큰 저장소)는 필수입니다.
