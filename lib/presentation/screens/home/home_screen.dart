@@ -76,41 +76,14 @@ class _HomeScreenState extends State<HomeScreen> {
           daysOfWeekHeight: 40.0,
 
           // 달력 바디 스타일 설정
-          calendarStyle: CalendarStyle(
+          calendarStyle: const CalendarStyle(
             // 평일 텍스트 스타일
             defaultTextStyle:
-                const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+                TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
 
             // 주말 텍스트 스타일
             weekendTextStyle:
-                const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-
-            // 오늘 날짜 텍스트 스타일
-            todayTextStyle: const TextStyle(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.bold,
-                fontSize: 16.0),
-
-            // 선택된 날짜 텍스트 스타일
-            selectedTextStyle: const TextStyle(
-                color: AppColors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16.0),
-
-            // 오늘 날짜 셀 스타일
-            todayDecoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.primaryLight,
-                width: 2.0,
-              ),
-            ),
-
-            // 선택된 날짜 셀 스타일
-            selectedDecoration: const BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
-            ),
+                TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
 
             // 현재 달에 속하지 않는 날짜 셀 숨기기
             outsideDaysVisible: false,
@@ -135,6 +108,61 @@ class _HomeScreenState extends State<HomeScreen> {
               _focusedDay = focusedDay;
             });
           },
+
+          calendarBuilders: CalendarBuilders(
+            // 오늘 날짜 셀 커스텀
+            // - 선택된 날짜가 있을때는, 핑크색 원형 배경 + 흰색 텍스트 스타일 적용
+            // - 선택된 날짜가 없을때는, 흰색 배경 + 핑크색 테두리 + 검은색 텍스트 스타일 적용
+            todayBuilder: (context, day, focusedDay) {
+              return Container(
+                margin: const EdgeInsets.all(6.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: _selectedDay != null
+                      ? Border.all(
+                          color: AppColors.primaryLight,
+                          width: 2.0,
+                        )
+                      : null,
+                  color:
+                      _selectedDay == null ? AppColors.primary : Colors.white,
+                ),
+                child: Center(
+                  child: Text(
+                    '${day.day}',
+                    style: TextStyle(
+                        color: _selectedDay != null
+                            ? AppColors.textPrimary
+                            : AppColors.textWhite,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0),
+                  ),
+                ),
+              );
+            },
+
+            // 선택한 날짜 셀 커스텀
+            // - 사용자가 선택한 날짜 셀에 핑크색 원형 배경 + 흰색 텍스트 스타일 적용 (애니메이션 X)
+            // - TableCalendar의 기본 선택 동작에는 애니메이션이 포함되어 있음
+            selectedBuilder: (context, day, focusedDay) {
+              return Container(
+                margin: const EdgeInsets.all(6.0),
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    '${day.day}',
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0),
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
