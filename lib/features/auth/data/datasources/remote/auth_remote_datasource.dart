@@ -1,4 +1,4 @@
-import '../models/models.dart';
+import '../../models/models.dart';
 
 /// Auth Remote Data Source 인터페이스
 ///
