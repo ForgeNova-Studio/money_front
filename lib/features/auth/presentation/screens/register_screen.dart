@@ -4,7 +4,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/validators.dart';
 import '../providers/auth_provider.dart';
 import '../../../../core/widgets/custom_text_field.dart';
-import '../../../../presentation/screens/home/home_screen.dart';
+import '../../../../presentation/screens/home/home_screen_old.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -57,7 +57,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       if (mounted && authProvider.isAuthenticated) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const HomeScreenOld()),
         );
       }
     } catch (e) {

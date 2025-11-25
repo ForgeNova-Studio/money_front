@@ -5,7 +5,7 @@ import '../../../../core/utils/validators.dart';
 import '../providers/auth_provider.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import 'register_screen.dart';
-import '../../../../presentation/screens/home/home_screen.dart';
+import '../../../../presentation/screens/home/home_screen_old.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted && authProvider.isAuthenticated) {
         print('🏠 홈 화면으로 이동');
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const HomeScreenOld()),
         );
       } else {
         print('⚠️ 인증되지 않음 또는 mounted가 false');

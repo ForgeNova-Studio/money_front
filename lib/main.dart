@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:moneyflow/core/theme/theme.dart';
+import 'package:moneyflow/presentation/screens/home/home_screen.dart';
+import 'package:moneyflow/presentation/screens/onboarding/on_boarding_screen.dart';
 
 import 'package:provider/provider.dart';
 
@@ -10,8 +12,6 @@ import 'features/expense/presentation/providers/expense_provider.dart';
 import 'features/income/presentation/providers/income_provider.dart';
 import 'features/statistics/presentation/providers/statistics_provider.dart';
 import 'features/couple/presentation/providers/couple_provider.dart';
-
-import 'package:moneyflow/presentation/screens/onboarding/on_boarding_screen.dart';
 
 void main() {
   runApp(const MoneyFlowApp());
@@ -38,7 +38,8 @@ class MoneyFlowApp extends StatelessWidget {
         // 테마 설정
         theme: buildLightTheme(),
         // darkTheme: buildDarkTheme(), // 다크모드 (선택사항)
-        home: const OnboardingScreen(),
+        // home: const OnboardingScreen(),
+        home: const HomeScreen(),
       ),
     );
   }
