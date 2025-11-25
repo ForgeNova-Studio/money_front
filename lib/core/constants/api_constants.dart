@@ -7,6 +7,8 @@ class ApiConstants {
   static const String register = '/api/auth/register';
   static const String refreshToken = '/api/auth/refresh';
   static const String logout = '/api/auth/logout';
+  static const String currentUser = '/api/auth/me';
+  static const String checkEmail = '/api/auth/check-email';
 
   // Expense endpoints
   static const String expenses = '/api/expenses';
