@@ -9,7 +9,7 @@ part 'auth_token_model.g.dart';
 /// API 응답 및 로컬 저장소의 토큰 데이터를 처리하는 모델
 /// Domain Entity로 변환하는 역할
 @freezed
-class AuthTokenModel with _$AuthTokenModel {
+sealed class AuthTokenModel with _$AuthTokenModel {
   const AuthTokenModel._();
 
   const factory AuthTokenModel({

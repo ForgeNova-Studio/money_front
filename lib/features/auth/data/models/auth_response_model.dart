@@ -10,7 +10,7 @@ part 'auth_response_model.g.dart';
 ///
 /// API 응답을 파싱하고 Domain AuthResult로 변환
 @freezed
-class AuthResponseModel with _$AuthResponseModel {
+sealed class AuthResponseModel with _$AuthResponseModel {
   const AuthResponseModel._();
 
   const factory AuthResponseModel({

@@ -6,8 +6,8 @@ part of 'auth_token_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$AuthTokenModelImpl _$$AuthTokenModelImplFromJson(Map<String, dynamic> json) =>
-    _$AuthTokenModelImpl(
+_AuthTokenModel _$AuthTokenModelFromJson(Map<String, dynamic> json) =>
+    _AuthTokenModel(
       accessToken: json['accessToken'] as String,
       refreshToken: json['refreshToken'] as String,
       expiresIn: json['expiresIn'] as String?,
@@ -16,8 +16,7 @@ _$AuthTokenModelImpl _$$AuthTokenModelImplFromJson(Map<String, dynamic> json) =>
           : DateTime.parse(json['expiresAt'] as String),
     );
 
-Map<String, dynamic> _$$AuthTokenModelImplToJson(
-        _$AuthTokenModelImpl instance) =>
+Map<String, dynamic> _$AuthTokenModelToJson(_AuthTokenModel instance) =>
     <String, dynamic>{
       'accessToken': instance.accessToken,
       'refreshToken': instance.refreshToken,

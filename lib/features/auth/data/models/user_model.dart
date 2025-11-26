@@ -9,7 +9,7 @@ part 'user_model.g.dart';
 /// API 응답 및 로컬 저장소 데이터를 처리하는 모델
 /// Domain Entity로 변환하는 역할
 @freezed
-class UserModel with _$UserModel {
+sealed class UserModel with _$UserModel {
   const UserModel._();
 
   const factory UserModel({

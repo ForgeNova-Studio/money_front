@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,88 +9,58 @@ part of 'auth_token_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
-AuthTokenModel _$AuthTokenModelFromJson(Map<String, dynamic> json) {
-  return _AuthTokenModel.fromJson(json);
-}
 
 /// @nodoc
 mixin _$AuthTokenModel {
-  String get accessToken => throw _privateConstructorUsedError;
-  String get refreshToken => throw _privateConstructorUsedError;
-  String? get expiresIn =>
-      throw _privateConstructorUsedError; // API 응답용 (초단위 문자열)
-  DateTime? get expiresAt => throw _privateConstructorUsedError;
+  String get accessToken;
+  String get refreshToken;
+  String? get expiresIn; // API 응답용 (초단위 문자열)
+  DateTime? get expiresAt;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $AuthTokenModelCopyWith<AuthTokenModel> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $AuthTokenModelCopyWith<$Res> {
-  factory $AuthTokenModelCopyWith(
-          AuthTokenModel value, $Res Function(AuthTokenModel) then) =
-      _$AuthTokenModelCopyWithImpl<$Res, AuthTokenModel>;
-  @useResult
-  $Res call(
-      {String accessToken,
-      String refreshToken,
-      String? expiresIn,
-      DateTime? expiresAt});
-}
-
-/// @nodoc
-class _$AuthTokenModelCopyWithImpl<$Res, $Val extends AuthTokenModel>
-    implements $AuthTokenModelCopyWith<$Res> {
-  _$AuthTokenModelCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
+  /// Create a copy of AuthTokenModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
+  $AuthTokenModelCopyWith<AuthTokenModel> get copyWith =>
+      _$AuthTokenModelCopyWithImpl<AuthTokenModel>(
+          this as AuthTokenModel, _$identity);
+
+  /// Serializes this AuthTokenModel to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? accessToken = null,
-    Object? refreshToken = null,
-    Object? expiresIn = freezed,
-    Object? expiresAt = freezed,
-  }) {
-    return _then(_value.copyWith(
-      accessToken: null == accessToken
-          ? _value.accessToken
-          : accessToken // ignore: cast_nullable_to_non_nullable
-              as String,
-      refreshToken: null == refreshToken
-          ? _value.refreshToken
-          : refreshToken // ignore: cast_nullable_to_non_nullable
-              as String,
-      expiresIn: freezed == expiresIn
-          ? _value.expiresIn
-          : expiresIn // ignore: cast_nullable_to_non_nullable
-              as String?,
-      expiresAt: freezed == expiresAt
-          ? _value.expiresAt
-          : expiresAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is AuthTokenModel &&
+            (identical(other.accessToken, accessToken) ||
+                other.accessToken == accessToken) &&
+            (identical(other.refreshToken, refreshToken) ||
+                other.refreshToken == refreshToken) &&
+            (identical(other.expiresIn, expiresIn) ||
+                other.expiresIn == expiresIn) &&
+            (identical(other.expiresAt, expiresAt) ||
+                other.expiresAt == expiresAt));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, accessToken, refreshToken, expiresIn, expiresAt);
+
+  @override
+  String toString() {
+    return 'AuthTokenModel(accessToken: $accessToken, refreshToken: $refreshToken, expiresIn: $expiresIn, expiresAt: $expiresAt)';
   }
 }
 
 /// @nodoc
-abstract class _$$AuthTokenModelImplCopyWith<$Res>
-    implements $AuthTokenModelCopyWith<$Res> {
-  factory _$$AuthTokenModelImplCopyWith(_$AuthTokenModelImpl value,
-          $Res Function(_$AuthTokenModelImpl) then) =
-      __$$AuthTokenModelImplCopyWithImpl<$Res>;
-  @override
+abstract mixin class $AuthTokenModelCopyWith<$Res> {
+  factory $AuthTokenModelCopyWith(
+          AuthTokenModel value, $Res Function(AuthTokenModel) _then) =
+      _$AuthTokenModelCopyWithImpl;
   @useResult
   $Res call(
       {String accessToken,
@@ -100,13 +70,15 @@ abstract class _$$AuthTokenModelImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$AuthTokenModelImplCopyWithImpl<$Res>
-    extends _$AuthTokenModelCopyWithImpl<$Res, _$AuthTokenModelImpl>
-    implements _$$AuthTokenModelImplCopyWith<$Res> {
-  __$$AuthTokenModelImplCopyWithImpl(
-      _$AuthTokenModelImpl _value, $Res Function(_$AuthTokenModelImpl) _then)
-      : super(_value, _then);
+class _$AuthTokenModelCopyWithImpl<$Res>
+    implements $AuthTokenModelCopyWith<$Res> {
+  _$AuthTokenModelCopyWithImpl(this._self, this._then);
 
+  final AuthTokenModel _self;
+  final $Res Function(AuthTokenModel) _then;
+
+  /// Create a copy of AuthTokenModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -115,39 +87,200 @@ class __$$AuthTokenModelImplCopyWithImpl<$Res>
     Object? expiresIn = freezed,
     Object? expiresAt = freezed,
   }) {
-    return _then(_$AuthTokenModelImpl(
+    return _then(_self.copyWith(
       accessToken: null == accessToken
-          ? _value.accessToken
+          ? _self.accessToken
           : accessToken // ignore: cast_nullable_to_non_nullable
               as String,
       refreshToken: null == refreshToken
-          ? _value.refreshToken
+          ? _self.refreshToken
           : refreshToken // ignore: cast_nullable_to_non_nullable
               as String,
       expiresIn: freezed == expiresIn
-          ? _value.expiresIn
+          ? _self.expiresIn
           : expiresIn // ignore: cast_nullable_to_non_nullable
               as String?,
       expiresAt: freezed == expiresAt
-          ? _value.expiresAt
+          ? _self.expiresAt
           : expiresAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
     ));
   }
 }
 
+/// Adds pattern-matching-related methods to [AuthTokenModel].
+extension AuthTokenModelPatterns on AuthTokenModel {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_AuthTokenModel value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _AuthTokenModel() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_AuthTokenModel value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _AuthTokenModel():
+        return $default(_that);
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_AuthTokenModel value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _AuthTokenModel() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(String accessToken, String refreshToken, String? expiresIn,
+            DateTime? expiresAt)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _AuthTokenModel() when $default != null:
+        return $default(_that.accessToken, _that.refreshToken, _that.expiresIn,
+            _that.expiresAt);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(String accessToken, String refreshToken, String? expiresIn,
+            DateTime? expiresAt)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _AuthTokenModel():
+        return $default(_that.accessToken, _that.refreshToken, _that.expiresIn,
+            _that.expiresAt);
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(String accessToken, String refreshToken,
+            String? expiresIn, DateTime? expiresAt)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _AuthTokenModel() when $default != null:
+        return $default(_that.accessToken, _that.refreshToken, _that.expiresIn,
+            _that.expiresAt);
+      case _:
+        return null;
+    }
+  }
+}
+
 /// @nodoc
 @JsonSerializable()
-class _$AuthTokenModelImpl extends _AuthTokenModel {
-  const _$AuthTokenModelImpl(
+class _AuthTokenModel extends AuthTokenModel {
+  const _AuthTokenModel(
       {required this.accessToken,
       required this.refreshToken,
       this.expiresIn,
       this.expiresAt})
       : super._();
-
-  factory _$AuthTokenModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$AuthTokenModelImplFromJson(json);
+  factory _AuthTokenModel.fromJson(Map<String, dynamic> json) =>
+      _$AuthTokenModelFromJson(json);
 
   @override
   final String accessToken;
@@ -159,16 +292,26 @@ class _$AuthTokenModelImpl extends _AuthTokenModel {
   @override
   final DateTime? expiresAt;
 
+  /// Create a copy of AuthTokenModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'AuthTokenModel(accessToken: $accessToken, refreshToken: $refreshToken, expiresIn: $expiresIn, expiresAt: $expiresAt)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$AuthTokenModelCopyWith<_AuthTokenModel> get copyWith =>
+      __$AuthTokenModelCopyWithImpl<_AuthTokenModel>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$AuthTokenModelToJson(
+      this,
+    );
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$AuthTokenModelImpl &&
+            other is _AuthTokenModel &&
             (identical(other.accessToken, accessToken) ||
                 other.accessToken == accessToken) &&
             (identical(other.refreshToken, refreshToken) ||
@@ -179,47 +322,69 @@ class _$AuthTokenModelImpl extends _AuthTokenModel {
                 other.expiresAt == expiresAt));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, accessToken, refreshToken, expiresIn, expiresAt);
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$AuthTokenModelImplCopyWith<_$AuthTokenModelImpl> get copyWith =>
-      __$$AuthTokenModelImplCopyWithImpl<_$AuthTokenModelImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$AuthTokenModelImplToJson(
-      this,
-    );
+  String toString() {
+    return 'AuthTokenModel(accessToken: $accessToken, refreshToken: $refreshToken, expiresIn: $expiresIn, expiresAt: $expiresAt)';
   }
 }
 
-abstract class _AuthTokenModel extends AuthTokenModel {
-  const factory _AuthTokenModel(
-      {required final String accessToken,
-      required final String refreshToken,
-      final String? expiresIn,
-      final DateTime? expiresAt}) = _$AuthTokenModelImpl;
-  const _AuthTokenModel._() : super._();
-
-  factory _AuthTokenModel.fromJson(Map<String, dynamic> json) =
-      _$AuthTokenModelImpl.fromJson;
-
+/// @nodoc
+abstract mixin class _$AuthTokenModelCopyWith<$Res>
+    implements $AuthTokenModelCopyWith<$Res> {
+  factory _$AuthTokenModelCopyWith(
+          _AuthTokenModel value, $Res Function(_AuthTokenModel) _then) =
+      __$AuthTokenModelCopyWithImpl;
   @override
-  String get accessToken;
-  @override
-  String get refreshToken;
-  @override
-  String? get expiresIn;
-  @override // API 응답용 (초단위 문자열)
-  DateTime? get expiresAt;
-  @override
-  @JsonKey(ignore: true)
-  _$$AuthTokenModelImplCopyWith<_$AuthTokenModelImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  @useResult
+  $Res call(
+      {String accessToken,
+      String refreshToken,
+      String? expiresIn,
+      DateTime? expiresAt});
 }
+
+/// @nodoc
+class __$AuthTokenModelCopyWithImpl<$Res>
+    implements _$AuthTokenModelCopyWith<$Res> {
+  __$AuthTokenModelCopyWithImpl(this._self, this._then);
+
+  final _AuthTokenModel _self;
+  final $Res Function(_AuthTokenModel) _then;
+
+  /// Create a copy of AuthTokenModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? accessToken = null,
+    Object? refreshToken = null,
+    Object? expiresIn = freezed,
+    Object? expiresAt = freezed,
+  }) {
+    return _then(_AuthTokenModel(
+      accessToken: null == accessToken
+          ? _self.accessToken
+          : accessToken // ignore: cast_nullable_to_non_nullable
+              as String,
+      refreshToken: null == refreshToken
+          ? _self.refreshToken
+          : refreshToken // ignore: cast_nullable_to_non_nullable
+              as String,
+      expiresIn: freezed == expiresIn
+          ? _self.expiresIn
+          : expiresIn // ignore: cast_nullable_to_non_nullable
+              as String?,
+      expiresAt: freezed == expiresAt
+          ? _self.expiresAt
+          : expiresAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ));
+  }
+}
+
+// dart format on
