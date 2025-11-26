@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../../core/constants/app_constants.dart';
-import '../../../../core/utils/validators.dart';
-import '../providers/auth_provider.dart';
-import '../../../../core/widgets/custom_text_field.dart';
-import '../../../../presentation/screens/home/home_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moneyflow/core/utils/validators.dart';
+import 'package:moneyflow/core/widgets/custom_text_field.dart';
+import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moneyflow/presentation/screens/home/home_screen.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -46,25 +46,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    final authProvider = context.read<AuthProvider>();
-
     try {
-      await authProvider.register(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-        nickname: _nicknameController.text.trim(),
-      );
+      await ref.read(authViewModelProvider.notifier).register(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+            nickname: _nicknameController.text.trim(),
+          );
 
-      if (mounted && authProvider.isAuthenticated) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
+      if (mounted) {
+        final authState = ref.read(authViewModelProvider);
+        if (authState.isAuthenticated) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
+        final errorMessage = ref.read(authViewModelProvider).errorMessage;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(authProvider.errorMessage ?? '회원가입에 실패했습니다'),
+            content: Text(errorMessage ?? '회원가입에 실패했습니다'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -74,6 +76,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authViewModelProvider);
+    final isLoading = authState.isLoading;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -175,25 +180,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 32),
 
                 // 회원가입 버튼
-                Consumer<AuthProvider>(
-                  builder: (context, authProvider, child) {
-                    final isLoading = authProvider.status == AuthStatus.loading;
-
-                    return ElevatedButton(
-                      onPressed: isLoading ? null : _handleRegister,
-                      child: isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
-                          : const Text('회원가입'),
-                    );
-                  },
+                ElevatedButton(
+                  onPressed: isLoading ? null : _handleRegister,
+                  child: isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text('회원가입'),
                 ),
               ],
             ),
