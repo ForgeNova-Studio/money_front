@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../../core/constants/app_constants.dart';
-import '../../../../core/utils/validators.dart';
-import '../providers/auth_provider.dart';
-import '../../../../core/widgets/custom_text_field.dart';
-import 'register_screen.dart';
-import '../../../../presentation/screens/home/home_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moneyflow/core/utils/validators.dart';
+import 'package:moneyflow/core/widgets/custom_text_field.dart';
+import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moneyflow/features/auth/presentation/screens/register_screen.dart';
+import 'package:moneyflow/presentation/screens/home/home_screen.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -32,33 +32,26 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    final authProvider = context.read<AuthProvider>();
-
     try {
-      print('🚀 로그인 시작');
-      await authProvider.login(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      );
-
-      print('✅ 로그인 완료, 인증 상태: ${authProvider.isAuthenticated}');
-
-      if (mounted && authProvider.isAuthenticated) {
-        print('🏠 홈 화면으로 이동');
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-      } else {
-        print('⚠️ 인증되지 않음 또는 mounted가 false');
-      }
-    } catch (e, stackTrace) {
-      print('❌ 로그인 에러: $e');
-      print('📍 스택 트레이스: $stackTrace');
+      await ref.read(authViewModelProvider.notifier).login(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          );
 
       if (mounted) {
+        final authState = ref.read(authViewModelProvider);
+        if (authState.isAuthenticated) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        final errorMessage = ref.read(authViewModelProvider).errorMessage;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(authProvider.errorMessage ?? '로그인에 실패했습니다: $e'),
+            content: Text(errorMessage ?? '로그인에 실패했습니다'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -68,6 +61,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authViewModelProvider);
+    final isLoading = authState.isLoading;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -132,25 +128,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 32),
 
                 // 로그인 버튼
-                Consumer<AuthProvider>(
-                  builder: (context, authProvider, child) {
-                    final isLoading = authProvider.status == AuthStatus.loading;
-
-                    return ElevatedButton(
-                      onPressed: isLoading ? null : _handleLogin,
-                      child: isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
-                          : const Text('로그인'),
-                    );
-                  },
+                ElevatedButton(
+                  onPressed: isLoading ? null : _handleLogin,
+                  child: isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text('로그인'),
                 ),
                 const SizedBox(height: 16),
 
