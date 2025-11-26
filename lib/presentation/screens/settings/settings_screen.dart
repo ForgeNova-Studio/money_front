@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_constants.dart';
-import '../../../features/auth/presentation/providers/auth_provider.dart';
+
 import '../../../features/couple/presentation/providers/couple_provider.dart';
 import '../../../features/couple/presentation/screens/couple_invite_screen.dart';
 import '../../../features/couple/presentation/screens/couple_join_screen.dart';
@@ -105,7 +105,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (confirmed != true || !mounted) return;
 
-    await context.read<AuthProvider>().logout();
+    // await context.read<AuthProvider>().logout();
 
     if (!mounted) return;
 

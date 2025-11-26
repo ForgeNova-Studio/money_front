@@ -3,7 +3,7 @@ import 'package:moneyflow/features/budget/presentation/providers/budget_provider
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_constants.dart';
-import '../../../features/auth/presentation/providers/auth_provider.dart';
+// import '../../../features/auth/presentation/providers/auth_provider.dart';
 import '../../../features/expense/presentation/providers/expense_provider.dart';
 import '../../../features/income/presentation/providers/income_provider.dart';
 import '../../../features/couple/presentation/providers/couple_provider.dart';
@@ -294,33 +294,33 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // 환영 메시지
-                Consumer<AuthProvider>(
-                  builder: (context, authProvider, child) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '안녕하세요,',
-                          style:
-                              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: AppColors.textSecondary,
-                                  ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${authProvider.user?.nickname ?? '사용자'}님!',
-                          style: Theme.of(context)
-                              .textTheme
-                              .displaySmall
-                              ?.copyWith(
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
+                // Consumer<AuthProvider>(
+                //   builder: (context, authProvider, child) {
+                //     return Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         Text(
+                //           '안녕하세요,',
+                //           style:
+                //               Theme.of(context).textTheme.bodyLarge?.copyWith(
+                //                     color: AppColors.textSecondary,
+                //                   ),
+                //         ),
+                //         const SizedBox(height: 4),
+                //         Text(
+                //           '${authProvider.user?.nickname ?? '사용자'}님!',
+                //           style: Theme.of(context)
+                //               .textTheme
+                //               .displaySmall
+                //               ?.copyWith(
+                //                 color: AppColors.textPrimary,
+                //                 fontWeight: FontWeight.bold,
+                //               ),
+                //         ),
+                //       ],
+                //     );
+                //   },
+                // ),
                 const SizedBox(height: 24),
 
                 // 월간 목표 예산 카드
