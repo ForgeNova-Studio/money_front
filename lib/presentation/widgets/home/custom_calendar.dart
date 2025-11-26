@@ -13,6 +13,13 @@ class _CustomCalendarState extends State<CustomCalendar> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
+  // 이벤트 목록
+  Map<DateTime, List<String>> events = {
+    DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day):
+        ['today'],
+    DateTime.utc(2025, 11, 19): ['event1', 'event2'],
+  };
+
   @override
   Widget build(BuildContext context) {
     return TableCalendar(
@@ -24,6 +31,14 @@ class _CustomCalendarState extends State<CustomCalendar> {
       focusedDay: _focusedDay,
       firstDay: DateTime(2020),
       lastDay: DateTime(2030, 12, 31),
+
+      // 각 날짜 셀에 표시할 이벤트 로드
+      // - TableCalendar이 각 날짜(day)마다 이 함수를 호출함
+      eventLoader: (day) {
+        // events에 없음 → [] 반환
+        // events에 있음 → 해당 날짜의 이벤트 리스트['event1', 'event2']를 반환
+        return events[day] ?? [];
+      },
 
       // 달력 헤더 스타일 설정
       headerStyle: const HeaderStyle(
@@ -116,16 +131,16 @@ class _CustomCalendarState extends State<CustomCalendar> {
         // - 선택된 날짜 O : 핑크색 원형 배경 + 흰색 텍스트 스타일 적용
         todayBuilder: (context, day, focusedDay) {
           return Container(
-            margin: const EdgeInsets.all(6.0),
+            margin: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: _selectedDay != null
-                  ? Border.all(
-                      color: AppColors.primaryLight,
-                      width: 2.0,
-                    )
-                  : null,
-              color: _selectedDay == null ? AppColors.primary : Colors.white,
+              border: Border.all(
+                color: AppColors.primaryPinkLight,
+                width: 2.0,
+              ),
+              color: _selectedDay == null
+                  ? AppColors.primary
+                  : AppColors.backgroundLight,
             ),
             child: Center(
               child: Text(
@@ -146,7 +161,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
         // - TableCalendar의 기본 선택 동작에는 애니메이션이 포함되어 있음
         selectedBuilder: (context, day, focusedDay) {
           return Container(
-            margin: const EdgeInsets.all(6.0),
+            margin: const EdgeInsets.all(8.0),
             decoration: const BoxDecoration(
               color: AppColors.primary,
               shape: BoxShape.circle,
@@ -159,6 +174,39 @@ class _CustomCalendarState extends State<CustomCalendar> {
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0),
               ),
+            ),
+          );
+        },
+
+        markerBuilder: (context, day, events) {
+          // events = eventLoader가 반환한 List
+          // 오늘 날짜 : ['today']
+          // 2025년 11월 19일 : ['event1', 'event2']
+
+          if (events.isEmpty) return null;
+
+          // events가 10개여도 3개만 표시
+          final displayEvents = events.take(3).toList();
+
+          final today = DateTime.utc(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+          return Positioned(
+            bottom:
+                isSameDay(day, _selectedDay) || isSameDay(day, today) ? -2 : 2,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: displayEvents.map((event) {
+                return Container(
+                  width: 6,
+                  height: 6,
+                  margin: const EdgeInsets.symmetric(horizontal: 1.0),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.primaryPinkLight,
+                  ),
+                );
+              }).toList(),
             ),
           );
         },
