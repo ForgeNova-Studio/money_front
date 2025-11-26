@@ -478,13 +478,402 @@ await localDataSource.saveUser(userModel);    // 한 번에 저장
 
 ---
 
-1. Auth 기능에서 Local DataSource가 없다면?
-앱을 껐다 켤 때마다 매번 다시 로그인해야 합니다.
+## 자동 로그인 & 지속 로그인 메커니즘
 
-Local이 하는 일: 로그인 성공 시 받은 
-Token
-을 기기에 저장해둠.
-앱 실행 시: 저장된 
-Token
-이 있는지 확인해서 있으면 자동 로그인 처리.
-결론: "사용자가 앱을 켤 때마다 아이디/비번을 치게 할 것인가?" → 아니라면 Local DataSource(토큰 저장소)는 필수입니다.
+### 왜 Local DataSource가 필수인가?
+
+**Q: Local DataSource 없이 앱을 만들면?**
+
+**A: 앱을 종료할 때마다 매번 다시 로그인해야 합니다!** ❌
+
+#### 메모리만 사용하는 경우 (Local DataSource 없음)
+
+```dart
+// ❌ 메모리에만 저장
+String? accessToken;
+String? refreshToken;
+
+login() {
+  accessToken = response.accessToken;  // 메모리에만 저장
+  refreshToken = response.refreshToken;
+}
+
+// 앱 종료 → 메모리 초기화 → 토큰 사라짐 💨
+// 앱 재시작 → 토큰 없음 → 다시 로그인 필요!
+```
+
+**문제점:**
+- 앱 종료 시 → 메모리 초기화 → 토큰 삭제
+- 앱 재시작 시 → 로그인 필요
+- **앱을 닫을 때마다 재로그인** (매우 나쁜 UX)
+
+#### Local DataSource를 사용하는 경우 (현재 구조)
+
+```dart
+// ✅ 영구 저장소에 저장
+login() async {
+  final response = await remoteDataSource.login(...);
+
+  // SharedPreferences(디스크)에 저장
+  await localDataSource.saveToken(tokenModel);  // 💾 영구 저장
+  await localDataSource.saveUser(userModel);
+}
+
+// 앱 재시작 시
+checkLogin() async {
+  final token = await localDataSource.getToken();  // 토큰이 여전히 있음! ✅
+
+  if (token != null && !token.isExpired) {
+    // 자동 로그인!
+  }
+}
+```
+
+**장점:**
+- 앱 종료해도 토큰이 **디바이스에 저장**되어 있음 💾
+- 앱 재시작 시 → 저장된 토큰 확인 → **자동 로그인** ✅
+- 사용자가 명시적으로 로그아웃하기 전까지 **계속 로그인 유지**
+
+---
+
+### 자동 로그인 전체 흐름
+
+#### 1️⃣ 최초 로그인 시
+
+```
+사용자 로그인
+    ↓
+POST /api/auth/login
+    ↓
+Access Token + Refresh Token 수신
+    ↓
+localDataSource.saveToken(tokenModel)  ← 💾 디스크에 저장
+localDataSource.saveUser(userModel)
+    ↓
+로그인 성공 (홈 화면 이동)
+```
+
+#### 2️⃣ 앱 재시작 시 (자동 로그인)
+
+```
+앱 시작
+    ↓
+AuthViewModel.build() 실행
+    ↓
+_checkCurrentUser() 호출
+    ↓
+localDataSource.getToken() ← 💾 저장된 토큰 확인
+    ↓
+토큰이 있나?
+    ├─ 없음 → 로그인 화면 표시
+    └─ 있음 ↓
+        ↓
+    GET /api/auth/me (토큰 유효성 검증 + 최신 사용자 정보)
+        ↓
+    토큰이 유효한가?
+        ├─ 유효함 (200 OK)
+        │   ↓
+        │   localDataSource.saveUser(최신 정보)  ← 캐시 업데이트
+        │   ↓
+        │   자동 로그인 성공! ✅
+        │
+        └─ 만료됨 (401 Unauthorized)
+            ↓
+            Refresh Token으로 갱신 시도
+            ↓
+            성공? → 자동 로그인 ✅
+            실패? → 로그아웃 처리 ❌
+```
+
+#### 3️⃣ 오프라인 상태
+
+```
+앱 시작 (인터넷 없음)
+    ↓
+GET /api/auth/me 호출 → NetworkException 발생
+    ↓
+Repository의 catch 블록에서 처리
+    ↓
+localDataSource.getUser()  ← 캐시된 사용자 정보 사용
+    ↓
+캐시 데이터로 자동 로그인! ✅ (오프라인 대응)
+```
+
+---
+
+### 토큰 갱신 전략
+
+#### Access Token vs Refresh Token
+
+| 토큰 종류 | 유효 기간 | 용도 | 저장 위치 |
+|----------|---------|------|----------|
+| **Access Token** | 짧음 (1시간) | API 요청 시 사용 | localDataSource |
+| **Refresh Token** | 김 (30일) | Access Token 갱신용 | localDataSource |
+
+#### 토큰 만료 처리 흐름
+
+```
+API 요청 (예: GET /api/expenses)
+    ↓
+Authorization: Bearer {accessToken}
+    ↓
+401 Unauthorized (토큰 만료!)
+    ↓
+Dio Interceptor가 감지 (onError)
+    ↓
+localDataSource.getToken() → Refresh Token 조회
+    ↓
+POST /api/auth/refresh (Refresh Token 전송)
+    ↓
+새 Access Token 수신
+    ↓
+localDataSource.saveToken(새 토큰)  ← 💾 저장
+    ↓
+원래 요청 재시도 (새 Access Token으로)
+    ↓
+성공! ✅ (사용자는 모르게 처리됨)
+```
+
+#### 현재 구현 상태
+
+⚠️ **주의**: 현재 Interceptor의 토큰 자동 갱신 로직은 TODO 상태입니다!
+
+```dart
+// lib/core/providers/core_providers.dart (55-61행)
+@override
+void onError(DioException err, ErrorInterceptorHandler handler) {
+  if (err.response?.statusCode == 401) {
+    // 토큰 만료 처리
+    // TODO: 로그인 화면으로 이동  ⚠️ 구현 필요!
+  }
+  handler.next(err);
+}
+```
+
+**개선 필요 사항:**
+- 401 에러 발생 시 Refresh Token으로 자동 갱신
+- Refresh Token도 만료된 경우 로그아웃 처리
+- 갱신 성공 시 원래 요청 재시도
+
+---
+
+### 데이터 저장 메커니즘
+
+#### AuthRepository에서 Local/Remote 협력
+
+```dart
+// lib/features/auth/data/repositories/auth_repository_impl.dart
+
+@override
+Future<User?> getCurrentUser() async {
+  try {
+    // 1. Remote에서 최신 정보 가져오기 ⭐
+    final userModel = await remoteDataSource.getCurrentUser();  // GET /api/auth/me
+
+    // 2. Local 캐시 업데이트 ⭐
+    await localDataSource.saveUser(userModel);  // 💾 디스크에 저장
+
+    return userModel.toEntity();
+  } catch (e) {
+    if (e is NetworkException) {
+      // 3. 네트워크 오류 시 로컬 캐시 사용 ⭐
+      final localUser = await localDataSource.getUser();  // 💾 캐시에서 로드
+      if (localUser != null) {
+        return localUser.toEntity();  // 오프라인 대응!
+      }
+    } else if (e is UnauthorizedException) {
+      // 4. 인증 실패 시 로컬 데이터 삭제 ⭐
+      await localDataSource.clearAll();  // 💾 캐시 삭제
+      return null;
+    }
+
+    rethrow;
+  }
+}
+```
+
+**주요 포인트:**
+1. **Remote 우선**: 항상 최신 정보를 가져오려고 시도
+2. **Local 캐싱**: 성공 시 Local에 저장 (다음번 오프라인 대응)
+3. **오프라인 대응**: 실패 시 Local 캐시 사용
+4. **인증 실패 처리**: 401 에러 시 Local 데이터 삭제
+
+---
+
+### 영구 저장소 비교
+
+#### 1. SharedPreferences (현재 사용 중)
+
+```dart
+// 장점
+✅ 간단하고 사용하기 쉬움
+✅ 빠른 read/write 성능
+✅ key-value 저장에 적합
+
+// 단점
+⚠️ 암호화되지 않음 (토큰이 평문으로 저장)
+⚠️ 보안에 취약
+⚠️ 루팅/탈옥 기기에서 접근 가능
+```
+
+**저장 위치:**
+- Android: `/data/data/com.app/shared_prefs/`
+- iOS: `~/Library/Preferences/`
+
+**데이터 예시:**
+```json
+{
+  "auth_token": "{\"accessToken\":\"abc123\",\"refreshToken\":\"xyz789\",...}",
+  "auth_user": "{\"userId\":\"user123\",\"email\":\"test@test.com\",...}"
+}
+```
+
+#### 2. flutter_secure_storage (권장)
+
+```dart
+// 장점
+✅ 암호화하여 저장 🔒
+✅ iOS Keychain / Android Keystore 사용
+✅ 안전한 토큰 저장
+✅ 루팅/탈옥에도 상대적으로 안전
+
+// 단점
+⚠️ SharedPreferences보다 느림
+⚠️ 설정이 조금 더 복잡
+```
+
+**사용 예시:**
+```dart
+final storage = FlutterSecureStorage();
+
+// 저장 (암호화됨)
+await storage.write(key: 'access_token', value: token);
+
+// 조회 (복호화됨)
+final token = await storage.read(key: 'access_token');
+```
+
+#### 비교표
+
+| 기능 | SharedPreferences | SecureStorage |
+|------|------------------|---------------|
+| 암호화 | ❌ 평문 저장 | ✅ 암호화 저장 |
+| 속도 | ⚡ 빠름 | 🐢 상대적으로 느림 |
+| 보안 | ⚠️ 취약 | ✅ 안전 |
+| 사용 편의성 | ✅ 매우 쉬움 | ✅ 쉬움 |
+| 토큰 저장 | ⚠️ 비권장 | ✅ 권장 |
+
+---
+
+### 보안 고려사항
+
+#### 1. 토큰 저장 보안
+
+**현재 (SharedPreferences):**
+```dart
+// ⚠️ 평문으로 저장됨!
+await prefs.setString('access_token', 'eyJhbGciOiJIUz...');
+
+// 누구나 읽을 수 있음:
+// adb shell
+// run-as com.yourapp
+// cat shared_prefs/FlutterSharedPreferences.xml
+```
+
+**권장 (SecureStorage):**
+```dart
+// ✅ 암호화되어 저장
+await storage.write(key: 'access_token', value: token);
+
+// iOS: Keychain에 암호화 저장
+// Android: Android Keystore에 암호화 저장
+```
+
+#### 2. Refresh Token 관리
+
+- Access Token: 짧은 유효기간 (1시간) → 탈취되어도 피해 최소화
+- Refresh Token: 긴 유효기간 (30일) → **반드시 암호화 저장 필요**
+- Refresh Token 탈취 시 → 장기간 접근 가능 → 매우 위험!
+
+#### 3. 로그아웃 시 완전 삭제
+
+```dart
+@override
+Future<void> logout() async {
+  // ✅ 모든 인증 데이터 삭제
+  await localDataSource.clearAll();
+
+  // 필요 시 서버에도 알림
+  // await remoteDataSource.logout();
+}
+```
+
+#### 4. 토큰 만료 시간 검증
+
+```dart
+// 저장된 토큰 사용 전 만료 확인
+final token = await localDataSource.getToken();
+if (token != null && !token.toEntity().isExpired) {
+  // 유효한 토큰 사용
+} else {
+  // 만료된 토큰 → 재로그인 또는 갱신
+}
+```
+
+---
+
+### 결론: Local DataSource의 역할
+
+| 기능 | Local DataSource의 역할 |
+|------|----------------------|
+| **자동 로그인** | 저장된 토큰으로 앱 재시작 시 자동 로그인 |
+| **지속 로그인** | 사용자가 로그아웃하기 전까지 계속 로그인 유지 |
+| **오프라인 대응** | 네트워크 오류 시 캐시된 데이터 사용 |
+| **성능 향상** | API 호출 없이 로컬 데이터로 빠른 응답 |
+| **토큰 관리** | Access Token, Refresh Token 영구 저장 |
+
+**핵심 메시지:**
+> Local DataSource 없이는 진정한 의미의 **자동 로그인/지속 로그인이 불가능**합니다.
+> 사용자가 앱을 닫을 때마다 다시 로그인해야 하는 불편함을 겪게 됩니다.
+
+---
+
+### 개선 권장사항
+
+#### 1. SecureStorage로 마이그레이션
+```dart
+// 현재: SharedPreferences 사용
+class AuthLocalDataSourceImpl implements AuthLocalDataSource {
+  final SharedPreferences prefs;  // ⚠️ 평문 저장
+}
+
+// 개선: SecureStorage 사용
+class AuthLocalDataSourceImpl implements AuthLocalDataSource {
+  final FlutterSecureStorage storage;  // ✅ 암호화 저장
+}
+```
+
+#### 2. Interceptor 토큰 자동 갱신 구현
+```dart
+// TODO 제거하고 실제 구현 필요
+@override
+void onError(DioException err, ErrorInterceptorHandler handler) async {
+  if (err.response?.statusCode == 401) {
+    // ✅ Refresh Token으로 자동 갱신 로직 추가
+    final newToken = await authRepository.refreshToken(...);
+    // ✅ 원래 요청 재시도
+  }
+  handler.next(err);
+}
+```
+
+#### 3. 토큰 만료 시간 체크
+```dart
+// 토큰 사용 전 항상 만료 확인
+final token = await localDataSource.getToken();
+if (token == null || token.toEntity().isExpired) {
+  // Refresh Token으로 갱신 또는 재로그인
+}
+```
+
+---
