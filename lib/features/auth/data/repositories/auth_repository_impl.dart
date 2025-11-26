@@ -166,4 +166,73 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<bool> checkEmailDuplicate(String email) async {
     return await remoteDataSource.checkEmailDuplicate(email);
   }
+
+  @override
+  Future<AuthResult> loginWithGoogle({required String idToken}) async {
+    // TODO: Remote API 호출로 변경
+    // final response = await remoteDataSource.loginWithGoogle(idToken: idToken);
+
+    // Mock: 임시 데이터 반환
+    await Future.delayed(const Duration(seconds: 1)); // API 호출 시뮬레이션
+
+    // Mock User 생성
+    final mockUserModel = UserModel(
+      userId: 'google_mock_user_${DateTime.now().millisecondsSinceEpoch}',
+      email: 'google.user@example.com',
+      nickname: 'Google User',
+      profileImageUrl: null,
+    );
+
+    // Mock Token 생성
+    final mockTokenModel = AuthTokenModel(
+      accessToken: 'mock_google_access_token',
+      refreshToken: 'mock_google_refresh_token',
+      expiresIn: '3600', // String으로 변경
+    );
+
+    // Local Storage에 저장
+    await localDataSource.saveToken(mockTokenModel);
+    await localDataSource.saveUser(mockUserModel);
+
+    // AuthResult 반환
+    return AuthResult(
+      user: mockUserModel.toEntity(),
+      token: mockTokenModel.toEntity(),
+    );
+  }
+
+  @override
+  Future<AuthResult> loginWithApple({required String authorizationCode}) async {
+    // TODO: Remote API 호출로 변경
+    // final response = await remoteDataSource.loginWithApple(
+    //   authorizationCode: authorizationCode,
+    // );
+
+    // Mock: 임시 데이터 반환
+    await Future.delayed(const Duration(seconds: 1)); // API 호출 시뮬레이션
+
+    // Mock User 생성
+    final mockUserModel = UserModel(
+      userId: 'apple_mock_user_${DateTime.now().millisecondsSinceEpoch}',
+      email: 'apple.user@example.com',
+      nickname: 'Apple User',
+      profileImageUrl: null,
+    );
+
+    // Mock Token 생성
+    final mockTokenModel = AuthTokenModel(
+      accessToken: 'mock_apple_access_token',
+      refreshToken: 'mock_apple_refresh_token',
+    );
+
+    // Local Storage에 저장
+    await localDataSource.saveToken(mockTokenModel);
+    await localDataSource.saveUser(mockUserModel);
+
+    // AuthResult 반환
+    return AuthResult(
+      user: mockUserModel.toEntity(),
+      token: mockTokenModel.toEntity(),
+    );
+  }
 }

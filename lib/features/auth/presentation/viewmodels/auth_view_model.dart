@@ -121,6 +121,54 @@ class AuthViewModel extends _$AuthViewModel {
     }
   }
 
+  /// Google 로그인
+  Future<void> loginWithGoogle() async {
+    state = AuthState.loading();
+
+    try {
+      final useCase = ref.read(googleLoginUseCaseProvider);
+      final result = await useCase();
+
+      state = AuthState.authenticated(result.user);
+    } on NetworkException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } on UnauthorizedException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } on ServerException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } catch (e) {
+      state = AuthState.error('Google 로그인 중 오류가 발생했습니다: $e');
+      rethrow;
+    }
+  }
+
+  /// Apple 로그인
+  Future<void> loginWithApple() async {
+    state = AuthState.loading();
+
+    try {
+      final useCase = ref.read(appleLoginUseCaseProvider);
+      final result = await useCase();
+
+      state = AuthState.authenticated(result.user);
+    } on NetworkException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } on UnauthorizedException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } on ServerException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } catch (e) {
+      state = AuthState.error('Apple 로그인 중 오류가 발생했습니다: $e');
+      rethrow;
+    }
+  }
+
   /// 에러 메시지 초기화
   void clearError() {
     state = state.copyWith(errorMessage: null);

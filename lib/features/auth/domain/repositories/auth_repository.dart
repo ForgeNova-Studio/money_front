@@ -99,4 +99,26 @@ abstract class AuthRepository {
   /// - [NetworkException] 네트워크 오류
   /// - [ServerException] 서버 오류
   Future<bool> checkEmailDuplicate(String email);
+
+  /// Google 로그인
+  /// [idToken] Google ID Token
+  ///
+  /// Returns: [AuthResult] (User + AuthToken)
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [UnauthorizedException] Google 인증 실패
+  /// - [ServerException] 서버 오류
+  Future<AuthResult> loginWithGoogle({required String idToken});
+
+  /// Apple 로그인
+  /// [authorizationCode] Apple Authorization Code
+  ///
+  /// Returns: [AuthResult] (User + AuthToken)
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [UnauthorizedException] Apple 인증 실패
+  /// - [ServerException] 서버 오류
+  Future<AuthResult> loginWithApple({required String authorizationCode});
 }

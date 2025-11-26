@@ -337,3 +337,100 @@ final class GetCurrentUserUseCaseProvider extends $FunctionalProvider<
 
 String _$getCurrentUserUseCaseHash() =>
     r'667fda7b5ed39acf7727e08c35274ea553056d76';
+
+/// Google Login UseCase Provider
+
+@ProviderFor(googleLoginUseCase)
+const googleLoginUseCaseProvider = GoogleLoginUseCaseProvider._();
+
+/// Google Login UseCase Provider
+
+final class GoogleLoginUseCaseProvider extends $FunctionalProvider<
+    GoogleLoginUseCase,
+    GoogleLoginUseCase,
+    GoogleLoginUseCase> with $Provider<GoogleLoginUseCase> {
+  /// Google Login UseCase Provider
+  const GoogleLoginUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'googleLoginUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$googleLoginUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<GoogleLoginUseCase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  GoogleLoginUseCase create(Ref ref) {
+    return googleLoginUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GoogleLoginUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GoogleLoginUseCase>(value),
+    );
+  }
+}
+
+String _$googleLoginUseCaseHash() =>
+    r'bde24a8375b92dcc544a44057bc376f21c5af48f';
+
+/// Apple Login UseCase Provider
+
+@ProviderFor(appleLoginUseCase)
+const appleLoginUseCaseProvider = AppleLoginUseCaseProvider._();
+
+/// Apple Login UseCase Provider
+
+final class AppleLoginUseCaseProvider extends $FunctionalProvider<
+    AppleLoginUseCase,
+    AppleLoginUseCase,
+    AppleLoginUseCase> with $Provider<AppleLoginUseCase> {
+  /// Apple Login UseCase Provider
+  const AppleLoginUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'appleLoginUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$appleLoginUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<AppleLoginUseCase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  AppleLoginUseCase create(Ref ref) {
+    return appleLoginUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AppleLoginUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AppleLoginUseCase>(value),
+    );
+  }
+}
+
+String _$appleLoginUseCaseHash() => r'931c3d354d781303dc43732114d9907121f37706';

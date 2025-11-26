@@ -9,7 +9,9 @@ import 'package:moneyflow/features/auth/data/repositories/auth_repository_impl.d
 import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart';
 
 // usecases
+import 'package:moneyflow/features/auth/domain/usecases/apple_login_usecase.dart';
 import 'package:moneyflow/features/auth/domain/usecases/get_current_user_usecase.dart';
+import 'package:moneyflow/features/auth/domain/usecases/google_login_usecase.dart';
 import 'package:moneyflow/features/auth/domain/usecases/login_usecase.dart';
 import 'package:moneyflow/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:moneyflow/features/auth/domain/usecases/register_usecase.dart';
@@ -75,4 +77,16 @@ LogoutUseCase logoutUseCase(Ref ref) {
 @riverpod
 GetCurrentUserUseCase getCurrentUserUseCase(Ref ref) {
   return GetCurrentUserUseCase(ref.read(authRepositoryProvider));
+}
+
+/// Google Login UseCase Provider
+@riverpod
+GoogleLoginUseCase googleLoginUseCase(Ref ref) {
+  return GoogleLoginUseCase(ref.read(authRepositoryProvider));
+}
+
+/// Apple Login UseCase Provider
+@riverpod
+AppleLoginUseCase appleLoginUseCase(Ref ref) {
+  return AppleLoginUseCase(ref.read(authRepositoryProvider));
 }
