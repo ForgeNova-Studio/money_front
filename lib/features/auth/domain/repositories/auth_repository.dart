@@ -102,6 +102,7 @@ abstract class AuthRepository {
 
   /// Google 로그인
   /// [idToken] Google ID Token
+  /// [nickname] 사용자 닉네임 (선택)
   ///
   /// Returns: [AuthResult] (User + AuthToken)
   ///
@@ -109,10 +110,14 @@ abstract class AuthRepository {
   /// - [NetworkException] 네트워크 오류
   /// - [UnauthorizedException] Google 인증 실패
   /// - [ServerException] 서버 오류
-  Future<AuthResult> loginWithGoogle({required String idToken});
+  Future<AuthResult> loginWithGoogle({
+    required String idToken,
+    String? nickname,
+  });
 
   /// Apple 로그인
   /// [authorizationCode] Apple Authorization Code
+  /// [nickname] 사용자 닉네임 (선택)
   ///
   /// Returns: [AuthResult] (User + AuthToken)
   ///
@@ -120,5 +125,8 @@ abstract class AuthRepository {
   /// - [NetworkException] 네트워크 오류
   /// - [UnauthorizedException] Apple 인증 실패
   /// - [ServerException] 서버 오류
-  Future<AuthResult> loginWithApple({required String authorizationCode});
+  Future<AuthResult> loginWithApple({
+    required String authorizationCode,
+    String? nickname,
+  });
 }

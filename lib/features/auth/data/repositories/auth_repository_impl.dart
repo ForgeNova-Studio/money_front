@@ -168,71 +168,59 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<AuthResult> loginWithGoogle({required String idToken}) async {
-    // TODO: Remote API 호출로 변경
-    // final response = await remoteDataSource.loginWithGoogle(idToken: idToken);
-
-    // Mock: 임시 데이터 반환
-    await Future.delayed(const Duration(seconds: 1)); // API 호출 시뮬레이션
-
-    // Mock User 생성
-    final mockUserModel = UserModel(
-      userId: 'google_mock_user_${DateTime.now().millisecondsSinceEpoch}',
-      email: 'google.user@example.com',
-      nickname: 'Google User',
-      profileImageUrl: null,
-    );
-
-    // Mock Token 생성
-    final mockTokenModel = AuthTokenModel(
-      accessToken: 'mock_google_access_token',
-      refreshToken: 'mock_google_refresh_token',
-      expiresIn: '3600', // String으로 변경
-    );
-
-    // Local Storage에 저장
-    await localDataSource.saveToken(mockTokenModel);
-    await localDataSource.saveUser(mockUserModel);
-
-    // AuthResult 반환
-    return AuthResult(
-      user: mockUserModel.toEntity(),
-      token: mockTokenModel.toEntity(),
+  Future<AuthResult> loginWithGoogle({
+    required String idToken,
+    String? nickname,
+  }) async {
+    return await _socialLogin(
+      provider: 'GOOGLE',
+      idToken: idToken,
+      nickname: nickname ?? 'Google 사용자',
     );
   }
 
   @override
-  Future<AuthResult> loginWithApple({required String authorizationCode}) async {
-    // TODO: Remote API 호출로 변경
-    // final response = await remoteDataSource.loginWithApple(
-    //   authorizationCode: authorizationCode,
-    // );
+  Future<AuthResult> loginWithApple({
+    required String authorizationCode,
+    String? nickname,
+  }) async {
+    return await _socialLogin(
+      provider: 'APPLE',
+      idToken: authorizationCode, // Apple은 authorizationCode를 idToken으로 사용
+      nickname: nickname ?? 'Apple 사용자',
+    );
+  }
 
-    // Mock: 임시 데이터 반환
-    await Future.delayed(const Duration(seconds: 1)); // API 호출 시뮬레이션
-
-    // Mock User 생성
-    final mockUserModel = UserModel(
-      userId: 'apple_mock_user_${DateTime.now().millisecondsSinceEpoch}',
-      email: 'apple.user@example.com',
-      nickname: 'Apple User',
-      profileImageUrl: null,
+  /// 소셜 로그인 공통 처리 (내부 헬퍼 메서드)
+  Future<AuthResult> _socialLogin({
+    required String provider,
+    required String idToken,
+    required String nickname,
+  }) async {
+    // 1. Remote API 호출 (통합 엔드포인트)
+    final response = await remoteDataSource.socialLogin(
+      provider: provider,
+      idToken: idToken,
+      nickname: nickname,
     );
 
-    // Mock Token 생성
-    final mockTokenModel = AuthTokenModel(
-      accessToken: 'mock_apple_access_token',
-      refreshToken: 'mock_apple_refresh_token',
+    // 2. Local Storage에 저장
+    final tokenModel = AuthTokenModel(
+      accessToken: response.accessToken,
+      refreshToken: response.refreshToken,
+      expiresIn: response.expiresIn,
     );
 
-    // Local Storage에 저장
-    await localDataSource.saveToken(mockTokenModel);
-    await localDataSource.saveUser(mockUserModel);
+    final profileData = Map<String, dynamic>.from(response.profile);
+    if (!profileData.containsKey('userId')) {
+      profileData['userId'] = response.userId;
+    }
+    final userModel = UserModel.fromJson(profileData);
 
-    // AuthResult 반환
-    return AuthResult(
-      user: mockUserModel.toEntity(),
-      token: mockTokenModel.toEntity(),
-    );
+    await localDataSource.saveToken(tokenModel);
+    await localDataSource.saveUser(userModel);
+
+    // 3. Entity 변환 및 반환
+    return response.toEntity();
   }
 }
