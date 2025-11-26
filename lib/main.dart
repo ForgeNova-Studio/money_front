@@ -1,20 +1,22 @@
+// packages
 import 'package:flutter/material.dart';
-
-import 'package:moneyflow/core/providers/core_providers.dart';
-import 'package:moneyflow/core/theme/theme.dart';
-import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
-
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// core
+import 'package:moneyflow/core/providers/core_providers.dart';
+import 'package:moneyflow/core/theme/theme.dart';
+
+// provider
+import 'package:provider/provider.dart';
 import 'features/budget/presentation/providers/budget_provider.dart';
 import 'features/expense/presentation/providers/expense_provider.dart';
 import 'features/income/presentation/providers/income_provider.dart';
 import 'features/statistics/presentation/providers/statistics_provider.dart';
 import 'features/couple/presentation/providers/couple_provider.dart';
 
-import 'package:moneyflow/presentation/screens/onboarding/on_boarding_screen.dart';
+// screens
+import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
