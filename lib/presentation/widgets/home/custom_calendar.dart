@@ -27,12 +27,6 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
       // 달력 헤더 스타일 설정
       headerStyle: const HeaderStyle(
-        // 헤더 텍스트 스타일 설정
-        titleTextStyle: TextStyle(
-          fontSize: 16.0,
-          fontWeight: FontWeight.bold,
-        ),
-
         // 왼쪽 화살표 아이콘 스타일 설정
         leftChevronIcon: Icon(
           Icons.chevron_left,
@@ -102,6 +96,21 @@ class _CustomCalendarState extends State<CustomCalendar> {
       },
 
       calendarBuilders: CalendarBuilders(
+        headerTitleBuilder: (context, day) {
+          return GestureDetector(
+            onTap: () {
+              debugPrint('Header Title Tapped: $day');
+            },
+            child: Text(
+              '${day.year}년 ${day.month}월',
+              style: const TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
+        },
+
         // 오늘 날짜 셀 커스텀
         // - 선택된 날짜 X : 흰색 배경 + 핑크색 테두리 + 검은색 텍스트 스타일 적용
         // - 선택된 날짜 O : 핑크색 원형 배경 + 흰색 텍스트 스타일 적용
