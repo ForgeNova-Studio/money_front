@@ -92,7 +92,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
       // focusedDay :
       // - 같은 달 내 선택: focusedDay는 선택한 날짜와 동일
       // - 다른 달 선택: focusedDay는 현재 보고 있는 달의 마지막 날로 설정됨
-      // - pageJumpingEnabled가 true인 경우, focusedDay는 선택한 날짜로 설정됨
+      // - pageJumpingEnabled = true 설정 시 -> focusedDay는 선택한 날짜로 설정되고 달이 전환됨
       onDaySelected: (selectedDay, focusedDay) {
         debugPrint('Selected Day: $selectedDay, Focused Day: $focusedDay');
         setState(() {
@@ -103,8 +103,8 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
       calendarBuilders: CalendarBuilders(
         // 오늘 날짜 셀 커스텀
-        // - 선택된 날짜가 있을때는, 핑크색 원형 배경 + 흰색 텍스트 스타일 적용
-        // - 선택된 날짜가 없을때는, 흰색 배경 + 핑크색 테두리 + 검은색 텍스트 스타일 적용
+        // - 선택된 날짜 X : 흰색 배경 + 핑크색 테두리 + 검은색 텍스트 스타일 적용
+        // - 선택된 날짜 O : 핑크색 원형 배경 + 흰색 텍스트 스타일 적용
         todayBuilder: (context, day, focusedDay) {
           return Container(
             margin: const EdgeInsets.all(6.0),
@@ -133,7 +133,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
         },
 
         // 선택한 날짜 셀 커스텀
-        // - 사용자가 선택한 날짜 셀에 핑크색 원형 배경 + 흰색 텍스트 스타일 적용 (애니메이션 X)
+        // - 사용자가 선택한 날짜 셀에 [ 핑크색 원형 배경 + 흰색 텍스트 스타일 적용 (애니메이션 X) ]
         // - TableCalendar의 기본 선택 동작에는 애니메이션이 포함되어 있음
         selectedBuilder: (context, day, focusedDay) {
           return Container(
