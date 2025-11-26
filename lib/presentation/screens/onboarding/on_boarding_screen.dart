@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
 
 // widgets
-import 'package:moneyflow/presentation/screens/onboarding/widgets/page1.dart';
-import 'package:moneyflow/presentation/screens/onboarding/widgets/page2.dart';
-import 'package:moneyflow/presentation/screens/onboarding/widgets/page3.dart';
-import 'package:moneyflow/presentation/screens/onboarding/widgets/page4.dart';
-import 'package:moneyflow/presentation/screens/onboarding/widgets/page5.dart';
+import 'package:moneyflow/presentation/widgets/onboarding/page1.dart';
+import 'package:moneyflow/presentation/widgets/onboarding/page2.dart';
+import 'package:moneyflow/presentation/widgets/onboarding/page3.dart';
+import 'package:moneyflow/presentation/widgets/onboarding/page4.dart';
+import 'package:moneyflow/presentation/widgets/onboarding/page5.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
