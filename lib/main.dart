@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:moneyflow/core/providers/core_providers.dart';
 import 'package:moneyflow/core/theme/theme.dart';
 
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/budget/presentation/providers/budget_provider.dart';
@@ -14,11 +16,17 @@ import 'features/couple/presentation/providers/couple_provider.dart';
 
 import 'package:moneyflow/presentation/screens/onboarding/on_boarding_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final sharedPreferences = await SharedPreferences.getInstance();
+
   runApp(
     // Riverpod ProviderScope로 앱 전체를 감싸서 Riverpod 활성화
     // 기존 Provider와 병행 사용 가능
-    const ProviderScope(
+    ProviderScope(
+      overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+        ],
       child: MoneyFlowApp(),
     ),
   );
