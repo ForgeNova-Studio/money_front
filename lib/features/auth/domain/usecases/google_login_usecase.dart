@@ -34,7 +34,8 @@ class GoogleLoginUseCase {
     final googleSignIn = GoogleSignIn.instance;
 
     // 2. 초기화 (필요한 경우 - clientId는 android/ios 설정 파일에서 자동으로 읽음)
-    await googleSignIn.initialize();
+    // await googleSignIn.initialize(); // v7에서는 initialize가 필요 없을 수 있음, 확인 필요
+    // 하지만 signIn() 호출 시 자동으로 초기화됨.
 
     // 3. Google Sign In으로 사용자 인증
     GoogleSignInAccount? googleUser;
