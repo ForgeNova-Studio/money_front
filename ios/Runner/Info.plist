@@ -71,5 +71,14 @@
 		<string>naversearchapp</string>
 		<string>naversearchthirdlogin</string>
 	</array>
+	<!-- Naver Login Configuration -->
+	<key>NAVER_CLIENT_ID</key>
+	<string>Q7D7lxUHQNJ3G9QXDvpT</string>
+	<key>NAVER_CLIENT_SECRET</key>
+	<string>clKAFV9HpQ</string>
+	<key>NAVER_SERVICE_APP_NAME</key>
+	<string>MoneyFlow</string>
+	<key>NAVER_SERVICE_APP_URL_SCHEME</key>
+	<string>naverlogin</string>
 </dict>
 </plist>

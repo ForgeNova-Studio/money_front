@@ -37,25 +37,25 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = context.read<AuthProvider>();
 
     try {
-      print('🚀 로그인 시작');
+      print('로그인 시작');
       await authProvider.login(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
 
-      print('✅ 로그인 완료, 인증 상태: ${authProvider.isAuthenticated}');
+      print('로그인 완료, 인증 상태: ${authProvider.isAuthenticated}');
 
       if (mounted && authProvider.isAuthenticated) {
-        print('🏠 홈 화면으로 이동');
+        print('홈 화면으로 이동');
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       } else {
-        print('⚠️ 인증되지 않음 또는 mounted가 false');
+        print('인증되지 않음 또는 mounted가 false');
       }
     } catch (e, stackTrace) {
-      print('❌ 로그인 에러: $e');
-      print('📍 스택 트레이스: $stackTrace');
+      print('로그인 에러: $e');
+      print('스택 트레이스: $stackTrace');
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -72,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = context.read<AuthProvider>();
 
     try {
-      print('🚀 Google 로그인 시작');
+      print('Google 로그인 시작');
       final GoogleSignIn googleSignIn = GoogleSignIn(
         scopes: ['email', 'profile'],
         clientId: '886590665036-4chomeefga43fmilrkdu90ajnhblc2po.apps.googleusercontent.com',
@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
-        print('❌ Google 로그인 취소됨');
+        print('Google 로그인 취소됨');
         return;
       }
 
@@ -91,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
         throw Exception('Google ID Token을 가져올 수 없습니다');
       }
 
-      print('✅ Google ID Token 획득');
+      print('Google ID Token 획득');
 
       await authProvider.socialLogin(
         provider: 'GOOGLE',
@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (e) {
-      print('❌ Google 로그인 에러: $e');
+      print('Google 로그인 에러: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -123,7 +123,17 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       print('🚀 Naver 로그인 시작');
 
-      final NaverLoginResult result = await FlutterNaverLogin.logIn();
+      // Timeout 추가 (10초)
+      final NaverLoginResult result = await FlutterNaverLogin.logIn()
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              print('⏰ Naver 로그인 타임아웃 (10초 초과)');
+              throw Exception('Naver 로그인 타임아웃');
+            },
+          );
+
+      print('📦 Naver 로그인 결과: ${result.status}');
 
       if (result.status == NaverLoginStatus.loggedIn) {
         print('✅ Naver Access Token 획득');
@@ -140,10 +150,11 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
       } else {
-        print('❌ Naver 로그인 취소됨');
+        print('❌ Naver 로그인 취소됨: ${result.status}');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('❌ Naver 로그인 에러: $e');
+      print('📍 스택 트레이스: $stackTrace');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -271,15 +282,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 12),
                 _buildSocialLoginButton(
-                  label: 'Naver로 로그인 (준비중)',
+                  label: 'Naver로 로그인',
                   icon: Icons.login,
-                  color: Colors.grey,
+                  color: const Color(0xFF03C75A),
                   textColor: Colors.white,
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Naver 로그인은 준비 중입니다')),
-                    );
-                  },
+                  onPressed: _handleNaverLogin,
                 ),
                 const SizedBox(height: 16),
 
