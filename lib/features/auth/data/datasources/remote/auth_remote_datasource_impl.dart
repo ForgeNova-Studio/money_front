@@ -104,4 +104,26 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw ExceptionHandler.handleDioException(e);
     }
   }
+
+  @override
+  Future<AuthResponseModel> socialLogin({
+    required String provider,
+    required String idToken,
+    required String nickname,
+  }) async {
+    try {
+      final response = await dio.post(
+        ApiConstants.socialLogin,
+        data: {
+          'provider': provider,
+          'idToken': idToken,
+          'nickname': nickname,
+        },
+      );
+
+      return AuthResponseModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
+  }
 }
