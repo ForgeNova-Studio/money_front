@@ -1,11 +1,20 @@
+// core
 import 'package:moneyflow/core/exceptions/exceptions.dart';
+
+// dataSources
 import 'package:moneyflow/features/auth/data/datasources/local/auth_local_datasource.dart';
 import 'package:moneyflow/features/auth/data/datasources/remote/auth_remote_datasource.dart';
+
+// models
 import 'package:moneyflow/features/auth/data/models/auth_token_model.dart';
 import 'package:moneyflow/features/auth/data/models/user_model.dart';
+
+// entities
 import 'package:moneyflow/features/auth/domain/entities/auth_result.dart';
 import 'package:moneyflow/features/auth/domain/entities/auth_token.dart';
 import 'package:moneyflow/features/auth/domain/entities/user.dart';
+
+// repositories
 import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart';
 
 /// Auth Repository 구현체

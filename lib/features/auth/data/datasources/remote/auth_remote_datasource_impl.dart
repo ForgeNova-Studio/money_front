@@ -1,9 +1,15 @@
+// packages
 import 'package:dio/dio.dart';
+
+// core
 import 'package:moneyflow/core/constants/api_constants.dart';
 import 'package:moneyflow/core/exceptions/exceptions.dart';
 
-import '../../models/models.dart';
-import 'auth_remote_datasource.dart';
+// models
+import 'package:moneyflow/features/auth/data/models/models.dart';
+
+// dataSources
+import 'package:moneyflow/features/auth/data/datasources/remote/auth_remote_datasource.dart';
 
 /// Auth Remote Data Source 구현체
 ///

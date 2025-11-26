@@ -1,4 +1,5 @@
-import '../../models/models.dart';
+// models
+import 'package:moneyflow/features/auth/data/models/models.dart';
 
 /// Auth Local Data Source 인터페이스
 ///

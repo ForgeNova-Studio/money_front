@@ -1,6 +1,7 @@
-import '../entities/auth_result.dart';
-import '../entities/auth_token.dart';
-import '../entities/user.dart';
+// entities
+import 'package:moneyflow/features/auth/domain/entities/auth_result.dart';
+import 'package:moneyflow/features/auth/domain/entities/auth_token.dart';
+import 'package:moneyflow/features/auth/domain/entities/user.dart';
 
 /// Auth Repository 인터페이스
 ///

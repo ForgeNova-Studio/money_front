@@ -1,5 +1,10 @@
+// core
 import 'package:moneyflow/core/exceptions/exceptions.dart';
+
+// entities
 import 'package:moneyflow/features/auth/domain/entities/auth_result.dart';
+
+// repository
 import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart';
 
 /// 회원가입 UseCase

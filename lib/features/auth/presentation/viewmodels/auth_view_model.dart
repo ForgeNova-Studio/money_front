@@ -1,7 +1,12 @@
+// packages
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+// core
 import 'package:moneyflow/core/exceptions/exceptions.dart';
+
+// providers/states
 import 'package:moneyflow/features/auth/presentation/providers/auth_providers.dart';
 import 'package:moneyflow/features/auth/presentation/states/auth_state.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_view_model.g.dart';
 

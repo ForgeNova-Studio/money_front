@@ -1,4 +1,7 @@
+// packages
 import 'package:freezed_annotation/freezed_annotation.dart';
+
+// entities
 import 'package:moneyflow/features/auth/domain/entities/user.dart';
 
 part 'auth_state.freezed.dart';
@@ -26,6 +29,7 @@ sealed class AuthState with _$AuthState {
   /// 로딩 상태
   factory AuthState.loading() => const AuthState(isLoading: true);
 
+  /// factory 생성자로 AuthState 인스턴스 생성
   /// 인증 성공 상태
   factory AuthState.authenticated(User user) => AuthState(
         isAuthenticated: true,
@@ -43,4 +47,6 @@ sealed class AuthState with _$AuthState {
   factory AuthState.error(String message) => AuthState(
         errorMessage: message,
       );
+
+  /// factory 생성자로 AuthState 인스턴스 생성
 }

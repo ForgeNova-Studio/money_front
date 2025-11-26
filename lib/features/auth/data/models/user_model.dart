@@ -1,4 +1,7 @@
+// packages
 import 'package:freezed_annotation/freezed_annotation.dart';
+
+// entities
 import 'package:moneyflow/features/auth/domain/entities/user.dart';
 
 part 'user_model.freezed.dart';

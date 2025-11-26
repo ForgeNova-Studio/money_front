@@ -1,6 +1,10 @@
+// packages
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:moneyflow/features/auth/data/models/user_model.dart';
-import 'package:moneyflow/features/auth/data/models/auth_token_model.dart';
+
+// models
+import 'package:moneyflow/features/auth/data/models/models.dart';
+
+// entities
 import 'package:moneyflow/features/auth/domain/entities/auth_result.dart';
 
 part 'auth_response_model.freezed.dart';
