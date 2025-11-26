@@ -28,19 +28,22 @@ class AuthViewModel extends _$AuthViewModel {
 
   /// 현재 사용자 정보 확인
   Future<void> _checkCurrentUser() async {
-    try {
-      final useCase = ref.read(getCurrentUserUseCaseProvider);
-      final user = await useCase();
+    // try {
+    //   final useCase = ref.read(getCurrentUserUseCaseProvider);
+    //   final user = await useCase();
 
-      if (user != null) {
-        state = AuthState.authenticated(user);
-      } else {
-        state = AuthState.unauthenticated();
-      }
-    } catch (e) {
-      // 에러 발생 시 로그아웃 상태로 처리
-      state = AuthState.unauthenticated();
-    }
+    //   if (user != null) {
+    //     state = AuthState.authenticated(user);
+    //   } else {
+    //     state = AuthState.unauthenticated();
+    //   }
+    // } catch (e) {
+    //   // 에러 발생 시 로그아웃 상태로 처리
+    //   state = AuthState.unauthenticated();
+    // }
+
+    // api 개발 전 임시 처리
+    state = AuthState.unauthenticated();
   }
 
   /// 로그인

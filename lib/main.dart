@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:moneyflow/core/providers/core_providers.dart';
 import 'package:moneyflow/core/theme/theme.dart';
+import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
 
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,8 +25,8 @@ void main() async {
     // 기존 Provider와 병행 사용 가능
     ProviderScope(
       overrides: [
-          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
-        ],
+        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+      ],
       child: MoneyFlowApp(),
     ),
   );
@@ -52,7 +53,8 @@ class MoneyFlowApp extends StatelessWidget {
         // 테마 설정
         theme: buildLightTheme(),
         // darkTheme: buildDarkTheme(), // 다크모드 (선택사항)
-        home: const OnboardingScreen(),
+        // home: const OnboardingScreen(),
+        home: const LoginScreen(),
       ),
     );
   }
