@@ -74,4 +74,22 @@ abstract class AuthRemoteDataSource {
   /// - [NetworkException] 네트워크 오류
   /// - [ServerException] 서버 오류
   Future<bool> checkEmailDuplicate(String email);
+
+  /// 소셜 로그인 API 호출 (통합 엔드포인트)
+  ///
+  /// [provider] 소셜 로그인 제공자 (GOOGLE, APPLE 등)
+  /// [idToken] 소셜 로그인 ID Token
+  /// [nickname] 사용자 닉네임
+  ///
+  /// Returns: [AuthResponseModel] API 응답 모델
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [UnauthorizedException] 소셜 인증 실패
+  /// - [ServerException] 서버 오류
+  Future<AuthResponseModel> socialLogin({
+    required String provider,
+    required String idToken,
+    required String nickname,
+  });
 }
