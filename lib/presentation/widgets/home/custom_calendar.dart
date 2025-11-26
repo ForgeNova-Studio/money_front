@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:moneyflow/presentation/widgets/home/custom_month_picker.dart';
 
 class CustomCalendar extends StatefulWidget {
   const CustomCalendar({super.key});
@@ -29,8 +30,8 @@ class _CustomCalendarState extends State<CustomCalendar> {
       // 현재 포커스된 날짜 (화면에 표시되는 오늘 날짜가 아님)
       // 어떤 달이 화면에 보일지 결정하는 용도
       focusedDay: _focusedDay,
-      firstDay: DateTime(2020),
-      lastDay: DateTime(2030, 12, 31),
+      firstDay: DateTime(2000),
+      lastDay: DateTime(2050, 12, 31),
 
       // 각 날짜 셀에 표시할 이벤트 로드
       // - TableCalendar이 각 날짜(day)마다 이 함수를 호출함
@@ -114,7 +115,17 @@ class _CustomCalendarState extends State<CustomCalendar> {
         headerTitleBuilder: (context, day) {
           return GestureDetector(
             onTap: () {
-              debugPrint('Header Title Tapped: $day');
+              showDialog(
+                context: context,
+                builder: (context) => CustomMonthPicker(
+                  initialDate: _focusedDay,
+                  onDateSelected: (selectedDate) {
+                    setState(() {
+                      _focusedDay = selectedDate;
+                    });
+                  },
+                ),
+              );
             },
             child: Text(
               '${day.year}년 ${day.month}월',
