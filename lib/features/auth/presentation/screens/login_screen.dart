@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moneyflow/presentation/screens/home/home_screen.dart';
 
 /// 로그인 화면
 class LoginScreen extends ConsumerStatefulWidget {
@@ -64,11 +65,15 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     ref.listen(authViewModelProvider, (previous, next) {
       // 로그인 성공 시
       if (next.isAuthenticated && next.user != null) {
-        // TODO: 홈 화면으로 이동
+        // 환영 메시지 표시
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${next.user!.nickname}님, 환영합니다!')),
         );
-        // Navigator.pushReplacementNamed(context, '/home');
+
+        // 홈 화면으로 이동 (뒤로가기 불가)
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
       }
 
       // 에러 발생 시
