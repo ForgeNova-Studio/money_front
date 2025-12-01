@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 // core
 import 'package:moneyflow/core/providers/core_providers.dart';
@@ -20,6 +21,10 @@ import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 한국어 locale 데이터 초기화 (TableCalendar 사용을 위해 필요)
+  await initializeDateFormatting('ko_KR', null);
+
   final sharedPreferences = await SharedPreferences.getInstance();
 
   runApp(
