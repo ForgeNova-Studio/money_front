@@ -74,35 +74,40 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<AuthTokenModel> refreshToken(String refreshToken) async {
-    try {
-      final response = await dio.post(
-        ApiConstants.refreshToken,
-        data: {
-          'refreshToken': refreshToken,
-        },
-      );
-
-      return AuthTokenModel.fromJson(response.data);
-    } on DioException catch (e) {
-      throw ExceptionHandler.handleDioException(e);
-    }
+    // TODO: 백엔드에 refreshToken API가 없음. JWT 토큰 갱신 방법 확인 필요
+    throw UnimplementedError('refreshToken API not implemented in backend');
+    // try {
+    //   final response = await dio.post(
+    //     ApiConstants.refreshToken,
+    //     data: {
+    //       'refreshToken': refreshToken,
+    //     },
+    //   );
+    //
+    //   return AuthTokenModel.fromJson(response.data);
+    // } on DioException catch (e) {
+    //   throw ExceptionHandler.handleDioException(e);
+    // }
   }
 
   @override
   Future<bool> checkEmailDuplicate(String email) async {
-    try {
-      final response = await dio.get(
-        ApiConstants.checkEmail,
-        queryParameters: {
-          'email': email,
-        },
-      );
-
-      // API 응답이 { "isDuplicate": true/false } 형태라고 가정
-      return response.data['isDuplicate'] as bool? ?? false;
-    } on DioException catch (e) {
-      throw ExceptionHandler.handleDioException(e);
-    }
+    // TODO: 백엔드에 checkEmail API가 없음. send-signup-code API를 사용하여 이메일 중복 확인 필요
+    // send-signup-code 호출 시 이미 가입된 이메일이면 400 에러 반환
+    throw UnimplementedError('checkEmail API not implemented in backend');
+    // try {
+    //   final response = await dio.get(
+    //     ApiConstants.checkEmail,
+    //     queryParameters: {
+    //       'email': email,
+    //     },
+    //   );
+    //
+    //   // API 응답이 { "isDuplicate": true/false } 형태라고 가정
+    //   return response.data['isDuplicate'] as bool? ?? false;
+    // } on DioException catch (e) {
+    //   throw ExceptionHandler.handleDioException(e);
+    // }
   }
 
   @override
