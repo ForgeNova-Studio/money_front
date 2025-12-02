@@ -9,6 +9,7 @@ class CustomTextField extends StatelessWidget {
   final bool isPasswordVisible;
   final VoidCallback? onVisibilityToggle;
   final TextInputType keyboardType;
+  final bool enabled;
 
   const CustomTextField({
     super.key,
@@ -19,12 +20,14 @@ class CustomTextField extends StatelessWidget {
     this.isPasswordVisible = false,
     this.onVisibilityToggle,
     this.keyboardType = TextInputType.text,
+    this.enabled = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      enabled: enabled,
       obscureText: isPassword && !isPasswordVisible,
       keyboardType: keyboardType,
       autocorrect: false,

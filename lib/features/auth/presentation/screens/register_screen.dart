@@ -16,10 +16,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _verificationCodeController = TextEditingController();
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _isTermsAgreed = false;
+  bool _isVerificationCodeSent = false;
+  bool _isEmailVerified = false;
 
   @override
   void dispose() {
@@ -27,6 +30,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _verificationCodeController.dispose();
     super.dispose();
   }
 
@@ -58,6 +62,48 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     // TODO: 개인정보 이용동의 페이지 이동
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('개인정보 이용동의 상세 페이지로 이동')),
+    );
+  }
+
+  void _handleSendVerificationCode() {
+    if (_emailController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('이메일을 입력해주세요.'),
+          backgroundColor: AppColors.warning,
+        ),
+      );
+      return;
+    }
+
+    // TODO: 이메일 인증번호 전송 API 연동
+    setState(() {
+      _isVerificationCodeSent = true;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('인증번호가 전송되었습니다.')),
+    );
+  }
+
+  void _handleVerifyCode() {
+    if (_verificationCodeController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('인증번호를 입력해주세요.'),
+          backgroundColor: AppColors.warning,
+        ),
+      );
+      return;
+    }
+
+    // TODO: 인증번호 확인 API 연동
+    setState(() {
+      _isEmailVerified = true;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('이메일 인증이 완료되었습니다.')),
     );
   }
 
@@ -103,12 +149,89 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 16),
 
                 // 이메일 입력 필드
-                CustomTextField(
-                  controller: _emailController,
-                  hintText: '이메일',
-                  icon: Icons.email_outlined,
-                  keyboardType: TextInputType.emailAddress,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        controller: _emailController,
+                        hintText: '이메일',
+                        icon: Icons.email_outlined,
+                        keyboardType: TextInputType.emailAddress,
+                        enabled: !_isEmailVerified,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: _isEmailVerified
+                            ? null
+                            : () {
+                                _handleSendVerificationCode();
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryPink,
+                          foregroundColor: AppColors.textWhite,
+                          disabledBackgroundColor: AppColors.gray300,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                        ),
+                        child: Text(
+                          _isEmailVerified ? '인증완료' : '인증요청',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
+
+                if (_isVerificationCodeSent && !_isEmailVerified) ...[
+                  const SizedBox(height: 12),
+                  // 인증번호 입력 필드
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: CustomTextField(
+                          controller: _verificationCodeController,
+                          hintText: '인증번호',
+                          icon: Icons.lock_outline,
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      SizedBox(
+                        height: 56,
+                        child: ElevatedButton(
+                          onPressed: _handleVerifyCode,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.textPrimary,
+                            foregroundColor: AppColors.textWhite,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                          ),
+                          child: const Text(
+                            '인증확인',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
 
                 const SizedBox(height: 16),
 
