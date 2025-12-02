@@ -76,10 +76,65 @@ class AuthViewModel extends _$AuthViewModel {
     }
   }
 
+  /// 회원가입 인증번호 전송
+  Future<void> sendSignupCode(String email) async {
+    state = AuthState.loading();
+
+    try {
+      final useCase = ref.read(sendSignupCodeUseCaseProvider);
+      await useCase(email);
+
+      // 인증번호 전송 성공 시 로딩 해제
+      state = AuthState.initial();
+    } on ValidationException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } on NetworkException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } on ServerException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } catch (e) {
+      state = AuthState.error('인증번호 전송 중 오류가 발생했습니다: $e');
+      rethrow;
+    }
+  }
+
+  /// 회원가입 인증번호 검증
+  Future<bool> verifySignupCode({
+    required String email,
+    required String code,
+  }) async {
+    state = AuthState.loading();
+
+    try {
+      final useCase = ref.read(verifySignupCodeUseCaseProvider);
+      final isVerified = await useCase(email: email, code: code);
+
+      // 검증 성공 시 로딩 해제
+      state = AuthState.initial();
+      return isVerified;
+    } on ValidationException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } on NetworkException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } on ServerException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } catch (e) {
+      state = AuthState.error('인증번호 확인 중 오류가 발생했습니다: $e');
+      rethrow;
+    }
+  }
+
   /// 회원가입
   Future<void> register({
     required String email,
     required String password,
+    required String confirmPassword,
     required String nickname,
   }) async {
     state = AuthState.loading();
@@ -89,6 +144,7 @@ class AuthViewModel extends _$AuthViewModel {
       final result = await useCase(
         email: email,
         password: password,
+        confirmPassword: confirmPassword,
         nickname: nickname,
       );
 

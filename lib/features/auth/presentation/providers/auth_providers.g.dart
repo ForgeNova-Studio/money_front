@@ -434,3 +434,101 @@ final class AppleLoginUseCaseProvider extends $FunctionalProvider<
 }
 
 String _$appleLoginUseCaseHash() => r'931c3d354d781303dc43732114d9907121f37706';
+
+/// Send Signup Code UseCase Provider
+
+@ProviderFor(sendSignupCodeUseCase)
+const sendSignupCodeUseCaseProvider = SendSignupCodeUseCaseProvider._();
+
+/// Send Signup Code UseCase Provider
+
+final class SendSignupCodeUseCaseProvider extends $FunctionalProvider<
+    SendSignupCodeUseCase,
+    SendSignupCodeUseCase,
+    SendSignupCodeUseCase> with $Provider<SendSignupCodeUseCase> {
+  /// Send Signup Code UseCase Provider
+  const SendSignupCodeUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'sendSignupCodeUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$sendSignupCodeUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<SendSignupCodeUseCase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  SendSignupCodeUseCase create(Ref ref) {
+    return sendSignupCodeUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SendSignupCodeUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SendSignupCodeUseCase>(value),
+    );
+  }
+}
+
+String _$sendSignupCodeUseCaseHash() =>
+    r'dcb320652d2e9524b8d2d1cef3640292a2a5ad97';
+
+/// Verify Signup Code UseCase Provider
+
+@ProviderFor(verifySignupCodeUseCase)
+const verifySignupCodeUseCaseProvider = VerifySignupCodeUseCaseProvider._();
+
+/// Verify Signup Code UseCase Provider
+
+final class VerifySignupCodeUseCaseProvider extends $FunctionalProvider<
+    VerifySignupCodeUseCase,
+    VerifySignupCodeUseCase,
+    VerifySignupCodeUseCase> with $Provider<VerifySignupCodeUseCase> {
+  /// Verify Signup Code UseCase Provider
+  const VerifySignupCodeUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'verifySignupCodeUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$verifySignupCodeUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<VerifySignupCodeUseCase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  VerifySignupCodeUseCase create(Ref ref) {
+    return verifySignupCodeUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(VerifySignupCodeUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<VerifySignupCodeUseCase>(value),
+    );
+  }
+}
+
+String _$verifySignupCodeUseCaseHash() =>
+    r'8cb915e5c1ff8584b1dd31744c0051ebc2eab1ee';

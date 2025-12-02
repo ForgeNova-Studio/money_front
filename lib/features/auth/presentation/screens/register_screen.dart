@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 
 /// 회원가입 화면
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -34,7 +35,30 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     super.dispose();
   }
 
-  void _handleSignUp() {
+  Future<void> _handleSignUp() async {
+    // 이메일 인증 완료 확인
+    if (!_isEmailVerified) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('이메일 인증을 완료해주세요.'),
+          backgroundColor: AppColors.warning,
+        ),
+      );
+      return;
+    }
+
+    // 비밀번호 확인 일치 검증
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('비밀번호가 일치하지 않습니다.'),
+          backgroundColor: AppColors.warning,
+        ),
+      );
+      return;
+    }
+
+    // 약관 동의 확인
     if (!_isTermsAgreed) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -45,10 +69,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    // TODO: 회원가입 로직 연동
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('회원가입 요청')),
-    );
+    try {
+      // ViewModel의 register 메서드 호출
+      await ref.read(authViewModelProvider.notifier).register(
+            email: _emailController.text,
+            password: _passwordController.text,
+            confirmPassword: _confirmPasswordController.text,
+            nickname: _displayNameController.text,
+          );
+
+      // 회원가입 성공 시 홈 화면으로 이동
+      // (ref.listen에서 처리됨)
+    } catch (e) {
+      // 에러는 ViewModel에서 state에 저장되므로 여기서는 추가 처리 불필요
+      // ref.listen에서 처리됨
+    }
   }
 
   void _handleTermsClick() {
@@ -65,7 +100,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     );
   }
 
-  void _handleSendVerificationCode() {
+  Future<void> _handleSendVerificationCode() async {
     if (_emailController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -76,17 +111,28 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    // TODO: 이메일 인증번호 전송 API 연동
-    setState(() {
-      _isVerificationCodeSent = true;
-    });
+    try {
+      // ViewModel의 sendSignupCode 메서드 호출
+      await ref
+          .read(authViewModelProvider.notifier)
+          .sendSignupCode(_emailController.text);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('인증번호가 전송되었습니다.')),
-    );
+      if (mounted) {
+        setState(() {
+          _isVerificationCodeSent = true;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('인증번호가 전송되었습니다.')),
+        );
+      }
+    } catch (e) {
+      // 에러는 ViewModel에서 state에 저장되므로 여기서는 추가 처리 불필요
+      // ref.listen에서 처리됨
+    }
   }
 
-  void _handleVerifyCode() {
+  Future<void> _handleVerifyCode() async {
     if (_verificationCodeController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -97,14 +143,28 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    // TODO: 인증번호 확인 API 연동
-    setState(() {
-      _isEmailVerified = true;
-    });
+    try {
+      // ViewModel의 verifySignupCode 메서드 호출
+      final isVerified = await ref
+          .read(authViewModelProvider.notifier)
+          .verifySignupCode(
+            email: _emailController.text,
+            code: _verificationCodeController.text,
+          );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('이메일 인증이 완료되었습니다.')),
-    );
+      if (mounted && isVerified) {
+        setState(() {
+          _isEmailVerified = true;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('이메일 인증이 완료되었습니다.')),
+        );
+      }
+    } catch (e) {
+      // 에러는 ViewModel에서 state에 저장되므로 여기서는 추가 처리 불필요
+      // ref.listen에서 처리됨
+    }
   }
 
   void _handleLogin() {
@@ -113,6 +173,34 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ViewModel 상태 구독
+    final authState = ref.watch(authViewModelProvider);
+
+    // ViewModel 상태 변화 감지
+    ref.listen(authViewModelProvider, (previous, next) {
+      // 회원가입 성공 시
+      if (next.isAuthenticated && next.user != null) {
+        // 홈 화면으로 이동 (뒤로가기 불가)
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
+
+      // 에러 발생 시
+      if (next.errorMessage != null && !next.isLoading) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.errorMessage!),
+            backgroundColor: Colors.red,
+          ),
+        );
+        // 에러 메시지 표시 후 초기화
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (mounted) {
+            ref.read(authViewModelProvider.notifier).clearError();
+          }
+        });
+      }
+    });
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -362,7 +450,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: _handleSignUp,
+                    onPressed: authState.isLoading ? null : _handleSignUp,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryPink,
                       foregroundColor: AppColors.textWhite,
@@ -372,13 +460,24 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: const Text(
-                      '회원가입',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    child: authState.isLoading
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                AppColors.textWhite,
+                              ),
+                            ),
+                          )
+                        : const Text(
+                            '회원가입',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                   ),
                 ),
 
