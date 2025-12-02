@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moneyflow/features/auth/presentation/screens/register_screen.dart';
+import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:moneyflow/presentation/screens/home/home_screen.dart';
 
 /// 로그인 화면
@@ -33,12 +35,10 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
   }
 
   void _handleAppleLogin() {
-    // ViewModel의 loginWithApple 메서드 호출 (Mock)
     ref.read(authViewModelProvider.notifier).loginWithApple();
   }
 
   void _handleGoogleLogin() {
-    // ViewModel의 loginWithGoogle 메서드 호출 (Mock)
     ref.read(authViewModelProvider.notifier).loginWithGoogle();
   }
 
@@ -50,9 +50,8 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
   }
 
   void _handleSignUp() {
-    // TODO: 회원가입 화면으로 이동
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('회원가입 화면으로 이동')),
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const RegisterScreen()),
     );
   }
 
@@ -66,9 +65,9 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
       // 로그인 성공 시
       if (next.isAuthenticated && next.user != null) {
         // 환영 메시지 표시
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${next.user!.nickname}님, 환영합니다!')),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text('${next.user!.nickname}님, 환영합니다!')),
+        // );
 
         // 홈 화면으로 이동 (뒤로가기 불가)
         Navigator.of(context).pushReplacement(
@@ -111,84 +110,26 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 40),
 
                 // 이메일 입력 필드
-                TextField(
+                CustomTextField(
                   controller: _emailController,
+                  hintText: '이메일',
+                  icon: Icons.edit_outlined,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    hintText: '이메일',
-                    suffixIcon: const Icon(
-                      Icons.edit_outlined,
-                      color: AppColors.textTertiary,
-                      size: 20,
-                    ),
-                    filled: true,
-                    fillColor: AppColors.gray100,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 18,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: AppColors.primaryPink,
-                        width: 2,
-                      ),
-                    ),
-                  ),
                 ),
 
                 const SizedBox(height: 16),
 
                 // 비밀번호 입력 필드
-                TextField(
+                CustomTextField(
                   controller: _passwordController,
-                  obscureText: !_isPasswordVisible,
-                  decoration: InputDecoration(
-                    hintText: '비밀번호',
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                      icon: Icon(
-                        _isPasswordVisible
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        color: AppColors.textTertiary,
-                        size: 20,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: AppColors.gray100,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 18,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: AppColors.primaryPink,
-                        width: 2,
-                      ),
-                    ),
-                  ),
+                  hintText: '비밀번호',
+                  isPassword: true,
+                  isPasswordVisible: _isPasswordVisible,
+                  onVisibilityToggle: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
                 ),
 
                 const SizedBox(height: 12),
@@ -198,13 +139,22 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                   alignment: Alignment.center,
                   child: TextButton(
                     onPressed: _handleForgotPassword,
-                    child: const Text(
-                      '비밀번호를 잊으셨나요?',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w500,
-                        decoration: TextDecoration.underline,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: AppColors.textSecondary,
+                            width: 1.0,
+                          ),
+                        ),
+                      ),
+                      child: const Text(
+                        '비밀번호를 잊으셨나요?',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ),

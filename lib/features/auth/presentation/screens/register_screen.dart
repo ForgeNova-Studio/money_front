@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/core/utils/validators.dart';
-import 'package:moneyflow/core/widgets/custom_text_field.dart';
-import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
-import 'package:moneyflow/presentation/screens/home/home_screen.dart';
+import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
 
+/// 회원가입 화면
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
@@ -14,191 +12,319 @@ class RegisterScreen extends ConsumerStatefulWidget {
 }
 
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final _displayNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _passwordConfirmController = TextEditingController();
-  final _nicknameController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscurePasswordConfirm = true;
+  final _confirmPasswordController = TextEditingController();
+
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+  bool _isTermsAgreed = false;
 
   @override
   void dispose() {
+    _displayNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _passwordConfirmController.dispose();
-    _nicknameController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  String? _validatePasswordConfirm(String? value) {
-    if (value == null || value.isEmpty) {
-      return '비밀번호 확인을 입력하세요';
-    }
-    if (value != _passwordController.text) {
-      return '비밀번호가 일치하지 않습니다';
-    }
-    return null;
-  }
-
-  Future<void> _handleRegister() async {
-    if (!_formKey.currentState!.validate()) {
+  void _handleSignUp() {
+    if (!_isTermsAgreed) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('약관 및 개인정보 이용동의에 체크해주세요.'),
+          backgroundColor: AppColors.warning,
+        ),
+      );
       return;
     }
 
-    try {
-      await ref.read(authViewModelProvider.notifier).register(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
-            nickname: _nicknameController.text.trim(),
-          );
+    // TODO: 회원가입 로직 연동
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('회원가입 요청')),
+    );
+  }
 
-      if (mounted) {
-        final authState = ref.read(authViewModelProvider);
-        if (authState.isAuthenticated) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const HomeScreen()),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        final errorMessage = ref.read(authViewModelProvider).errorMessage;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage ?? '회원가입에 실패했습니다'),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-    }
+  void _handleTermsClick() {
+    // TODO: 이용약관 페이지 이동
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('이용약관 상세 페이지로 이동')),
+    );
+  }
+
+  void _handlePrivacyClick() {
+    // TODO: 개인정보 이용동의 페이지 이동
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('개인정보 이용동의 상세 페이지로 이동')),
+    );
+  }
+
+  void _handleLogin() {
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authViewModelProvider);
-    final isLoading = authState.isLoading;
-
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () => Navigator.of(context).pop(),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundWhite,
+        appBar: AppBar(
+          backgroundColor: AppColors.backgroundWhite,
+          elevation: 0,
+          leading: IconButton(
+            icon:
+                const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 10),
+
                 // 타이틀
-                Text(
-                  '회원가입',
-                  style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '새로운 계정을 만들어보세요',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                ),
+                _buildRegisterTitle(),
+
                 const SizedBox(height: 40),
 
-                // 이메일 입력
+                // 닉네임(Display Name) 입력 필드
                 CustomTextField(
-                  label: '이메일',
-                  hintText: 'example@email.com',
+                  controller: _displayNameController,
+                  hintText: '닉네임',
+                  icon: Icons.person_outline,
+                ),
+
+                const SizedBox(height: 16),
+
+                // 이메일 입력 필드
+                CustomTextField(
                   controller: _emailController,
-                  validator: Validators.validateEmail,
+                  hintText: '이메일',
+                  icon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
                 ),
-                const SizedBox(height: 20),
 
-                // 닉네임 입력
-                CustomTextField(
-                  label: '닉네임',
-                  hintText: '2자 이상 50자 이하',
-                  controller: _nicknameController,
-                  validator: Validators.validateNickname,
-                ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
 
-                // 비밀번호 입력
+                // 비밀번호 입력 필드
                 CustomTextField(
-                  label: '비밀번호',
-                  hintText: '8자 이상 입력하세요',
                   controller: _passwordController,
-                  validator: Validators.validatePassword,
-                  obscureText: _obscurePassword,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      color: AppColors.textSecondary,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
-                  ),
+                  hintText: '비밀번호',
+                  isPassword: true,
+                  isPasswordVisible: _isPasswordVisible,
+                  onVisibilityToggle: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
                 ),
-                const SizedBox(height: 20),
 
-                // 비밀번호 확인
+                const SizedBox(height: 16),
+
+                // 비밀번호 확인 입력 필드
                 CustomTextField(
-                  label: '비밀번호 확인',
-                  hintText: '비밀번호를 다시 입력하세요',
-                  controller: _passwordConfirmController,
-                  validator: _validatePasswordConfirm,
-                  obscureText: _obscurePasswordConfirm,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePasswordConfirm
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      color: AppColors.textSecondary,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePasswordConfirm = !_obscurePasswordConfirm;
-                      });
-                    },
-                  ),
+                  controller: _confirmPasswordController,
+                  hintText: '비밀번호 확인',
+                  isPassword: true,
+                  isPasswordVisible: _isConfirmPasswordVisible,
+                  onVisibilityToggle: () {
+                    setState(() {
+                      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                    });
+                  },
                 ),
-                const SizedBox(height: 32),
+
+                const SizedBox(height: 24),
+
+                // 약관 동의 체크박스
+                Row(
+                  children: [
+                    SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: Checkbox(
+                        value: _isTermsAgreed,
+                        onChanged: (value) {
+                          setState(() {
+                            _isTermsAgreed = value ?? false;
+                          });
+                        },
+                        activeColor: AppColors.primaryPink,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        side: const BorderSide(
+                          color: AppColors.gray300,
+                          width: 1.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Container(
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: AppColors.textSecondary,
+                                  width: 1.0,
+                                ),
+                              ),
+                            ),
+                            child: GestureDetector(
+                              onTap: _handleTermsClick,
+                              child: const Text(
+                                '이용약관',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const Text(
+                            ' 및 ',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          Container(
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: AppColors.textSecondary,
+                                  width: 1.0,
+                                ),
+                              ),
+                            ),
+                            child: GestureDetector(
+                              onTap: _handlePrivacyClick,
+                              child: const Text(
+                                '개인정보 이용동의',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const Text(
+                            '에 확인하고 동의합니다.',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
 
                 // 회원가입 버튼
-                ElevatedButton(
-                  onPressed: isLoading ? null : _handleRegister,
-                  child: isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : const Text('회원가입'),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _handleSignUp,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryPink,
+                      foregroundColor: AppColors.textWhite,
+                      disabledBackgroundColor: AppColors.primaryPinkPale,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: const Text(
+                      '회원가입',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
+
+                const SizedBox(height: 32),
+
+                // 로그인 링크
+                Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        '이미 계정이 있으신가요? ',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: _handleLogin,
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: const Text(
+                          '로그인',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: AppColors.primaryPink,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 40),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildRegisterTitle() {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '회원가입',
+          style: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+            height: 1.2,
+          ),
+        ),
+        SizedBox(height: 6),
+        Text(
+          '새로운 계정을 생성합니다.',
+          style: TextStyle(
+            fontSize: 16,
+            color: AppColors.textSecondary,
+            height: 1.5,
+          ),
+        )
+      ],
     );
   }
 }
