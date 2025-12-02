@@ -30,13 +30,13 @@ abstract class AuthRemoteDataSource {
   /// [password] 사용자 비밀번호
   /// [nickname] 사용자 닉네임
   ///
-  /// Returns: [AuthResponseModel] API 응답 모델
+  /// Returns: [RegisterResponseModel] 회원가입 API 응답 모델 (토큰만 포함)
   ///
   /// Throws:
   /// - [NetworkException] 네트워크 오류
   /// - [ValidationException] 입력값 검증 오류
   /// - [ServerException] 서버 오류
-  Future<AuthResponseModel> register({
+  Future<RegisterResponseModel> register({
     required String email,
     required String password,
     required String nickname,

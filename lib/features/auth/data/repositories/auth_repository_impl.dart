@@ -68,7 +68,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     required String nickname,
   }) async {
-    // 1. Remote API 호출
+    // 1. Remote API 호출 (토큰만 받음)
     final response = await remoteDataSource.register(
       email: email,
       password: password,
@@ -82,17 +82,22 @@ class AuthRepositoryImpl implements AuthRepository {
       expiresIn: response.expiresIn,
     );
 
-    final profileData = Map<String, dynamic>.from(response.profile);
-    if (!profileData.containsKey('userId')) {
-      profileData['userId'] = response.userId;
-    }
-    final userModel = UserModel.fromJson(profileData);
+    // 회원가입 시 입력한 정보로 UserModel 생성
+    final userModel = UserModel(
+      userId: response.userId,
+      email: email,
+      nickname: nickname,
+      profileImageUrl: null, // 회원가입 시 프로필 이미지 없음
+    );
 
     await localDataSource.saveToken(tokenModel);
     await localDataSource.saveUser(userModel);
 
-    // 3. Entity 변환 및 반환
-    return response.toEntity();
+    // 3. Entity 변환 및 반환 (email, nickname 전달)
+    return response.toEntity(
+      email: email,
+      nickname: nickname,
+    );
   }
 
   @override

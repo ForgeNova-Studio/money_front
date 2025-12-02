@@ -40,7 +40,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<AuthResponseModel> register({
+  Future<RegisterResponseModel> register({
     required String email,
     required String password,
     required String nickname,
@@ -55,7 +55,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         },
       );
 
-      return AuthResponseModel.fromJson(response.data);
+      return RegisterResponseModel.fromJson(response.data);
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     }
