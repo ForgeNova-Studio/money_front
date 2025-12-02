@@ -1,8 +1,8 @@
 class ApiConstants {
   // Base URL
   // 로컬 개발: 맥의 IP 주소 사용 (아이폰에서 접근 가능)
-  // static const String baseUrl = 'http://localhost:8080';
-  static const String baseUrl = 'http://172.20.10.3:8080';
+  static const String baseUrl = 'http://localhost:8080';
+  // static const String baseUrl = 'http://172.20.10.3:8080';
 
   // ========== Auth endpoints ==========
   static const String register = '/api/auth/register';
@@ -12,7 +12,8 @@ class ApiConstants {
   static const String mockSocialLogin = '/api/auth/social-login/mock';
   static const String sendSignupCode = '/api/auth/send-signup-code';
   static const String verifySignupCode = '/api/auth/verify-signup-code';
-  static const String sendPasswordResetCode = '/api/auth/reset-password/send-code';
+  static const String sendPasswordResetCode =
+      '/api/auth/reset-password/send-code';
   static const String resetPassword = '/api/auth/reset-password';
   static const String authHealth = '/api/auth/health';
   // 개발용
@@ -49,10 +50,12 @@ class ApiConstants {
 
   // ========== Recurring Expense endpoints ==========
   static const String recurringExpenses = '/api/recurring-expenses';
-  static const String recurringExpensesActive = '/api/recurring-expenses/active';
+  static const String recurringExpensesActive =
+      '/api/recurring-expenses/active';
   static const String recurringExpensesSubscriptions =
       '/api/recurring-expenses/subscriptions';
-  static const String recurringExpensesUpcoming = '/api/recurring-expenses/upcoming';
+  static const String recurringExpensesUpcoming =
+      '/api/recurring-expenses/upcoming';
   static const String recurringExpensesMonthlyTotal =
       '/api/recurring-expenses/monthly-total';
   static const String recurringExpensesDetectSubscriptions =
