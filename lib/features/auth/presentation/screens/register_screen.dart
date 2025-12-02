@@ -38,34 +38,40 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Future<void> _handleSignUp() async {
     // 이메일 인증 완료 확인
     if (!_isEmailVerified) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('이메일 인증을 완료해주세요.'),
-          backgroundColor: AppColors.warning,
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('이메일 인증을 완료해주세요.'),
+            backgroundColor: AppColors.warning,
+          ),
+        );
       return;
     }
 
     // 비밀번호 확인 일치 검증
     if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('비밀번호가 일치하지 않습니다.'),
-          backgroundColor: AppColors.warning,
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('비밀번호가 일치하지 않습니다.'),
+            backgroundColor: AppColors.warning,
+          ),
+        );
       return;
     }
 
     // 약관 동의 확인
     if (!_isTermsAgreed) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('약관 및 개인정보 이용동의에 체크해주세요.'),
-          backgroundColor: AppColors.warning,
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('약관 및 개인정보 이용동의에 체크해주세요.'),
+            backgroundColor: AppColors.warning,
+          ),
+        );
       return;
     }
 
@@ -88,26 +94,32 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   void _handleTermsClick() {
     // TODO: 이용약관 페이지 이동
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('이용약관 상세 페이지로 이동')),
-    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(content: Text('이용약관 상세 페이지로 이동 구현 예정')),
+      );
   }
 
   void _handlePrivacyClick() {
     // TODO: 개인정보 이용동의 페이지 이동
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('개인정보 이용동의 상세 페이지로 이동')),
-    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(content: Text('개인정보 이용동의 상세 페이지로 이동 구현 예정')),
+      );
   }
 
   Future<void> _handleSendVerificationCode() async {
     if (_emailController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('이메일을 입력해주세요.'),
-          backgroundColor: AppColors.warning,
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('이메일을 입력해주세요.'),
+            backgroundColor: AppColors.warning,
+          ),
+        );
       return;
     }
 
@@ -122,9 +134,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           _isVerificationCodeSent = true;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('인증번호가 전송되었습니다.')),
-        );
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(content: Text('인증번호가 전송되었습니다.')),
+          );
       }
     } catch (e) {
       // 에러는 ViewModel에서 state에 저장되므로 여기서는 추가 처리 불필요
@@ -134,32 +148,35 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _handleVerifyCode() async {
     if (_verificationCodeController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('인증번호를 입력해주세요.'),
-          backgroundColor: AppColors.warning,
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('인증번호를 입력해주세요.'),
+            backgroundColor: AppColors.warning,
+          ),
+        );
       return;
     }
 
     try {
       // ViewModel의 verifySignupCode 메서드 호출
-      final isVerified = await ref
-          .read(authViewModelProvider.notifier)
-          .verifySignupCode(
-            email: _emailController.text,
-            code: _verificationCodeController.text,
-          );
+      final isVerified =
+          await ref.read(authViewModelProvider.notifier).verifySignupCode(
+                email: _emailController.text,
+                code: _verificationCodeController.text,
+              );
 
       if (mounted && isVerified) {
         setState(() {
           _isEmailVerified = true;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('이메일 인증이 완료되었습니다.')),
-        );
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(content: Text('이메일 인증이 완료되었습니다.')),
+          );
       }
     } catch (e) {
       // 에러는 ViewModel에서 state에 저장되므로 여기서는 추가 처리 불필요
@@ -186,12 +203,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
       // 에러 발생 시
       if (next.errorMessage != null && !next.isLoading) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(next.errorMessage!),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(next.errorMessage!),
+              backgroundColor: Colors.red,
+            ),
+          );
         // 에러 메시지 표시 후 초기화
         Future.delayed(const Duration(milliseconds: 100), () {
           if (mounted) {

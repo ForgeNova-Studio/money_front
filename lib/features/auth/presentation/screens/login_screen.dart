@@ -44,9 +44,11 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
   void _handleForgotPassword() {
     // TODO: 비밀번호 찾기 화면으로 이동
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('비밀번호 찾기 화면으로 이동')),
-    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(content: Text('비밀번호 찾기 화면으로 이동')),
+      );
   }
 
   void _handleSignUp() {
@@ -64,11 +66,6 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     ref.listen(authViewModelProvider, (previous, next) {
       // 로그인 성공 시
       if (next.isAuthenticated && next.user != null) {
-        // 환영 메시지 표시
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text('${next.user!.nickname}님, 환영합니다!')),
-        // );
-
         // 홈 화면으로 이동 (뒤로가기 불가)
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -77,12 +74,14 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
       // 에러 발생 시
       if (next.errorMessage != null && !next.isLoading) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(next.errorMessage!),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(next.errorMessage!),
+              backgroundColor: Colors.red,
+            ),
+          );
         // 에러 메시지 표시 후 초기화
         Future.delayed(const Duration(milliseconds: 100), () {
           if (mounted) {
