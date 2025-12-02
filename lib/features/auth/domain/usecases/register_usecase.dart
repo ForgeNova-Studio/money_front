@@ -77,9 +77,9 @@ class RegisterUseCase {
     if (password.length < 8) {
       throw ValidationException('비밀번호는 8자 이상이어야 합니다');
     }
-    if (!_hasUpperCase(password)) {
-      throw ValidationException('비밀번호에 대문자를 포함해주세요');
-    }
+    // if (!_hasUpperCase(password)) {
+    //   throw ValidationException('비밀번호에 대문자를 포함해주세요');
+    // }
     if (!_hasLowerCase(password)) {
       throw ValidationException('비밀번호에 소문자를 포함해주세요');
     }
