@@ -64,16 +64,28 @@ abstract class AuthRemoteDataSource {
   /// - [ServerException] 서버 오류
   Future<AuthTokenModel> refreshToken(String refreshToken);
 
-  /// 이메일 중복 확인
+  /// 회원가입 인증번호 전송
   ///
-  /// [email] 확인할 이메일
-  ///
-  /// Returns: true (중복), false (사용 가능)
+  /// [email] 사용자 이메일
   ///
   /// Throws:
   /// - [NetworkException] 네트워크 오류
+  /// - [ValidationException] 이메일 형식 오류 또는 이미 가입된 이메일
   /// - [ServerException] 서버 오류
-  Future<bool> checkEmailDuplicate(String email);
+  Future<void> sendSignupCode(String email);
+
+  /// 회원가입 인증번호 검증
+  ///
+  /// [email] 사용자 이메일
+  /// [code] 6자리 인증번호
+  ///
+  /// Returns: true (검증 성공), false (검증 실패)
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [ValidationException] 인증번호 불일치 또는 만료
+  /// - [ServerException] 서버 오류
+  Future<bool> verifySignupCode(String email, String code);
 
   /// 소셜 로그인 API 호출 (통합 엔드포인트)
   ///

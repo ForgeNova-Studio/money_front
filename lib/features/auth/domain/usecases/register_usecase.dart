@@ -11,8 +11,10 @@ import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart
 ///
 /// 사용자 회원가입 비즈니스 로직 처리
 /// - 입력값 검증
-/// - 이메일 중복 확인
+/// - 비밀번호 확인 일치 검증
 /// - Repository 호출
+///
+/// 참고: 이메일 중복 확인은 send-signup-code API에서 처리됨
 class RegisterUseCase {
   final AuthRepository _repository;
 
@@ -22,31 +24,28 @@ class RegisterUseCase {
   ///
   /// [email] 사용자 이메일
   /// [password] 사용자 비밀번호
+  /// [confirmPassword] 비밀번호 확인
   /// [nickname] 사용자 닉네임
   ///
   /// Returns: [AuthResult] (User + AuthToken)
   ///
   /// Throws:
-  /// - [ValidationException] 입력값 검증 오류
+  /// - [ValidationException] 입력값 검증 오류 (비밀번호 불일치 포함)
   /// - [NetworkException] 네트워크 오류
   /// - [ServerException] 서버 오류
   Future<AuthResult> call({
     required String email,
     required String password,
+    required String confirmPassword,
     required String nickname,
   }) async {
     // 입력값 검증
     _validateInput(
       email: email,
       password: password,
+      confirmPassword: confirmPassword,
       nickname: nickname,
     );
-
-    // 이메일 중복 확인
-    final isDuplicate = await _repository.checkEmailDuplicate(email);
-    if (isDuplicate) {
-      throw ValidationException('이미 사용 중인 이메일입니다');
-    }
 
     // Repository 호출
     return await _repository.register(
@@ -60,6 +59,7 @@ class RegisterUseCase {
   void _validateInput({
     required String email,
     required String password,
+    required String confirmPassword,
     required String nickname,
   }) {
     // 이메일 검증
@@ -85,6 +85,14 @@ class RegisterUseCase {
     }
     if (!_hasDigit(password)) {
       throw ValidationException('비밀번호에 숫자를 포함해주세요');
+    }
+
+    // 비밀번호 확인 검증
+    if (confirmPassword.isEmpty) {
+      throw ValidationException('비밀번호 확인을 입력해주세요');
+    }
+    if (password != confirmPassword) {
+      throw ValidationException('비밀번호가 일치하지 않습니다');
     }
 
     // 닉네임 검증

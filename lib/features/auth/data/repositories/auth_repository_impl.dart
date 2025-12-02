@@ -163,8 +163,13 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<bool> checkEmailDuplicate(String email) async {
-    return await remoteDataSource.checkEmailDuplicate(email);
+  Future<void> sendSignupCode(String email) async {
+    await remoteDataSource.sendSignupCode(email);
+  }
+
+  @override
+  Future<bool> verifySignupCode(String email, String code) async {
+    return await remoteDataSource.verifySignupCode(email, code);
   }
 
   @override

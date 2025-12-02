@@ -15,6 +15,8 @@ import 'package:moneyflow/features/auth/domain/usecases/google_login_usecase.dar
 import 'package:moneyflow/features/auth/domain/usecases/login_usecase.dart';
 import 'package:moneyflow/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:moneyflow/features/auth/domain/usecases/register_usecase.dart';
+import 'package:moneyflow/features/auth/domain/usecases/send_signup_code_usecase.dart';
+import 'package:moneyflow/features/auth/domain/usecases/verify_signup_code_usecase.dart';
 
 // providers/states
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -89,4 +91,16 @@ GoogleLoginUseCase googleLoginUseCase(Ref ref) {
 @riverpod
 AppleLoginUseCase appleLoginUseCase(Ref ref) {
   return AppleLoginUseCase(ref.read(authRepositoryProvider));
+}
+
+/// Send Signup Code UseCase Provider
+@riverpod
+SendSignupCodeUseCase sendSignupCodeUseCase(Ref ref) {
+  return SendSignupCodeUseCase(ref.read(authRepositoryProvider));
+}
+
+/// Verify Signup Code UseCase Provider
+@riverpod
+VerifySignupCodeUseCase verifySignupCodeUseCase(Ref ref) {
+  return VerifySignupCodeUseCase(ref.read(authRepositoryProvider));
 }

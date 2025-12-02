@@ -90,15 +90,29 @@ abstract class AuthRepository {
   /// - [StorageException] 로컬 저장소 오류
   Future<void> saveToken(AuthToken token);
 
-  /// 이메일 중복 확인
-  /// [email] 확인할 이메일
+  /// 회원가입 인증번호 전송
+  /// [email] 사용자 이메일
   ///
-  /// Returns: true (중복), false (사용 가능)
+  /// 6자리 인증번호를 이메일로 전송 (10분 유효)
+  /// 이메일 중복 체크 포함 (이미 가입된 이메일이면 오류 반환)
   ///
   /// Throws:
+  /// - [ValidationException] 이메일 형식 오류 또는 이미 가입된 이메일
   /// - [NetworkException] 네트워크 오류
   /// - [ServerException] 서버 오류
-  Future<bool> checkEmailDuplicate(String email);
+  Future<void> sendSignupCode(String email);
+
+  /// 회원가입 인증번호 검증
+  /// [email] 사용자 이메일
+  /// [code] 6자리 인증번호
+  ///
+  /// Returns: true (검증 성공), false (검증 실패)
+  ///
+  /// Throws:
+  /// - [ValidationException] 인증번호 불일치 또는 만료
+  /// - [NetworkException] 네트워크 오류
+  /// - [ServerException] 서버 오류
+  Future<bool> verifySignupCode(String email, String code);
 
   /// Google 로그인
   /// [idToken] Google ID Token

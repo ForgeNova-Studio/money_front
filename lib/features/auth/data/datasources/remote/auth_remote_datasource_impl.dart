@@ -91,23 +91,35 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<bool> checkEmailDuplicate(String email) async {
-    // TODO: 백엔드에 checkEmail API가 없음. send-signup-code API를 사용하여 이메일 중복 확인 필요
-    // send-signup-code 호출 시 이미 가입된 이메일이면 400 에러 반환
-    throw UnimplementedError('checkEmail API not implemented in backend');
-    // try {
-    //   final response = await dio.get(
-    //     ApiConstants.checkEmail,
-    //     queryParameters: {
-    //       'email': email,
-    //     },
-    //   );
-    //
-    //   // API 응답이 { "isDuplicate": true/false } 형태라고 가정
-    //   return response.data['isDuplicate'] as bool? ?? false;
-    // } on DioException catch (e) {
-    //   throw ExceptionHandler.handleDioException(e);
-    // }
+  Future<void> sendSignupCode(String email) async {
+    try {
+      await dio.post(
+        ApiConstants.sendSignupCode,
+        data: {
+          'email': email,
+        },
+      );
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
+  }
+
+  @override
+  Future<bool> verifySignupCode(String email, String code) async {
+    try {
+      final response = await dio.post(
+        ApiConstants.verifySignupCode,
+        data: {
+          'email': email,
+          'code': code,
+        },
+      );
+
+      // API 응답이 { "success": true/false } 형태라고 가정
+      return response.data['success'] as bool? ?? false;
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
   }
 
   @override
