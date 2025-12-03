@@ -1,5 +1,6 @@
 // models
 import 'package:moneyflow/features/auth/data/models/models.dart';
+import 'package:moneyflow/features/auth/domain/entities/gender.dart';
 
 /// Auth Remote Data Source 인터페이스
 ///
@@ -40,6 +41,7 @@ abstract class AuthRemoteDataSource {
     required String email,
     required String password,
     required String nickname,
+    required Gender gender,
   });
 
   /// 현재 사용자 정보 조회

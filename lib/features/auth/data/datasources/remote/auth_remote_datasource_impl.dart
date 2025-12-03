@@ -7,6 +7,7 @@ import 'package:moneyflow/core/exceptions/exceptions.dart';
 
 // models
 import 'package:moneyflow/features/auth/data/models/models.dart';
+import 'package:moneyflow/features/auth/domain/entities/gender.dart';
 
 // dataSources
 import 'package:moneyflow/features/auth/data/datasources/remote/auth_remote_datasource.dart';
@@ -44,6 +45,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String email,
     required String password,
     required String nickname,
+    required Gender gender,
   }) async {
     try {
       final response = await dio.post(
@@ -52,6 +54,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'email': email,
           'password': password,
           'nickname': nickname,
+          // 'gender': gender.toServerString(), // 백엔드 준비될 때까지 주석 처리
         },
       );
 

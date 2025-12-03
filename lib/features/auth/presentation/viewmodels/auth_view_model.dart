@@ -7,6 +7,7 @@ import 'package:moneyflow/core/exceptions/exceptions.dart';
 // providers/states
 import 'package:moneyflow/features/auth/presentation/providers/auth_providers.dart';
 import 'package:moneyflow/features/auth/presentation/states/auth_state.dart';
+import 'package:moneyflow/features/auth/domain/entities/gender.dart';
 
 part 'auth_view_model.g.dart';
 
@@ -136,6 +137,7 @@ class AuthViewModel extends _$AuthViewModel {
     required String password,
     required String confirmPassword,
     required String nickname,
+    required Gender gender,
   }) async {
     state = AuthState.loading();
 
@@ -146,6 +148,7 @@ class AuthViewModel extends _$AuthViewModel {
         password: password,
         confirmPassword: confirmPassword,
         nickname: nickname,
+        gender: gender,
       );
 
       state = AuthState.authenticated(result.user);

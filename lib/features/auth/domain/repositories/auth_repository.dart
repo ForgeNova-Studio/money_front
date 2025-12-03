@@ -2,6 +2,7 @@
 import 'package:moneyflow/features/auth/domain/entities/auth_result.dart';
 import 'package:moneyflow/features/auth/domain/entities/auth_token.dart';
 import 'package:moneyflow/features/auth/domain/entities/user.dart';
+import 'package:moneyflow/features/auth/domain/entities/gender.dart';
 
 /// Auth Repository 인터페이스
 ///
@@ -45,6 +46,7 @@ abstract class AuthRepository {
     required String email,
     required String password,
     required String nickname,
+    required Gender gender,
   });
 
   /// 로그아웃

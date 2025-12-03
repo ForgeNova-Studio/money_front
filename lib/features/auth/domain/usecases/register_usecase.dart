@@ -4,6 +4,7 @@ import 'package:moneyflow/core/validators/input_validator.dart';
 
 // entities
 import 'package:moneyflow/features/auth/domain/entities/auth_result.dart';
+import 'package:moneyflow/features/auth/domain/entities/gender.dart';
 
 // repository
 import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart';
@@ -39,6 +40,7 @@ class RegisterUseCase {
     required String password,
     required String confirmPassword,
     required String nickname,
+    required Gender gender,
   }) async {
     // 입력값 검증
     _validateInput(
@@ -53,6 +55,7 @@ class RegisterUseCase {
       email: email,
       password: password,
       nickname: nickname,
+      gender: gender, // 추가된 파라미터 전달
     );
   }
 
@@ -70,8 +73,8 @@ class RegisterUseCase {
     }
 
     // 비밀번호 검증 (대문자 불필요)
-    final passwordError =
-        InputValidator.getPasswordErrorMessage(password, requireUppercase: false);
+    final passwordError = InputValidator.getPasswordErrorMessage(password,
+        requireUppercase: false);
     if (passwordError.isNotEmpty) {
       throw ValidationException(passwordError);
     }

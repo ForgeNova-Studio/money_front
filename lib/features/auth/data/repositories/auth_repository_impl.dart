@@ -13,6 +13,7 @@ import 'package:moneyflow/features/auth/data/models/user_model.dart';
 import 'package:moneyflow/features/auth/domain/entities/auth_result.dart';
 import 'package:moneyflow/features/auth/domain/entities/auth_token.dart';
 import 'package:moneyflow/features/auth/domain/entities/user.dart';
+import 'package:moneyflow/features/auth/domain/entities/gender.dart';
 
 // repositories
 import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart';
@@ -67,12 +68,14 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     required String nickname,
+    required Gender gender,
   }) async {
     // 1. Remote API 호출 (토큰만 받음)
     final response = await remoteDataSource.register(
       email: email,
       password: password,
       nickname: nickname,
+      gender: gender,
     );
 
     // 2. Local Storage에 저장

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moneyflow/features/auth/domain/entities/gender.dart';
 
 /// 회원가입 화면
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -24,6 +25,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool _isTermsAgreed = false;
   bool _isVerificationCodeSent = false;
   bool _isEmailVerified = false;
+  Gender? _selectedGender;
 
   @override
   void dispose() {
@@ -43,6 +45,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ..showSnackBar(
           const SnackBar(
             content: Text('이메일 인증을 완료해주세요.'),
+            backgroundColor: AppColors.warning,
+          ),
+        );
+      return;
+    }
+
+    // 성별 선택 확인
+    if (_selectedGender == null) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('성별을 선택해주세요.'),
             backgroundColor: AppColors.warning,
           ),
         );
@@ -82,6 +97,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             password: _passwordController.text,
             confirmPassword: _confirmPasswordController.text,
             nickname: _displayNameController.text,
+            gender: _selectedGender!,
           );
 
       // 회원가입 성공 시 홈 화면으로 이동
@@ -251,6 +267,85 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   controller: _displayNameController,
                   hintText: '닉네임',
                   icon: Icons.person_outline,
+                ),
+
+                const SizedBox(height: 16),
+
+                // 성별 선택
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedGender = Gender.male;
+                          });
+                        },
+                        child: Container(
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: _selectedGender == Gender.male
+                                ? AppColors.primaryPink.withOpacity(0.1)
+                                : AppColors.gray100,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: _selectedGender == Gender.male
+                                  ? AppColors.primaryPink
+                                  : Colors.transparent,
+                              width: 1.5,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            '남성',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: _selectedGender == Gender.male
+                                  ? AppColors.primaryPink
+                                  : AppColors.textTertiary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedGender = Gender.female;
+                          });
+                        },
+                        child: Container(
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: _selectedGender == Gender.female
+                                ? AppColors.primaryPink.withOpacity(0.1)
+                                : AppColors.gray100,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: _selectedGender == Gender.female
+                                  ? AppColors.primaryPink
+                                  : Colors.transparent,
+                              width: 1.5,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            '여성',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: _selectedGender == Gender.female
+                                  ? AppColors.primaryPink
+                                  : AppColors.textTertiary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 16),
