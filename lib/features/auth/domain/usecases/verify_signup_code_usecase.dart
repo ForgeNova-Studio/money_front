@@ -1,5 +1,6 @@
 // core
 import 'package:moneyflow/core/exceptions/exceptions.dart';
+import 'package:moneyflow/core/validators/input_validator.dart';
 
 // repository
 import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart';
@@ -44,21 +45,15 @@ class VerifySignupCodeUseCase {
     required String code,
   }) {
     // 이메일 검증
-    if (email.isEmpty) {
-      throw ValidationException('이메일을 입력해주세요');
+    final emailError = InputValidator.getEmailErrorMessage(email);
+    if (emailError.isNotEmpty) {
+      throw ValidationException(emailError);
     }
 
     // 인증번호 검증
-    if (code.isEmpty) {
-      throw ValidationException('인증번호를 입력해주세요');
+    final codeError = InputValidator.getVerificationCodeErrorMessage(code);
+    if (codeError.isNotEmpty) {
+      throw ValidationException(codeError);
     }
-    if (!_isValidCode(code)) {
-      throw ValidationException('인증번호는 6자리 숫자입니다');
-    }
-  }
-
-  /// 인증번호 형식 검증 (6자리 숫자)
-  bool _isValidCode(String code) {
-    return RegExp(r'^\d{6}$').hasMatch(code);
   }
 }

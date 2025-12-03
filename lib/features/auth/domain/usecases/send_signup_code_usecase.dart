@@ -1,5 +1,6 @@
 // core
 import 'package:moneyflow/core/exceptions/exceptions.dart';
+import 'package:moneyflow/core/validators/input_validator.dart';
 
 // repository
 import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart';
@@ -34,16 +35,9 @@ class SendSignupCodeUseCase {
 
   /// 이메일 검증
   void _validateEmail(String email) {
-    if (email.isEmpty) {
-      throw ValidationException('이메일을 입력해주세요');
+    final errorMessage = InputValidator.getEmailErrorMessage(email);
+    if (errorMessage.isNotEmpty) {
+      throw ValidationException(errorMessage);
     }
-    if (!_isValidEmail(email)) {
-      throw ValidationException('올바른 이메일 형식이 아닙니다');
-    }
-  }
-
-  /// 이메일 형식 검증 (RFC 5322 기반 간소화)
-  bool _isValidEmail(String email) {
-    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
   }
 }

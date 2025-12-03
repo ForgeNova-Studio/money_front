@@ -1,5 +1,6 @@
 // core
 import 'package:moneyflow/core/exceptions/exceptions.dart';
+import 'package:moneyflow/core/validators/input_validator.dart';
 
 // entities
 import 'package:moneyflow/features/auth/domain/entities/auth_result.dart';
@@ -63,28 +64,16 @@ class RegisterUseCase {
     required String nickname,
   }) {
     // 이메일 검증
-    if (email.isEmpty) {
-      throw ValidationException('이메일을 입력해주세요');
-    }
-    if (!_isValidEmail(email)) {
-      throw ValidationException('올바른 이메일 형식이 아닙니다');
+    final emailError = InputValidator.getEmailErrorMessage(email);
+    if (emailError.isNotEmpty) {
+      throw ValidationException(emailError);
     }
 
-    // 비밀번호 검증
-    if (password.isEmpty) {
-      throw ValidationException('비밀번호를 입력해주세요');
-    }
-    if (password.length < 8) {
-      throw ValidationException('비밀번호는 8자 이상이어야 합니다');
-    }
-    // if (!_hasUpperCase(password)) {
-    //   throw ValidationException('비밀번호에 대문자를 포함해주세요');
-    // }
-    if (!_hasLowerCase(password)) {
-      throw ValidationException('비밀번호에 소문자를 포함해주세요');
-    }
-    if (!_hasDigit(password)) {
-      throw ValidationException('비밀번호에 숫자를 포함해주세요');
+    // 비밀번호 검증 (대문자 불필요)
+    final passwordError =
+        InputValidator.getPasswordErrorMessage(password, requireUppercase: false);
+    if (passwordError.isNotEmpty) {
+      throw ValidationException(passwordError);
     }
 
     // 비밀번호 확인 검증
@@ -96,30 +85,9 @@ class RegisterUseCase {
     }
 
     // 닉네임 검증
-    if (nickname.isEmpty) {
-      throw ValidationException('닉네임을 입력해주세요');
+    final nicknameError = InputValidator.getNicknameErrorMessage(nickname);
+    if (nicknameError.isNotEmpty) {
+      throw ValidationException(nicknameError);
     }
-    if (nickname.length < 2) {
-      throw ValidationException('닉네임은 2자 이상이어야 합니다');
-    }
-    if (nickname.length > 20) {
-      throw ValidationException('닉네임은 20자 이하여야 합니다');
-    }
-  }
-
-  bool _isValidEmail(String email) {
-    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
-  }
-
-  bool _hasUpperCase(String password) {
-    return RegExp(r'[A-Z]').hasMatch(password);
-  }
-
-  bool _hasLowerCase(String password) {
-    return RegExp(r'[a-z]').hasMatch(password);
-  }
-
-  bool _hasDigit(String password) {
-    return RegExp(r'\d').hasMatch(password);
   }
 }

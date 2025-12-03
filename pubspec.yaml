@@ -66,6 +66,7 @@ dev_dependencies:
   riverpod_lint: ^3.0.3
   json_serializable: ^6.8.0
   freezed: ^3.2.3
+  mockito: ^5.4.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
