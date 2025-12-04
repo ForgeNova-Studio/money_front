@@ -1,10 +1,17 @@
+// packages
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// cores
 import 'package:moneyflow/core/constants/app_constants.dart';
+
+// features
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/screens/register_screen.dart';
 import 'package:moneyflow/features/auth/presentation/screens/find_password_screen.dart';
 import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
+
+// presentation
 import 'package:moneyflow/presentation/screens/home/home_screen.dart';
 
 /// 로그인 화면
@@ -26,9 +33,9 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     _passwordController.dispose();
     super.dispose();
   }
-
+  
+  // ViewModel의 login 메서드 호출
   void _handleLogin() {
-    // ViewModel의 login 메서드 호출
     ref.read(authViewModelProvider.notifier).login(
           email: _emailController.text,
           password: _passwordController.text,
