@@ -10,6 +10,7 @@ import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.
 import 'package:moneyflow/features/auth/presentation/screens/register_screen.dart';
 import 'package:moneyflow/features/auth/presentation/screens/find_password_screen.dart';
 import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:moneyflow/features/auth/presentation/widgets/social_login_button.dart';
 
 // presentation
 import 'package:moneyflow/presentation/screens/home/home_screen.dart';
@@ -212,74 +213,34 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 24),
 
                 // Apple 로그인 버튼
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: OutlinedButton.icon(
-                    onPressed: _handleAppleLogin,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.textPrimary,
-                      side: const BorderSide(
-                        color: AppColors.gray300,
-                        width: 1.5,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    icon: const Icon(
-                      Icons.apple,
-                      color: AppColors.textPrimary,
-                      size: 24,
-                    ),
-                    label: const Text(
-                      'Apple로 로그인',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                SocialLoginButton(
+                  label: 'Apple로 로그인',
+                  icon: const Icon(
+                    Icons.apple,
+                    color: AppColors.textPrimary,
+                    size: 24,
                   ),
+                  onPressed: _handleAppleLogin,
                 ),
 
                 const SizedBox(height: 16),
 
                 // Google 로그인 버튼
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: OutlinedButton.icon(
-                    onPressed: _handleGoogleLogin,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.textPrimary,
-                      side: const BorderSide(
-                        color: AppColors.gray300,
-                        width: 1.5,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    icon: Image.network(
-                      'https://www.google.com/favicon.ico',
-                      width: 24,
-                      height: 24,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(
-                          Icons.g_mobiledata,
-                          color: AppColors.textPrimary,
-                          size: 24,
-                        );
-                      },
-                    ),
-                    label: const Text(
-                      'Google로 로그인',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                SocialLoginButton(
+                  label: 'Google로 로그인',
+                  icon: Image.network(
+                    'https://www.google.com/favicon.ico',
+                    width: 24,
+                    height: 24,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.g_mobiledata,
+                        color: AppColors.textPrimary,
+                        size: 24,
+                      );
+                    },
                   ),
+                  onPressed: _handleGoogleLogin,
                 ),
 
                 const SizedBox(height: 32),
