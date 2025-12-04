@@ -26,9 +26,11 @@ class _FindPasswordScreenState extends State<FindPasswordScreen> {
 
   void _handleSendVerificationCode() {
     if (_emailController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('이메일을 입력해주세요.')),
-      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(content: Text('이메일을 입력해주세요.')),
+        );
       return;
     }
 
@@ -37,16 +39,20 @@ class _FindPasswordScreenState extends State<FindPasswordScreen> {
       _isVerificationCodeSent = true;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('인증번호가 발송되었습니다.')),
-    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(content: Text('인증번호가 발송되었습니다.')),
+      );
   }
 
   void _handleVerifyCode() {
     if (_verificationCodeController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('인증번호를 입력해주세요.')),
-      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(content: Text('인증번호를 입력해주세요.')),
+        );
       return;
     }
 
@@ -56,13 +62,17 @@ class _FindPasswordScreenState extends State<FindPasswordScreen> {
       setState(() {
         _isEmailVerified = true;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('이메일 인증이 완료되었습니다.')),
-      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(content: Text('이메일 인증이 완료되었습니다.')),
+        );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('인증번호가 올바르지 않습니다. (테스트: 123456)')),
-      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(content: Text('인증번호가 올바르지 않습니다. (테스트: 123456)')),
+        );
     }
   }
 
