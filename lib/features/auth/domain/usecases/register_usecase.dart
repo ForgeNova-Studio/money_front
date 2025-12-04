@@ -55,7 +55,7 @@ class RegisterUseCase {
       email: email,
       password: password,
       nickname: nickname,
-      gender: gender, // 추가된 파라미터 전달
+      gender: gender,
     );
   }
 

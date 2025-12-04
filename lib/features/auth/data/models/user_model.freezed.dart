@@ -18,6 +18,8 @@ mixin _$UserModel {
   String get email;
   String get nickname;
   String? get profileImageUrl;
+  @GenderConverter()
+  Gender? get gender;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -39,17 +41,18 @@ mixin _$UserModel {
             (identical(other.nickname, nickname) ||
                 other.nickname == nickname) &&
             (identical(other.profileImageUrl, profileImageUrl) ||
-                other.profileImageUrl == profileImageUrl));
+                other.profileImageUrl == profileImageUrl) &&
+            (identical(other.gender, gender) || other.gender == gender));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, userId, email, nickname, profileImageUrl);
+  int get hashCode => Object.hash(
+      runtimeType, userId, email, nickname, profileImageUrl, gender);
 
   @override
   String toString() {
-    return 'UserModel(userId: $userId, email: $email, nickname: $nickname, profileImageUrl: $profileImageUrl)';
+    return 'UserModel(userId: $userId, email: $email, nickname: $nickname, profileImageUrl: $profileImageUrl, gender: $gender)';
   }
 }
 
@@ -59,7 +62,11 @@ abstract mixin class $UserModelCopyWith<$Res> {
       _$UserModelCopyWithImpl;
   @useResult
   $Res call(
-      {String userId, String email, String nickname, String? profileImageUrl});
+      {String userId,
+      String email,
+      String nickname,
+      String? profileImageUrl,
+      @GenderConverter() Gender? gender});
 }
 
 /// @nodoc
@@ -78,6 +85,7 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
     Object? email = null,
     Object? nickname = null,
     Object? profileImageUrl = freezed,
+    Object? gender = freezed,
   }) {
     return _then(_self.copyWith(
       userId: null == userId
@@ -96,6 +104,10 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
           ? _self.profileImageUrl
           : profileImageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      gender: freezed == gender
+          ? _self.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as Gender?,
     ));
   }
 }
@@ -192,15 +204,15 @@ extension UserModelPatterns on UserModel {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(String userId, String email, String nickname,
-            String? profileImageUrl)?
+            String? profileImageUrl, @GenderConverter() Gender? gender)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _UserModel() when $default != null:
-        return $default(
-            _that.userId, _that.email, _that.nickname, _that.profileImageUrl);
+        return $default(_that.userId, _that.email, _that.nickname,
+            _that.profileImageUrl, _that.gender);
       case _:
         return orElse();
     }
@@ -222,14 +234,14 @@ extension UserModelPatterns on UserModel {
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
     TResult Function(String userId, String email, String nickname,
-            String? profileImageUrl)
+            String? profileImageUrl, @GenderConverter() Gender? gender)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _UserModel():
-        return $default(
-            _that.userId, _that.email, _that.nickname, _that.profileImageUrl);
+        return $default(_that.userId, _that.email, _that.nickname,
+            _that.profileImageUrl, _that.gender);
     }
   }
 
@@ -248,14 +260,14 @@ extension UserModelPatterns on UserModel {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(String userId, String email, String nickname,
-            String? profileImageUrl)?
+            String? profileImageUrl, @GenderConverter() Gender? gender)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _UserModel() when $default != null:
-        return $default(
-            _that.userId, _that.email, _that.nickname, _that.profileImageUrl);
+        return $default(_that.userId, _that.email, _that.nickname,
+            _that.profileImageUrl, _that.gender);
       case _:
         return null;
     }
@@ -269,7 +281,8 @@ class _UserModel extends UserModel {
       {required this.userId,
       required this.email,
       required this.nickname,
-      this.profileImageUrl})
+      this.profileImageUrl,
+      @GenderConverter() this.gender})
       : super._();
   factory _UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
@@ -282,6 +295,9 @@ class _UserModel extends UserModel {
   final String nickname;
   @override
   final String? profileImageUrl;
+  @override
+  @GenderConverter()
+  final Gender? gender;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -308,17 +324,18 @@ class _UserModel extends UserModel {
             (identical(other.nickname, nickname) ||
                 other.nickname == nickname) &&
             (identical(other.profileImageUrl, profileImageUrl) ||
-                other.profileImageUrl == profileImageUrl));
+                other.profileImageUrl == profileImageUrl) &&
+            (identical(other.gender, gender) || other.gender == gender));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, userId, email, nickname, profileImageUrl);
+  int get hashCode => Object.hash(
+      runtimeType, userId, email, nickname, profileImageUrl, gender);
 
   @override
   String toString() {
-    return 'UserModel(userId: $userId, email: $email, nickname: $nickname, profileImageUrl: $profileImageUrl)';
+    return 'UserModel(userId: $userId, email: $email, nickname: $nickname, profileImageUrl: $profileImageUrl, gender: $gender)';
   }
 }
 
@@ -331,7 +348,11 @@ abstract mixin class _$UserModelCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String userId, String email, String nickname, String? profileImageUrl});
+      {String userId,
+      String email,
+      String nickname,
+      String? profileImageUrl,
+      @GenderConverter() Gender? gender});
 }
 
 /// @nodoc
@@ -350,6 +371,7 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
     Object? email = null,
     Object? nickname = null,
     Object? profileImageUrl = freezed,
+    Object? gender = freezed,
   }) {
     return _then(_UserModel(
       userId: null == userId
@@ -368,6 +390,10 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
           ? _self.profileImageUrl
           : profileImageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      gender: freezed == gender
+          ? _self.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as Gender?,
     ));
   }
 }
