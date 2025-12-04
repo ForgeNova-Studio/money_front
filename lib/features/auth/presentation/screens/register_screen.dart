@@ -41,51 +41,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Future<void> _handleSignUp() async {
-    final formState = ref.read(registerViewModelProvider);
-
-    // 유효성 검사
-    if (!formState.isEmailVerified) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(
-            content: Text('이메일 인증을 완료해주세요.'),
-            backgroundColor: AppColors.warning,
-          ),
+    // ViewModel에서 유효성 검사
+    final errorMessage = ref
+        .read(registerViewModelProvider.notifier)
+        .validateForSignup(
+          password: _passwordController.text,
+          confirmPassword: _confirmPasswordController.text,
         );
-      return;
-    }
 
-    if (formState.selectedGender == null) {
+    if (errorMessage != null) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(
-            content: Text('성별을 선택해주세요.'),
-            backgroundColor: AppColors.warning,
-          ),
-        );
-      return;
-    }
-
-    if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(
-            content: Text('비밀번호가 일치하지 않습니다.'),
-            backgroundColor: AppColors.warning,
-          ),
-        );
-      return;
-    }
-
-    if (!formState.isTermsAgreed) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(
-            content: Text('약관 및 개인정보 이용동의에 체크해주세요.'),
+          SnackBar(
+            content: Text(errorMessage),
             backgroundColor: AppColors.warning,
           ),
         );
@@ -99,7 +68,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             password: _passwordController.text,
             confirmPassword: _confirmPasswordController.text,
             nickname: _displayNameController.text,
-            gender: formState.selectedGender!,
+            gender: ref.read(registerViewModelProvider).selectedGender!,
           );
 
       // 회원가입 성공 시 홈 화면으로 이동

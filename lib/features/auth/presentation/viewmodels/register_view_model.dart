@@ -78,6 +78,30 @@ class RegisterViewModel extends _$RegisterViewModel {
     return isVerified;
   }
 
+  /// 회원가입 가능 여부 검증 및 에러 메시지 반환
+  String? validateForSignup({
+    required String password,
+    required String confirmPassword,
+  }) {
+    if (!state.isEmailVerified) {
+      return '이메일 인증을 완료해주세요.';
+    }
+
+    if (state.selectedGender == null) {
+      return '성별을 선택해주세요.';
+    }
+
+    if (password != confirmPassword) {
+      return '비밀번호가 일치하지 않습니다.';
+    }
+
+    if (!state.isTermsAgreed) {
+      return '약관 및 개인정보 이용동의에 체크해주세요.';
+    }
+
+    return null; // 검증 통과
+  }
+
   /// 상태 초기화
   void reset() {
     state = RegisterFormState.initial();
