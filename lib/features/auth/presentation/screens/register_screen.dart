@@ -61,22 +61,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    try {
-      // AuthViewModel의 register 메서드 호출
-      await ref.read(authViewModelProvider.notifier).register(
-            email: _emailController.text,
-            password: _passwordController.text,
-            confirmPassword: _confirmPasswordController.text,
-            nickname: _displayNameController.text,
-            gender: ref.read(registerViewModelProvider).selectedGender!,
-          );
+    // AuthViewModel의 register 메서드 호출
+    await ref.read(authViewModelProvider.notifier).register(
+          email: _emailController.text,
+          password: _passwordController.text,
+          confirmPassword: _confirmPasswordController.text,
+          nickname: _displayNameController.text,
+          gender: ref.read(registerViewModelProvider).selectedGender!,
+        );
 
-      // 회원가입 성공 시 홈 화면으로 이동
-      // (ref.listen에서 처리됨)
-    } catch (e) {
-      // 에러는 ViewModel에서 state에 저장되므로 여기서는 추가 처리 불필요
-      // ref.listen에서 처리됨
-    }
+    // 회원가입 성공 시 홈 화면으로 이동
+    // (ref.listen에서 처리됨)
   }
 
   void _handleTermsClick() {
@@ -110,22 +105,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    try {
-      // RegisterViewModel의 sendVerificationCode 메서드 호출
-      await ref
-          .read(registerViewModelProvider.notifier)
-          .sendVerificationCode(_emailController.text);
+    // RegisterViewModel의 sendVerificationCode 메서드 호출
+    await ref
+        .read(registerViewModelProvider.notifier)
+        .sendVerificationCode(_emailController.text);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            const SnackBar(content: Text('인증번호가 전송되었습니다.')),
-          );
-      }
-    } catch (e) {
-      // 에러는 ViewModel에서 state에 저장되므로 여기서는 추가 처리 불필요
-      // ref.listen에서 처리됨
+    if (mounted) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(content: Text('인증번호가 전송되었습니다.')),
+        );
     }
   }
 
@@ -142,25 +132,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    try {
-      // RegisterViewModel의 verifyCode 메서드 호출
-      final isVerified = await ref
-          .read(registerViewModelProvider.notifier)
-          .verifyCode(
-            email: _emailController.text,
-            code: _verificationCodeController.text,
-          );
+    // RegisterViewModel의 verifyCode 메서드 호출
+    final isVerified = await ref
+        .read(registerViewModelProvider.notifier)
+        .verifyCode(
+          email: _emailController.text,
+          code: _verificationCodeController.text,
+        );
 
-      if (mounted && isVerified) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            const SnackBar(content: Text('이메일 인증이 완료되었습니다.')),
-          );
-      }
-    } catch (e) {
-      // 에러는 ViewModel에서 state에 저장되므로 여기서는 추가 처리 불필요
-      // ref.listen에서 처리됨
+    if (mounted && isVerified) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(content: Text('이메일 인증이 완료되었습니다.')),
+        );
     }
   }
 
