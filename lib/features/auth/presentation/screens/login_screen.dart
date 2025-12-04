@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/screens/register_screen.dart';
+import 'package:moneyflow/features/auth/presentation/screens/find_password_screen.dart';
 import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:moneyflow/presentation/screens/home/home_screen.dart';
 
@@ -42,15 +43,14 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     ref.read(authViewModelProvider.notifier).loginWithGoogle();
   }
 
+  // 비밀번호 찾기 화면으로 이동
   void _handleForgotPassword() {
-    // TODO: 비밀번호 찾기 화면으로 이동
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(content: Text('비밀번호 찾기 화면으로 이동')),
-      );
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const FindPasswordScreen()),
+    );
   }
 
+  // 회원가입 화면으로 이동
   void _handleSignUp() {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const RegisterScreen()),
