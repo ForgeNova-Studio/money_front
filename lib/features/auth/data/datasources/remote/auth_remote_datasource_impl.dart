@@ -54,7 +54,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'email': email,
           'password': password,
           'nickname': nickname,
-          // 'gender': gender.toServerString(), // 백엔드 준비될 때까지 주석 처리
+          'gender': gender.toServerString(),
         },
       );
 

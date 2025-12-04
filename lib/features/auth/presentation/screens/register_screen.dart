@@ -11,6 +11,8 @@ import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.d
 // viewmodels
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/register_view_model.dart';
+
+// entities
 import 'package:moneyflow/features/auth/domain/entities/gender.dart';
 
 /// 회원가입 화면
@@ -279,7 +281,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           height: 56,
                           decoration: BoxDecoration(
                             color: formState.selectedGender == Gender.male
-                                ? AppColors.primaryPink.withOpacity(0.1)
+                                ? AppColors.primaryPink.withValues(alpha: 0.1)
                                 : AppColors.gray100,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
@@ -315,7 +317,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           height: 56,
                           decoration: BoxDecoration(
                             color: formState.selectedGender == Gender.female
-                                ? AppColors.primaryPink.withOpacity(0.1)
+                                ? AppColors.primaryPink.withValues(alpha: 0.1)
                                 : AppColors.gray100,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
