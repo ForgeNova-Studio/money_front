@@ -47,9 +47,6 @@ class AuthViewModel extends _$AuthViewModel {
       // 에러 발생 시 로그아웃 상태로 처리
       state = AuthState.unauthenticated();
     }
-
-    // api 개발 전 임시 처리
-    // state = AuthState.unauthenticated();
   }
 
   /// 로그인
