@@ -37,10 +37,8 @@ class AuthViewModel extends _$AuthViewModel {
       final user = await useCase();
 
       if (user != null) {
-        debugPrint('User found: ${user.email}');
         state = AuthState.authenticated(user);
       } else {
-        debugPrint('User not found');
         state = AuthState.unauthenticated();
       }
     } catch (e) {
