@@ -54,6 +54,7 @@ class AuthViewModel extends _$AuthViewModel {
     required String email,
     required String password,
   }) async {
+    // 로딩 상태로 변경
     state = AuthState.loading();
 
     try {
@@ -62,20 +63,21 @@ class AuthViewModel extends _$AuthViewModel {
 
       state = AuthState.authenticated(result.user);
     } on ValidationException catch (e) {
+      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
       state = AuthState.error(e.message);
-      rethrow;
     } on UnauthorizedException catch (e) {
+      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
       state = AuthState.error(e.message);
-      rethrow;
     } on NetworkException catch (e) {
+      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
       state = AuthState.error(e.message);
-      rethrow;
     } on ServerException catch (e) {
+      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
       state = AuthState.error(e.message);
-      rethrow;
     } catch (e) {
-      state = AuthState.error('로그인 중 오류가 발생했습니다: $e');
-      rethrow;
+      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
+      state = AuthState.error('로그인 중 오류가 발생했습니다');
+      debugPrint('Login failed: $e');
     }
   }
 
