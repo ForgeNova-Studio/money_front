@@ -53,12 +53,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _handleSignUp() async {
     // ViewModel에서 유효성 검사
-    final errorMessage = ref
-        .read(registerViewModelProvider.notifier)
-        .validateForSignup(
-          password: _passwordController.text,
-          confirmPassword: _confirmPasswordController.text,
-        );
+    final errorMessage =
+        ref.read(registerViewModelProvider.notifier).validateForSignup(
+              password: _passwordController.text,
+              confirmPassword: _confirmPasswordController.text,
+            );
 
     if (errorMessage != null) {
       ScaffoldMessenger.of(context)
@@ -144,12 +143,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
 
     // RegisterViewModel의 verifyCode 메서드 호출
-    final isVerified = await ref
-        .read(registerViewModelProvider.notifier)
-        .verifyCode(
-          email: _emailController.text,
-          code: _verificationCodeController.text,
-        );
+    final isVerified =
+        await ref.read(registerViewModelProvider.notifier).verifyCode(
+              email: _emailController.text,
+              code: _verificationCodeController.text,
+            );
 
     if (mounted && isVerified) {
       ScaffoldMessenger.of(context)
@@ -158,10 +156,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           const SnackBar(content: Text('이메일 인증이 완료되었습니다.')),
         );
     }
-  }
-
-  void _handleLogin() {
-    Navigator.of(context).pop();
   }
 
   @override
@@ -556,42 +550,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ),
                   ),
                 ),
-
-                const SizedBox(height: 32),
-
-                // 로그인 링크
-                Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        '이미 계정이 있으신가요? ',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: _handleLogin,
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: const Text(
-                          '로그인',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: AppColors.primaryPink,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 40),
               ],
             ),
           ),
