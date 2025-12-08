@@ -46,14 +46,19 @@ class RegisterViewModel extends _$RegisterViewModel {
 
   /// 이메일 인증번호 전송
   Future<void> sendVerificationCode(String email) async {
-    // 이메일 저장
-    state = state.copyWith(email: email);
+    try {
+      // 이메일 저장
+      state = state.copyWith(email: email);
 
-    // AuthViewModel의 sendSignupCode 호출
-    await ref.read(authViewModelProvider.notifier).sendSignupCode(email);
+      // AuthViewModel의 sendSignupCode 호출
+      await ref.read(authViewModelProvider.notifier).sendSignupCode(email);
 
-    // 성공 시 인증번호 전송 상태 업데이트
-    state = state.copyWith(isVerificationCodeSent: true);
+      // 성공 시 인증번호 전송 상태 업데이트
+      state = state.copyWith(isVerificationCodeSent: true);
+    } catch (e) {
+      // 에러 발생 시 예외를 다시 던져서 UI에서 처리하도록 함
+      rethrow;
+    }
   }
 
   /// 인증번호 확인

@@ -115,17 +115,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    // RegisterViewModel의 sendVerificationCode 메서드 호출
-    await ref
-        .read(registerViewModelProvider.notifier)
-        .sendVerificationCode(_emailController.text);
+    try {
+      // RegisterViewModel의 sendVerificationCode 메서드 호출
+      await ref
+          .read(registerViewModelProvider.notifier)
+          .sendVerificationCode(_emailController.text);
 
-    if (mounted) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(content: Text('인증번호가 전송되었습니다.')),
-        );
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(content: Text('인증번호가 전송되었습니다.')),
+          );
+      }
+    } catch (e) {
+      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
+      // 174행에서 ref.listen으로 에러를 감지하여 처리
+      // try-catch는 UnhandledException 방지용
     }
   }
 
