@@ -145,4 +145,46 @@ abstract class AuthRepository {
     required String authorizationCode,
     String? nickname,
   });
+
+  /// 비밀번호 재설정 인증번호 전송
+  /// [email] 사용자 이메일
+  ///
+  /// 6자리 인증번호를 이메일로 전송 (10분 유효)
+  /// 가입된 이메일 체크 포함 (가입되지 않은 이메일이면 오류 반환)
+  /// 소셜 로그인 사용자는 사용 불가
+  ///
+  /// Throws:
+  /// - [ValidationException] 이메일 형식 오류, 가입되지 않은 이메일, 또는 소셜 로그인 사용자
+  /// - [NetworkException] 네트워크 오류
+  /// - [ServerException] 서버 오류
+  Future<void> sendPasswordResetCode(String email);
+
+  /// 비밀번호 재설정 인증번호 검증
+  /// [email] 사용자 이메일
+  /// [code] 6자리 인증번호
+  ///
+  /// Returns: true (검증 성공), false (검증 실패)
+  ///
+  /// Throws:
+  /// - [ValidationException] 인증번호 불일치, 만료, 또는 소셜 로그인 사용자
+  /// - [NetworkException] 네트워크 오류
+  /// - [ServerException] 서버 오류
+  Future<bool> verifyPasswordResetCode(String email, String code);
+
+  /// 비밀번호 재설정
+  /// [email] 사용자 이메일
+  /// [code] 6자리 인증번호
+  /// [newPassword] 새로운 비밀번호
+  ///
+  /// 인증번호를 검증하고 새로운 비밀번호로 재설정
+  /// 소셜 로그인 사용자는 사용 불가
+  ///
+  /// Throws:
+  /// - [ValidationException] 인증번호 불일치, 만료, 또는 소셜 로그인 사용자
+  /// - [NetworkException] 네트워크 오류
+  /// - [ServerException] 서버 오류
+  Future<void> resetPassword({
+    required String email,
+    required String newPassword,
+  });
 }

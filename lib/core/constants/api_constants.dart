@@ -14,6 +14,8 @@ class ApiConstants {
   static const String verifySignupCode = '/api/auth/verify-signup-code';
   static const String sendPasswordResetCode =
       '/api/auth/reset-password/send-code';
+  static const String verifyResetPasswordCode =
+      '/api/auth/verify-reset-password-code';
   static const String resetPassword = '/api/auth/reset-password';
   static const String authHealth = '/api/auth/health';
   // 개발용

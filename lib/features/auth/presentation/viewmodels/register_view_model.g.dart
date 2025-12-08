@@ -50,7 +50,7 @@ final class RegisterViewModelProvider
   }
 }
 
-String _$registerViewModelHash() => r'8370b14f7719b80926d05c0007540d8d7368e729';
+String _$registerViewModelHash() => r'1228a317ba0d68e94c659a5d14318b6fe6736471';
 
 /// 회원가입 폼 ViewModel
 ///

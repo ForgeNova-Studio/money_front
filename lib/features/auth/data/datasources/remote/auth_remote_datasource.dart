@@ -106,4 +106,41 @@ abstract class AuthRemoteDataSource {
     required String idToken,
     required String nickname,
   });
+
+  /// 비밀번호 재설정 인증번호 전송
+  ///
+  /// [email] 사용자 이메일
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [ValidationException] 가입되지 않은 이메일 또는 소셜 로그인 사용자
+  /// - [ServerException] 서버 오류
+  Future<void> sendPasswordResetCode(String email);
+
+  /// 비밀번호 재설정 인증번호 검증
+  ///
+  /// [email] 사용자 이메일
+  /// [code] 6자리 인증번호
+  ///
+  /// Returns: true (검증 성공), false (검증 실패)
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [ValidationException] 인증번호 불일치, 만료, 또는 소셜 로그인 사용자
+  /// - [ServerException] 서버 오류
+  Future<bool> verifyPasswordResetCode(String email, String code);
+
+  /// 비밀번호 재설정
+  ///
+  /// [email] 사용자 이메일
+  /// [newPassword] 새로운 비밀번호
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [ValidationException] 인증번호 불일치, 만료, 또는 소셜 로그인 사용자
+  /// - [ServerException] 서버 오류
+  Future<void> resetPassword({
+    required String email,
+    required String newPassword,
+  });
 }

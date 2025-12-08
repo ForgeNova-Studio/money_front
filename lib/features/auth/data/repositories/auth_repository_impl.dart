@@ -238,4 +238,25 @@ class AuthRepositoryImpl implements AuthRepository {
     // 3. Entity 변환 및 반환
     return response.toEntity();
   }
+
+  @override
+  Future<void> sendPasswordResetCode(String email) async {
+    await remoteDataSource.sendPasswordResetCode(email);
+  }
+
+  @override
+  Future<bool> verifyPasswordResetCode(String email, String code) async {
+    return await remoteDataSource.verifyPasswordResetCode(email, code);
+  }
+
+  @override
+  Future<void> resetPassword({
+    required String email,
+    required String newPassword,
+  }) async {
+    await remoteDataSource.resetPassword(
+      email: email,
+      newPassword: newPassword,
+    );
+  }
 }

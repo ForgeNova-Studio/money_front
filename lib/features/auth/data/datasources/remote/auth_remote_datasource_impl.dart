@@ -145,4 +145,53 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw ExceptionHandler.handleDioException(e);
     }
   }
+
+  @override
+  Future<void> sendPasswordResetCode(String email) async {
+    try {
+      await dio.post(
+        ApiConstants.sendPasswordResetCode,
+        data: {
+          'email': email,
+        },
+      );
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
+  }
+
+  @override
+  Future<bool> verifyPasswordResetCode(String email, String code) async {
+    try {
+      final response = await dio.post(
+        ApiConstants.verifyResetPasswordCode,
+        data: {
+          'email': email,
+          'code': code,
+        },
+      );
+
+      return response.data['success'] as bool? ?? false;
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
+  }
+
+  @override
+  Future<void> resetPassword({
+    required String email,
+    required String newPassword,
+  }) async {
+    try {
+      await dio.post(
+        ApiConstants.resetPassword,
+        data: {
+          'email': email,
+          'newPassword': newPassword,
+        },
+      );
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
+  }
 }

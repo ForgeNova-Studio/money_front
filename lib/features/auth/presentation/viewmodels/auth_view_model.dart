@@ -133,6 +133,36 @@ class AuthViewModel extends _$AuthViewModel {
     }
   }
 
+  /// 비밀번호 찾기 인증번호 검증
+  Future<bool> verifyFindPasswordCode({
+    required String email,
+    required String code,
+  }) async {
+    state = AuthState.loading();
+
+    try {
+      // final useCase = ref.read(verifySignupCodeUseCaseProvider);
+      // final isVerified = await useCase(email: email, code: code);
+      final isVerified = true;
+
+      // 검증 성공 시 로딩 해제
+      state = AuthState.initial();
+      return isVerified;
+    } on ValidationException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } on NetworkException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } on ServerException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } catch (e) {
+      state = AuthState.error('인증번호 확인 중 오류가 발생했습니다: $e');
+      rethrow;
+    }
+  }
+
   /// 회원가입
   Future<void> register({
     required String email,
@@ -248,6 +278,62 @@ class AuthViewModel extends _$AuthViewModel {
       }
     } catch (e) {
       // 에러 발생 시 현재 상태 유지
+    }
+  }
+
+  /// 비밀번호 재설정 인증번호 전송
+  Future<void> sendPasswordResetCode(String email) async {
+    state = AuthState.loading();
+
+    try {
+      final useCase = ref.read(sendPasswordResetCodeUseCaseProvider);
+      await useCase(email);
+
+      // 인증번호 전송 성공 시 로딩 해제
+      state = AuthState.initial();
+    } on ValidationException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } on NetworkException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } on ServerException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } catch (e) {
+      state = AuthState.error('인증번호 전송 중 오류가 발생했습니다: $e');
+      rethrow;
+    }
+  }
+
+  /// 비밀번호 재설정
+  Future<void> resetPassword({
+    required String email,
+    required String newPassword,
+  }) async {
+    state = AuthState.loading();
+
+    try {
+      final useCase = ref.read(resetPasswordUseCaseProvider);
+      await useCase(
+        email: email,
+        newPassword: newPassword,
+      );
+
+      // 비밀번호 재설정 성공 시 로딩 해제
+      state = AuthState.initial();
+    } on ValidationException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } on NetworkException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } on ServerException catch (e) {
+      state = AuthState.error(e.message);
+      rethrow;
+    } catch (e) {
+      state = AuthState.error('비밀번호 재설정 중 오류가 발생했습니다: $e');
+      rethrow;
     }
   }
 }
