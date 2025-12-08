@@ -118,7 +118,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         },
       );
 
-      // API 응답이 { "success": true/false } 형태라고 가정
       return response.data['success'] as bool? ?? false;
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);

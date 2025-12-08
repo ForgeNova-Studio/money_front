@@ -132,27 +132,6 @@ final hasSpecialChar = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
 
 ### 🟢 경미한 문제
 
-#### 5. **verifySignupCode 응답 형식 불명확**
-
-**위치**: `money_front/lib/features/auth/data/datasources/remote/auth_remote_datasource_impl.dart:122`
-
-```dart
-// API 응답이 { "success": true/false } 형태라고 가정
-return response.data['success'] as bool? ?? false;
-```
-
-**문제**:
-- 주석으로 "가정"이라고 명시됨
-- 백엔드 AuthService.java:358을 보면 `VerificationResponse.success("인증이 완료되었습니다")`를 반환
-- VerificationResponse의 실제 JSON 구조를 확인해야 함
-
-**해결 방법**:
-1. VerificationResponse 클래스 확인
-2. 실제 응답 형식에 맞게 코드 수정
-3. 주석 제거 또는 명확하게 수정
-
----
-
 #### 6. **성별 필수 여부 불명확**
 
 **위치**: `money_front/lib/features/auth/presentation/viewmodels/register_view_model.dart:95-97`
