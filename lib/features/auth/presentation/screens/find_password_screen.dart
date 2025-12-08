@@ -25,6 +25,17 @@ class _FindPasswordScreenState extends State<FindPasswordScreen> {
   bool _isEmailVerified = false;
 
   @override
+  void initState() {
+    super.initState();
+    // 화면 진입 시 이전 화면의 SnackBar 제거
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _verificationCodeController.dispose();
@@ -110,24 +121,7 @@ class _FindPasswordScreenState extends State<FindPasswordScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 24),
-              const Text(
-                '계정을 찾아볼까요?',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                  height: 1.3,
-                ),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                '가입하신 이메일을 입력하고\n인증번호를 확인해주세요.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textSecondary,
-                  height: 1.5,
-                ),
-              ),
+              _buildTitle(),
               const SizedBox(height: 40),
 
               // 이메일 입력 필드
@@ -208,6 +202,19 @@ class _FindPasswordScreenState extends State<FindPasswordScreen> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 8),
+                // 인증번호 유효 시간 안내
+                const Padding(
+                  padding: EdgeInsets.only(left: 4),
+                  child: Text(
+                    '※ 인증번호는 10분간 유효합니다.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
               ],
 
               const SizedBox(height: 24),
@@ -240,4 +247,30 @@ class _FindPasswordScreenState extends State<FindPasswordScreen> {
       ),
     );
   }
+}
+
+Widget _buildTitle() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Text(
+        '계정을 찾아볼까요?',
+        style: TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+          color: AppColors.textPrimary,
+          height: 1.3,
+        ),
+      ),
+      const SizedBox(height: 12),
+      const Text(
+        '가입하신 이메일을 입력하고\n인증번호를 확인해주세요.',
+        style: TextStyle(
+          fontSize: 16,
+          color: AppColors.textSecondary,
+          height: 1.5,
+        ),
+      )
+    ],
+  );
 }
