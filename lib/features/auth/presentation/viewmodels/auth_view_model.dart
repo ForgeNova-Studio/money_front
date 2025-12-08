@@ -309,6 +309,7 @@ class AuthViewModel extends _$AuthViewModel {
   /// 비밀번호 재설정
   Future<void> resetPassword({
     required String email,
+    required String code,
     required String newPassword,
   }) async {
     state = AuthState.loading();
@@ -317,6 +318,7 @@ class AuthViewModel extends _$AuthViewModel {
       final useCase = ref.read(resetPasswordUseCaseProvider);
       await useCase(
         email: email,
+        code: code,
         newPassword: newPassword,
       );
 

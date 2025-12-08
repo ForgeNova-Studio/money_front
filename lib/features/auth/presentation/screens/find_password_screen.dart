@@ -124,12 +124,10 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
       return;
     }
 
-    // reset_password_screen으로 이동 (이메일과 인증번호 전달)
+    // reset_password_screen으로 이동 (상태관리를 통해 email과 verificationCode 공유)
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ResetPasswordScreen(
-          email: formState.email,
-        ),
+        builder: (context) => const ResetPasswordScreen(),
       ),
     );
   }

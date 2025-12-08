@@ -133,6 +133,7 @@ abstract class AuthRemoteDataSource {
   /// 비밀번호 재설정
   ///
   /// [email] 사용자 이메일
+  /// [code] 6자리 인증번호
   /// [newPassword] 새로운 비밀번호
   ///
   /// Throws:
@@ -141,6 +142,7 @@ abstract class AuthRemoteDataSource {
   /// - [ServerException] 서버 오류
   Future<void> resetPassword({
     required String email,
+    required String code,
     required String newPassword,
   });
 }

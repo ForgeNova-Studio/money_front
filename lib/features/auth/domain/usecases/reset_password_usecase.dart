@@ -20,6 +20,7 @@ class ResetPasswordUseCase {
   /// 비밀번호 재설정 실행
   ///
   /// [email] 사용자 이메일
+  /// [code] 인증번호
   /// [newPassword] 새로운 비밀번호
   ///
   /// Throws:
@@ -30,17 +31,20 @@ class ResetPasswordUseCase {
   /// - [ServerException] 서버 오류
   Future<void> call({
     required String email,
+    required String code,
     required String newPassword,
   }) async {
     // 입력값 검증
     _validateInput(
       email: email,
+      code: code,
       newPassword: newPassword,
     );
 
     // Repository 호출
     await _repository.resetPassword(
       email: email,
+      code: code,
       newPassword: newPassword,
     );
   }
@@ -48,6 +52,7 @@ class ResetPasswordUseCase {
   /// 입력값 검증
   void _validateInput({
     required String email,
+    required String code,
     required String newPassword,
   }) {
     // 이메일 검증
@@ -63,6 +68,12 @@ class ResetPasswordUseCase {
     );
     if (passwordError.isNotEmpty) {
       throw ValidationException(passwordError);
+    }
+
+    // 인증번호 검증
+    final codeError = InputValidator.getVerificationCodeErrorMessage(code);
+    if (codeError.isNotEmpty) {
+      throw ValidationException(codeError);
     }
   }
 }

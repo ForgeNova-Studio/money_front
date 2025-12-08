@@ -185,6 +185,7 @@ abstract class AuthRepository {
   /// - [ServerException] 서버 오류
   Future<void> resetPassword({
     required String email,
+    required String code,
     required String newPassword,
   });
 }

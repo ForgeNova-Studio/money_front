@@ -10,14 +10,10 @@ import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.d
 
 // viewmodels
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moneyflow/features/auth/presentation/viewmodels/find_password_view_model.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
-  final String email;
-
-  const ResetPasswordScreen({
-    super.key,
-    required this.email,
-  });
+  const ResetPasswordScreen({super.key});
 
   @override
   ConsumerState<ResetPasswordScreen> createState() =>
@@ -76,9 +72,15 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     }
 
     try {
+      // FindPasswordViewModel에서 email 가져오기
+      final email = ref.read(findPasswordViewModelProvider).email;
+      final verificationCode =
+          ref.read(findPasswordViewModelProvider).verificationCode;
+
       // AuthViewModel의 resetPassword 메서드 호출
       await ref.read(authViewModelProvider.notifier).resetPassword(
-            email: widget.email,
+            email: email,
+            code: verificationCode,
             newPassword: _passwordController.text,
           );
 

@@ -180,6 +180,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> resetPassword({
     required String email,
+    required String code,
     required String newPassword,
   }) async {
     try {
@@ -187,6 +188,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         ApiConstants.resetPassword,
         data: {
           'email': email,
+          'code': code,
           'newPassword': newPassword,
         },
       );
