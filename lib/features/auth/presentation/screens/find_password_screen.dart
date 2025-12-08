@@ -110,8 +110,6 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
   }
 
   void _handleContinue() {
-    final formState = ref.read(findPasswordViewModelProvider);
-
     if (_verificationCodeController.text.isEmpty) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
