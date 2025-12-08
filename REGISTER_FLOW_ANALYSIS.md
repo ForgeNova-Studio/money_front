@@ -71,38 +71,7 @@ Database (EmailVerification, User)
 
 ### 🟡 중간 수준 문제
 
-#### 3. **닉네임 길이 제한 불일치**
 
-**위치**:
-- `money_front/lib/core/validators/input_validator.dart:8`
-- `money_front/lib/features/auth/REGISTER_FLOW.md:102`
-
-**문제**:
-```dart
-// InputValidator
-static const int nicknameMaxLength = 20;  // 코드: 20자
-```
-
-```markdown
-# REGISTER_FLOW.md
-2자 이상 12자 이하  // 문서: 12자
-```
-
-**영향**:
-- 문서와 코드가 일치하지 않음
-- 백엔드 검증 정책을 확인해야 함
-
-**해결 방법**:
-1. 백엔드의 실제 제한을 확인
-2. 프론트엔드와 백엔드, 문서를 모두 일치시킴
-
----
-
-#### 4. **특수문자 정책 불일치**
-
-**위치**:
-- `money_front/lib/features/auth/presentation/viewmodels/register_view_model.dart:125`
-- `money_front/lib/core/validators/input_validator.dart`
 
 **문제**:
 

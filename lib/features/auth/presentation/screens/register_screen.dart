@@ -407,6 +407,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 8),
+                  // 인증번호 유효 시간 안내
+                  const Padding(
+                    padding: EdgeInsets.only(left: 4),
+                    child: Text(
+                      '※ 인증번호는 10분간 유효합니다.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
                 ],
 
                 const SizedBox(height: 16),
