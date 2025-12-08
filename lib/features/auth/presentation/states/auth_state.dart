@@ -14,6 +14,12 @@ part 'auth_state.freezed.dart';
 /// - errorMessage: 에러 메시지
 @freezed
 sealed class AuthState with _$AuthState {
+  /// 기본 생성자가 아닌 생성자로 AuthState 인스턴스 생성할 때,
+  /// @Default 어노테이션을 사용하여 필드의 기본값을 설정
+  /// 예) AuthState.error(e.message) 생성자로 AuthState 인스턴스 생성할 때,
+  /// errorMessage 필드만 명시적으로 전달하고,
+  /// isLoading, isAuthenticated, user 필드는 @Default 어노테이션으로 자동으로 설정됨
+
   const factory AuthState({
     @Default(false) bool isLoading,
     @Default(false) bool isAuthenticated,

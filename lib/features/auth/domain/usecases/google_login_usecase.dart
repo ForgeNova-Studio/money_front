@@ -50,8 +50,7 @@ class GoogleLoginUseCase {
     }
 
     // 4. ID Token 가져오기
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth = googleUser.authentication;
     final String? idToken = googleAuth.idToken;
 
     if (idToken == null) {

@@ -54,7 +54,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'email': email,
           'password': password,
           'nickname': nickname,
-          // 'gender': gender.toServerString(), // 백엔드 준비될 때까지 주석 처리
+          'gender': gender.toServerString(),
         },
       );
 
@@ -118,7 +118,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         },
       );
 
-      // API 응답이 { "success": true/false } 형태라고 가정
       return response.data['success'] as bool? ?? false;
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);

@@ -1,8 +1,18 @@
+// packages
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// core
 import 'package:moneyflow/core/constants/app_constants.dart';
+
+// widgets
 import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
+
+// viewmodels
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moneyflow/features/auth/presentation/viewmodels/register_view_model.dart';
+
+// entities
 import 'package:moneyflow/features/auth/domain/entities/gender.dart';
 
 /// 회원가입 화면
@@ -20,12 +30,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   final _verificationCodeController = TextEditingController();
 
-  bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
-  bool _isTermsAgreed = false;
-  bool _isVerificationCodeSent = false;
-  bool _isEmailVerified = false;
-  Gender? _selectedGender;
+  @override
+  void initState() {
+    super.initState();
+    // 화면 진입 시 이전 화면의 SnackBar 제거
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -38,74 +52,42 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Future<void> _handleSignUp() async {
-    // 이메일 인증 완료 확인
-    if (!_isEmailVerified) {
+    // ViewModel에서 유효성 검사
+    final errorMessage =
+        ref.read(registerViewModelProvider.notifier).validateForSignup(
+              password: _passwordController.text,
+              confirmPassword: _confirmPasswordController.text,
+            );
+
+    if (errorMessage != null) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(
-            content: Text('이메일 인증을 완료해주세요.'),
+          SnackBar(
+            content: Text(errorMessage),
             backgroundColor: AppColors.warning,
           ),
         );
       return;
     }
 
-    // 성별 선택 확인
-    if (_selectedGender == null) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(
-            content: Text('성별을 선택해주세요.'),
-            backgroundColor: AppColors.warning,
-          ),
-        );
-      return;
-    }
-
-    // 비밀번호 확인 일치 검증
-    if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(
-            content: Text('비밀번호가 일치하지 않습니다.'),
-            backgroundColor: AppColors.warning,
-          ),
-        );
-      return;
-    }
-
-    // 약관 동의 확인
-    if (!_isTermsAgreed) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(
-            content: Text('약관 및 개인정보 이용동의에 체크해주세요.'),
-            backgroundColor: AppColors.warning,
-          ),
-        );
-      return;
-    }
-
+    // AuthViewModel의 register 메서드 호출
     try {
-      // ViewModel의 register 메서드 호출
       await ref.read(authViewModelProvider.notifier).register(
             email: _emailController.text,
             password: _passwordController.text,
             confirmPassword: _confirmPasswordController.text,
             nickname: _displayNameController.text,
-            gender: _selectedGender!,
+            gender: ref.read(registerViewModelProvider).selectedGender!,
           );
-
-      // 회원가입 성공 시 홈 화면으로 이동
-      // (ref.listen에서 처리됨)
     } catch (e) {
-      // 에러는 ViewModel에서 state에 저장되므로 여기서는 추가 처리 불필요
-      // ref.listen에서 처리됨
+      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
+      // 174행에서 ref.listen으로 에러를 감지하여 처리
+      // try-catch는 UnhandledException 방지용
     }
+
+    // 회원가입 성공 시 홈 화면으로 이동
+    // (ref.listen에서 처리됨)
   }
 
   void _handleTermsClick() {
@@ -140,16 +122,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
 
     try {
-      // ViewModel의 sendSignupCode 메서드 호출
+      // RegisterViewModel의 sendVerificationCode 메서드 호출
       await ref
-          .read(authViewModelProvider.notifier)
-          .sendSignupCode(_emailController.text);
+          .read(registerViewModelProvider.notifier)
+          .sendVerificationCode(_emailController.text);
 
       if (mounted) {
-        setState(() {
-          _isVerificationCodeSent = true;
-        });
-
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
@@ -157,8 +135,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           );
       }
     } catch (e) {
-      // 에러는 ViewModel에서 state에 저장되므로 여기서는 추가 처리 불필요
-      // ref.listen에서 처리됨
+      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
+      // 174행에서 ref.listen으로 에러를 감지하여 처리
+      // try-catch는 UnhandledException 방지용
     }
   }
 
@@ -175,19 +154,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
+    // RegisterViewModel의 verifyCode 메서드 호출
     try {
-      // ViewModel의 verifySignupCode 메서드 호출
       final isVerified =
-          await ref.read(authViewModelProvider.notifier).verifySignupCode(
+          await ref.read(registerViewModelProvider.notifier).verifyCode(
                 email: _emailController.text,
                 code: _verificationCodeController.text,
               );
 
       if (mounted && isVerified) {
-        setState(() {
-          _isEmailVerified = true;
-        });
-
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
@@ -195,19 +170,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           );
       }
     } catch (e) {
-      // 에러는 ViewModel에서 state에 저장되므로 여기서는 추가 처리 불필요
-      // ref.listen에서 처리됨
+      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
+      // 174행에서 ref.listen으로 에러를 감지하여 처리
+      // try-catch는 UnhandledException 방지용
     }
-  }
-
-  void _handleLogin() {
-    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     // ViewModel 상태 구독
     final authState = ref.watch(authViewModelProvider);
+    final formState = ref.watch(registerViewModelProvider);
 
     // ViewModel 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
@@ -277,19 +250,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          setState(() {
-                            _selectedGender = Gender.male;
-                          });
+                          ref
+                              .read(registerViewModelProvider.notifier)
+                              .selectGender(Gender.male);
                         },
                         child: Container(
                           height: 56,
                           decoration: BoxDecoration(
-                            color: _selectedGender == Gender.male
-                                ? AppColors.primaryPink.withOpacity(0.1)
+                            color: formState.selectedGender == Gender.male
+                                ? AppColors.primaryPink.withValues(alpha: 0.1)
                                 : AppColors.gray100,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: _selectedGender == Gender.male
+                              color: formState.selectedGender == Gender.male
                                   ? AppColors.primaryPink
                                   : Colors.transparent,
                               width: 1.5,
@@ -301,7 +274,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: _selectedGender == Gender.male
+                              color: formState.selectedGender == Gender.male
                                   ? AppColors.primaryPink
                                   : AppColors.textTertiary,
                             ),
@@ -313,19 +286,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          setState(() {
-                            _selectedGender = Gender.female;
-                          });
+                          ref
+                              .read(registerViewModelProvider.notifier)
+                              .selectGender(Gender.female);
                         },
                         child: Container(
                           height: 56,
                           decoration: BoxDecoration(
-                            color: _selectedGender == Gender.female
-                                ? AppColors.primaryPink.withOpacity(0.1)
+                            color: formState.selectedGender == Gender.female
+                                ? AppColors.primaryPink.withValues(alpha: 0.1)
                                 : AppColors.gray100,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: _selectedGender == Gender.female
+                              color: formState.selectedGender == Gender.female
                                   ? AppColors.primaryPink
                                   : Colors.transparent,
                               width: 1.5,
@@ -337,7 +310,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: _selectedGender == Gender.female
+                              color: formState.selectedGender == Gender.female
                                   ? AppColors.primaryPink
                                   : AppColors.textTertiary,
                             ),
@@ -360,14 +333,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         hintText: '이메일',
                         icon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
-                        enabled: !_isEmailVerified,
+                        enabled: !formState.isEmailVerified,
                       ),
                     ),
                     const SizedBox(width: 8),
                     SizedBox(
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: _isEmailVerified
+                        onPressed: formState.isEmailVerified
                             ? null
                             : () {
                                 _handleSendVerificationCode();
@@ -383,7 +356,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                         ),
                         child: Text(
-                          _isEmailVerified ? '인증완료' : '인증요청',
+                          formState.isEmailVerified ? '인증완료' : '인증요청',
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -394,7 +367,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ],
                 ),
 
-                if (_isVerificationCodeSent && !_isEmailVerified) ...[
+                if (formState.isVerificationCodeSent &&
+                    !formState.isEmailVerified) ...[
                   const SizedBox(height: 12),
                   // 인증번호 입력 필드
                   Row(
@@ -433,6 +407,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 8),
+                  // 인증번호 유효 시간 안내
+                  const Padding(
+                    padding: EdgeInsets.only(left: 4),
+                    child: Text(
+                      '※ 인증번호는 10분간 유효합니다.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
                 ],
 
                 const SizedBox(height: 16),
@@ -442,11 +429,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   controller: _passwordController,
                   hintText: '비밀번호',
                   isPassword: true,
-                  isPasswordVisible: _isPasswordVisible,
+                  isPasswordVisible: formState.isPasswordVisible,
                   onVisibilityToggle: () {
-                    setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
-                    });
+                    ref
+                        .read(registerViewModelProvider.notifier)
+                        .togglePasswordVisibility();
                   },
                 ),
 
@@ -457,11 +444,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   controller: _confirmPasswordController,
                   hintText: '비밀번호 확인',
                   isPassword: true,
-                  isPasswordVisible: _isConfirmPasswordVisible,
+                  isPasswordVisible: formState.isConfirmPasswordVisible,
                   onVisibilityToggle: () {
-                    setState(() {
-                      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                    });
+                    ref
+                        .read(registerViewModelProvider.notifier)
+                        .toggleConfirmPasswordVisibility();
                   },
                 ),
 
@@ -474,11 +461,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       height: 24,
                       width: 24,
                       child: Checkbox(
-                        value: _isTermsAgreed,
+                        value: formState.isTermsAgreed,
                         onChanged: (value) {
-                          setState(() {
-                            _isTermsAgreed = value ?? false;
-                          });
+                          ref
+                              .read(registerViewModelProvider.notifier)
+                              .toggleTermsAgreed();
                         },
                         activeColor: AppColors.primaryPink,
                         shape: RoundedRectangleBorder(
@@ -594,42 +581,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ),
                   ),
                 ),
-
-                const SizedBox(height: 32),
-
-                // 로그인 링크
-                Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        '이미 계정이 있으신가요? ',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: _handleLogin,
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: const Text(
-                          '로그인',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: AppColors.primaryPink,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 40),
               ],
             ),
           ),

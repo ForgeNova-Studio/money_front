@@ -8,6 +8,8 @@ import 'package:moneyflow/core/exceptions/exceptions.dart';
 // providers/states
 import 'package:moneyflow/features/auth/presentation/providers/auth_providers.dart';
 import 'package:moneyflow/features/auth/presentation/states/auth_state.dart';
+
+// entities
 import 'package:moneyflow/features/auth/domain/entities/gender.dart';
 
 part 'auth_view_model.g.dart';
@@ -35,19 +37,14 @@ class AuthViewModel extends _$AuthViewModel {
       final user = await useCase();
 
       if (user != null) {
-        debugPrint('User found: ${user.email}');
         state = AuthState.authenticated(user);
       } else {
-        debugPrint('User not found');
         state = AuthState.unauthenticated();
       }
     } catch (e) {
       // 에러 발생 시 로그아웃 상태로 처리
       state = AuthState.unauthenticated();
     }
-
-    // api 개발 전 임시 처리
-    // state = AuthState.unauthenticated();
   }
 
   /// 로그인
@@ -55,6 +52,7 @@ class AuthViewModel extends _$AuthViewModel {
     required String email,
     required String password,
   }) async {
+    // 로딩 상태로 변경
     state = AuthState.loading();
 
     try {
@@ -63,20 +61,21 @@ class AuthViewModel extends _$AuthViewModel {
 
       state = AuthState.authenticated(result.user);
     } on ValidationException catch (e) {
+      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
       state = AuthState.error(e.message);
-      rethrow;
     } on UnauthorizedException catch (e) {
+      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
       state = AuthState.error(e.message);
-      rethrow;
     } on NetworkException catch (e) {
+      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
       state = AuthState.error(e.message);
-      rethrow;
     } on ServerException catch (e) {
+      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
       state = AuthState.error(e.message);
-      rethrow;
     } catch (e) {
-      state = AuthState.error('로그인 중 오류가 발생했습니다: $e');
-      rethrow;
+      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
+      state = AuthState.error('로그인 중 오류가 발생했습니다');
+      debugPrint('Login failed: $e');
     }
   }
 

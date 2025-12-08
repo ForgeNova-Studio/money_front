@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 // entities
 import 'package:moneyflow/features/auth/domain/entities/user.dart';
+import 'package:moneyflow/features/auth/domain/entities/gender.dart';
 
 part 'user_model.freezed.dart';
 part 'user_model.g.dart';
@@ -20,6 +21,7 @@ sealed class UserModel with _$UserModel {
     required String email,
     required String nickname,
     String? profileImageUrl,
+    @GenderConverter() Gender? gender,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -34,6 +36,7 @@ sealed class UserModel with _$UserModel {
       userId: userId,
       email: email,
       nickname: nickname,
+      gender: gender,
       lastLoginAt: null,
     );
   }
@@ -45,6 +48,32 @@ sealed class UserModel with _$UserModel {
       email: user.email,
       nickname: user.nickname,
       profileImageUrl: null,
+      gender: user.gender,
     );
+  }
+}
+
+/// Gender enum <-> String 변환을 위한 JsonConverter
+class GenderConverter implements JsonConverter<Gender?, String?> {
+  const GenderConverter();
+
+  @override
+  Gender? fromJson(String? json) {
+    if (json == null) return null;
+    switch (json.toUpperCase()) {
+      case 'MALE':
+        return Gender.male;
+      case 'FEMALE':
+        return Gender.female;
+      case 'OTHER':
+        return Gender.other;
+      default:
+        return null;
+    }
+  }
+
+  @override
+  String? toJson(Gender? gender) {
+    return gender?.toServerString();
   }
 }

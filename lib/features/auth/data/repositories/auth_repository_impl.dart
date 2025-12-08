@@ -91,15 +91,17 @@ class AuthRepositoryImpl implements AuthRepository {
       email: email,
       nickname: nickname,
       profileImageUrl: null, // 회원가입 시 프로필 이미지 없음
+      gender: gender,
     );
 
     await localDataSource.saveToken(tokenModel);
     await localDataSource.saveUser(userModel);
 
-    // 3. Entity 변환 및 반환 (email, nickname 전달)
+    // 3. Entity 변환 및 반환 (email, nickname, gender 전달)
     return response.toEntity(
       email: email,
       nickname: nickname,
+      gender: gender,
     );
   }
 

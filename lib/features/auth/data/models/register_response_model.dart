@@ -7,6 +7,7 @@ import 'package:moneyflow/features/auth/data/models/models.dart';
 // entities
 import 'package:moneyflow/features/auth/domain/entities/auth_result.dart';
 import 'package:moneyflow/features/auth/domain/entities/user.dart';
+import 'package:moneyflow/features/auth/domain/entities/gender.dart';
 
 part 'register_response_model.freezed.dart';
 part 'register_response_model.g.dart';
@@ -29,10 +30,11 @@ sealed class RegisterResponseModel with _$RegisterResponseModel {
       _$RegisterResponseModelFromJson(json);
 
   /// Domain AuthResult로 변환
-  /// email, nickname은 회원가입 시 사용한 값을 매개변수로 받음
+  /// email, nickname, gender는 회원가입 시 사용한 값을 매개변수로 받음
   AuthResult toEntity({
     required String email,
     required String nickname,
+    Gender? gender,
   }) {
     // Token Model 생성 후 Entity로 변환
     final tokenModel = AuthTokenModel(
@@ -46,6 +48,7 @@ sealed class RegisterResponseModel with _$RegisterResponseModel {
       userId: userId,
       email: email,
       nickname: nickname,
+      gender: gender,
       lastLoginAt: DateTime.now(),
     );
 

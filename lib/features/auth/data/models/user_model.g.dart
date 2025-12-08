@@ -11,6 +11,7 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
       email: json['email'] as String,
       nickname: json['nickname'] as String,
       profileImageUrl: json['profileImageUrl'] as String?,
+      gender: const GenderConverter().fromJson(json['gender'] as String?),
     );
 
 Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
@@ -19,4 +20,5 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'email': instance.email,
       'nickname': instance.nickname,
       'profileImageUrl': instance.profileImageUrl,
+      'gender': const GenderConverter().toJson(instance.gender),
     };

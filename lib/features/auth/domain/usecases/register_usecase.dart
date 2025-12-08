@@ -55,7 +55,7 @@ class RegisterUseCase {
       email: email,
       password: password,
       nickname: nickname,
-      gender: gender, // 추가된 파라미터 전달
+      gender: gender,
     );
   }
 
@@ -72,9 +72,9 @@ class RegisterUseCase {
       throw ValidationException(emailError);
     }
 
-    // 비밀번호 검증 (대문자 불필요)
+    // 비밀번호 검증 (대문자 필수)
     final passwordError = InputValidator.getPasswordErrorMessage(password,
-        requireUppercase: false);
+        requireUppercase: true);
     if (passwordError.isNotEmpty) {
       throw ValidationException(passwordError);
     }
