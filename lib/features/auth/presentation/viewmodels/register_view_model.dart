@@ -91,6 +91,11 @@ class RegisterViewModel extends _$RegisterViewModel {
       return '성별을 선택해주세요.';
     }
 
+    // 비밀번호 패턴 검증 (백엔드와 동일한 규칙)
+    if (!_isValidPassword(password)) {
+      return '비밀번호는 대문자, 소문자, 숫자, 특수문자(@\$!%*?&)를 각각 최소 1개 이상 포함해야 합니다.';
+    }
+
     if (password != confirmPassword) {
       return '비밀번호가 일치하지 않습니다.';
     }
@@ -100,6 +105,21 @@ class RegisterViewModel extends _$RegisterViewModel {
     }
 
     return null; // 검증 통과
+  }
+
+  /// 비밀번호 유효성 검증
+  /// 대문자, 소문자, 숫자, 특수문자(@$!%*?&) 각각 최소 1개 이상 포함
+  bool _isValidPassword(String password) {
+    // 최소 1개의 대문자
+    final hasUpperCase = password.contains(RegExp(r'[A-Z]'));
+    // 최소 1개의 소문자
+    final hasLowerCase = password.contains(RegExp(r'[a-z]'));
+    // 최소 1개의 숫자
+    final hasDigit = password.contains(RegExp(r'[0-9]'));
+    // 최소 1개의 특수문자 (@$!%*?&)
+    final hasSpecialChar = password.contains(RegExp(r'[@$!%*?&]'));
+
+    return hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar;
   }
 
   /// 상태 초기화
