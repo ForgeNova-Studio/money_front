@@ -31,6 +31,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _verificationCodeController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    // 화면 진입 시 이전 화면의 SnackBar 제거
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _displayNameController.dispose();
     _emailController.dispose();
