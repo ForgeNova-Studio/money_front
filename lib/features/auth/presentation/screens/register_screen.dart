@@ -72,13 +72,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
 
     // AuthViewModel의 register 메서드 호출
-    await ref.read(authViewModelProvider.notifier).register(
-          email: _emailController.text,
-          password: _passwordController.text,
-          confirmPassword: _confirmPasswordController.text,
-          nickname: _displayNameController.text,
-          gender: ref.read(registerViewModelProvider).selectedGender!,
-        );
+    try {
+      await ref.read(authViewModelProvider.notifier).register(
+            email: _emailController.text,
+            password: _passwordController.text,
+            confirmPassword: _confirmPasswordController.text,
+            nickname: _displayNameController.text,
+            gender: ref.read(registerViewModelProvider).selectedGender!,
+          );
+    } catch (e) {
+      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
+      // 174행에서 ref.listen으로 에러를 감지하여 처리
+      // try-catch는 UnhandledException 방지용
+    }
 
     // 회원가입 성공 시 홈 화면으로 이동
     // (ref.listen에서 처리됨)
@@ -149,18 +155,24 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
 
     // RegisterViewModel의 verifyCode 메서드 호출
-    final isVerified =
-        await ref.read(registerViewModelProvider.notifier).verifyCode(
-              email: _emailController.text,
-              code: _verificationCodeController.text,
-            );
+    try {
+      final isVerified =
+          await ref.read(registerViewModelProvider.notifier).verifyCode(
+                email: _emailController.text,
+                code: _verificationCodeController.text,
+              );
 
-    if (mounted && isVerified) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(content: Text('이메일 인증이 완료되었습니다.')),
-        );
+      if (mounted && isVerified) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(content: Text('이메일 인증이 완료되었습니다.')),
+          );
+      }
+    } catch (e) {
+      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
+      // 174행에서 ref.listen으로 에러를 감지하여 처리
+      // try-catch는 UnhandledException 방지용
     }
   }
 
