@@ -5,12 +5,11 @@ class InputValidator {
   // 검증 상수
   static const int passwordMinLength = 8;
   static const int nicknameMinLength = 2;
-  static const int nicknameMaxLength = 20;
+  static const int nicknameMaxLength = 10;
   static const int verificationCodeLength = 6;
 
   // 정규식
-  static final RegExp emailRegex =
-      RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+  static final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
   static final RegExp codeRegex = RegExp(r'^\d{6}$');
   static final RegExp uppercaseRegex = RegExp(r'[A-Z]');
   static final RegExp lowercaseRegex = RegExp(r'[a-z]');
