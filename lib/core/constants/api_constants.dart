@@ -8,6 +8,7 @@ class ApiConstants {
   static const String register = '/api/auth/register';
   static const String login = '/api/auth/login';
   static const String currentUser = '/api/auth/me';
+  static const String refreshToken = '/api/auth/refresh';
   static const String socialLogin = '/api/auth/social-login';
   static const String mockSocialLogin = '/api/auth/social-login/mock';
   static const String sendSignupCode = '/api/auth/send-signup-code';

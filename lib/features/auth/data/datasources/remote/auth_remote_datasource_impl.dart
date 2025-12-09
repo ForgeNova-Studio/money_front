@@ -77,20 +77,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<AuthTokenModel> refreshToken(String refreshToken) async {
-    // TODO: 백엔드에 refreshToken API가 없음. JWT 토큰 갱신 방법 확인 필요
-    throw UnimplementedError('refreshToken API not implemented in backend');
-    // try {
-    //   final response = await dio.post(
-    //     ApiConstants.refreshToken,
-    //     data: {
-    //       'refreshToken': refreshToken,
-    //     },
-    //   );
-    //
-    //   return AuthTokenModel.fromJson(response.data);
-    // } on DioException catch (e) {
-    //   throw ExceptionHandler.handleDioException(e);
-    // }
+    try {
+      final response = await dio.post(
+        ApiConstants.refreshToken,
+        data: {
+          'refreshToken': refreshToken,
+        },
+      );
+
+      // 백엔드는 LoginResponse 형식으로 응답 (accessToken, refreshToken, userId, profile 포함)
+      // AuthTokenModel은 accessToken, refreshToken만 필요
+      return AuthTokenModel.fromJson({
+        'accessToken': response.data['accessToken'],
+        'refreshToken': response.data['refreshToken'],
+        // expiresIn은 백엔드에서 제공하지 않으므로 생략
+      });
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
   }
 
   @override
