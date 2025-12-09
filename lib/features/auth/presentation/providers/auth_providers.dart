@@ -15,7 +15,10 @@ import 'package:moneyflow/features/auth/domain/usecases/google_login_usecase.dar
 import 'package:moneyflow/features/auth/domain/usecases/login_usecase.dart';
 import 'package:moneyflow/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:moneyflow/features/auth/domain/usecases/register_usecase.dart';
+import 'package:moneyflow/features/auth/domain/usecases/reset_password_usecase.dart';
+import 'package:moneyflow/features/auth/domain/usecases/send_password_reset_code_usecase.dart';
 import 'package:moneyflow/features/auth/domain/usecases/send_signup_code_usecase.dart';
+import 'package:moneyflow/features/auth/domain/usecases/verifiy_find_password_code_usecase.dart';
 import 'package:moneyflow/features/auth/domain/usecases/verify_signup_code_usecase.dart';
 
 // providers/states
@@ -103,4 +106,22 @@ SendSignupCodeUseCase sendSignupCodeUseCase(Ref ref) {
 @riverpod
 VerifySignupCodeUseCase verifySignupCodeUseCase(Ref ref) {
   return VerifySignupCodeUseCase(ref.read(authRepositoryProvider));
+}
+
+/// Send Password Reset Code UseCase Provider
+@riverpod
+SendPasswordResetCodeUseCase sendPasswordResetCodeUseCase(Ref ref) {
+  return SendPasswordResetCodeUseCase(ref.read(authRepositoryProvider));
+}
+
+/// Verify Password Code UseCase Provider
+@riverpod
+VerifiyFindPasswordCodeUsecase verifyFindPasswordCodeUseCase(Ref ref) {
+  return VerifiyFindPasswordCodeUsecase(ref.read(authRepositoryProvider));
+}
+
+/// Reset Password UseCase Provider
+@riverpod
+ResetPasswordUseCase resetPasswordUseCase(Ref ref) {
+  return ResetPasswordUseCase(ref.read(authRepositoryProvider));
 }
