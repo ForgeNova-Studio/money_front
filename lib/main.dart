@@ -61,8 +61,7 @@ class MoneyFlowApp extends StatelessWidget {
           theme: buildLightTheme(),
           // darkTheme: buildDarkTheme(), // 다크모드 (선택사항)
           // home: const OnboardingScreen(),
-          // home: const LoginScreen(),
-          home: const HomeScreen()),
+          home: const LoginScreen()),
     );
   }
 }

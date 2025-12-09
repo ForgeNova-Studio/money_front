@@ -1,14 +1,16 @@
 # JWT Token 세션 관리 개선 작업
 
 > 작성일: 2025-12-09
-> 상태: TODO
+> 최종 수정: 2025-12-09
+> 상태: IN PROGRESS
 > 우선순위: HIGH
 
 ## 📋 목차
 1. [현재 상태 요약](#현재-상태-요약)
-2. [발견된 문제점](#발견된-문제점)
-3. [작업 목록](#작업-목록)
-4. [참고 정보](#참고-정보)
+2. [아키텍처 현황](#아키텍처-현황)
+3. [발견된 문제점](#발견된-문제점)
+4. [작업 목록](#작업-목록)
+5. [참고 정보](#참고-정보)
 
 ---
 
@@ -16,50 +18,113 @@
 
 ### ✅ 정상 작동하는 부분
 - 로그인/회원가입 시 Access Token + Refresh Token 발급
-- SharedPreferences에 토큰 저장
+- SharedPreferences에 토큰 저장 (`'auth_token'` 키)
 - 앱 시작 시 자동 로그인 (GET /api/auth/me)
-- API 요청 시 Bearer 토큰 자동 첨부
 - 백엔드의 완전한 Refresh Token 구현 (Rotation 정책 포함)
 
 ### ❌ 미완성/문제 있는 부분
-1. **토큰 저장소 불일치**: 두 개의 독립적인 저장소 사용
+1. **🔴 CRITICAL: 토큰 키 불일치**: 저장 키(`auth_token`)와 읽기 키(`access_token`)가 달라 **인증이 작동하지 않음**
 2. **Refresh Token 로직 미구현**: 프론트엔드에서 구현 안됨
 3. **401 에러 처리 없음**: Access Token 만료 시 자동 갱신 없음
 4. **expiresIn 필드 미사용**: 백엔드가 제공하지 않음
 
 ---
 
+## 아키텍처 현황
+
+### ✅ 클린 아키텍처 적용 Feature (Auth)
+**구조**:
+```
+lib/features/auth/
+├── data/
+│   ├── datasources/remote/  # Dio 사용
+│   ├── datasources/local/   # AuthLocalDataSource ('auth_token' 키)
+│   └── repositories/
+├── domain/
+│   ├── entities/
+│   ├── repositories/
+│   └── usecases/
+└── presentation/
+    ├── providers/           # Riverpod
+    └── viewmodels/
+```
+
+**Dio 인스턴스**: `core_providers.dart`의 `dioProvider` (Riverpod)
+**Interceptor**: `core_providers.dart:38-62`의 `_AuthInterceptor`
+**토큰 읽기**: SharedPreferences에서 `'access_token'` 키로 직접 읽기 ❌
+
+---
+
+### 🚧 미적용 Features (Budget, Expense, Income, Couple, Statistics)
+**구조**:
+```
+lib/features/[feature]/
+├── data/
+│   └── services/          # BaseApiService 상속
+├── domain/
+│   └── entities/
+└── presentation/
+    └── providers/
+```
+
+**Dio 인스턴스**: `BaseApiService` 클래스 내부에서 생성
+**Interceptor**: `base_api_service.dart:36-59`의 `_AuthInterceptor`
+**토큰 읽기**: `StorageService.getAccessToken()` (`'access_token'` 키) ❌
+
+**마이그레이션 전략**:
+- 현재는 BaseApiService 유지
+- Auth feature 완성 후 점진적으로 클린 아키텍처로 마이그레이션
+- Phase 5에서 가이드 제공
+
+---
+
 ## 발견된 문제점
 
-### 🔴 CRITICAL: 토큰 저장소 불일치
+### 🔴 CRITICAL: 토큰 키 불일치 (저장 vs 읽기)
 
-**문제**: 두 개의 독립적인 저장소가 존재하여 토큰 동기화 안됨
+**문제**: 로그인 시 저장하는 키와 API 요청 시 읽는 키가 달라 **인증이 전혀 작동하지 않음**
 
-#### 1. `StorageService` (사용 중: BaseApiService)
-**파일**: `lib/core/services/storage_service.dart`
+#### 토큰 저장 (로그인 시)
+**파일**: `lib/features/auth/data/datasources/local/auth_local_datasource_impl.dart:21`
 ```dart
-static const String _keyAccessToken = 'access_token';
-static const String _keyRefreshToken = 'refresh_token';
+static const String _keyToken = 'auth_token';  // ← 이 키에 저장
 ```
-- `BaseApiService`의 `_AuthInterceptor`가 여기서 토큰 읽음
-- 단순히 문자열만 저장
-
-#### 2. `AuthLocalDataSource` (사용 중: AuthRepository)
-**파일**: `lib/features/auth/data/datasources/local/auth_local_datasource_impl.dart`
-```dart
-static const String _keyToken = 'auth_token';
-static const String _keyUser = 'auth_user';
-```
-- 로그인 시 여기에 `AuthTokenModel` (JSON) 저장
+- `auth_repository_impl.dart:59-60`에서 호출
+- `AuthTokenModel` JSON 형태로 저장
 - `expiresAt` 등 메타데이터 포함
 
+#### 토큰 읽기 (API 요청 시) - 3개 위치
+1. **core_providers.dart:47** (Auth feature용)
+   ```dart
+   final token = prefs.getString('access_token');  // ← 'access_token' 키에서 읽기 ❌
+   ```
+   - `dioProvider`의 `_AuthInterceptor`
+   - Auth feature의 모든 API 요청
+
+2. **base_api_service.dart:44** (다른 features용)
+   ```dart
+   final token = await _storageService.getAccessToken();  // ← 'access_token' 키에서 읽기 ❌
+   ```
+   - Budget, Expense, Income 등 features
+   - `StorageService` 사용
+
+3. **storage_service.dart:14-17** (실제 구현)
+   ```dart
+   static const String _keyAccessToken = 'access_token';
+   Future<String?> getAccessToken() async {
+     return prefs.getString(_keyAccessToken);  // ← 'access_token' 키
+   }
+   ```
+
 **결과**:
-- 로그인 후 `AuthLocalDataSource`에만 저장됨
-- `_AuthInterceptor`는 `StorageService`에서 읽으려 하므로 토큰을 찾지 못할 가능성
+- 로그인 시: `'auth_token'` 키에 토큰 저장 ✓
+- API 요청 시: `'access_token'` 키에서 토큰 읽기 시도 ✗
+- **모든 인증 API 요청이 실패함** (401 Unauthorized)
 
 **영향 범위**:
-- `lib/core/services/base_api_service.dart:44` - 토큰 읽기
-- `lib/features/auth/data/repositories/auth_repository_impl.dart:59-60` - 토큰 저장
+- 모든 인증 필요 API 요청
+- GET /api/auth/me (자동 로그인)
+- Budget, Expense, Income 등 모든 protected endpoints
 
 ---
 
@@ -158,33 +223,69 @@ public class LoginResponse {
 
 ## 작업 목록
 
-### Phase 1: 토큰 저장소 통일 (우선순위: HIGH)
+### Phase 1: Auth Feature 토큰 저장소 통일 (우선순위: CRITICAL)
 
-#### Task 1.1: StorageService 제거 및 AuthLocalDataSource 통합
+#### Task 1.1: core_providers.dart의 dioProvider 수정
 
-**목표**: 모든 토큰 저장/읽기를 `AuthLocalDataSource`로 통일
+**목표**: Auth feature의 Interceptor가 `AuthLocalDataSource`에서 토큰을 읽도록 수정
 
-**수정 파일**:
-1. `lib/core/services/base_api_service.dart`
-   ```dart
-   // 변경 전
-   final StorageService _storageService = StorageService();
-   final token = await _storageService.getAccessToken();
+**수정 파일**: `lib/core/providers/core_providers.dart`
 
-   // 변경 후
-   final AuthLocalDataSource _authLocalDataSource;
-   final token = await _authLocalDataSource.getToken();
-   ```
+**변경 전** (core_providers.dart:38-62):
+```dart
+class _AuthInterceptor extends Interceptor {
+  final Ref ref;
 
-2. `lib/core/providers/core_providers.dart`
-   - `baseApiServiceProvider` 수정하여 `AuthLocalDataSource` 주입
+  _AuthInterceptor(this.ref);
 
-3. `lib/core/services/storage_service.dart`
-   - 파일 전체 삭제 (또는 deprecated 처리)
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    final token = prefs.getString('access_token');  // ❌ 잘못된 키
+    if (token != null) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
+    handler.next(options);
+  }
+  // ...
+}
+```
+
+**변경 후**:
+```dart
+class _AuthInterceptor extends Interceptor {
+  final Ref ref;
+
+  _AuthInterceptor(this.ref);
+
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    // AuthLocalDataSource 사용
+    final authLocalDataSource = ref.read(authLocalDataSourceProvider);
+    final tokenModel = await authLocalDataSource.getToken();
+
+    if (tokenModel != null) {
+      options.headers['Authorization'] = 'Bearer ${tokenModel.accessToken}';
+    }
+    handler.next(options);
+  }
+  // ...
+}
+```
+
+**추가 작업**:
+- `core_providers.dart`에 `authLocalDataSourceProvider` import 추가
+  ```dart
+  import 'package:moneyflow/features/auth/presentation/providers/auth_providers.dart';
+  ```
 
 **확인 사항**:
-- [ ] 로그인 후 API 요청 시 토큰이 정상적으로 첨부되는지
+- [ ] 로그인 후 GET /api/auth/me 호출 시 토큰이 정상적으로 첨부되는지
 - [ ] 앱 재시작 후에도 토큰이 유지되는지
+
+**주의**:
+- BaseApiService는 수정하지 않음 (다른 features에서 사용 중)
+- StorageService도 유지 (향후 마이그레이션 시 제거)
 
 ---
 
@@ -236,9 +337,9 @@ static const String refreshToken = '/api/auth/refresh';
 
 #### Task 3.1: Token Refresh Interceptor 구현
 
-**파일**: `lib/core/services/base_api_service.dart`
+**파일**: `lib/core/providers/core_providers.dart`
 
-**새로운 인터셉터 추가**:
+**기존 _AuthInterceptor 확장**:
 ```dart
 class _TokenRefreshInterceptor extends Interceptor {
   final AuthLocalDataSource _authLocalDataSource;
@@ -354,6 +455,43 @@ return LoginResponse.builder()
 
 ---
 
+### Phase 5: 다른 Features 클린 아키텍처 마이그레이션 (우선순위: FUTURE)
+
+#### 마이그레이션 가이드 (향후 작업)
+
+**대상 Features**: Budget, Expense, Income, Couple, Statistics
+
+**마이그레이션 순서** (Feature별):
+1. `data/datasources/remote/` 생성
+   - `[feature]_remote_datasource.dart` (interface)
+   - `[feature]_remote_datasource_impl.dart` (Dio 주입)
+   - 기존 ApiService의 메서드 이동
+
+2. `data/datasources/local/` 생성 (필요 시)
+   - 로컬 캐싱이 필요한 경우
+
+3. `data/repositories/` 생성
+   - `[feature]_repository_impl.dart`
+   - DataSource 조합
+
+4. `domain/usecases/` 생성
+   - 비즈니스 로직 분리
+
+5. `presentation/providers/` 수정
+   - Riverpod으로 의존성 주입
+   - dioProvider 사용
+
+6. 기존 ApiService 제거
+   - `data/services/[feature]_api_service.dart` 삭제
+
+**완료 후**:
+- `lib/core/services/base_api_service.dart` 삭제
+- `lib/core/services/storage_service.dart` 삭제
+
+**참고**: Auth feature 구조를 템플릿으로 사용
+
+---
+
 ## 참고 정보
 
 ### 백엔드 API 엔드포인트
@@ -459,44 +597,66 @@ return LoginResponse.builder()
 
 ## 예상 작업 시간
 
-- Phase 1 (토큰 저장소 통일): 2-3시간
-- Phase 2 (Refresh Token 구현): 3-4시간
-- Phase 3 (401 자동 처리): 4-5시간
+- Phase 1 (Auth Interceptor 수정): 30분-1시간
+- Phase 2 (Refresh Token 구현): 2-3시간
+- Phase 3 (401 자동 처리): 3-4시간
 - Phase 4 (백엔드 개선): 1-2시간
-- **Total**: 10-14시간
+- Phase 5 (다른 Features 마이그레이션): Feature당 4-6시간 (향후 작업)
+- **Total (Phase 1-4)**: 6.5-10시간
 
 ---
 
 ## 관련 파일 경로
 
 ### 프론트엔드 (Flutter)
+
+#### Phase 1-3 수정 대상 (Auth Feature)
 ```
 lib/
 ├── core/
-│   ├── services/
-│   │   ├── base_api_service.dart          # 수정 필요 (Phase 1, 3)
-│   │   └── storage_service.dart           # 삭제 예정 (Phase 1)
 │   ├── constants/
 │   │   └── api_constants.dart             # 수정 필요 (Phase 2)
 │   └── providers/
-│       └── core_providers.dart            # 수정 필요 (Phase 1)
-├── features/auth/
-│   ├── data/
-│   │   ├── datasources/
-│   │   │   ├── local/
-│   │   │   │   ├── auth_local_datasource.dart
-│   │   │   │   └── auth_local_datasource_impl.dart  # 참조
-│   │   │   └── remote/
-│   │   │       └── auth_remote_datasource_impl.dart # 수정 필요 (Phase 2)
-│   │   ├── models/
-│   │   │   └── auth_token_model.dart      # 참조
-│   │   └── repositories/
-│   │       └── auth_repository_impl.dart  # 참조
-│   └── presentation/
-│       └── viewmodels/
-│           └── auth_view_model.dart       # 참조
-└── docs/
-    └── jwt-token-todo.md                  # 이 문서
+│       └── core_providers.dart            # 🔴 수정 필요 (Phase 1, 3)
+└── features/auth/
+    ├── data/
+    │   ├── datasources/
+    │   │   ├── local/
+    │   │   │   ├── auth_local_datasource.dart
+    │   │   │   └── auth_local_datasource_impl.dart  # 참조 (Phase 1)
+    │   │   └── remote/
+    │   │       └── auth_remote_datasource_impl.dart # 🔴 수정 필요 (Phase 2)
+    │   ├── models/
+    │   │   └── auth_token_model.dart      # 참조
+    │   └── repositories/
+    │       └── auth_repository_impl.dart  # 참조
+    └── presentation/
+        ├── providers/
+        │   └── auth_providers.dart        # 참조 (Phase 1)
+        └── viewmodels/
+            └── auth_view_model.dart       # 참조
+```
+
+#### 현재 유지 (향후 Phase 5에서 제거)
+```
+lib/
+└── core/
+    └── services/
+        ├── base_api_service.dart          # ⚠️ 유지 (다른 features 사용 중)
+        └── storage_service.dart           # ⚠️ 유지 (다른 features 사용 중)
+```
+
+#### Phase 5 마이그레이션 대상
+```
+lib/
+└── features/
+    ├── budget/
+    ├── expense/
+    ├── income/
+    ├── couple/
+    └── statistics/
+        └── data/
+            └── services/               # BaseApiService 상속 중
 ```
 
 ### 백엔드 (Spring Boot)
@@ -532,5 +692,19 @@ money_back/src/main/java/com/moneyflow/
 
 | 날짜 | 작업자 | 작업 내용 | 상태 |
 |------|--------|-----------|------|
-| 2025-12-09 | hanwool | JWT 토큰 분석 및 문서 작성 | 완료 |
-| - | - | Phase 1 작업 시작 예정 | 대기 |
+| 2025-12-09 | hanwool | JWT 토큰 분석 및 문서 작성 | ✅ 완료 |
+| 2025-12-09 | hanwool | 실제 코드 분석 - 토큰 키 불일치 발견 | ✅ 완료 |
+| 2025-12-09 | hanwool | 문서 업데이트 - 아키텍처 현황 및 점진적 마이그레이션 전략 반영 | ✅ 완료 |
+| 2025-12-09 | hanwool | Phase 1 작업 시작 예정 | ⏳ 대기 |
+
+## 주요 발견 사항
+
+### Critical Bug 발견
+- **문제**: 토큰 저장 키(`'auth_token'`)와 읽기 키(`'access_token'`)가 불일치
+- **영향**: 모든 인증 API 요청이 실패 (토큰이 첨부되지 않음)
+- **해결**: Phase 1에서 core_providers.dart의 Interceptor 수정
+
+### 아키텍처 혼재 상황
+- **Auth**: 클린 아키텍처 완전 적용 (dioProvider 사용)
+- **나머지**: BaseApiService 사용 (향후 마이그레이션 예정)
+- **전략**: Auth 완성 후 점진적으로 다른 features 마이그레이션
