@@ -74,13 +74,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     try {
       // FindPasswordViewModel에서 email 가져오기
       final email = ref.read(findPasswordViewModelProvider).email;
-      final verificationCode =
-          ref.read(findPasswordViewModelProvider).verificationCode;
 
       // AuthViewModel의 resetPassword 메서드 호출
       await ref.read(authViewModelProvider.notifier).resetPassword(
             email: email,
-            code: verificationCode,
             newPassword: _passwordController.text,
           );
 

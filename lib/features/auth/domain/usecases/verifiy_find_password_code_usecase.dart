@@ -6,14 +6,14 @@ import 'package:moneyflow/core/exceptions/auth_exceptions.dart';
 import 'package:moneyflow/core/validators/input_validator.dart';
 
 /// 비밀번호 찾기 인증번호 검증 UseCase
-/// 
+///
 /// 이메일로 전송된 인증번호를 검증
 /// - 인증번호 형식 검증 (6자리 숫자)
 /// - Repository를 통한 백엔드 검증
-class VerifyPasswordCodeUseCase {
+class VerifiyFindPasswordCodeUsecase {
   final AuthRepository _repository;
 
-  VerifyPasswordCodeUseCase(this._repository);
+  VerifiyFindPasswordCodeUsecase(this._repository);
 
   /// 인증번호 검증 실행
   ///

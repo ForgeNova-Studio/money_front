@@ -141,9 +141,8 @@ class AuthViewModel extends _$AuthViewModel {
     state = AuthState.loading();
 
     try {
-      // final useCase = ref.read(verifySignupCodeUseCaseProvider);
-      // final isVerified = await useCase(email: email, code: code);
-      final isVerified = true;
+      final useCase = ref.read(verifyFindPasswordCodeUseCaseProvider);
+      final isVerified = await useCase(email: email, code: code);
 
       // 검증 성공 시 로딩 해제
       state = AuthState.initial();
@@ -309,16 +308,16 @@ class AuthViewModel extends _$AuthViewModel {
   /// 비밀번호 재설정
   Future<void> resetPassword({
     required String email,
-    required String code,
     required String newPassword,
   }) async {
     state = AuthState.loading();
+
+    debugPrint("======== email: ${state.user?.email} =======");
 
     try {
       final useCase = ref.read(resetPasswordUseCaseProvider);
       await useCase(
         email: email,
-        code: code,
         newPassword: newPassword,
       );
 

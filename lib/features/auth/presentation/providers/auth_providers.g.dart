@@ -583,6 +583,58 @@ final class SendPasswordResetCodeUseCaseProvider extends $FunctionalProvider<
 String _$sendPasswordResetCodeUseCaseHash() =>
     r'151c7651784434cf7b34f0bae881274fa3ddd5fc';
 
+/// Verify Password Code UseCase Provider
+
+@ProviderFor(verifyFindPasswordCodeUseCase)
+const verifyFindPasswordCodeUseCaseProvider =
+    VerifyFindPasswordCodeUseCaseProvider._();
+
+/// Verify Password Code UseCase Provider
+
+final class VerifyFindPasswordCodeUseCaseProvider extends $FunctionalProvider<
+        VerifiyFindPasswordCodeUsecase,
+        VerifiyFindPasswordCodeUsecase,
+        VerifiyFindPasswordCodeUsecase>
+    with $Provider<VerifiyFindPasswordCodeUsecase> {
+  /// Verify Password Code UseCase Provider
+  const VerifyFindPasswordCodeUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'verifyFindPasswordCodeUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$verifyFindPasswordCodeUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<VerifiyFindPasswordCodeUsecase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  VerifiyFindPasswordCodeUsecase create(Ref ref) {
+    return verifyFindPasswordCodeUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(VerifiyFindPasswordCodeUsecase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<VerifiyFindPasswordCodeUsecase>(value),
+    );
+  }
+}
+
+String _$verifyFindPasswordCodeUseCaseHash() =>
+    r'065d066bb33944a267facf6a198ac04e21611014';
+
 /// Reset Password UseCase Provider
 
 @ProviderFor(resetPasswordUseCase)

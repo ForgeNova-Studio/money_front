@@ -40,18 +40,16 @@ class FindPasswordViewModel extends _$FindPasswordViewModel {
 
   // 이메일 인증번호 확인
   Future<bool> verifyCode({
-    required String email,
     required String code,
   }) async {
     // AuthViewModel의 verifyFindPasswordCode 호출
     final isVerified = await ref
         .read(authViewModelProvider.notifier)
-        .verifyFindPasswordCode(email: email, code: code);
+        .verifyFindPasswordCode(email: state.email, code: code);
 
     if (isVerified) {
       // 인증 성공 시 상태 업데이트
-      state = state.copyWith(
-          email: email, verificationCode: code, isEmailVerified: true);
+      state = state.copyWith(verificationCode: code, isEmailVerified: true);
     }
 
     return isVerified;

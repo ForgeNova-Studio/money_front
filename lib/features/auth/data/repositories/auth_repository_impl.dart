@@ -252,12 +252,10 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> resetPassword({
     required String email,
-    required String code,
     required String newPassword,
   }) async {
     await remoteDataSource.resetPassword(
       email: email,
-      code: code,
       newPassword: newPassword,
     );
   }

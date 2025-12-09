@@ -44,6 +44,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
     super.dispose();
   }
 
+  // 인증번호 전송
   Future<void> _handleSendVerificationCode() async {
     if (_emailController.text.isEmpty) {
       ScaffoldMessenger.of(context)
@@ -76,6 +77,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
     }
   }
 
+  // 인증번호 검증
   void _handleVerifyCode() async {
     if (_verificationCodeController.text.isEmpty) {
       ScaffoldMessenger.of(context)
@@ -92,9 +94,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
     try {
       final isVerified = await ref
           .read(findPasswordViewModelProvider.notifier)
-          .verifyCode(
-              email: _emailController.text,
-              code: _verificationCodeController.text);
+          .verifyCode(code: _verificationCodeController.text);
 
       if (mounted && isVerified) {
         ScaffoldMessenger.of(context)
@@ -233,25 +233,30 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                           hintText: '인증번호',
                           icon: Icons.lock_outline,
                           keyboardType: TextInputType.number,
+                          enabled: !formState.isEmailVerified,
                         ),
                       ),
                       const SizedBox(width: 8),
                       SizedBox(
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: _handleVerifyCode,
+                          onPressed: formState.isEmailVerified ||
+                                  authState.isLoading
+                              ? null
+                              : _handleVerifyCode,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.textPrimary,
                             foregroundColor: AppColors.textWhite,
+                            disabledBackgroundColor: AppColors.gray300,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                           ),
-                          child: const Text(
-                            '인증확인',
-                            style: TextStyle(
+                          child: Text(
+                            formState.isEmailVerified ? '인증완료' : '인증확인',
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
