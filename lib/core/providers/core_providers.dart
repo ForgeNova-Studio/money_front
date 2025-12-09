@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moneyflow/core/constants/api_constants.dart';
+import 'package:moneyflow/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -43,10 +44,12 @@ class _AuthInterceptor extends Interceptor {
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    final prefs = ref.read(sharedPreferencesProvider);
-    final token = prefs.getString('access_token');
-    if (token != null) {
-      options.headers['Authorization'] = 'Bearer $token';
+    // AuthLocalDataSource에서 토큰 가져오기
+    final authLocalDataSource = ref.read(authLocalDataSourceProvider);
+    final tokenModel = await authLocalDataSource.getToken();
+
+    if (tokenModel != null) {
+      options.headers['Authorization'] = 'Bearer ${tokenModel.accessToken}';
     }
     handler.next(options);
   }
