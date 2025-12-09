@@ -1,5 +1,6 @@
 // packages
 import 'package:flutter/material.dart';
+import 'package:moneyflow/presentation/screens/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -53,15 +54,15 @@ class MoneyFlowApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => BudgetProvider()),
       ],
       child: MaterialApp(
-        title: 'MoneyFlowTemp',
-        debugShowCheckedModeBanner: false,
+          title: 'MoneyFlowTemp',
+          debugShowCheckedModeBanner: false,
 
-        // 테마 설정
-        theme: buildLightTheme(),
-        // darkTheme: buildDarkTheme(), // 다크모드 (선택사항)
-        // home: const OnboardingScreen(),
-        home: const LoginScreen(),
-      ),
+          // 테마 설정
+          theme: buildLightTheme(),
+          // darkTheme: buildDarkTheme(), // 다크모드 (선택사항)
+          // home: const OnboardingScreen(),
+          // home: const LoginScreen(),
+          home: const HomeScreen()),
     );
   }
 }
