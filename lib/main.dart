@@ -9,14 +9,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:moneyflow/core/providers/core_providers.dart';
 import 'package:moneyflow/core/theme/theme.dart';
 
-// provider
-import 'package:provider/provider.dart';
-import 'features/budget/presentation/providers/budget_provider.dart';
-import 'features/expense/presentation/providers/expense_provider.dart';
-import 'features/income/presentation/providers/income_provider.dart';
-import 'features/statistics/presentation/providers/statistics_provider.dart';
-import 'features/couple/presentation/providers/couple_provider.dart';
-
 // screens
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
 import 'package:moneyflow/features/auth/presentation/screens/splash_screen.dart';
@@ -53,25 +45,16 @@ class MoneyFlowApp extends ConsumerWidget {
     // AuthViewModel의 상태 구독
     final authState = ref.watch(authViewModelProvider);
 
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ExpenseProvider()),
-        ChangeNotifierProvider(create: (_) => IncomeProvider()),
-        ChangeNotifierProvider(create: (_) => StatisticsProvider()),
-        ChangeNotifierProvider(create: (_) => CoupleProvider()),
-        ChangeNotifierProvider(create: (_) => BudgetProvider()),
-      ],
-      child: MaterialApp(
-        title: 'MoneyFlowTemp',
-        debugShowCheckedModeBanner: false,
+    return MaterialApp(
+      title: 'MoneyFlowTemp',
+      debugShowCheckedModeBanner: false,
 
-        // 테마 설정
-        theme: buildLightTheme(),
-        // darkTheme: buildDarkTheme(), // 다크모드 (선택사항)
+      // 테마 설정
+      theme: buildLightTheme(),
+      // darkTheme: buildDarkTheme(), // 다크모드 (선택사항)
 
-        // 인증 상태에 따라 화면 분기
-        home: _buildHomeScreen(authState),
-      ),
+      // 인증 상태에 따라 화면 분기
+      home: _buildHomeScreen(authState),
     );
   }
 
