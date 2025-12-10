@@ -5,13 +5,13 @@ import 'package:moneyflow/core/constants/app_constants.dart';
 class SocialLoginButton extends StatelessWidget {
   final String label;
   final Widget icon;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   const SocialLoginButton({
     super.key,
     required this.label,
     required this.icon,
-    required this.onPressed,
+    this.onPressed,
   });
 
   @override

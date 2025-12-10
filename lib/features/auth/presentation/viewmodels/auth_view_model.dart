@@ -25,24 +25,48 @@ part 'auth_view_model.g.dart';
 class AuthViewModel extends _$AuthViewModel {
   @override
   AuthState build() {
-    // 초기화 시 현재 사용자 정보 확인
-    _checkCurrentUser();
-    return AuthState.initial();
+    // 초기화 시 로딩 상태로 시작
+    // Future.microtask를 사용하여 비동기 초기화 실행
+    Future.microtask(() => _checkCurrentUser());
+    return AuthState.loading();
   }
 
-  /// 현재 사용자 정보 확인
+  /// 현재 사용자 정보 확인 (로컬 토큰 기반)
+  ///
+  /// 앱 시작 시 로컬 저장소의 토큰과 사용자 정보를 확인하여
+  /// 빠른 초기화를 제공합니다.
+  /// - 토큰이 있으면: authenticated 상태로 변경
+  /// - 토큰이 없으면: unauthenticated 상태로 변경
   Future<void> _checkCurrentUser() async {
     try {
-      final useCase = ref.read(getCurrentUserUseCaseProvider);
-      final user = await useCase();
+      debugPrint('[AuthViewModel] 토큰 확인 시작');
+      // 로컬 저장소에서 토큰 확인 (원격 API 호출 없이)
+      final localDataSource = ref.read(authLocalDataSourceProvider);
+      final hasToken = await localDataSource.hasToken();
 
-      if (user != null) {
-        state = AuthState.authenticated(user);
+      debugPrint('[AuthViewModel] 토큰 존재 여부: $hasToken');
+
+      if (hasToken) {
+        // 토큰이 있으면 로컬 사용자 정보 불러오기
+        final user = await localDataSource.getUser();
+        debugPrint('[AuthViewModel] 사용자 정보: ${user?.email}');
+
+        if (user != null) {
+          state = AuthState.authenticated(user.toEntity());
+          debugPrint('[AuthViewModel] 인증된 상태로 변경됨');
+        } else {
+          // 토큰은 있지만 사용자 정보가 없는 경우 (비정상 상태)
+          state = AuthState.unauthenticated();
+          debugPrint('[AuthViewModel] 사용자 정보 없음 - 미인증 상태로 변경');
+        }
       } else {
+        // 토큰이 없으면 로그아웃 상태
         state = AuthState.unauthenticated();
+        debugPrint('[AuthViewModel] 토큰 없음 - 미인증 상태로 변경');
       }
     } catch (e) {
       // 에러 발생 시 로그아웃 상태로 처리
+      debugPrint('[AuthViewModel] 에러 발생: $e');
       state = AuthState.unauthenticated();
     }
   }
@@ -52,9 +76,6 @@ class AuthViewModel extends _$AuthViewModel {
     required String email,
     required String password,
   }) async {
-    // 로딩 상태로 변경
-    state = AuthState.loading();
-
     try {
       final useCase = ref.read(loginUseCaseProvider);
       final result = await useCase(email: email, password: password);
@@ -213,8 +234,6 @@ class AuthViewModel extends _$AuthViewModel {
 
   /// Google 로그인
   Future<void> loginWithGoogle() async {
-    state = AuthState.loading();
-
     try {
       final useCase = ref.read(googleLoginUseCaseProvider);
       final result = await useCase();
@@ -237,8 +256,6 @@ class AuthViewModel extends _$AuthViewModel {
 
   /// Apple 로그인
   Future<void> loginWithApple() async {
-    state = AuthState.loading();
-
     try {
       final useCase = ref.read(appleLoginUseCaseProvider);
       final result = await useCase();

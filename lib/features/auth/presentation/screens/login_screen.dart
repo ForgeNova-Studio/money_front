@@ -16,7 +16,7 @@ import 'package:moneyflow/features/auth/presentation/widgets/social_login_button
 // presentation
 import 'package:moneyflow/presentation/screens/home/home_screen.dart';
 
-// states
+// viewmodels
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 
 /// 로그인 화면
@@ -31,6 +31,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -38,21 +39,57 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     _passwordController.dispose();
     super.dispose();
   }
-  
+
   // ViewModel의 login 메서드 호출
-  void _handleLogin() {
-    ref.read(authViewModelProvider.notifier).login(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
+  Future<void> _handleLogin() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await ref.read(authViewModelProvider.notifier).login(
+            email: _emailController.text,
+            password: _passwordController.text,
+          );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
-  void _handleAppleLogin() {
-    ref.read(authViewModelProvider.notifier).loginWithApple();
+  Future<void> _handleAppleLogin() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await ref.read(authViewModelProvider.notifier).loginWithApple();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
-  void _handleGoogleLogin() {
-    ref.read(authViewModelProvider.notifier).loginWithGoogle();
+  Future<void> _handleGoogleLogin() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await ref.read(authViewModelProvider.notifier).loginWithGoogle();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   // 비밀번호 찾기 화면으로 이동
@@ -71,21 +108,17 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ViewModel 상태 구독
-    final authState = ref.watch(authViewModelProvider);
-
     // ViewModel 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
-      // 로그인 성공 시
+      // 로그인 성공 시 홈 화면으로 이동
       if (next.isAuthenticated && next.user != null) {
-        // 홈 화면으로 이동 (뒤로가기 불가)
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       }
 
       // 에러 발생 시
-      if (next.errorMessage != null && !next.isLoading) {
+      if (next.errorMessage != null) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
@@ -178,7 +211,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: authState.isLoading ? null : _handleLogin,
+                    onPressed: _isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryPink,
                       foregroundColor: AppColors.textWhite,
@@ -188,7 +221,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: authState.isLoading
+                    child: _isLoading
                         ? const SizedBox(
                             width: 24,
                             height: 24,
@@ -224,7 +257,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                     color: AppColors.textPrimary,
                     size: 24,
                   ),
-                  onPressed: _handleAppleLogin,
+                  onPressed: _isLoading ? null : () => _handleAppleLogin(),
                 ),
 
                 const SizedBox(height: 16),
@@ -244,7 +277,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                       );
                     },
                   ),
-                  onPressed: _handleGoogleLogin,
+                  onPressed: _isLoading ? null : () => _handleGoogleLogin(),
                 ),
 
                 const SizedBox(height: 32),
