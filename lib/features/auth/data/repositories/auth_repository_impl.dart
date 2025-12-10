@@ -107,9 +107,14 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> logout() async {
+    // Refresh Token 읽기
+    final tokenModel = await localDataSource.getToken();
+
+    // Remote Logout 호출
+    await remoteDataSource.logout(tokenModel?.refreshToken ?? '');
+
     // Local Storage 데이터 삭제
     await localDataSource.clearAll();
-    // 필요 시 Remote Logout 호출 (현재 API 없음)
   }
 
   @override

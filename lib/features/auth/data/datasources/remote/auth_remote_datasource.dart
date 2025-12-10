@@ -143,4 +143,12 @@ abstract class AuthRemoteDataSource {
     required String email,
     required String newPassword,
   });
+
+  /// 로그아웃
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [TokenExpiredException] 토큰 만료
+  /// - [ServerException] 서버 오류
+  Future<void> logout(String refreshToken);
 }

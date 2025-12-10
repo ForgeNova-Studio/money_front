@@ -22,6 +22,7 @@ class ApiConstants {
   // 개발용
   static const String devGetUserByEmail = '/api/auth/dev/users';
   static const String devDeleteUser = '/api/auth/dev/users';
+  static const String logout = '/api/auth/logout';
 
   // ========== Expense endpoints ==========
   static const String expenses = '/api/expenses';

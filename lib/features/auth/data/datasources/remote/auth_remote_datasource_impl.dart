@@ -198,4 +198,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw ExceptionHandler.handleDioException(e);
     }
   }
+
+  @override
+  Future<void> logout(String refreshToken) async {
+    try {
+      await dio.post(ApiConstants.logout, data: {'refreshToken': refreshToken});
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
+  }
 }
