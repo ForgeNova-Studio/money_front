@@ -13,6 +13,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authViewModelProvider);
 
   // authState 변화를 GoRouter에 알리기 위한 Notifier
+  // authState.isAuthenticated 값만 추출하여 Notifier 초기화
   final authStateNotifier = ValueNotifier<bool>(authState.isAuthenticated);
 
   // authState 변화 감지하여 Notifier 업데이트
@@ -53,6 +54,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (isAuthenticated && hasUser) {
         // 인증된 사용자가 로그인/회원가입 등의 화면에 접근하려는 경우
         if (isGoingToAuth) {
+          debugPrint('인증된 사용자가 로그인/회원가입 등의 화면에 접근하려는 경우, 홈으로 이동');
           return RouteNames.home;
         }
         // 이미 protected 화면에 있으면 그대로 유지
