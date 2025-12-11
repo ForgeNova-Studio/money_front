@@ -43,10 +43,8 @@ class AppRouter {
   /// 모든 라우트 정의
   static List<RouteBase> get routes => [
         // ==================== Root Route ====================
-        GoRoute(
-          path: '/',
-          redirect: (context, state) => RouteNames.login,
-        ),
+        // Note: Root 경로(/)의 redirect는 router_provider.dart에서 처리됨
+        // 인증 상태에 따라 /home 또는 /login으로 자동 리다이렉션
 
         // ==================== Public Routes (인증 불필요) ====================
         GoRoute(
