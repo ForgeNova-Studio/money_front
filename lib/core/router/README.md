@@ -132,6 +132,160 @@ class AppRouter {
 }
 ```
 
+#### 2-1. path vs name - 라우트 경로와 별칭 🔍
+
+GoRoute에는 `path`와 `name` 두 가지 속성이 있습니다. 둘의 차이를 이해하는 것이 중요합니다!
+
+##### path - 실제 URL 경로 (필수)
+
+```dart
+GoRoute(
+  path: '/login',  // ← 실제 URL 경로
+  name: 'login',   // ← 라우트 별칭 (선택)
+  builder: (context, state) => const LoginScreen(),
+)
+```
+
+**역할:**
+- ✅ **필수 속성**
+- ✅ 실제 브라우저 주소창에 표시되는 URL
+- ✅ Deep Link의 경로
+- ✅ 라우팅 매칭에 사용되는 실제 경로
+
+**예시:**
+```
+앱: myapp://login
+웹: https://myapp.com/login
+```
+
+##### name - 라우트 별칭 (선택)
+
+**역할:**
+- ⚪ **선택 속성**
+- ⚪ 코드에서 라우트를 참조하기 위한 별칭
+- ⚪ path가 변경되어도 코드 수정을 최소화
+- ⚪ 복잡한 파라미터 전달 시 유용
+
+##### 사용 방법 비교
+
+**방법 1: path로 직접 네비게이션 (✅ 우리 프로젝트 방식)**
+
+```dart
+// route_names.dart에서 경로 관리
+static const String login = '/login';
+static String expenseDetail(String id) => '/expenses/$id';
+
+// 네비게이션
+context.push(RouteNames.login);                // '/login'
+context.push(RouteNames.expenseDetail('123'));  // '/expenses/123'
+```
+
+**장점:**
+- ✅ 간단하고 직관적
+- ✅ URL 구조가 명확하게 보임
+- ✅ RouteNames 클래스로 타입 안전성 확보
+
+**단점:**
+- ❌ 경로가 복잡할 때 문자열 조합 필요
+- ❌ 파라미터가 많으면 가독성 떨어짐
+
+**방법 2: name으로 네비게이션**
+
+```dart
+// app_router.dart
+GoRoute(
+  path: '/expenses/:id/edit',
+  name: 'editExpense',  // ← name 정의
+  builder: (context, state) { ... },
+)
+
+// 네비게이션
+context.goNamed(
+  'editExpense',
+  pathParameters: {'id': '123'},  // 파라미터를 명시적으로 전달
+);
+```
+
+**장점:**
+- ✅ 파라미터를 명시적으로 전달 가능
+- ✅ path 변경 시 name으로 호출하는 코드는 수정 불필요
+- ✅ queryParameters도 깔끔하게 전달 가능
+
+```dart
+context.goNamed(
+  'expenseDetail',
+  pathParameters: {'id': '123'},
+  queryParameters: {'tab': 'comments', 'sort': 'newest'},
+);
+// 결과: /expenses/123?tab=comments&sort=newest
+```
+
+**단점:**
+- ❌ name과 path를 둘 다 관리해야 함
+- ❌ 코드가 조금 더 길어짐
+
+##### 우리 프로젝트의 선택
+
+**현재: name을 정의했지만 path로 네비게이션**
+
+```dart
+// app_router.dart - name 정의
+GoRoute(
+  path: RouteNames.login,  // '/login'
+  name: 'login',           // ← 정의했지만...
+  builder: (context, state) => const LoginScreen(),
+),
+
+// login_screen.dart - path 사용
+context.push(RouteNames.login);  // ← name 사용 안 함!
+```
+
+**이유:**
+1. ✅ **RouteNames 클래스로 이미 타입 안전성 확보**
+2. ✅ **간결하고 직관적한 코드**
+3. ✅ **URL 구조가 코드에서 명확히 보임**
+
+**name은 유지하는 이유:**
+- 🔮 향후 복잡한 파라미터 전달이 필요할 수 있음
+- 🔮 웹 배포 시 유용할 수 있음
+- 🔮 테스트 코드에서 활용 가능
+
+##### path vs name 비교표
+
+| 항목 | path | name |
+|------|------|------|
+| **필수 여부** | ✅ 필수 | ⚪ 선택 |
+| **역할** | 실제 URL 경로 | 라우트 별칭 |
+| **사용처** | URL 매칭, Deep Link | 코드에서 라우트 참조 |
+| **우리 프로젝트** | ✅ 사용 중 | ⚪ 정의만 함 |
+| **네비게이션** | `context.push(path)` | `context.goNamed(name)` |
+
+##### 핵심 정리
+
+```dart
+// path: 실제 URL (필수)
+// name: 별칭 (선택, 복잡한 파라미터 전달 시 유용)
+
+GoRoute(
+  path: '/login',      // ← 필수! URL 경로
+  name: 'login',       // ← 선택! 별칭
+  builder: ...
+)
+
+// ✅ 현재 방식 (추천)
+context.push(RouteNames.login);
+
+// 🔮 name 사용 방식 (필요 시)
+context.goNamed('login');
+
+// 🔮 복잡한 파라미터 전달 시 name이 유용
+context.goNamed(
+  'expenseDetail',
+  pathParameters: {'id': '123'},
+  queryParameters: {'tab': 'comments', 'sort': 'newest'},
+);
+```
+
 ---
 
 ### 3. router_provider.dart - GoRouter 인스턴스 + Redirect
