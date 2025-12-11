@@ -1,6 +1,5 @@
 // packages
 import 'package:flutter/material.dart';
-import 'package:moneyflow/presentation/screens/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -8,14 +7,7 @@ import 'package:intl/date_symbol_data_local.dart';
 // core
 import 'package:moneyflow/core/providers/core_providers.dart';
 import 'package:moneyflow/core/theme/theme.dart';
-
-// screens
-import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
-import 'package:moneyflow/features/auth/presentation/screens/splash_screen.dart';
-
-// viewmodels & states
-import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
-import 'package:moneyflow/features/auth/presentation/states/auth_state.dart';
+import 'package:moneyflow/core/router/router_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,10 +34,10 @@ class MoneyFlowApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // AuthViewModel의 상태 구독
-    final authState = ref.watch(authViewModelProvider);
+    // GoRouter 인스턴스 가져오기
+    final router = ref.watch(routerProvider);
 
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'MoneyFlowTemp',
       debugShowCheckedModeBanner: false,
 
@@ -53,24 +45,8 @@ class MoneyFlowApp extends ConsumerWidget {
       theme: buildLightTheme(),
       // darkTheme: buildDarkTheme(), // 다크모드 (선택사항)
 
-      // 인증 상태에 따라 화면 분기
-      home: _buildHomeScreen(authState),
+      // GoRouter 설정
+      routerConfig: router,
     );
-  }
-
-  /// 인증 상태에 따라 적절한 화면 반환
-  Widget _buildHomeScreen(AuthState authState) {
-    // 로딩 중: 스플래시 화면
-    if (authState.isLoading) {
-      return const SplashScreen();
-    }
-
-    // 인증된 상태: 홈 화면
-    if (authState.isAuthenticated && authState.user != null) {
-      return const HomeScreen();
-    }
-
-    // 미인증 상태: 로그인 화면
-    return const LoginScreen();
   }
 }
