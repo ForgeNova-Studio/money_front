@@ -1,20 +1,15 @@
 // packages
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 // cores
 import 'package:moneyflow/core/constants/app_constants.dart';
-
-// screens
-import 'package:moneyflow/features/auth/presentation/screens/register_screen.dart';
-import 'package:moneyflow/features/auth/presentation/screens/find_password_screen.dart';
+import 'package:moneyflow/core/router/route_names.dart';
 
 // widgets
 import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:moneyflow/features/auth/presentation/widgets/social_login_button.dart';
-
-// presentation
-import 'package:moneyflow/presentation/screens/home/home_screen.dart';
 
 // viewmodels
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
@@ -94,16 +89,12 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
   // 비밀번호 찾기 화면으로 이동
   void _handleForgotPassword() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const FindPasswordScreen()),
-    );
+    context.push(RouteNames.findPassword);
   }
 
   // 회원가입 화면으로 이동
   void _handleSignUp() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const RegisterScreen()),
-    );
+    context.push(RouteNames.register);
   }
 
   @override
@@ -111,11 +102,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     // ViewModel 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
       // 로그인 성공 시 홈 화면으로 이동
-      if (next.isAuthenticated && next.user != null) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      }
+      // ✨ GoRouter의 redirect가 자동으로 /home으로 이동시킴 (코드 불필요!)
 
       // 에러 발생 시
       if (next.errorMessage != null) {
