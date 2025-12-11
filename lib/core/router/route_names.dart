@@ -3,9 +3,6 @@ class RouteNames {
   RouteNames._();
 
   // ==================== Public Routes ====================
-  /// 스플래시 화면
-  static const String splash = '/splash';
-
   /// 로그인 화면
   static const String login = '/login';
 
@@ -81,7 +78,7 @@ class RouteNames {
 
   /// Public 화면 여부 확인 (인증 불필요)
   static bool isPublicRoute(String location) {
-    return isAuthRoute(location) || location == splash;
+    return isAuthRoute(location);
   }
 
   /// Protected 화면 여부 확인 (인증 필요)

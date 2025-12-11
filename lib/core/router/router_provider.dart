@@ -42,20 +42,17 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Public 화면 확인
       final isGoingToAuth = RouteNames.isAuthRoute(currentLocation);
-      final isOnSplash = currentLocation == RouteNames.splash;
 
-      // Priority 1: 로딩 중 → 스플래시 화면
+      // Priority 1: 로딩 중일 때는 redirect 하지 않음
+      // (초기화가 완료되면 자동으로 redirect 실행됨)
       if (isLoading) {
-        // 이미 스플래시 화면이면 그대로 유지
-        if (isOnSplash) return null;
-        // 다른 화면이면 스플래시로 리다이렉션
-        return RouteNames.splash;
+        return null;
       }
 
       // Priority 2: 인증된 사용자 → public 화면 접근 시 홈으로 리다이렉션
       if (isAuthenticated && hasUser) {
         // 인증된 사용자가 로그인/회원가입 등의 화면에 접근하려는 경우
-        if (isGoingToAuth || isOnSplash) {
+        if (isGoingToAuth) {
           return RouteNames.home;
         }
         // 이미 protected 화면에 있으면 그대로 유지

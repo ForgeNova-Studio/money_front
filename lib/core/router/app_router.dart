@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:moneyflow/core/router/route_names.dart';
 
 // Auth Screens
-import 'package:moneyflow/features/auth/presentation/screens/splash_screen.dart';
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
 import 'package:moneyflow/features/auth/presentation/screens/register_screen.dart';
 import 'package:moneyflow/features/auth/presentation/screens/find_password_screen.dart';
@@ -46,15 +45,10 @@ class AppRouter {
         // ==================== Root Route ====================
         GoRoute(
           path: '/',
-          redirect: (context, state) => RouteNames.splash,
+          redirect: (context, state) => RouteNames.login,
         ),
 
         // ==================== Public Routes (인증 불필요) ====================
-        GoRoute(
-          path: RouteNames.splash,
-          name: 'splash',
-          builder: (context, state) => const SplashScreen(),
-        ),
         GoRoute(
           path: RouteNames.login,
           name: 'login',
