@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:moneyflow/presentation/widgets/home/custom_month_picker.dart';
+import 'package:moneyflow/features/home/presentation/widgets/custom_month_picker.dart';
 
 class CustomCalendar extends StatefulWidget {
   final void Function(DateTime, DateTime)? onDateSelected;

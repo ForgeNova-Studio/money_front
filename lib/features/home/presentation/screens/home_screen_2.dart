@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/presentation/widgets/home/custom_calendar.dart';
+import 'package:moneyflow/features/home/presentation/widgets/custom_calendar.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+class HomeScreen2 extends ConsumerStatefulWidget {
+  const HomeScreen2({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen2> createState() => _HomeScreen2State();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreen2State extends ConsumerState<HomeScreen2> {
   int _selectedIndex = 0;
   DateTime _selectedDate = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _lastFormatChangeTime = DateTime.now();
+  bool _isBudgetInfoVisible = true;
 
   Future<void> _handleLogout() async {
     final shouldLogout = await showDialog<bool>(
@@ -64,6 +64,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
+  void _onListScroll(double delta, double offset) {
+    if (delta > 0) {
+      // Scrolling down (content moving up)
+      if (_isBudgetInfoVisible) {
+        setState(() {
+          _isBudgetInfoVisible = false;
+        });
+      }
+      if (_calendarFormat == CalendarFormat.month) {
+        setState(() {
+          _calendarFormat = CalendarFormat.week;
+        });
+      }
+    } else if (delta < 0 && offset <= 0) {
+      // Scrolling up at top (content moving down)
+      if (!_isBudgetInfoVisible) {
+        setState(() {
+          _isBudgetInfoVisible = true;
+        });
+      }
+      if (_calendarFormat == CalendarFormat.week) {
+        setState(() {
+          _calendarFormat = CalendarFormat.month;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,8 +118,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       body: Column(
         children: [
-          // 1. Budget Info Area
-          _buildBudgetInfo(),
+          // 1. Budget Info Area (Collapsible)
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            height: _isBudgetInfoVisible ? 180 : 0, // Approximate height
+            curve: Curves.easeInOut,
+            child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              child: _buildBudgetInfo(),
+            ),
+          ),
 
           // 2. Custom Calendar
           Padding(
@@ -107,6 +143,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onDateSelected: (selected, focused) {
                 setState(() {
                   _selectedDate = selected;
+                  // Auto-collapse budget on date selection to focus on list
+                  _isBudgetInfoVisible = false;
+                  // Optionally switch to week view
+                  // _calendarFormat = CalendarFormat.week;
                 });
               },
             ),
@@ -119,28 +159,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: NotificationListener<ScrollNotification>(
               onNotification: (notification) {
                 if (notification is ScrollUpdateNotification) {
-                  // 스크롤을 아래로 내리면 (내용물을 위로 올리면) -> 주간 달력으로 축소
-                  if (notification.scrollDelta! > 10 &&
-                      _calendarFormat == CalendarFormat.month &&
-                      DateTime.now().difference(_lastFormatChangeTime) >
-                          const Duration(milliseconds: 300)) {
-                    setState(() {
-                      _calendarFormat = CalendarFormat.week;
-                      _lastFormatChangeTime = DateTime.now();
-                    });
-                  }
-                  // 스크롤을 위로 올리면 (내용물을 아래로 내리면) -> 월간 달력으로 확장
-                  // 단, 리스트가 최상단에 도달했을 때만
-                  else if (notification.scrollDelta! < -10 &&
-                      notification.metrics.pixels <= 10 &&
-                      _calendarFormat == CalendarFormat.week &&
-                      DateTime.now().difference(_lastFormatChangeTime) >
-                          const Duration(milliseconds: 300)) {
-                    setState(() {
-                      _calendarFormat = CalendarFormat.month;
-                      _lastFormatChangeTime = DateTime.now();
-                    });
-                  }
+                  _onListScroll(
+                      notification.scrollDelta!, notification.metrics.pixels);
                 }
                 return false;
               },
@@ -187,7 +207,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final progress = usedAmount / totalBudget;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+      // height: 160, // Removed fixed height to prevent overflow
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -202,6 +223,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
