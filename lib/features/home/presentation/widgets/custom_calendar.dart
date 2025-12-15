@@ -57,6 +57,12 @@ class _CustomCalendarState extends State<CustomCalendar> {
       formatAnimationDuration: const Duration(milliseconds: 300),
       formatAnimationCurve: Curves.easeInOut,
 
+      // 사용 가능한 달력 포맷 제한 (2주 보기 제외)
+      availableCalendarFormats: const {
+        CalendarFormat.month: '월',
+        CalendarFormat.week: '주',
+      },
+
       calendarFormat: _calendarFormat,
       onFormatChanged: (format) {
         if (widget.onFormatChanged != null) {
