@@ -9,51 +9,6 @@ import 'package:moneyflow/features/auth/presentation/providers/auth_providers.da
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  // TODO: Phase 2 테스트용 - 나중에 삭제
-  Future<void> _testRefreshToken(BuildContext context, WidgetRef ref) async {
-    try {
-      print('🔄 [테스트] Refresh Token 시작...');
-
-      // 1. 현재 저장된 토큰 가져오기
-      final authRepo = ref.read(authRepositoryProvider);
-      final currentToken = await authRepo.getStoredToken();
-
-      if (currentToken == null) {
-        throw Exception('저장된 토큰이 없습니다');
-      }
-
-      print('📝 [테스트] 현재 Access Token: ${currentToken.accessToken.substring(0, 30)}...');
-      print('📝 [테스트] 현재 Refresh Token: ${currentToken.refreshToken.substring(0, 30)}...');
-
-      // 2. Refresh Token API 호출
-      final newToken = await authRepo.refreshToken(currentToken.refreshToken);
-
-      print('✅ [테스트] 새 Access Token: ${newToken.accessToken.substring(0, 30)}...');
-      print('✅ [테스트] 새 Refresh Token: ${newToken.refreshToken.substring(0, 30)}...');
-      print('🎉 [테스트] Refresh Token 성공!');
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ Refresh Token 성공! 콘솔 로그를 확인하세요'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      print('❌ [테스트] Refresh Token 실패: $e');
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('❌ Refresh Token 실패: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
   Future<void> _handleLogout(BuildContext context, WidgetRef ref) async {
     // 로그아웃 확인 다이얼로그
     final shouldLogout = await showDialog<bool>(
@@ -116,13 +71,6 @@ class HomeScreen extends ConsumerWidget {
       body: const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: CustomCalendar()),
-      // TODO: Phase 2 테스트용 버튼 - 나중에 삭제
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _testRefreshToken(context, ref),
-        icon: const Icon(Icons.refresh),
-        label: const Text('Refresh Token 테스트'),
-        backgroundColor: Colors.orange,
-      ),
     );
   }
 }
