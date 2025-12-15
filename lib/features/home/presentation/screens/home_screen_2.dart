@@ -5,7 +5,6 @@ import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
 import 'package:moneyflow/features/home/presentation/widgets/custom_calendar_2.dart';
-import 'package:moneyflow/features/home/presentation/widgets/custom_month_picker.dart'; // Import if needed for TableCalendar internals or types
 import 'package:table_calendar/table_calendar.dart'; // Import for CalendarFormat
 
 class HomeScreen2 extends ConsumerStatefulWidget {
