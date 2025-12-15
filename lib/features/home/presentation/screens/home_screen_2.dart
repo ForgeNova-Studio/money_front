@@ -134,45 +134,65 @@ class _HomeScreenState extends ConsumerState<HomeScreen2> {
               ),
 
               // Layer 2: Draggable Sheet (Transactions)
-              if (_calendarFormat == CalendarFormat.week)
-                NotificationListener<DraggableScrollableNotification>(
-                  onNotification: (notification) {
-                    if (notification.extent <= 0.05) {
-                      setState(() {
-                        _calendarFormat = CalendarFormat.month;
-                      });
-                    }
-                    return true;
+              Positioned.fill(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (child, animation) {
+                    final offsetAnimation = Tween<Offset>(
+                      begin: const Offset(0, 1),
+                      end: Offset.zero,
+                    ).animate(CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeInOut,
+                    ));
+                    return SlideTransition(
+                      position: offsetAnimation,
+                      child: child,
+                    );
                   },
-                  child: DraggableScrollableSheet(
-                    initialChildSize: initialSheetSize,
-                    minChildSize: 0.0,
-                    maxChildSize: initialSheetSize,
-                    snap: true,
-                    builder: (context, scrollController) {
-                      return Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(20)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 10,
-                              spreadRadius: 2,
-                              offset: Offset(0, -2),
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.only(top: 16),
-                        child: SingleChildScrollView(
-                          controller: scrollController,
-                          child: _buildTransactionList(isModal: true),
-                        ),
-                      );
-                    },
-                  ),
+                  child: _calendarFormat == CalendarFormat.week
+                      ? NotificationListener<DraggableScrollableNotification>(
+                          key: const ValueKey('modal'),
+                          onNotification: (notification) {
+                            if (notification.extent <= 0.05) {
+                              setState(() {
+                                _calendarFormat = CalendarFormat.month;
+                              });
+                            }
+                            return true;
+                          },
+                          child: DraggableScrollableSheet(
+                            initialChildSize: initialSheetSize,
+                            minChildSize: 0.0,
+                            maxChildSize: initialSheetSize,
+                            snap: true,
+                            builder: (context, scrollController) {
+                              return Container(
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 10,
+                                      spreadRadius: 2,
+                                      offset: Offset(0, -2),
+                                    ),
+                                  ],
+                                ),
+                                padding: const EdgeInsets.only(top: 16),
+                                child: SingleChildScrollView(
+                                  controller: scrollController,
+                                  child: _buildTransactionList(isModal: true),
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      : const SizedBox.shrink(key: ValueKey('empty')),
                 ),
+              ),
             ],
           );
         },
