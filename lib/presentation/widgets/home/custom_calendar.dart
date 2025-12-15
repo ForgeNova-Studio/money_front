@@ -53,6 +53,10 @@ class _CustomCalendarState extends State<CustomCalendar> {
       // 달력 언어 설정
       locale: 'ko_KR',
 
+      // 애니메이션 설정
+      formatAnimationDuration: const Duration(milliseconds: 300),
+      formatAnimationCurve: Curves.easeInOut,
+
       calendarFormat: _calendarFormat,
       onFormatChanged: (format) {
         if (widget.onFormatChanged != null) {
