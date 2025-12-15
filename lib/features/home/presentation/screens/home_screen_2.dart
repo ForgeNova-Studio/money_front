@@ -5,6 +5,8 @@ import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
 import 'package:moneyflow/features/home/presentation/widgets/custom_calendar_2.dart';
+import 'package:go_router/go_router.dart';
+import 'package:moneyflow/core/router/route_names.dart';
 import 'package:table_calendar/table_calendar.dart'; // Import for CalendarFormat
 
 class HomeScreen2 extends ConsumerStatefulWidget {
@@ -196,6 +198,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen2> {
           );
         },
       ),
+      floatingActionButton: _calendarFormat == CalendarFormat.month
+          ? FloatingActionButton(
+              onPressed: () {
+                _showAddTransactionModal(context);
+              },
+              backgroundColor: AppColors.primary,
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -558,4 +569,96 @@ class _HomeScreenState extends ConsumerState<HomeScreen2> {
       ],
     );
   }
+}
+
+void _showAddTransactionModal(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    builder: (context) => Container(
+      padding: const EdgeInsets.all(24),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            '내역 추가',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.pushNamed(RouteNames.addIncome);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.backgroundLight,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Column(
+                      children: [
+                        Icon(Icons.arrow_downward,
+                            color: AppColors.success, size: 32),
+                        SizedBox(height: 8),
+                        Text(
+                          '입금',
+                          style: TextStyle(
+                            color: AppColors.success,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.pushNamed(RouteNames.addExpense);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.backgroundLight,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Column(
+                      children: [
+                        Icon(Icons.arrow_upward,
+                            color: AppColors.error, size: 32),
+                        SizedBox(height: 8),
+                        Text(
+                          '지출',
+                          style: TextStyle(
+                            color: AppColors.error,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
+    ),
+  );
 }

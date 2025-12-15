@@ -78,8 +78,8 @@ class AppRouter {
         GoRoute(
           path: RouteNames.home,
           name: 'home',
-          builder: (context, state) => const HomeScreen(),
-          // builder: (context, state) => const HomeScreen2(),
+          // builder: (context, state) => const HomeScreen(),
+          builder: (context, state) => const HomeScreen2(),
         ),
 
         // ==================== Expense Routes ====================
