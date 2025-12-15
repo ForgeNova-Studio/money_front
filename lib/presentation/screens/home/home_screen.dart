@@ -259,7 +259,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsetsGeometry.fromLTRB(16, 12, 16, 0),
+          padding: const EdgeInsetsGeometry.fromLTRB(20, 12, 20, 0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -302,32 +302,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   isExpense ? AppColors.textPrimary : AppColors.success;
               final amountStr = NumberFormat('#,###').format(amount);
 
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: AppColors.gray50,
-                  child: Icon(
-                    isExpense ? Icons.coffee : Icons.attach_money,
-                    color:
-                        isExpense ? AppColors.textSecondary : AppColors.success,
-                    size: 20,
-                  ),
-                ),
-                title: Text(
-                  tx['title'] as String,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                subtitle: Text(
-                  '${tx['time']} · ${tx['category']}',
-                  style: const TextStyle(
-                      color: AppColors.textTertiary, fontSize: 12),
-                ),
-                trailing: Text(
-                  '$amountStr원',
-                  style: TextStyle(
-                    color: color,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+              return InkWell(
+                onTap: () {
+                  // TODO: Show transaction details modal
+                },
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                  child: Row(
+                    children: [
+                      // Leading Icon
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor: AppColors.gray50,
+                        child: Icon(
+                          isExpense ? Icons.coffee : Icons.attach_money,
+                          color: isExpense
+                              ? AppColors.textSecondary
+                              : AppColors.success,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // Title & Subtitle
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              tx['title'] as String,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${tx['time']} · ${tx['category']}',
+                              style: const TextStyle(
+                                  color: AppColors.textTertiary, fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Trailing Amount
+                      Text(
+                        '$amountStr원',
+                        style: TextStyle(
+                          color: color,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );
