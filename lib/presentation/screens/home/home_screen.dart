@@ -5,6 +5,7 @@ import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:moneyflow/presentation/widgets/home/custom_calendar.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -16,6 +17,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _selectedIndex = 0;
   DateTime _selectedDate = DateTime.now();
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  DateTime _lastFormatChangeTime = DateTime.now();
 
   Future<void> _handleLogout() async {
     final shouldLogout = await showDialog<bool>(
@@ -73,6 +76,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
         backgroundColor: AppColors.backgroundLight,
         elevation: 0,
         actions: [
@@ -82,8 +87,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             tooltip: '로그아웃',
           ),
         ],
-        centerTitle: true,
-        automaticallyImplyLeading: false,
       ),
       body: Column(
         children: [
@@ -95,6 +98,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             padding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: CustomCalendar(
+              format: _calendarFormat,
+              onFormatChanged: (format) {
+                setState(() {
+                  _calendarFormat = format;
+                });
+              },
               onDateSelected: (selected, focused) {
                 setState(() {
                   _selectedDate = selected;
@@ -107,7 +116,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
           // 3. Transaction List Area
           Expanded(
-            child: _buildTransactionList(),
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (notification is ScrollUpdateNotification) {
+                  // 스크롤을 아래로 내리면 (내용물을 위로 올리면) -> 주간 달력으로 축소
+                  if (notification.scrollDelta! > 10 &&
+                      _calendarFormat == CalendarFormat.month &&
+                      DateTime.now().difference(_lastFormatChangeTime) >
+                          const Duration(milliseconds: 300)) {
+                    setState(() {
+                      _calendarFormat = CalendarFormat.week;
+                      _lastFormatChangeTime = DateTime.now();
+                    });
+                  }
+                  // 스크롤을 위로 올리면 (내용물을 아래로 내리면) -> 월간 달력으로 확장
+                  // 단, 리스트가 최상단에 도달했을 때만
+                  else if (notification.scrollDelta! < -10 &&
+                      notification.metrics.pixels <= 10 &&
+                      _calendarFormat == CalendarFormat.week &&
+                      DateTime.now().difference(_lastFormatChangeTime) >
+                          const Duration(milliseconds: 300)) {
+                    setState(() {
+                      _calendarFormat = CalendarFormat.month;
+                      _lastFormatChangeTime = DateTime.now();
+                    });
+                  }
+                }
+                return false;
+              },
+              child: _buildTransactionList(),
+            ),
           ),
         ],
       ),
@@ -246,6 +284,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     final transactions = [
+      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '17:30', 'category': '카페'},
+      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '16:30', 'category': '카페'},
+      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '15:30', 'category': '카페'},
+      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '14:30', 'category': '카페'},
+      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '13:30', 'category': '카페'},
       {'title': '스타벅스 강남점', 'amount': -4500, 'time': '12:30', 'category': '카페'},
       {
         'title': 'GS25 편의점',

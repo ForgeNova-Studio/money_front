@@ -5,17 +5,20 @@ import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:moneyflow/presentation/widgets/home/custom_calendar.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
+import 'package:table_calendar/table_calendar.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+class HomeScreen2 extends ConsumerStatefulWidget {
+  const HomeScreen2({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen2> createState() => _HomeScreen2State();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreen2State extends ConsumerState<HomeScreen2> {
   int _selectedIndex = 0;
   DateTime _selectedDate = DateTime.now();
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  bool _isBudgetInfoVisible = true;
 
   Future<void> _handleLogout() async {
     final shouldLogout = await showDialog<bool>(
@@ -61,6 +64,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
+  void _onListScroll(double delta, double offset) {
+    if (delta > 0) {
+      // Scrolling down (content moving up)
+      if (_isBudgetInfoVisible) {
+        setState(() {
+          _isBudgetInfoVisible = false;
+        });
+      }
+      if (_calendarFormat == CalendarFormat.month) {
+        setState(() {
+          _calendarFormat = CalendarFormat.week;
+        });
+      }
+    } else if (delta < 0 && offset <= 0) {
+      // Scrolling up at top (content moving down)
+      if (!_isBudgetInfoVisible) {
+        setState(() {
+          _isBudgetInfoVisible = true;
+        });
+      }
+      if (_calendarFormat == CalendarFormat.week) {
+        setState(() {
+          _calendarFormat = CalendarFormat.month;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,6 +104,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
         backgroundColor: AppColors.backgroundLight,
         elevation: 0,
         actions: [
@@ -82,22 +115,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             tooltip: '로그아웃',
           ),
         ],
-        centerTitle: true,
-        automaticallyImplyLeading: false,
       ),
       body: Column(
         children: [
-          // 1. Budget Info Area
-          _buildBudgetInfo(),
+          // 1. Budget Info Area (Collapsible)
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            height: _isBudgetInfoVisible ? 180 : 0, // Approximate height
+            curve: Curves.easeInOut,
+            child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              child: _buildBudgetInfo(),
+            ),
+          ),
 
           // 2. Custom Calendar
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: CustomCalendar(
+              format: _calendarFormat,
+              onFormatChanged: (format) {
+                setState(() {
+                  _calendarFormat = format;
+                });
+              },
               onDateSelected: (selected, focused) {
                 setState(() {
                   _selectedDate = selected;
+                  // Auto-collapse budget on date selection to focus on list
+                  _isBudgetInfoVisible = false;
+                  // Optionally switch to week view
+                  // _calendarFormat = CalendarFormat.week;
                 });
               },
             ),
@@ -107,7 +156,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
           // 3. Transaction List Area
           Expanded(
-            child: _buildTransactionList(),
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (notification is ScrollUpdateNotification) {
+                  _onListScroll(
+                      notification.scrollDelta!, notification.metrics.pixels);
+                }
+                return false;
+              },
+              child: _buildTransactionList(),
+            ),
           ),
         ],
       ),
@@ -149,7 +207,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final progress = usedAmount / totalBudget;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+      // height: 160, // Removed fixed height to prevent overflow
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -164,6 +223,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -246,6 +306,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     final transactions = [
+      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '17:30', 'category': '카페'},
+      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '16:30', 'category': '카페'},
+      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '15:30', 'category': '카페'},
+      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '14:30', 'category': '카페'},
+      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '13:30', 'category': '카페'},
       {'title': '스타벅스 강남점', 'amount': -4500, 'time': '12:30', 'category': '카페'},
       {
         'title': 'GS25 편의점',

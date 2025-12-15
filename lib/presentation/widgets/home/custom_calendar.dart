@@ -5,8 +5,15 @@ import 'package:moneyflow/presentation/widgets/home/custom_month_picker.dart';
 
 class CustomCalendar extends StatefulWidget {
   final void Function(DateTime, DateTime)? onDateSelected;
+  final CalendarFormat? format;
+  final void Function(CalendarFormat)? onFormatChanged;
 
-  const CustomCalendar({super.key, this.onDateSelected});
+  const CustomCalendar({
+    super.key,
+    this.onDateSelected,
+    this.format,
+    this.onFormatChanged,
+  });
 
   @override
   State<CustomCalendar> createState() => _CustomCalendarState();
@@ -15,6 +22,23 @@ class CustomCalendar extends StatefulWidget {
 class _CustomCalendarState extends State<CustomCalendar> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  late CalendarFormat _calendarFormat;
+
+  @override
+  void initState() {
+    super.initState();
+    _calendarFormat = widget.format ?? CalendarFormat.month;
+  }
+
+  @override
+  void didUpdateWidget(CustomCalendar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.format != null && widget.format != oldWidget.format) {
+      setState(() {
+        _calendarFormat = widget.format!;
+      });
+    }
+  }
 
   // 이벤트 목록
   Map<DateTime, List<String>> events = {
@@ -28,6 +52,17 @@ class _CustomCalendarState extends State<CustomCalendar> {
     return TableCalendar(
       // 달력 언어 설정
       locale: 'ko_KR',
+
+      calendarFormat: _calendarFormat,
+      onFormatChanged: (format) {
+        if (widget.onFormatChanged != null) {
+          widget.onFormatChanged!(format);
+        } else {
+          setState(() {
+            _calendarFormat = format;
+          });
+        }
+      },
 
       // 현재 포커스된 날짜 (화면에 표시되는 오늘 날짜가 아님)
       // 어떤 달이 화면에 보일지 결정하는 용도
