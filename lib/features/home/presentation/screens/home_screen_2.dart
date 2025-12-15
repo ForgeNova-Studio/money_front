@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/features/home/presentation/widgets/custom_calendar.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:moneyflow/features/home/presentation/widgets/custom_calendar_2.dart';
+import 'package:moneyflow/features/home/presentation/widgets/custom_month_picker.dart'; // Import if needed for TableCalendar internals or types
+import 'package:table_calendar/table_calendar.dart'; // Import for CalendarFormat
 
 class HomeScreen2 extends ConsumerStatefulWidget {
   const HomeScreen2({super.key});
 
   @override
-  ConsumerState<HomeScreen2> createState() => _HomeScreen2State();
+  ConsumerState<HomeScreen2> createState() => _HomeScreenState();
 }
 
-class _HomeScreen2State extends ConsumerState<HomeScreen2> {
+class _HomeScreenState extends ConsumerState<HomeScreen2> {
   int _selectedIndex = 0;
   DateTime _selectedDate = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  bool _isBudgetInfoVisible = true;
 
   Future<void> _handleLogout() async {
     final shouldLogout = await showDialog<bool>(
@@ -64,34 +64,6 @@ class _HomeScreen2State extends ConsumerState<HomeScreen2> {
     });
   }
 
-  void _onListScroll(double delta, double offset) {
-    if (delta > 0) {
-      // Scrolling down (content moving up)
-      if (_isBudgetInfoVisible) {
-        setState(() {
-          _isBudgetInfoVisible = false;
-        });
-      }
-      if (_calendarFormat == CalendarFormat.month) {
-        setState(() {
-          _calendarFormat = CalendarFormat.week;
-        });
-      }
-    } else if (delta < 0 && offset <= 0) {
-      // Scrolling up at top (content moving down)
-      if (!_isBudgetInfoVisible) {
-        setState(() {
-          _isBudgetInfoVisible = true;
-        });
-      }
-      if (_calendarFormat == CalendarFormat.week) {
-        setState(() {
-          _calendarFormat = CalendarFormat.month;
-        });
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,8 +76,6 @@ class _HomeScreen2State extends ConsumerState<HomeScreen2> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
         backgroundColor: AppColors.backgroundLight,
         elevation: 0,
         actions: [
@@ -115,58 +85,69 @@ class _HomeScreen2State extends ConsumerState<HomeScreen2> {
             tooltip: '로그아웃',
           ),
         ],
+        centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // 1. Budget Info Area (Collapsible)
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            height: _isBudgetInfoVisible ? 180 : 0, // Approximate height
-            curve: Curves.easeInOut,
-            child: SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
-              child: _buildBudgetInfo(),
-            ),
+          // Layer 1: Main Content (Budget + Calendar)
+          Column(
+            children: [
+              // 1. Budget Info Area
+              _buildBudgetInfo(),
+
+              // 2. Custom Calendar
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: CustomCalendar(
+                  format: _calendarFormat,
+                  onFormatChanged: (format) {
+                    setState(() {
+                      _calendarFormat = format;
+                    });
+                  },
+                  onDateSelected: (selected, focused) {
+                    setState(() {
+                      _selectedDate = selected;
+                      _calendarFormat = CalendarFormat.week;
+                    });
+                    // Modal shows automatically via Stack + State
+                  },
+                ),
+              ),
+            ],
           ),
 
-          // 2. Custom Calendar
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: CustomCalendar(
-              format: _calendarFormat,
-              onFormatChanged: (format) {
-                setState(() {
-                  _calendarFormat = format;
-                });
-              },
-              onDateSelected: (selected, focused) {
-                setState(() {
-                  _selectedDate = selected;
-                  // Auto-collapse budget on date selection to focus on list
-                  _isBudgetInfoVisible = false;
-                  // Optionally switch to week view
-                  // _calendarFormat = CalendarFormat.week;
-                });
+          // Layer 2: Draggable Sheet (Transactions)
+          if (_calendarFormat == CalendarFormat.week)
+            DraggableScrollableSheet(
+              initialChildSize: 0.6,
+              minChildSize: 0.3,
+              maxChildSize: 0.9,
+              builder: (context, scrollController) {
+                return Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(20)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                        offset: Offset(0, -2),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.only(top: 16),
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: _buildTransactionList(isModal: true),
+                  ),
+                );
               },
             ),
-          ),
-
-          const Divider(height: 1, color: AppColors.border),
-
-          // 3. Transaction List Area
-          Expanded(
-            child: NotificationListener<ScrollNotification>(
-              onNotification: (notification) {
-                if (notification is ScrollUpdateNotification) {
-                  _onListScroll(
-                      notification.scrollDelta!, notification.metrics.pixels);
-                }
-                return false;
-              },
-              child: _buildTransactionList(),
-            ),
-          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -207,8 +188,7 @@ class _HomeScreen2State extends ConsumerState<HomeScreen2> {
     final progress = usedAmount / totalBudget;
 
     return Container(
-      // height: 160, // Removed fixed height to prevent overflow
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -223,7 +203,6 @@ class _HomeScreen2State extends ConsumerState<HomeScreen2> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -281,7 +260,7 @@ class _HomeScreen2State extends ConsumerState<HomeScreen2> {
     );
   }
 
-  Widget _buildTransactionList() {
+  Widget _buildTransactionList({bool isModal = false}) {
     // Dummy transactions based on date (for demo, just scramble a bit or static)
     // We will show "No transactions" if date is odd, else show some.
     // Randomize a bit based on date day to make it feel alive.
@@ -306,11 +285,6 @@ class _HomeScreen2State extends ConsumerState<HomeScreen2> {
     }
 
     final transactions = [
-      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '17:30', 'category': '카페'},
-      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '16:30', 'category': '카페'},
-      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '15:30', 'category': '카페'},
-      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '14:30', 'category': '카페'},
-      {'title': '스타벅스 강남점', 'amount': -4500, 'time': '13:30', 'category': '카페'},
       {'title': '스타벅스 강남점', 'amount': -4500, 'time': '12:30', 'category': '카페'},
       {
         'title': 'GS25 편의점',
@@ -323,106 +297,164 @@ class _HomeScreen2State extends ConsumerState<HomeScreen2> {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsetsGeometry.fromLTRB(20, 12, 20, 0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '${_selectedDate.month}월 ${_selectedDate.day}일',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.gray100,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '전체 -${NumberFormat('#,###').format(16500)}원', // Dummy sum
+        if (!isModal) ...[
+          Padding(
+            padding: const EdgeInsetsGeometry.fromLTRB(20, 12, 20, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${_selectedDate.month}월 ${_selectedDate.day}일',
                   style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
                   ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.gray100,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '전체 -${NumberFormat('#,###').format(16500)}원', // Dummy sum
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ] else ...[
+          // Modal Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+            child: Column(
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${_selectedDate.month}월 ${_selectedDate.day}일',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      '-${NumberFormat('#,###').format(16500)}원',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+        // Since SingleChildScrollView is already in the DraggableScrollableSheet builder,
+        // we should just return the list items here?
+        // Actually, ListView.builder inside SingleChildScrollView is bad.
+        // We should just use ListView.builder with shrinkWrap true and physics NeverScrollable
+        // OR let the caller handle scrolling.
+        // For DraggableScrollableSheet, the child should usually be the scrollable.
+        // In the builder above: `_buildTransactionList(isModal: true)`.
+        // Let's adjust this method to return a list of widgets or handle scrolling properly.
+        // But for minimal diff, let's keep ListView inside Expanded but change how it's called.
+        // Wait, DraggableScrollableSheet gives a controller. We passed it to SingleChildScrollView.
+        // So inside here we should not use Expanded/ListView if we want that outer scroll to work?
+        // Actually, best practice for DraggableScrollableSheet is to use the controller on a ListView.
+        // So let's refactor _buildTransactionList slightly to accept a controller?
+        // Or changing the caller side.
+        // To avoid big refactor of _buildTransactionList signature now, let's look at it.
+        // It returns a Column with Expanded(ListView).
+        // This won't work well inside SingleChildScrollView.
+        // Detailed fix below.
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: transactions.length,
+          padding: EdgeInsets.zero,
+          itemBuilder: (context, index) {
+            final tx = transactions[index];
+            final amount = tx['amount'] as int;
+            final isExpense = amount < 0;
+            final color = isExpense ? AppColors.textPrimary : AppColors.success;
+            final amountStr = NumberFormat('#,###').format(amount);
+
+            return InkWell(
+              onTap: () {
+                // TODO: Show transaction details modal
+              },
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                child: Row(
+                  children: [
+                    // Leading Icon
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundColor: AppColors.gray50,
+                      child: Icon(
+                        isExpense ? Icons.coffee : Icons.attach_money,
+                        color: isExpense
+                            ? AppColors.textSecondary
+                            : AppColors.success,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Title & Subtitle
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            tx['title'] as String,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${tx['time']} · ${tx['category']}',
+                            style: const TextStyle(
+                                color: AppColors.textTertiary, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Trailing Amount
+                    Text(
+                      '$amountStr원',
+                      style: TextStyle(
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: transactions.length,
-            padding: EdgeInsets.zero,
-            itemBuilder: (context, index) {
-              final tx = transactions[index];
-              final amount = tx['amount'] as int;
-              final isExpense = amount < 0;
-              final color =
-                  isExpense ? AppColors.textPrimary : AppColors.success;
-              final amountStr = NumberFormat('#,###').format(amount);
-
-              return InkWell(
-                onTap: () {
-                  // TODO: Show transaction details modal
-                },
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-                  child: Row(
-                    children: [
-                      // Leading Icon
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundColor: AppColors.gray50,
-                        child: Icon(
-                          isExpense ? Icons.coffee : Icons.attach_money,
-                          color: isExpense
-                              ? AppColors.textSecondary
-                              : AppColors.success,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      // Title & Subtitle
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              tx['title'] as String,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              '${tx['time']} · ${tx['category']}',
-                              style: const TextStyle(
-                                  color: AppColors.textTertiary, fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Trailing Amount
-                      Text(
-                        '$amountStr원',
-                        style: TextStyle(
-                          color: color,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+            );
+          },
         ),
       ],
     );
