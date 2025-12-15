@@ -132,9 +132,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     });
                   }
                   // 스크롤을 위로 올리면 (내용물을 아래로 내리면) -> 월간 달력으로 확장
-                  // 단, 리스트가 최상단에 도달했을 때만
-                  else if (notification.scrollDelta! < -10 &&
-                      notification.metrics.pixels <= 10 &&
+                  // 리스트를 당겨서(Overscroll) -15px 이상 내려갔을 때만 확장 (Pull to Expand)
+                  else if (notification.metrics.pixels < -15 &&
                       _calendarFormat == CalendarFormat.week &&
                       DateTime.now().difference(_lastFormatChangeTime) >
                           const Duration(milliseconds: 300)) {
@@ -378,21 +377,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         Expanded(
           child: !hasData
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.receipt_long_outlined,
-                          size: 48, color: AppColors.gray300),
-                      const SizedBox(height: 16),
-                      Text(
-                        '${_selectedDate.month}월 ${_selectedDate.day}일 내역이 없습니다.',
-                        style: const TextStyle(color: AppColors.textTertiary),
+              ? LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(
+                          parent: AlwaysScrollableScrollPhysics()),
+                      child: ConstrainedBox(
+                        constraints:
+                            BoxConstraints(minHeight: constraints.maxHeight),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.receipt_long_outlined,
+                                  size: 48, color: AppColors.gray300),
+                              const SizedBox(height: 16),
+                              Text(
+                                '${_selectedDate.month}월 ${_selectedDate.day}일 내역이 없습니다.',
+                                style: const TextStyle(
+                                    color: AppColors.textTertiary),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 )
               : ListView.builder(
+                  physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics()),
                   itemCount: transactions.length,
                   padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
