@@ -82,8 +82,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             tooltip: '로그아웃',
           ),
         ],
-        centerTitle: true,
-        automaticallyImplyLeading: false,
       ),
       body: Column(
         children: [
@@ -91,17 +89,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           _buildBudgetInfo(),
 
           // 2. Custom Calendar
-          // Padding(
-          //   padding:
-          //       const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          //   child: CustomCalendar(
-          //     onDateSelected: (selected, focused) {
-          //       setState(() {
-          //         _selectedDate = selected;
-          //       });
-          //     },
-          //   ),
-          // ),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: CustomCalendar(
+              onDateSelected: (selected, focused) {
+                setState(() {
+                  _selectedDate = selected;
+                });
+              },
+            ),
+          ),
 
           const Divider(height: 1, color: AppColors.border),
 
@@ -149,7 +147,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final progress = usedAmount / totalBudget;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -259,7 +257,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsetsGeometry.fromLTRB(16, 12, 16, 0),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
