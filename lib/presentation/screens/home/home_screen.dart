@@ -91,17 +91,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           _buildBudgetInfo(),
 
           // 2. Custom Calendar
-          // Padding(
-          //   padding:
-          //       const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          //   child: CustomCalendar(
-          //     onDateSelected: (selected, focused) {
-          //       setState(() {
-          //         _selectedDate = selected;
-          //       });
-          //     },
-          //   ),
-          // ),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: CustomCalendar(
+              onDateSelected: (selected, focused) {
+                setState(() {
+                  _selectedDate = selected;
+                });
+              },
+            ),
+          ),
 
           const Divider(height: 1, color: AppColors.border),
 
