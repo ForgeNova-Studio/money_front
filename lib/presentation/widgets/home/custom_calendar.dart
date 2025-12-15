@@ -4,7 +4,9 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:moneyflow/presentation/widgets/home/custom_month_picker.dart';
 
 class CustomCalendar extends StatefulWidget {
-  const CustomCalendar({super.key});
+  final void Function(DateTime, DateTime)? onDateSelected;
+
+  const CustomCalendar({super.key, this.onDateSelected});
 
   @override
   State<CustomCalendar> createState() => _CustomCalendarState();
@@ -109,6 +111,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
           _selectedDay = selectedDay;
           _focusedDay = focusedDay;
         });
+        widget.onDateSelected?.call(selectedDay, focusedDay);
       },
 
       calendarBuilders: CalendarBuilders(
