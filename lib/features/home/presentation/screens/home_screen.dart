@@ -274,23 +274,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // Randomize a bit based on date day to make it feel alive.
     final day = _selectedDate.day;
     final hasData = day % 2 != 0; // Show data on odd days
-
-    if (!hasData) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.receipt_long_outlined,
-                size: 48, color: AppColors.gray300),
-            const SizedBox(height: 16),
-            Text(
-              '${_selectedDate.month}월 ${_selectedDate.day}일 내역이 없습니다.',
-              style: const TextStyle(color: AppColors.textTertiary),
-            ),
-          ],
-        ),
-      );
-    }
+    final totalAmount = hasData
+        ? -16500 // Dummy sum for demo
+        : 0;
 
     final transactions = [
       {'title': '스타벅스 강남점', 'amount': -4500, 'time': '17:30', 'category': '카페'},
@@ -311,31 +297,59 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsetsGeometry.fromLTRB(20, 12, 20, 0),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${_selectedDate.month}월 ${_selectedDate.day}일',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${_selectedDate.month}월 ${_selectedDate.day}일 (${[
+                      '월',
+                      '화',
+                      '수',
+                      '목',
+                      '금',
+                      '토',
+                      '일'
+                    ][_selectedDate.weekday - 1]})',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${totalAmount == 0 ? '' : '-'}${NumberFormat('#,###').format(totalAmount.abs())}원',
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
               ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.gray100,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '전체 -${NumberFormat('#,###').format(16500)}원', // Dummy sum
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w600,
+              InkWell(
+                onTap: () {
+                  // TODO: Navigate to OCR screen
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: AppColors.primaryPinkLight,
+                      width: 1.5,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(
+                    Icons.camera_alt_outlined,
+                    color: AppColors.primaryPinkLight,
+                    size: 24,
                   ),
                 ),
               ),
@@ -343,73 +357,90 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            itemCount: transactions.length,
-            padding: EdgeInsets.zero,
-            itemBuilder: (context, index) {
-              final tx = transactions[index];
-              final amount = tx['amount'] as int;
-              final isExpense = amount < 0;
-              final color =
-                  isExpense ? AppColors.textPrimary : AppColors.success;
-              final amountStr = NumberFormat('#,###').format(amount);
-
-              return InkWell(
-                onTap: () {
-                  // TODO: Show transaction details modal
-                },
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-                  child: Row(
+          child: !hasData
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Leading Icon
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundColor: AppColors.gray50,
-                        child: Icon(
-                          isExpense ? Icons.coffee : Icons.attach_money,
-                          color: isExpense
-                              ? AppColors.textSecondary
-                              : AppColors.success,
-                          size: 20,
-                        ),
+                      Icon(Icons.receipt_long_outlined,
+                          size: 48, color: AppColors.gray300),
+                      const SizedBox(height: 16),
+                      Text(
+                        '${_selectedDate.month}월 ${_selectedDate.day}일 내역이 없습니다.',
+                        style: const TextStyle(color: AppColors.textTertiary),
                       ),
-                      const SizedBox(width: 12),
-                      // Title & Subtitle
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    ],
+                  ),
+                )
+              : ListView.builder(
+                  itemCount: transactions.length,
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (context, index) {
+                    final tx = transactions[index];
+                    final amount = tx['amount'] as int;
+                    final isExpense = amount < 0;
+                    final color =
+                        isExpense ? AppColors.textPrimary : AppColors.success;
+                    final amountStr = NumberFormat('#,###').format(amount);
+
+                    return InkWell(
+                      onTap: () {
+                        // TODO: Show transaction details modal
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 6),
+                        child: Row(
                           children: [
-                            Text(
-                              tx['title'] as String,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
+                            // Leading Icon
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundColor: AppColors.gray50,
+                              child: Icon(
+                                isExpense ? Icons.coffee : Icons.attach_money,
+                                color: isExpense
+                                    ? AppColors.textSecondary
+                                    : AppColors.success,
+                                size: 20,
+                              ),
                             ),
-                            const SizedBox(height: 2),
+                            const SizedBox(width: 12),
+                            // Title & Subtitle
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    tx['title'] as String,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    '${tx['time']} · ${tx['category']}',
+                                    style: const TextStyle(
+                                        color: AppColors.textTertiary,
+                                        fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Trailing Amount
                             Text(
-                              '${tx['time']} · ${tx['category']}',
-                              style: const TextStyle(
-                                  color: AppColors.textTertiary, fontSize: 12),
+                              '$amountStr원',
+                              style: TextStyle(
+                                color: color,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      // Trailing Amount
-                      Text(
-                        '$amountStr원',
-                        style: TextStyle(
-                          color: color,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         ),
       ],
     );
