@@ -296,64 +296,84 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${_selectedDate.month}월 ${_selectedDate.day}일 (${[
-                      '월',
-                      '화',
-                      '수',
-                      '목',
-                      '금',
-                      '토',
-                      '일'
-                    ][_selectedDate.weekday - 1]})',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w500,
+        GestureDetector(
+          onVerticalDragEnd: (details) {
+            if (details.primaryVelocity! < 0) {
+              // Swipe Up -> Week
+              if (_calendarFormat == CalendarFormat.month) {
+                setState(() {
+                  _calendarFormat = CalendarFormat.week;
+                });
+              }
+            } else if (details.primaryVelocity! > 0) {
+              // Swipe Down -> Month
+              if (_calendarFormat == CalendarFormat.week) {
+                setState(() {
+                  _calendarFormat = CalendarFormat.month;
+                });
+              }
+            }
+          },
+          behavior: HitTestBehavior.translucent,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${_selectedDate.month}월 ${_selectedDate.day}일 (${[
+                        '월',
+                        '화',
+                        '수',
+                        '목',
+                        '금',
+                        '토',
+                        '일'
+                      ][_selectedDate.weekday - 1]})',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${totalAmount == 0 ? '' : '-'}${NumberFormat('#,###').format(totalAmount.abs())}원',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                    const SizedBox(height: 4),
+                    Text(
+                      '${totalAmount == 0 ? '' : '-'}${NumberFormat('#,###').format(totalAmount.abs())}원',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              InkWell(
-                onTap: () {
-                  // TODO: Navigate to OCR screen
-                },
-                borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
+                  ],
+                ),
+                InkWell(
+                  onTap: () {
+                    // TODO: Navigate to OCR screen
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: AppColors.primaryPinkLight,
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.camera_alt_outlined,
                       color: AppColors.primaryPinkLight,
-                      width: 1.5,
+                      size: 24,
                     ),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(
-                    Icons.camera_alt_outlined,
-                    color: AppColors.primaryPinkLight,
-                    size: 24,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         Expanded(
