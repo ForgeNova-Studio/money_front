@@ -88,67 +88,94 @@ class _HomeScreenState extends ConsumerState<HomeScreen2> {
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
-      body: Stack(
-        children: [
-          // Layer 1: Main Content (Budget + Calendar)
-          Column(
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // Estimate header height (Budget + Week Calendar)
+          // Budget ~150 + Padding ~16 + WeekCalendar ~150 = ~316
+          const double estimatedHeaderHeight = 320.0;
+          final double bodyHeight = constraints.maxHeight;
+
+          // Calculate fraction
+          double initialSheetSize =
+              (bodyHeight - estimatedHeaderHeight) / bodyHeight;
+          // Clamp for safety
+          if (initialSheetSize < 0.2) initialSheetSize = 0.2;
+          if (initialSheetSize > 0.8) initialSheetSize = 0.8;
+
+          return Stack(
             children: [
-              // 1. Budget Info Area
-              _buildBudgetInfo(),
+              // Layer 1: Main Content (Budget + Calendar)
+              Column(
+                children: [
+                  // 1. Budget Info Area
+                  _buildBudgetInfo(),
 
-              // 2. Custom Calendar
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: CustomCalendar(
-                  format: _calendarFormat,
-                  onFormatChanged: (format) {
-                    setState(() {
-                      _calendarFormat = format;
-                    });
-                  },
-                  onDateSelected: (selected, focused) {
-                    setState(() {
-                      _selectedDate = selected;
-                      _calendarFormat = CalendarFormat.week;
-                    });
-                    // Modal shows automatically via Stack + State
-                  },
-                ),
+                  // 2. Custom Calendar
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: CustomCalendar(
+                      format: _calendarFormat,
+                      onFormatChanged: (format) {
+                        setState(() {
+                          _calendarFormat = format;
+                        });
+                      },
+                      onDateSelected: (selected, focused) {
+                        setState(() {
+                          _selectedDate = selected;
+                          _calendarFormat = CalendarFormat.week;
+                        });
+                        // Modal shows automatically via Stack + State
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
 
-          // Layer 2: Draggable Sheet (Transactions)
-          if (_calendarFormat == CalendarFormat.week)
-            DraggableScrollableSheet(
-              initialChildSize: 0.6,
-              minChildSize: 0.3,
-              maxChildSize: 0.9,
-              builder: (context, scrollController) {
-                return Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(20)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 10,
-                        spreadRadius: 2,
-                        offset: Offset(0, -2),
-                      ),
-                    ],
+              // Layer 2: Draggable Sheet (Transactions)
+              if (_calendarFormat == CalendarFormat.week)
+                NotificationListener<DraggableScrollableNotification>(
+                  onNotification: (notification) {
+                    if (notification.extent <= 0.05) {
+                      setState(() {
+                        _calendarFormat = CalendarFormat.month;
+                      });
+                    }
+                    return true;
+                  },
+                  child: DraggableScrollableSheet(
+                    initialChildSize: initialSheetSize,
+                    minChildSize: 0.0,
+                    maxChildSize: initialSheetSize,
+                    snap: true,
+                    builder: (context, scrollController) {
+                      return Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(20)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                              offset: Offset(0, -2),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.only(top: 16),
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: _buildTransactionList(isModal: true),
+                        ),
+                      );
+                    },
                   ),
-                  padding: const EdgeInsets.only(top: 16),
-                  child: SingleChildScrollView(
-                    controller: scrollController,
-                    child: _buildTransactionList(isModal: true),
-                  ),
-                );
-              },
-            ),
-        ],
+                ),
+            ],
+          );
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
