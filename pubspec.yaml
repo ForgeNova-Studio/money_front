@@ -89,8 +89,30 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+# ==================== Google Fonts 설정 ====================
 google_fonts:
   offline: true
+
+# ==================== Native Splash Screen 설정 ====================
+flutter_native_splash:
+  # 배경색 (앱 메인 핑크 컬러 사용)
+  color: "#f5a4b3"
+
+  # 로고 이미지 (선택사항 - 추후 추가 시 주석 해제)
+  # image: assets/images/logo.png
+
+  # Android Splash
+  android: true
+  android_12:
+    # Android 12+ 전용 설정
+    color: "#f5a4b3"
+    # image: assets/images/logo.png
+
+  # iOS Splash
+  ios: true
+
+  # Web Splash (필요시 활성화)
+  web: false
 
 # The following section is specific to Flutter packages.
 flutter:
