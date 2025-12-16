@@ -23,15 +23,13 @@ final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
 /// FlutterSecureStorage Provider
 /// - 민감한 데이터(JWT 토큰, 사용자 인증 정보)를 암호화하여 저장
 /// - iOS: Keychain 사용
-/// - Android: EncryptedSharedPreferences 사용 (API 23+)
+/// - Android: Custom AES encryption (v10+, 자동 마이그레이션)
 final flutterSecureStorageProvider = Provider<FlutterSecureStorage>((ref) {
   const iosOptions = IOSOptions(
     accessibility: KeychainAccessibility.first_unlock,
   );
 
-  const androidOptions = AndroidOptions(
-    encryptedSharedPreferences: true,
-  );
+  const androidOptions = AndroidOptions();
 
   return const FlutterSecureStorage(
     iOptions: iosOptions,
