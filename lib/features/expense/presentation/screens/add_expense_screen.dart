@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../domain/entities/expense_model.dart';
 import '../providers/expense_provider.dart';
-import '../../../../core/widgets/custom_text_field.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({super.key});
@@ -124,105 +123,234 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('지출 등록'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        title: const Text(
+          '지출 등록',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: AppColors.textPrimary),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // 금액 입력
-              CustomTextField(
-                label: '금액',
-                hintText: '0',
-                controller: _amountController,
-                validator: _validateAmount,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  _ThousandsSeparatorInputFormatter(),
-                ],
-                suffixIcon: const Padding(
-                  padding: EdgeInsets.only(right: 16, top: 14),
-                  child: Text('원', style: TextStyle(fontSize: 16)),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // 날짜 선택
-              InkWell(
-                onTap: () => _selectDate(context),
-                child: InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: '날짜',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    suffixIcon: const Icon(Icons.calendar_today),
-                  ),
-                  child: Text(
-                    DateFormat('yyyy년 M월 d일').format(_selectedDate),
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // 카테고리 선택
-              const Text(
-                '카테고리',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: _categories.map((category) {
-                  final isSelected = _selectedCategory == category['code'];
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedCategory = category['code'];
-                      });
-                    },
-                    child: Container(
-                      width: (MediaQuery.of(context).size.width - 72) / 3,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.primary.withValues(alpha: 0.1)
-                            : Colors.white,
-                        border: Border.all(
-                          color:
-                              isSelected ? AppColors.primary : AppColors.border,
-                          width: isSelected ? 2 : 1,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(
-                            category['icon'],
-                            color: isSelected
-                                ? AppColors.primary
-                                : AppColors.textSecondary,
-                            size: 32,
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 32),
+                    // 1. Large Amount Input
+                    Center(
+                      child: IntrinsicWidth(
+                        child: TextFormField(
+                          controller: _amountController,
+                          validator: _validateAmount,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            category['name'],
-                            style: TextStyle(
-                              fontSize: 12,
+                          decoration: const InputDecoration(
+                            hintText: '0',
+                            hintStyle: TextStyle(
+                              color: AppColors.gray300,
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            suffixText: '원',
+                            suffixStyle: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            _ThousandsSeparatorInputFormatter(),
+                          ],
+                          autofocus: true,
+                          showCursor: false,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+
+                    // 2. Date Selection
+                    GestureDetector(
+                      onTap: () => _selectDate(context),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors.backgroundLight,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.calendar_today,
+                                color: AppColors.textSecondary, size: 20),
+                            const SizedBox(width: 12),
+                            Text(
+                              DateFormat('yyyy년 M월 d일 (E)', 'ko_KR')
+                                  .format(_selectedDate),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+
+                    // 3. Category Selection
+                    const Text(
+                      '카테고리',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 90,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _categories.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(width: 20),
+                        itemBuilder: (context, index) {
+                          final category = _categories[index];
+                          final isSelected =
+                              _selectedCategory == category['code'];
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedCategory = category['code'];
+                              });
+                            },
+                            child: Column(
+                              children: [
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  width: 56,
+                                  height: 56,
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : AppColors.backgroundLight,
+                                    shape: BoxShape.circle,
+                                    boxShadow: isSelected
+                                        ? [
+                                            BoxShadow(
+                                              color: AppColors.primary
+                                                  .withOpacity(0.3),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 4),
+                                            )
+                                          ]
+                                        : [],
+                                  ),
+                                  child: Icon(
+                                    category['icon'],
+                                    color: isSelected
+                                        ? Colors.white
+                                        : AppColors.textSecondary,
+                                    size: 24,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  category['name'],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : AppColors.textSecondary,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+
+                    // 4. Additional Fields (Merchant, Memo)
+                    _buildCleanTextField(
+                      controller: _merchantController,
+                      label: '가맹점',
+                      hint: '어디서 썼나요?',
+                      icon: Icons.store_outlined,
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Divider(height: 1, color: AppColors.gray200),
+                    ),
+                    _buildCleanTextField(
+                      controller: _memoController,
+                      label: '메모',
+                      hint: '메모를 남겨주세요',
+                      icon: Icons.edit_outlined,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // 5. Payment Method
+                    const Text(
+                      '결제 수단',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: _paymentMethods.map((method) {
+                        final isSelected =
+                            _selectedPaymentMethod == method['code'];
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: ChoiceChip(
+                            label: Text(method['name']!),
+                            selected: isSelected,
+                            onSelected: (selected) {
+                              if (selected) {
+                                setState(() {
+                                  _selectedPaymentMethod = method['code']!;
+                                });
+                              }
+                            },
+                            backgroundColor: AppColors.backgroundLight,
+                            selectedColor: AppColors.primary.withOpacity(0.1),
+                            labelStyle: TextStyle(
                               color: isSelected
                                   ? AppColors.primary
                                   : AppColors.textSecondary,
@@ -230,112 +358,80 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                   ? FontWeight.w600
                                   : FontWeight.normal,
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
-
-              // 가맹점 입력
-              CustomTextField(
-                label: '가맹점 (선택)',
-                hintText: '예: 스타벅스',
-                controller: _merchantController,
-              ),
-              const SizedBox(height: 20),
-
-              // 결제 수단
-              const Text(
-                '결제 수단',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: _paymentMethods.map((method) {
-                  final isSelected = _selectedPaymentMethod == method['code'];
-                  return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedPaymentMethod = method['code']!;
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                            color:
-                                isSelected ? AppColors.primary : Colors.white,
-                            border: Border.all(
+                            side: BorderSide(
                               color: isSelected
                                   ? AppColors.primary
-                                  : AppColors.border,
+                                  : Colors.transparent,
                             ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            method['name']!,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: isSelected
-                                  ? Colors.white
-                                  : AppColors.textPrimary,
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
                             ),
+                            showCheckmark: false,
                           ),
-                        ),
-                      ),
+                        );
+                      }).toList(),
                     ),
-                  );
-                }).toList(),
+                    const SizedBox(height: 48),
+                  ],
+                ),
               ),
-              const SizedBox(height: 20),
+            ),
+          ),
 
-              // 메모 입력
-              CustomTextField(
-                label: '메모 (선택)',
-                hintText: '메모를 입력하세요',
-                controller: _memoController,
-                maxLines: 3,
+          // Bottom Button
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+            child: SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: _handleSubmit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  '등록하기',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-              const SizedBox(height: 32),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-              // 등록 버튼
-              Consumer<ExpenseProvider>(
-                builder: (context, expenseProvider, child) {
-                  final isLoading =
-                      expenseProvider.status == ExpenseStatus.loading;
-
-                  return ElevatedButton(
-                    onPressed: isLoading ? null : _handleSubmit,
-                    child: isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : const Text('등록'),
-                  );
-                },
-              ),
-            ],
+  Widget _buildCleanTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, color: AppColors.textSecondary, size: 24),
+        const SizedBox(width: 16),
+        Expanded(
+          child: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: const TextStyle(color: AppColors.gray400),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+            style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
           ),
         ),
-      ),
+      ],
     );
   }
 }
