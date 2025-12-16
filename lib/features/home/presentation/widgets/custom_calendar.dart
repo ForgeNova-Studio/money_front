@@ -57,11 +57,8 @@ class _CustomCalendarState extends State<CustomCalendar> {
       formatAnimationDuration: const Duration(milliseconds: 300),
       formatAnimationCurve: Curves.easeInOut,
 
-      // 사용 가능한 달력 포맷 제한 (2주 보기 제외)
-      availableCalendarFormats: const {
-        CalendarFormat.month: '월',
-        CalendarFormat.week: '주',
-      },
+      // 세로 스와이프로 포맷 변경 방지 (좌우 스와이프로 월 이동만 허용)
+      availableGestures: AvailableGestures.horizontalSwipe,
 
       calendarFormat: _calendarFormat,
       onFormatChanged: (format) {
@@ -252,7 +249,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
           return Positioned(
             bottom:
-                isSameDay(day, _selectedDay) || isSameDay(day, today) ? -2 : 2,
+                isSameDay(day, _selectedDay) || isSameDay(day, today) ? 1 : 2,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: displayEvents.map((event) {

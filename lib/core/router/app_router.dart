@@ -10,7 +10,6 @@ import 'package:moneyflow/features/auth/presentation/screens/reset_password_scre
 
 // Main Screens
 import 'package:moneyflow/features/home/presentation/screens/home_screen.dart';
-import 'package:moneyflow/features/home/presentation/screens/home_screen_2.dart';
 
 // Expense Screens
 import 'package:moneyflow/features/expense/presentation/screens/expense_list_screen.dart';
@@ -78,8 +77,7 @@ class AppRouter {
         GoRoute(
           path: RouteNames.home,
           name: 'home',
-          // builder: (context, state) => const HomeScreen(),
-          builder: (context, state) => const HomeScreen2(),
+          builder: (context, state) => const HomeScreen(),
         ),
 
         // ==================== Expense Routes ====================
