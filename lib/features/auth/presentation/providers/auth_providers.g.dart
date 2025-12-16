@@ -58,17 +58,20 @@ String _$authRemoteDataSourceHash() =>
     r'633d1e5b64040a0ff20ada1e5407890c30191a24';
 
 /// Local DataSource Provider
+/// - FlutterSecureStorage를 사용하여 JWT 토큰과 사용자 정보를 암호화하여 저장
 
 @ProviderFor(authLocalDataSource)
 const authLocalDataSourceProvider = AuthLocalDataSourceProvider._();
 
 /// Local DataSource Provider
+/// - FlutterSecureStorage를 사용하여 JWT 토큰과 사용자 정보를 암호화하여 저장
 
 final class AuthLocalDataSourceProvider extends $FunctionalProvider<
     AuthLocalDataSource,
     AuthLocalDataSource,
     AuthLocalDataSource> with $Provider<AuthLocalDataSource> {
   /// Local DataSource Provider
+  /// - FlutterSecureStorage를 사용하여 JWT 토큰과 사용자 정보를 암호화하여 저장
   const AuthLocalDataSourceProvider._()
       : super(
           from: null,
@@ -104,7 +107,7 @@ final class AuthLocalDataSourceProvider extends $FunctionalProvider<
 }
 
 String _$authLocalDataSourceHash() =>
-    r'f3688c0da137ea64d583d81bf6a2516ee735fb50';
+    r'6ca422911f9e481684aa431aab6b28a59b87a7a6';
 
 /// Auth Repository Provider
 

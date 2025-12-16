@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:moneyflow/core/constants/api_constants.dart';
 import 'package:moneyflow/features/auth/data/models/auth_token_model.dart';
 import 'package:moneyflow/features/auth/presentation/providers/auth_providers.dart';
@@ -10,9 +11,28 @@ import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// SharedPreferences Provider
+/// SharedPreferences Provider (Deprecated - 보안 관련 데이터는 FlutterSecureStorage 사용)
+/// TODO: 보안이 필요없는 일반 설정 데이터로만 사용하도록 변경
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
   throw UnimplementedError('sharedPreferencesProvider must be overridden');
+});
+
+/// FlutterSecureStorage Provider
+/// - 민감한 데이터(JWT 토큰, 사용자 인증 정보)를 암호화하여 저장
+/// - iOS: Keychain 사용
+/// - Android: EncryptedSharedPreferences 사용
+final flutterSecureStorageProvider = Provider<FlutterSecureStorage>((ref) {
+  const androidOptions = AndroidOptions(
+    encryptedSharedPreferences: true,
+  );
+  const iosOptions = IOSOptions(
+    accessibility: KeychainAccessibility.first_unlock,
+  );
+
+  return const FlutterSecureStorage(
+    aOptions: androidOptions,
+    iOptions: iosOptions,
+  );
 });
 
 /// Dio Provider

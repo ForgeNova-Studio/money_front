@@ -38,9 +38,12 @@ AuthRemoteDataSource authRemoteDataSource(Ref ref) {
 }
 
 /// Local DataSource Provider
+/// - FlutterSecureStorage를 사용하여 JWT 토큰과 사용자 정보를 암호화하여 저장
 @riverpod
 AuthLocalDataSource authLocalDataSource(Ref ref) {
-  return AuthLocalDataSourceImpl(prefs: ref.read(sharedPreferencesProvider));
+  return AuthLocalDataSourceImpl(
+    secureStorage: ref.read(flutterSecureStorageProvider),
+  );
 }
 
 // ============================================================================

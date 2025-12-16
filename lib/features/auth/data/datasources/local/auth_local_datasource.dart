@@ -4,7 +4,7 @@ import 'package:moneyflow/features/auth/data/models/models.dart';
 /// Auth Local Data Source 인터페이스
 ///
 /// 로컬 저장소 관리 계층
-/// - SharedPreferences 사용
+/// - FlutterSecureStorage 사용 (암호화된 안전한 저장소)
 /// - 순수 Dart 인터페이스 (외부 패키지 의존 없음)
 /// - Data Model 사용
 abstract class AuthLocalDataSource {

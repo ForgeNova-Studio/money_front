@@ -1,6 +1,6 @@
 // packages
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // core
 import 'package:moneyflow/core/exceptions/exceptions.dart';
@@ -13,23 +13,26 @@ import 'package:moneyflow/features/auth/data/datasources/local/auth_local_dataso
 
 /// Auth Local Data Source 구현체
 ///
-/// SharedPreferences를 사용한 로컬 저장소 구현
+/// FlutterSecureStorage를 사용한 안전한 로컬 저장소 구현
+/// - 민감한 인증 정보(JWT 토큰)를 암호화하여 저장
+/// - iOS: Keychain 사용
+/// - Android: EncryptedSharedPreferences 사용
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
-  final SharedPreferences prefs;
+  final FlutterSecureStorage secureStorage;
 
   // Storage Key 상수
   static const String _keyToken = 'auth_token';
   static const String _keyUser = 'auth_user';
 
-  AuthLocalDataSourceImpl({required this.prefs});
+  AuthLocalDataSourceImpl({required this.secureStorage});
 
   @override
   Future<void> saveToken(AuthTokenModel token) async {
     try {
-      // Model을 JSON으로 변환하여 저장
+      // Model을 JSON으로 변환하여 암호화된 저장소에 저장
       final json = token.toJson();
       final jsonString = jsonEncode(json);
-      await prefs.setString(_keyToken, jsonString);
+      await secureStorage.write(key: _keyToken, value: jsonString);
     } catch (e) {
       throw StorageException('토큰 저장 실패: $e');
     }
@@ -38,7 +41,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<AuthTokenModel?> getToken() async {
     try {
-      final jsonString = prefs.getString(_keyToken);
+      final jsonString = await secureStorage.read(key: _keyToken);
       if (jsonString == null) return null;
 
       final json = jsonDecode(jsonString) as Map<String, dynamic>;
@@ -52,7 +55,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<void> deleteToken() async {
     try {
-      await prefs.remove(_keyToken);
+      await secureStorage.delete(key: _keyToken);
     } catch (e) {
       throw StorageException('토큰 삭제 실패: $e');
     }
@@ -63,7 +66,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     try {
       final json = user.toJson();
       final jsonString = jsonEncode(json);
-      await prefs.setString(_keyUser, jsonString);
+      await secureStorage.write(key: _keyUser, value: jsonString);
     } catch (e) {
       throw StorageException('사용자 정보 저장 실패: $e');
     }
@@ -72,7 +75,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<UserModel?> getUser() async {
     try {
-      final jsonString = prefs.getString(_keyUser);
+      final jsonString = await secureStorage.read(key: _keyUser);
       if (jsonString == null) return null;
 
       final json = jsonDecode(jsonString) as Map<String, dynamic>;
@@ -85,7 +88,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<void> deleteUser() async {
     try {
-      await prefs.remove(_keyUser);
+      await secureStorage.delete(key: _keyUser);
     } catch (e) {
       throw StorageException('사용자 정보 삭제 실패: $e');
     }
@@ -95,8 +98,8 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   Future<void> clearAll() async {
     try {
       await Future.wait([
-        prefs.remove(_keyToken),
-        prefs.remove(_keyUser),
+        secureStorage.delete(key: _keyToken),
+        secureStorage.delete(key: _keyUser),
       ]);
     } catch (e) {
       throw StorageException('데이터 삭제 실패: $e');
@@ -106,7 +109,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<bool> hasToken() async {
     try {
-      return prefs.containsKey(_keyToken);
+      return await secureStorage.containsKey(key: _keyToken);
     } catch (e) {
       throw StorageException('토큰 확인 실패: $e');
     }
