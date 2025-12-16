@@ -23,14 +23,19 @@ final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
 /// FlutterSecureStorage Provider
 /// - 민감한 데이터(JWT 토큰, 사용자 인증 정보)를 암호화하여 저장
 /// - iOS: Keychain 사용
-/// - Android: Custom AES encryption (v11+에서 자동 마이그레이션)
+/// - Android: EncryptedSharedPreferences 사용 (API 23+)
 final flutterSecureStorageProvider = Provider<FlutterSecureStorage>((ref) {
   const iosOptions = IOSOptions(
     accessibility: KeychainAccessibility.first_unlock,
   );
 
+  const androidOptions = AndroidOptions(
+    encryptedSharedPreferences: true,
+  );
+
   return const FlutterSecureStorage(
     iOptions: iosOptions,
+    aOptions: androidOptions,
   );
 });
 
@@ -54,6 +59,10 @@ final dioProvider = Provider<Dio>((ref) {
     responseBody: true,
     error: true,
     compact: true,
+    filter: (options, args) {
+      options.headers['Authorization'] = 'Bearer ***';
+      return true;
+    },
   ));
 
   return dio;
@@ -104,9 +113,9 @@ class _AuthInterceptor extends Interceptor {
     if (err.requestOptions.path == ApiConstants.refreshToken) {
       await localDataSource.clearAll();
 
-      ref.read(authViewModelProvider.notifier).forceUnauthenticated(
-        errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.'
-      );
+      ref
+          .read(authViewModelProvider.notifier)
+          .forceUnauthenticated(errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.');
 
       debugPrint('[AuthInterceptor] Refresh Token 엔드포인트 401 → 자동 로그아웃 처리');
       return handler.next(err);
@@ -117,9 +126,9 @@ class _AuthInterceptor extends Interceptor {
     if (token == null || token.refreshToken.isEmpty) {
       await localDataSource.clearAll();
 
-      ref.read(authViewModelProvider.notifier).forceUnauthenticated(
-        errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.'
-      );
+      ref
+          .read(authViewModelProvider.notifier)
+          .forceUnauthenticated(errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.');
 
       debugPrint('[AuthInterceptor] 토큰 없음 → 자동 로그아웃 처리');
       return handler.next(err);
@@ -165,14 +174,30 @@ class _AuthInterceptor extends Interceptor {
     } catch (e) {
       _refreshCompleter?.completeError(e);
 
+      // TODO(auth): Refresh Token 실패 원인별 로깅 분리
+      // 1️⃣ 네트워크 오류 (인터넷 끊김, 타임아웃)
+      //    - e is DioException && e.type == DioExceptionType.connectionTimeout
+      //
+      // 2️⃣ 서버 오류 (5xx)
+      //    - e is DioException && e.response?.statusCode >= 500
+      //
+      // 3️⃣ Refresh Token 만료 / 무효 (401)
+      //    - e is DioException && e.response?.statusCode == 401
+      //    - 서버에서 refreshToken expired / invalid 응답
+      //
+      // 4️⃣ 기타 예외 (파싱 오류, 예상 못한 에러)
+      //
+      // 👉 추후 Crashlytics / Sentry 연동 시
+      //    원인별 tag 또는 error code로 분리 수집 권장
+
       // 1. 로컬 데이터 삭제 (토큰 + 사용자 정보)
       await localDataSource.clearAll();
 
       // 2. AuthViewModel 상태를 unauthenticated로 변경
       // → GoRouter의 redirect가 자동으로 /login으로 이동
-      ref.read(authViewModelProvider.notifier).forceUnauthenticated(
-        errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.'
-      );
+      ref
+          .read(authViewModelProvider.notifier)
+          .forceUnauthenticated(errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.');
 
       debugPrint('[AuthInterceptor] Refresh Token 실패 → 자동 로그아웃 처리');
 
