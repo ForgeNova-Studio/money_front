@@ -36,6 +36,7 @@ class AuthViewModel extends _$AuthViewModel {
     // Future.microtask를 사용하여 비동기 초기화 실행
     Future.microtask(() async {
       await _checkCurrentUser();
+      if (!_initCompleter.isCompleted) _initCompleter.complete();
     });
     return AuthState.loading();
   }
@@ -60,6 +61,8 @@ class AuthViewModel extends _$AuthViewModel {
         final user = await localDataSource.getUser();
         debugPrint('[AuthViewModel] 사용자 정보: ${user?.email}');
 
+        if (!ref.mounted) return; // Provider가 해제되었으면 작업 중단
+
         if (user != null) {
           state = AuthState.authenticated(user.toEntity());
           debugPrint('[AuthViewModel] 인증된 상태로 변경됨');
@@ -69,12 +72,14 @@ class AuthViewModel extends _$AuthViewModel {
           debugPrint('[AuthViewModel] 사용자 정보 없음 - 미인증 상태로 변경');
         }
       } else {
+        if (!ref.mounted) return; // Provider가 해제되었으면 작업 중단
         // 토큰이 없으면 로그아웃 상태
         state = AuthState.unauthenticated();
         debugPrint('[AuthViewModel] 토큰 없음 - 미인증 상태로 변경');
       }
     } catch (e) {
       // 에러 발생 시 로그아웃 상태로 처리
+      if (!ref.mounted) return; // Provider가 해제되었으면 작업 중단
       debugPrint('[AuthViewModel] 에러 발생: $e');
       state = AuthState.unauthenticated();
     } finally {

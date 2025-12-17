@@ -14,7 +14,9 @@ import 'package:moneyflow/core/router/router_provider.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 
 void main() async {
-  // Native Splash Screen 유지 (Flutter 엔진 초기화 중 표시)
+  /// Native Splash Screen 유지 (Flutter 엔진 초기화 중 표시)
+  /// - 이 코드가 실행되면, 앱의 네이티브 스플래시 화면이 자동으로 사라지지 않고
+  ///   필요한 모든 비동기 작업이 끝날 때까지 스플래시 화면이 유지된다.
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
@@ -31,7 +33,8 @@ void main() async {
     ],
   );
 
-  // 앱 시작 전, 비동기 초기화 (예: 사용자 인증 상태 확인)
+  /// 앱 시작 전, 비동기 초기화 (예: 사용자 인증 상태 확인)
+  /// - AuthViewModel이 처음으로 생성되고 초기화 로직이 실행
   await container.read(authViewModelProvider.notifier).isInitialized;
 
   // 초기화 완료 후 스플래시 스크린 제거
