@@ -36,7 +36,6 @@ class AuthViewModel extends _$AuthViewModel {
     // Future.microtask를 사용하여 비동기 초기화 실행
     Future.microtask(() async {
       await _checkCurrentUser();
-      if (!_initCompleter.isCompleted) _initCompleter.complete();
     });
     return AuthState.loading();
   }
@@ -374,4 +373,3 @@ class AuthViewModel extends _$AuthViewModel {
     }
   }
 }
-
