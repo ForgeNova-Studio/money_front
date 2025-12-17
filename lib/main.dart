@@ -21,54 +21,36 @@ void main() async {
   // 한국어 locale 데이터 초기화 (TableCalendar 사용을 위해 필요)
   await initializeDateFormatting('ko_KR', null);
 
+  // SharedPreferences 인스턴스 생성
   final sharedPreferences = await SharedPreferences.getInstance();
 
+  // Riverpod 컨테이너 생성 및 초기화
+  final container = ProviderContainer(
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+    ],
+  );
+
+  // 앱 시작 전, 비동기 초기화 (예: 사용자 인증 상태 확인)
+  await container.read(authViewModelProvider.notifier).isInitialized;
+
+  // 초기화 완료 후 스플래시 스크린 제거
+  FlutterNativeSplash.remove();
+
   runApp(
-    // Riverpod ProviderScope로 앱 전체를 감싸서 Riverpod 활성화
-    // 기존 Provider와 병행 사용 가능
-    ProviderScope(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
-      ],
-      child: MoneyFlowApp(),
+    // 미리 생성한 컨테이너를 앱에 제공
+    UncontrolledProviderScope(
+      container: container,
+      child: const MoneyFlowApp(),
     ),
   );
 }
 
-class MoneyFlowApp extends ConsumerStatefulWidget {
+class MoneyFlowApp extends ConsumerWidget {
   const MoneyFlowApp({super.key});
 
   @override
-  ConsumerState<MoneyFlowApp> createState() => _MoneyFlowAppState();
-}
-
-class _MoneyFlowAppState extends ConsumerState<MoneyFlowApp> {
-  @override
-  void initState() {
-    super.initState();
-
-    // AuthViewModel 초기화 완료 후 Splash Screen 제거
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _removeSplashWhenReady();
-    });
-  }
-
-  void _removeSplashWhenReady() {
-    // authState의 isLoading이 false가 될 때까지 대기 후 splash 제거
-    ref.listenManual(
-      authViewModelProvider.select((state) => state.isLoading),
-      (previous, isLoading) {
-        if (!isLoading) {
-          // 인증 상태 확인 완료 → Splash 제거
-          FlutterNativeSplash.remove();
-        }
-      },
-      fireImmediately: true,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // GoRouter 인스턴스 가져오기
     final router = ref.watch(routerProvider);
 
@@ -85,3 +67,4 @@ class _MoneyFlowAppState extends ConsumerState<MoneyFlowApp> {
     );
   }
 }
+

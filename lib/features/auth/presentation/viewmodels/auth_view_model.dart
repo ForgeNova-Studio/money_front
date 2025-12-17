@@ -1,4 +1,5 @@
 // packages
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -23,11 +24,20 @@ part 'auth_view_model.g.dart';
 /// - 현재 사용자 정보 조회
 @riverpod
 class AuthViewModel extends _$AuthViewModel {
+  // 초기화 완료를 알리기 위한 Completer
+  final _initCompleter = Completer<void>();
+
+  // 외부에서 초기화 완료를 기다릴 수 있도록 Future 제공
+  Future<void> get isInitialized => _initCompleter.future;
+
   @override
   AuthState build() {
     // 초기화 시 로딩 상태로 시작
     // Future.microtask를 사용하여 비동기 초기화 실행
-    Future.microtask(() => _checkCurrentUser());
+    Future.microtask(() async {
+      await _checkCurrentUser();
+      if (!_initCompleter.isCompleted) _initCompleter.complete();
+    });
     return AuthState.loading();
   }
 
@@ -68,6 +78,9 @@ class AuthViewModel extends _$AuthViewModel {
       // 에러 발생 시 로그아웃 상태로 처리
       debugPrint('[AuthViewModel] 에러 발생: $e');
       state = AuthState.unauthenticated();
+    } finally {
+      // 어떤 경우에도 초기화가 완료되었음을 보장
+      if (!_initCompleter.isCompleted) _initCompleter.complete();
     }
   }
 
@@ -361,3 +374,4 @@ class AuthViewModel extends _$AuthViewModel {
     }
   }
 }
+
