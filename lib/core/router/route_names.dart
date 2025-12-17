@@ -2,6 +2,10 @@
 class RouteNames {
   RouteNames._();
 
+  // ==================== Splash Route ====================
+  /// 스플래시 화면 (앱 초기화)
+  static const String splash = '/splash';
+
   // ==================== Public Routes ====================
   /// 로그인 화면
   static const String login = '/login';

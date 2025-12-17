@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moneyflow/core/router/route_names.dart';
 
+// Splash Screen
+import 'package:moneyflow/presentation/screens/splash_screen.dart';
+
 // Auth Screens
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
 import 'package:moneyflow/features/auth/presentation/screens/register_screen.dart';
@@ -45,6 +48,13 @@ class AppRouter {
         // ==================== Root Route ====================
         // Note: Root 경로(/)의 redirect는 router_provider.dart에서 처리됨
         // 인증 상태에 따라 /home 또는 /login으로 자동 리다이렉션
+
+        // ==================== Splash Route ====================
+        GoRoute(
+          path: RouteNames.splash,
+          name: 'splash',
+          builder: (context, state) => const SplashScreen(),
+        ),
 
         // ==================== Public Routes (인증 불필요) ====================
         GoRoute(
