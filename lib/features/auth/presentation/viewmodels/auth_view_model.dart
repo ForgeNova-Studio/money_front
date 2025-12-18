@@ -34,10 +34,7 @@ class AuthViewModel extends _$AuthViewModel {
   AuthState build() {
     // 초기화 시 로딩 상태로 시작
     // Future.microtask를 사용하여 비동기 초기화 실행
-    Future.microtask(() async {
-      await _checkCurrentUser();
-      if (!_initCompleter.isCompleted) _initCompleter.complete();
-    });
+    Future.microtask(_checkCurrentUser);
     return AuthState.loading();
   }
 
@@ -84,7 +81,9 @@ class AuthViewModel extends _$AuthViewModel {
       state = AuthState.unauthenticated();
     } finally {
       // 어떤 경우에도 초기화가 완료되었음을 보장
-      if (!_initCompleter.isCompleted) _initCompleter.complete();
+      if (!_initCompleter.isCompleted) {
+        _initCompleter.complete();
+      }
     }
   }
 
