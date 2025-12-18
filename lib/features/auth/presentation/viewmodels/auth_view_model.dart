@@ -281,12 +281,6 @@ class AuthViewModel extends _$AuthViewModel {
     state = state.copyWith(errorMessage: null);
   }
 
-  /// 강제로 unauthenticated 상태로 변경
-  /// (401 에러 발생 시 Interceptor에서 호출)
-  void forceUnauthenticated({String? errorMessage}) {
-    state = AuthState.unauthenticated(errorMessage: errorMessage);
-  }
-
   /// 현재 사용자 정보 새로고침
   Future<void> refreshUser() async {
     try {
