@@ -101,13 +101,14 @@ class AuthViewModel extends _$AuthViewModel {
 
   /// 회원가입 인증번호 전송
   Future<void> sendSignupCode(String email) async {
-    state = AuthState.loading();
-
     await _handleAuthRequest(() async {
       final useCase = ref.read(sendSignupCodeUseCaseProvider);
       await useCase(email);
-      state = AuthState.initial();
-    }, rethrowError: true, defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다');
+      state = AuthState.initial(); // 성공 시 초기 상태로 복귀
+    },
+        loading: true,
+        rethrowError: true,
+        defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다');
   }
 
   /// 회원가입 인증번호 검증
@@ -115,13 +116,15 @@ class AuthViewModel extends _$AuthViewModel {
     required String email,
     required String code,
   }) async {
-    state = AuthState.loading();
-
     return _handleAuthRequest(() async {
       final useCase = ref.read(verifySignupCodeUseCaseProvider);
-      state = AuthState.initial();
-      return await useCase(email: email, code: code);
-    }, rethrowError: true, defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다');
+      final result = await useCase(email: email, code: code);
+      state = AuthState.initial(); // 성공 시 초기 상태로 복귀
+      return result;
+    },
+        loading: true,
+        rethrowError: true,
+        defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다');
   }
 
   /// 비밀번호 찾기 인증번호 검증
@@ -129,13 +132,15 @@ class AuthViewModel extends _$AuthViewModel {
     required String email,
     required String code,
   }) async {
-    state = AuthState.loading();
-
     return _handleAuthRequest(() async {
       final useCase = ref.read(verifyFindPasswordCodeUseCaseProvider);
-      state = AuthState.initial();
-      return await useCase(email: email, code: code);
-    }, rethrowError: true, defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다');
+      final result = await useCase(email: email, code: code);
+      state = AuthState.initial(); // 성공 시 초기 상태로 복귀
+      return result;
+    },
+        loading: true,
+        rethrowError: true,
+        defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다');
   }
 
   /// 회원가입
@@ -146,8 +151,6 @@ class AuthViewModel extends _$AuthViewModel {
     required String nickname,
     required Gender gender,
   }) async {
-    state = AuthState.loading();
-
     await _handleAuthRequest(() async {
       final useCase = ref.read(registerUseCaseProvider);
       final result = await useCase(
@@ -158,7 +161,10 @@ class AuthViewModel extends _$AuthViewModel {
         gender: gender,
       );
       state = AuthState.authenticated(result.user);
-    }, rethrowError: true, defaultErrorMessage: '회원가입 중 오류가 발생했습니다');
+    },
+        loading: true,
+        rethrowError: true,
+        defaultErrorMessage: '회원가입 중 오류가 발생했습니다');
   }
 
   /// 로그아웃
@@ -180,7 +186,10 @@ class AuthViewModel extends _$AuthViewModel {
       final useCase = ref.read(googleLoginUseCaseProvider);
       final result = await useCase();
       state = AuthState.authenticated(result.user);
-    }, rethrowError: true, defaultErrorMessage: 'Google 로그인 중 오류가 발생했습니다');
+    },
+        loading: true,
+        rethrowError: true,
+        defaultErrorMessage: 'Google 로그인 중 오류가 발생했습니다');
   }
 
   /// Apple 로그인
@@ -189,7 +198,10 @@ class AuthViewModel extends _$AuthViewModel {
       final useCase = ref.read(appleLoginUseCaseProvider);
       final result = await useCase();
       state = AuthState.authenticated(result.user);
-    }, rethrowError: true, defaultErrorMessage: 'Apple 로그인 중 오류가 발생했습니다');
+    },
+        loading: true,
+        rethrowError: true,
+        defaultErrorMessage: 'Apple 로그인 중 오류가 발생했습니다');
   }
 
   /// 에러 메시지 초기화
@@ -221,13 +233,14 @@ class AuthViewModel extends _$AuthViewModel {
 
   /// 비밀번호 재설정 인증번호 전송
   Future<void> sendPasswordResetCode(String email) async {
-    state = AuthState.loading();
-
     await _handleAuthRequest(() async {
       final useCase = ref.read(sendPasswordResetCodeUseCaseProvider);
       await useCase(email);
-      state = AuthState.initial();
-    }, rethrowError: true, defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다');
+      state = AuthState.initial(); // 성공 시 초기 상태로 복귀
+    },
+        loading: true,
+        rethrowError: true,
+        defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다');
   }
 
   /// 비밀번호 재설정
@@ -235,15 +248,16 @@ class AuthViewModel extends _$AuthViewModel {
     required String email,
     required String newPassword,
   }) async {
-    state = AuthState.loading();
-
     debugPrint("======== email: ${state.user?.email} =======");
 
     await _handleAuthRequest(() async {
       final useCase = ref.read(resetPasswordUseCaseProvider);
       await useCase(email: email, newPassword: newPassword);
-      state = AuthState.initial();
-    }, rethrowError: true, defaultErrorMessage: '비밀번호 재설정 중 오류가 발생했습니다');
+      state = AuthState.initial(); // 성공 시 초기 상태로 복귀
+    },
+        loading: true,
+        rethrowError: true,
+        defaultErrorMessage: '비밀번호 재설정 중 오류가 발생했습니다');
   }
 
   /// 공통 에러 처리 헬퍼 메서드
