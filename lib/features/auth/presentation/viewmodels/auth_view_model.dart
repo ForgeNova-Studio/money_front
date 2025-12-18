@@ -93,53 +93,22 @@ class AuthViewModel extends _$AuthViewModel {
     required String email,
     required String password,
   }) async {
-    try {
+    await _handleAuthRequest(() async {
       final useCase = ref.read(loginUseCaseProvider);
       final result = await useCase(email: email, password: password);
-
       state = AuthState.authenticated(result.user);
-    } on ValidationException catch (e) {
-      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
-      state = AuthState.error(e.message);
-    } on UnauthorizedException catch (e) {
-      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
-      state = AuthState.error(e.message);
-    } on NetworkException catch (e) {
-      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
-      state = AuthState.error(e.message);
-    } on ServerException catch (e) {
-      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
-      state = AuthState.error(e.message);
-    } catch (e) {
-      // 에러 발생 시 에러 상태로 변경하며 새로운 AuthState 인스턴스 생성 및 참조
-      state = AuthState.error('로그인 중 오류가 발생했습니다');
-      debugPrint('Login failed: $e');
-    }
+    }, loading: true, defaultErrorMessage: '로그인 중 오류가 발생했습니다');
   }
 
   /// 회원가입 인증번호 전송
   Future<void> sendSignupCode(String email) async {
     state = AuthState.loading();
 
-    try {
+    await _handleAuthRequest(() async {
       final useCase = ref.read(sendSignupCodeUseCaseProvider);
       await useCase(email);
-
-      // 인증번호 전송 성공 시 로딩 해제
       state = AuthState.initial();
-    } on ValidationException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } on NetworkException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } on ServerException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } catch (e) {
-      state = AuthState.error('인증번호 전송 중 오류가 발생했습니다: $e');
-      rethrow;
-    }
+    }, rethrowError: true, defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다');
   }
 
   /// 회원가입 인증번호 검증
@@ -149,26 +118,11 @@ class AuthViewModel extends _$AuthViewModel {
   }) async {
     state = AuthState.loading();
 
-    try {
+    return _handleAuthRequest(() async {
       final useCase = ref.read(verifySignupCodeUseCaseProvider);
-      final isVerified = await useCase(email: email, code: code);
-
-      // 검증 성공 시 로딩 해제
       state = AuthState.initial();
-      return isVerified;
-    } on ValidationException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } on NetworkException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } on ServerException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } catch (e) {
-      state = AuthState.error('인증번호 확인 중 오류가 발생했습니다: $e');
-      rethrow;
-    }
+      return await useCase(email: email, code: code);
+    }, rethrowError: true, defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다');
   }
 
   /// 비밀번호 찾기 인증번호 검증
@@ -178,26 +132,11 @@ class AuthViewModel extends _$AuthViewModel {
   }) async {
     state = AuthState.loading();
 
-    try {
+    return _handleAuthRequest(() async {
       final useCase = ref.read(verifyFindPasswordCodeUseCaseProvider);
-      final isVerified = await useCase(email: email, code: code);
-
-      // 검증 성공 시 로딩 해제
       state = AuthState.initial();
-      return isVerified;
-    } on ValidationException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } on NetworkException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } on ServerException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } catch (e) {
-      state = AuthState.error('인증번호 확인 중 오류가 발생했습니다: $e');
-      rethrow;
-    }
+      return await useCase(email: email, code: code);
+    }, rethrowError: true, defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다');
   }
 
   /// 회원가입
@@ -210,7 +149,7 @@ class AuthViewModel extends _$AuthViewModel {
   }) async {
     state = AuthState.loading();
 
-    try {
+    await _handleAuthRequest(() async {
       final useCase = ref.read(registerUseCaseProvider);
       final result = await useCase(
         email: email,
@@ -219,21 +158,8 @@ class AuthViewModel extends _$AuthViewModel {
         nickname: nickname,
         gender: gender,
       );
-
       state = AuthState.authenticated(result.user);
-    } on ValidationException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } on NetworkException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } on ServerException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } catch (e) {
-      state = AuthState.error('회원가입 중 오류가 발생했습니다: $e');
-      rethrow;
-    }
+    }, rethrowError: true, defaultErrorMessage: '회원가입 중 오류가 발생했습니다');
   }
 
   /// 로그아웃
@@ -251,46 +177,20 @@ class AuthViewModel extends _$AuthViewModel {
 
   /// Google 로그인
   Future<void> loginWithGoogle() async {
-    try {
+    await _handleAuthRequest(() async {
       final useCase = ref.read(googleLoginUseCaseProvider);
       final result = await useCase();
-
       state = AuthState.authenticated(result.user);
-    } on NetworkException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } on UnauthorizedException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } on ServerException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } catch (e) {
-      state = AuthState.error('Google 로그인 중 오류가 발생했습니다: $e');
-      rethrow;
-    }
+    }, rethrowError: true, defaultErrorMessage: 'Google 로그인 중 오류가 발생했습니다');
   }
 
   /// Apple 로그인
   Future<void> loginWithApple() async {
-    try {
+    await _handleAuthRequest(() async {
       final useCase = ref.read(appleLoginUseCaseProvider);
       final result = await useCase();
-
       state = AuthState.authenticated(result.user);
-    } on NetworkException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } on UnauthorizedException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } on ServerException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } catch (e) {
-      state = AuthState.error('Apple 로그인 중 오류가 발생했습니다: $e');
-      rethrow;
-    }
+    }, rethrowError: true, defaultErrorMessage: 'Apple 로그인 중 오류가 발생했습니다');
   }
 
   /// 에러 메시지 초기화
@@ -324,25 +224,11 @@ class AuthViewModel extends _$AuthViewModel {
   Future<void> sendPasswordResetCode(String email) async {
     state = AuthState.loading();
 
-    try {
+    await _handleAuthRequest(() async {
       final useCase = ref.read(sendPasswordResetCodeUseCaseProvider);
       await useCase(email);
-
-      // 인증번호 전송 성공 시 로딩 해제
       state = AuthState.initial();
-    } on ValidationException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } on NetworkException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } on ServerException catch (e) {
-      state = AuthState.error(e.message);
-      rethrow;
-    } catch (e) {
-      state = AuthState.error('인증번호 전송 중 오류가 발생했습니다: $e');
-      rethrow;
-    }
+    }, rethrowError: true, defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다');
   }
 
   /// 비밀번호 재설정
@@ -354,27 +240,43 @@ class AuthViewModel extends _$AuthViewModel {
 
     debugPrint("======== email: ${state.user?.email} =======");
 
-    try {
+    await _handleAuthRequest(() async {
       final useCase = ref.read(resetPasswordUseCaseProvider);
-      await useCase(
-        email: email,
-        newPassword: newPassword,
-      );
-
-      // 비밀번호 재설정 성공 시 로딩 해제
+      await useCase(email: email, newPassword: newPassword);
       state = AuthState.initial();
+    }, rethrowError: true, defaultErrorMessage: '비밀번호 재설정 중 오류가 발생했습니다');
+  }
+
+  /// 공통 에러 처리 헬퍼 메서드
+  Future<T> _handleAuthRequest<T>(
+    Future<T> Function() request, {
+    bool loading = false,
+    bool rethrowError = false,
+    String defaultErrorMessage = '오류가 발생했습니다',
+  }) async {
+    if (loading) {
+      state = AuthState.loading();
+    }
+    try {
+      return await request();
     } on ValidationException catch (e) {
       state = AuthState.error(e.message);
-      rethrow;
+      if (rethrowError) rethrow;
     } on NetworkException catch (e) {
       state = AuthState.error(e.message);
-      rethrow;
+      if (rethrowError) rethrow;
     } on ServerException catch (e) {
       state = AuthState.error(e.message);
-      rethrow;
+      if (rethrowError) rethrow;
     } catch (e) {
-      state = AuthState.error('비밀번호 재설정 중 오류가 발생했습니다: $e');
-      rethrow;
+      state = AuthState.error(defaultErrorMessage);
+      debugPrint('$defaultErrorMessage: $e');
+      if (rethrowError) rethrow;
     }
+    // 에러 발생 시 T 타입의 기본값을 반환해야 함 (Future<void>가 아닌 경우)
+    // 이 예제에서는 rethrow 하거나 Future<void>가 대부분이라 문제가 덜하지만,
+    // Future<bool> 같은 경우를 위해 기본값 처리가 필요할 수 있습니다.
+    // 여기서는 rethrowError=true로 처리하여 호출부에서 처리하도록 유도합니다.
+    throw Exception(defaultErrorMessage);
   }
 }
