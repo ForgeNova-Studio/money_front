@@ -138,11 +138,11 @@ class AppRouter {
         //   name: 'incomes',
         //   builder: (context, state) => const IncomeListScreen(),
         // ),
-        // GoRoute(
-        //   path: RouteNames.addIncome,
-        //   name: 'addIncome',
-        //   builder: (context, state) => const AddIncomeScreen(),
-        // ),
+        GoRoute(
+          path: RouteNames.addIncome,
+          name: 'addIncome',
+          builder: (context, state) => const AddIncomeScreen(),
+        ),
         // GoRoute(
         //   path: '/incomes/:id',
         //   name: 'incomeDetail',
