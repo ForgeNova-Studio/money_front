@@ -35,6 +35,7 @@ abstract class AuthRepository {
   /// [email] 사용자 이메일
   /// [password] 사용자 비밀번호
   /// [nickname] 사용자 닉네임
+  /// [gender] 사용자 성별
   ///
   /// Returns: [AuthResult] (User + AuthToken)
   ///
