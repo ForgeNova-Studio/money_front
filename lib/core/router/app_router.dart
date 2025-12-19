@@ -21,10 +21,7 @@ import 'package:moneyflow/features/expense/presentation/screens/expense_detail_s
 import 'package:moneyflow/features/expense/presentation/screens/edit_expense_screen.dart';
 
 // Income Screens
-import 'package:moneyflow/features/income/presentation/screens/income_list_screen.dart';
 import 'package:moneyflow/features/income/presentation/screens/add_income_screen.dart';
-import 'package:moneyflow/features/income/presentation/screens/income_detail_screen.dart';
-import 'package:moneyflow/features/income/presentation/screens/edit_income_screen.dart';
 
 // Statistics Screens
 import 'package:moneyflow/features/statistics/presentation/screens/statistics_screen.dart';
@@ -136,48 +133,48 @@ class AppRouter {
         ),
 
         // ==================== Income Routes ====================
-        GoRoute(
-          path: RouteNames.incomes,
-          name: 'incomes',
-          builder: (context, state) => const IncomeListScreen(),
-        ),
-        GoRoute(
-          path: RouteNames.addIncome,
-          name: 'addIncome',
-          builder: (context, state) => const AddIncomeScreen(),
-        ),
-        GoRoute(
-          path: '/incomes/:id',
-          name: 'incomeDetail',
-          builder: (context, state) {
-            // extra로 IncomeModel 전달받기
-            final income = state.extra as IncomeModel?;
-            if (income == null) {
-              return Scaffold(
-                body: Center(
-                  child: Text('잘못된 접근입니다.'),
-                ),
-              );
-            }
-            return IncomeDetailScreen(income: income);
-          },
-        ),
-        GoRoute(
-          path: '/incomes/:id/edit',
-          name: 'editIncome',
-          builder: (context, state) {
-            // extra로 IncomeModel 전달받기
-            final income = state.extra as IncomeModel?;
-            if (income == null) {
-              return Scaffold(
-                body: Center(
-                  child: Text('잘못된 접근입니다.'),
-                ),
-              );
-            }
-            return EditIncomeScreen(income: income);
-          },
-        ),
+        // GoRoute(
+        //   path: RouteNames.incomes,
+        //   name: 'incomes',
+        //   builder: (context, state) => const IncomeListScreen(),
+        // ),
+        // GoRoute(
+        //   path: RouteNames.addIncome,
+        //   name: 'addIncome',
+        //   builder: (context, state) => const AddIncomeScreen(),
+        // ),
+        // GoRoute(
+        //   path: '/incomes/:id',
+        //   name: 'incomeDetail',
+        //   builder: (context, state) {
+        //     // extra로 IncomeModel 전달받기
+        //     final income = state.extra as IncomeModel?;
+        //     if (income == null) {
+        //       return Scaffold(
+        //         body: Center(
+        //           child: Text('잘못된 접근입니다.'),
+        //         ),
+        //       );
+        //     }
+        //     return IncomeDetailScreen(income: income);
+        //   },
+        // ),
+        // GoRoute(
+        //   path: '/incomes/:id/edit',
+        //   name: 'editIncome',
+        //   builder: (context, state) {
+        //     // extra로 IncomeModel 전달받기
+        //     final income = state.extra as IncomeModel?;
+        //     if (income == null) {
+        //       return Scaffold(
+        //         body: Center(
+        //           child: Text('잘못된 접근입니다.'),
+        //         ),
+        //       );
+        //     }
+        //     return EditIncomeScreen(income: income);
+        //   },
+        // ),
 
         // ==================== Statistics Routes ====================
         GoRoute(
