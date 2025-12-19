@@ -1,13 +1,18 @@
+// packages
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
+import 'package:table_calendar/table_calendar.dart'; // Import for CalendarFormat
+
+// core
 import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moneyflow/core/router/route_names.dart';
+
+// features
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
 import 'package:moneyflow/features/home/presentation/widgets/custom_calendar.dart';
-import 'package:go_router/go_router.dart';
-import 'package:moneyflow/core/router/route_names.dart';
-import 'package:table_calendar/table_calendar.dart'; // Import for CalendarFormat
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
