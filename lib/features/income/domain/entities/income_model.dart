@@ -21,36 +21,6 @@ class IncomeModel {
     this.updatedAt,
   });
 
-  factory IncomeModel.fromJson(Map<String, dynamic> json) {
-    return IncomeModel(
-      incomeId: json['incomeId'],
-      userId: json['userId'],
-      coupleId: json['coupleId'],
-      amount: (json['amount'] as num).toDouble(),
-      date: DateTime.parse(json['date']),
-      source: json['source'],
-      description: json['description'],
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
-          : null,
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
-          : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      if (incomeId != null) 'incomeId': incomeId,
-      if (userId != null) 'userId': userId,
-      if (coupleId != null) 'coupleId': coupleId,
-      'amount': amount,
-      'date': date.toIso8601String().split('T')[0], // yyyy-MM-dd 형식
-      'source': source,
-      if (description != null) 'description': description,
-    };
-  }
-
   IncomeModel copyWith({
     String? incomeId,
     String? userId,
