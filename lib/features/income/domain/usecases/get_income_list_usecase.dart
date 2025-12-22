@@ -16,7 +16,7 @@ class GetIncomeListUsecase {
   ///
   /// Throws:
   /// - [NetworkException] 네트워크 오류
-  /// - [UnauthorizedException] 인증 실패
+  /// - [TokenExpiredException] 토큰 만료
   /// - [ServerException] 서버 오류
 
   Future<List<Income>> call({

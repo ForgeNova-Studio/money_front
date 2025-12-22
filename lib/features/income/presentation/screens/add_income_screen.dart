@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:moneyflow/features/income/presentation/providers/income_providers.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../domain/entities/income.dart';
-import '../providers/income_provider_old.dart';
 
-class AddIncomeScreen extends StatefulWidget {
+class AddIncomeScreen extends ConsumerStatefulWidget {
   const AddIncomeScreen({super.key});
 
   @override
-  State<AddIncomeScreen> createState() => _AddIncomeScreenState();
+  ConsumerState<AddIncomeScreen> createState() => _AddIncomeScreenState();
 }
 
-class _AddIncomeScreenState extends State<AddIncomeScreen> {
+class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -74,10 +74,10 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
       return;
     }
 
-    final incomeProvider = context.read<IncomeProvider>();
+    // final incomeProvider = ref.read(incomeProvider.notifier);
     final amount = double.parse(_amountController.text.replaceAll(',', ''));
 
-    final income = IncomeModel(
+    final income = Income(
       amount: amount,
       date: _selectedDate,
       source: _selectedSource,
@@ -87,7 +87,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
     );
 
     try {
-      await incomeProvider.createIncome(income);
+      // await incomeProvider.createIncomeUseCase(income);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -100,12 +100,12 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(incomeProvider.errorMessage ?? '수입 등록에 실패했습니다'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text(incomeProvider.errorMessage ?? '수입 등록에 실패했습니다'),
+        //     backgroundColor: AppColors.error,
+        //   ),
+        // );
       }
     }
   }
