@@ -12,7 +12,7 @@ class GetIncomeListUsecase {
   /// [endDate] 조회 종료일*
   /// [source] 수입 출처
   ///
-  /// Returns: [List<IncomeModel>] 수입 목록
+  /// Returns: [List<Income>] 수입 목록
   ///
   /// Throws:
   /// - [NetworkException] 네트워크 오류

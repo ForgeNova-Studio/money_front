@@ -10,7 +10,7 @@ class CreateIncomeUsecase {
   ///
   /// [income] 수입 정보
   ///
-  /// Returns: [IncomeModel] 생성된 수입
+  /// Returns: [Income] 생성된 수입
   ///
   /// Throws:
   /// - [NetworkException] 네트워크 오류

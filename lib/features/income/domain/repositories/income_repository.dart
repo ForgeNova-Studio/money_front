@@ -18,7 +18,7 @@ abstract class IncomeRepository {
   /// [endDate] 조회 종료일*
   /// [source] 수입 출처
   ///
-  /// Returns: [List<IncomeModel>] 수입 목록
+  /// Returns: [List<Income>] 수입 목록
   ///
   /// Throws:
   /// - [NetworkException] 네트워크 오류
@@ -33,7 +33,7 @@ abstract class IncomeRepository {
   /// 수입 생성
   /// [income] 수입 정보
   ///
-  /// Returns: [IncomeModel] 생성된 수입
+  /// Returns: [Income] 생성된 수입
   ///
   /// Throws:
   /// - [NetworkException] 네트워크 오류
@@ -46,7 +46,7 @@ abstract class IncomeRepository {
   /// 수입 상세 조회
   /// [incomeId] 수입 ID*
   ///
-  /// Returns: [IncomeModel]
+  /// Returns: [Income]
   ///
   /// Throws:
   /// - [NetworkException] 네트워크 오류
@@ -60,7 +60,7 @@ abstract class IncomeRepository {
   /// [incomeId] 수입 ID*
   /// [income] 수입 정보*
   ///
-  /// Returns: [IncomeModel] 수정된 수입
+  /// Returns: [Income] 수정된 수입
   ///
   /// Throws:
   /// - [NetworkException] 네트워크 오류
@@ -86,7 +86,7 @@ abstract class IncomeRepository {
 
   /// 최근 수입 내역 조회 (최근 수입 5개 조회 - 홈 화면 전용)
   ///
-  /// Returns: [List<IncomeModel>] 최근 수입 목록
+  /// Returns: [List<Income>] 최근 수입 목록
   ///
   /// Throws:
   /// - [NetworkException] 네트워크 오류

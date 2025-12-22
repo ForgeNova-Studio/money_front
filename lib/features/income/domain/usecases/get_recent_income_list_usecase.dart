@@ -8,7 +8,7 @@ class GetRecentIncomeListUsecase {
 
   /// 최근 수입 내역 조회 (최근 수입 5개 조회 - 홈 화면 전용)
   ///
-  /// Returns: [List<IncomeModel>] 최근 수입 목록
+  /// Returns: [List<Income>] 최근 수입 목록
   ///
   /// Throws:
   /// - [NetworkException] 네트워크 오류

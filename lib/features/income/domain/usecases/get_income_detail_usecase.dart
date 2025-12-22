@@ -10,7 +10,7 @@ class GetIncomeDetailUsecase {
   ///
   /// [incomeId] 수입 ID*
   ///
-  /// Returns: [IncomeModel]
+  /// Returns: [Income]
   ///
   /// Throws:
   /// - [NetworkException] 네트워크 오류

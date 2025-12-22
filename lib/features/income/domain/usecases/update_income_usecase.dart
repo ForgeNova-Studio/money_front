@@ -11,7 +11,7 @@ class UpdateIncomeUsecase {
   /// [incomeId] 수입 ID*
   /// [income] 수입 정보*
   ///
-  /// Returns: [IncomeModel] 수정된 수입
+  /// Returns: [Income] 수정된 수입
   ///
   /// Throws:
   /// - [NetworkException] 네트워크 오류
