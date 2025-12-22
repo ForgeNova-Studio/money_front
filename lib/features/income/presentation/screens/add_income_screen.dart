@@ -115,6 +115,9 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Provider를 watch하여 화면이 살아있는 동안 Provider가 dispose되지 않도록 함
+    final incomeState = ref.watch(incomeViewModelProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
