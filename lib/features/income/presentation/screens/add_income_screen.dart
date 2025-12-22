@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moneyflow/features/income/presentation/providers/income_providers.dart';
 import 'package:intl/intl.dart';
+import 'package:moneyflow/features/income/presentation/viewmodels/income_view_model.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../domain/entities/income.dart';
 
@@ -74,7 +75,6 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
       return;
     }
 
-    // final incomeProvider = ref.read(incomeProvider.notifier);
     final amount = double.parse(_amountController.text.replaceAll(',', ''));
 
     final income = Income(
@@ -87,7 +87,9 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     );
 
     try {
-      // await incomeProvider.createIncomeUseCase(income);
+      await ref
+          .read(incomeViewModelProvider.notifier)
+          .createIncome(income: income);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -100,6 +102,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
       }
     } catch (e) {
       if (mounted) {
+        debugPrint(e.toString());
         // ScaffoldMessenger.of(context).showSnackBar(
         //   SnackBar(
         //     content: Text(incomeProvider.errorMessage ?? '수입 등록에 실패했습니다'),
