@@ -12,8 +12,8 @@ sealed class IncomeModel with _$IncomeModel {
   const IncomeModel._();
 
   const factory IncomeModel({
-    required String incomeId,
-    required String userId,
+    String? incomeId,
+    String? userId,
     String? coupleId,
     required double amount,
     required DateTime date,
@@ -47,8 +47,8 @@ sealed class IncomeModel with _$IncomeModel {
   /// Domain Entity로부터 생성
   factory IncomeModel.fromEntity(Income income) {
     return IncomeModel(
-      incomeId: income.incomeId!,
-      userId: income.userId!,
+      incomeId: income.incomeId,
+      userId: income.userId,
       coupleId: income.coupleId,
       amount: income.amount,
       date: income.date,

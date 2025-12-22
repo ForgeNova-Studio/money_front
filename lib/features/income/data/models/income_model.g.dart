@@ -7,8 +7,8 @@ part of 'income_model.dart';
 // **************************************************************************
 
 _IncomeModel _$IncomeModelFromJson(Map<String, dynamic> json) => _IncomeModel(
-      incomeId: json['incomeId'] as String,
-      userId: json['userId'] as String,
+      incomeId: json['incomeId'] as String?,
+      userId: json['userId'] as String?,
       coupleId: json['coupleId'] as String?,
       amount: (json['amount'] as num).toDouble(),
       date: DateTime.parse(json['date'] as String),

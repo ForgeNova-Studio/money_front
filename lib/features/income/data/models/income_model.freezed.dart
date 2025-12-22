@@ -14,8 +14,8 @@ T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$IncomeModel {
-  String get incomeId;
-  String get userId;
+  String? get incomeId;
+  String? get userId;
   String? get coupleId;
   double get amount;
   DateTime get date;
@@ -73,8 +73,8 @@ abstract mixin class $IncomeModelCopyWith<$Res> {
       _$IncomeModelCopyWithImpl;
   @useResult
   $Res call(
-      {String incomeId,
-      String userId,
+      {String? incomeId,
+      String? userId,
       String? coupleId,
       double amount,
       DateTime date,
@@ -96,8 +96,8 @@ class _$IncomeModelCopyWithImpl<$Res> implements $IncomeModelCopyWith<$Res> {
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? incomeId = null,
-    Object? userId = null,
+    Object? incomeId = freezed,
+    Object? userId = freezed,
     Object? coupleId = freezed,
     Object? amount = null,
     Object? date = null,
@@ -107,14 +107,14 @@ class _$IncomeModelCopyWithImpl<$Res> implements $IncomeModelCopyWith<$Res> {
     Object? updatedAt = freezed,
   }) {
     return _then(_self.copyWith(
-      incomeId: null == incomeId
+      incomeId: freezed == incomeId
           ? _self.incomeId
           : incomeId // ignore: cast_nullable_to_non_nullable
-              as String,
-      userId: null == userId
+              as String?,
+      userId: freezed == userId
           ? _self.userId
           : userId // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       coupleId: freezed == coupleId
           ? _self.coupleId
           : coupleId // ignore: cast_nullable_to_non_nullable
@@ -239,8 +239,8 @@ extension IncomeModelPatterns on IncomeModel {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(
-            String incomeId,
-            String userId,
+            String? incomeId,
+            String? userId,
             String? coupleId,
             double amount,
             DateTime date,
@@ -285,8 +285,8 @@ extension IncomeModelPatterns on IncomeModel {
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
     TResult Function(
-            String incomeId,
-            String userId,
+            String? incomeId,
+            String? userId,
             String? coupleId,
             double amount,
             DateTime date,
@@ -327,8 +327,8 @@ extension IncomeModelPatterns on IncomeModel {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(
-            String incomeId,
-            String userId,
+            String? incomeId,
+            String? userId,
             String? coupleId,
             double amount,
             DateTime date,
@@ -361,8 +361,8 @@ extension IncomeModelPatterns on IncomeModel {
 @JsonSerializable()
 class _IncomeModel extends IncomeModel {
   const _IncomeModel(
-      {required this.incomeId,
-      required this.userId,
+      {this.incomeId,
+      this.userId,
       this.coupleId,
       required this.amount,
       required this.date,
@@ -375,9 +375,9 @@ class _IncomeModel extends IncomeModel {
       _$IncomeModelFromJson(json);
 
   @override
-  final String incomeId;
+  final String? incomeId;
   @override
-  final String userId;
+  final String? userId;
   @override
   final String? coupleId;
   @override
@@ -449,8 +449,8 @@ abstract mixin class _$IncomeModelCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String incomeId,
-      String userId,
+      {String? incomeId,
+      String? userId,
       String? coupleId,
       double amount,
       DateTime date,
@@ -472,8 +472,8 @@ class __$IncomeModelCopyWithImpl<$Res> implements _$IncomeModelCopyWith<$Res> {
   @override
   @pragma('vm:prefer-inline')
   $Res call({
-    Object? incomeId = null,
-    Object? userId = null,
+    Object? incomeId = freezed,
+    Object? userId = freezed,
     Object? coupleId = freezed,
     Object? amount = null,
     Object? date = null,
@@ -483,14 +483,14 @@ class __$IncomeModelCopyWithImpl<$Res> implements _$IncomeModelCopyWith<$Res> {
     Object? updatedAt = freezed,
   }) {
     return _then(_IncomeModel(
-      incomeId: null == incomeId
+      incomeId: freezed == incomeId
           ? _self.incomeId
           : incomeId // ignore: cast_nullable_to_non_nullable
-              as String,
-      userId: null == userId
+              as String?,
+      userId: freezed == userId
           ? _self.userId
           : userId // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       coupleId: freezed == coupleId
           ? _self.coupleId
           : coupleId // ignore: cast_nullable_to_non_nullable
