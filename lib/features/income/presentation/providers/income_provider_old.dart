@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:moneyflow/features/income/data/services/income_api_service.dart';
-import '../../domain/entities/income_model.dart';
+import '../../domain/entities/income.dart';
 
 enum IncomeStatus { initial, loading, success, error }
 

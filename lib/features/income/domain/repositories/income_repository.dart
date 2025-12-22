@@ -1,5 +1,5 @@
 // entities
-import 'package:moneyflow/features/income/domain/entities/income_model.dart';
+import 'package:moneyflow/features/income/domain/entities/income.dart';
 
 /// Income Repository 인터페이스
 ///
@@ -24,7 +24,7 @@ abstract class IncomeRepository {
   /// - [NetworkException] 네트워크 오류
   /// - [TokenExpiredException] 토큰 만료
   /// - [ServerException] 서버 오류
-  Future<List<IncomeModel>> getIncomeList({
+  Future<List<Income>> getIncomeList({
     required DateTime startDate,
     required DateTime endDate,
     String? source,
@@ -39,8 +39,8 @@ abstract class IncomeRepository {
   /// - [NetworkException] 네트워크 오류
   /// - [TokenExpiredException] 토큰 만료
   /// - [ServerException] 서버 오류
-  Future<IncomeModel> createIncome({
-    required IncomeModel income,
+  Future<Income> createIncome({
+    required Income income,
   });
 
   /// 수입 상세 조회
@@ -52,7 +52,7 @@ abstract class IncomeRepository {
   /// - [NetworkException] 네트워크 오류
   /// - [TokenExpiredException] 토큰 만료
   /// - [ServerException] 서버 오류
-  Future<IncomeModel> getIncomeDetail({
+  Future<Income> getIncomeDetail({
     required String incomeId,
   });
 
@@ -66,9 +66,9 @@ abstract class IncomeRepository {
   /// - [NetworkException] 네트워크 오류
   /// - [TokenExpiredException] 토큰 만료
   /// - [ServerException] 서버 오류
-  Future<IncomeModel> updateIncome({
+  Future<Income> updateIncome({
     required String incomeId,
-    required IncomeModel income,
+    required Income income,
   });
 
   /// 수입 삭제
@@ -92,5 +92,5 @@ abstract class IncomeRepository {
   /// - [NetworkException] 네트워크 오류
   /// - [TokenExpiredException] 토큰 만료
   /// - [ServerException] 서버 오류
-  Future<List<IncomeModel>> getRecentIncomeList();
+  Future<List<Income>> getRecentIncomeList();
 }

@@ -34,7 +34,7 @@ import 'package:moneyflow/features/couple/presentation/screens/couple_join_scree
 
 // Models (for extra parameter)
 import 'package:moneyflow/features/expense/domain/entities/expense_model.dart';
-import 'package:moneyflow/features/income/domain/entities/income_model.dart';
+import 'package:moneyflow/features/income/domain/entities/income.dart';
 
 /// 앱 라우트 설정 클래스
 class AppRouter {

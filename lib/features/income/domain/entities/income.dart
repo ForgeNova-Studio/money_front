@@ -1,4 +1,4 @@
-class IncomeModel {
+class Income {
   final String? incomeId;
   final String? userId;
   final String? coupleId;
@@ -9,7 +9,7 @@ class IncomeModel {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  IncomeModel({
+  Income({
     this.incomeId,
     this.userId,
     this.coupleId,
@@ -21,7 +21,7 @@ class IncomeModel {
     this.updatedAt,
   });
 
-  IncomeModel copyWith({
+  Income copyWith({
     String? incomeId,
     String? userId,
     String? coupleId,
@@ -32,7 +32,7 @@ class IncomeModel {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return IncomeModel(
+    return Income(
       incomeId: incomeId ?? this.incomeId,
       userId: userId ?? this.userId,
       coupleId: coupleId ?? this.coupleId,
