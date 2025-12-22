@@ -27,8 +27,6 @@ class IncomeViewModel extends _$IncomeViewModel {
       final usecase = ref.read(createIncomeUsecaseProvider);
       final createdIncome = await usecase(income: income);
 
-      //TODO: 생성된 수입을 목록 맨 앞에 추가
-
       state = state.copyWith(
         isLoading: false,
       );
