@@ -57,10 +57,10 @@ final dioProvider = Provider<Dio>((ref) {
     responseBody: true,
     error: true,
     compact: true,
-    filter: (options, args) {
-      options.headers['Authorization'] = 'Bearer ***';
-      return true;
-    },
+    // filter: (options, args) {
+    //   options.headers['Authorization'] = 'Bearer ***';
+    //   return true;
+    // },
   ));
 
   return dio;
