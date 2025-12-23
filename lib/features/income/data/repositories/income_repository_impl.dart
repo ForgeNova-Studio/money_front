@@ -27,14 +27,14 @@ class IncomeRepositoryImpl implements IncomeRepository {
     String? source,
   }) async {
     // 1. Remote API 호출
-    final incomeModels = await remoteDataSource.getIncomeList(
+    final response = await remoteDataSource.getIncomeList(
       startDate: startDate,
       endDate: endDate,
       source: source,
     );
 
     // 2. Entity 변환 및 반환
-    return incomeModels.map((model) => model.toEntity()).toList();
+    return response.incomes.map((model) => model.toEntity()).toList();
   }
 
   @override
@@ -58,7 +58,7 @@ class IncomeRepositoryImpl implements IncomeRepository {
     required String incomeId,
   }) async {
     // 1. Remote API 호출
-    final incomeModel = await remoteDataSource.getIncome(
+    final incomeModel = await remoteDataSource.getIncomeDetail(
       incomeId: incomeId,
     );
 

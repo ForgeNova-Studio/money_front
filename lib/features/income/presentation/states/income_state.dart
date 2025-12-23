@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moneyflow/features/income/domain/entities/income.dart';
 
 part 'income_state.freezed.dart';
@@ -6,24 +7,16 @@ part 'income_state.freezed.dart';
 @freezed
 sealed class IncomeState with _$IncomeState {
   const factory IncomeState({
-    @Default(false) bool isLoading,
-    @Default([]) List<Income> incomes,
-    @Default('') String errorMessage,
+    /// 수입 목록 (AsyncValue로 로딩/에러 상태 관리)
+    @Default(AsyncValue.loading()) AsyncValue<List<Income>> incomes,
+
+    /// 현재 보여지는 달력의 기준 날짜 (월 단위 조회를 위함)
+    required DateTime focusedDay,
+
+    /// 사용자가 선택한 특정 날짜 (null이면 해당 월 전체)
+    DateTime? selectedDate,
+
+    /// 총 수입 금액 (현재 조회된 목록 기준)
+    @Default(0) double totalAmount,
   }) = _IncomeState;
-
-  const IncomeState._();
-
-  /// 초기 상태
-  factory IncomeState.initial() => const IncomeState();
-
-  /// 로딩 상태
-  factory IncomeState.loading() => const IncomeState(isLoading: true);
-
-  /// 성공 상태
-  factory IncomeState.success(List<Income> incomes) =>
-      IncomeState(incomes: incomes);
-
-  // 에러 상태
-  factory IncomeState.error(String errorMessage) =>
-      IncomeState(errorMessage: errorMessage);
 }

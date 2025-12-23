@@ -1,3 +1,4 @@
+import 'package:moneyflow/features/income/data/models/income_list_response_model.dart';
 import 'package:moneyflow/features/income/data/models/income_model.dart';
 
 /// Income Remote Data Source
@@ -8,7 +9,7 @@ import 'package:moneyflow/features/income/data/models/income_model.dart';
 /// - 구현체에서 예외 처리
 abstract class IncomeRemoteDataSource {
   /// 수입 목록 조회
-  Future<List<IncomeModel>> getIncomeList({
+  Future<IncomeListResponseModel> getIncomeList({
     required DateTime startDate,
     required DateTime endDate,
     String? source,

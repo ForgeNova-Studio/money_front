@@ -14,9 +14,17 @@ T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$IncomeState {
-  bool get isLoading;
-  List<Income> get incomes;
-  String get errorMessage;
+  /// 수입 목록 (AsyncValue로 로딩/에러 상태 관리)
+  AsyncValue<List<Income>> get incomes;
+
+  /// 현재 보여지는 달력의 기준 날짜 (월 단위 조회를 위함)
+  DateTime get focusedDay;
+
+  /// 사용자가 선택한 특정 날짜 (null이면 해당 월 전체)
+  DateTime? get selectedDate;
+
+  /// 총 수입 금액 (현재 조회된 목록 기준)
+  double get totalAmount;
 
   /// Create a copy of IncomeState
   /// with the given fields replaced by the non-null parameter values.
@@ -30,20 +38,22 @@ mixin _$IncomeState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is IncomeState &&
-            (identical(other.isLoading, isLoading) ||
-                other.isLoading == isLoading) &&
-            const DeepCollectionEquality().equals(other.incomes, incomes) &&
-            (identical(other.errorMessage, errorMessage) ||
-                other.errorMessage == errorMessage));
+            (identical(other.incomes, incomes) || other.incomes == incomes) &&
+            (identical(other.focusedDay, focusedDay) ||
+                other.focusedDay == focusedDay) &&
+            (identical(other.selectedDate, selectedDate) ||
+                other.selectedDate == selectedDate) &&
+            (identical(other.totalAmount, totalAmount) ||
+                other.totalAmount == totalAmount));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, isLoading,
-      const DeepCollectionEquality().hash(incomes), errorMessage);
+  int get hashCode =>
+      Object.hash(runtimeType, incomes, focusedDay, selectedDate, totalAmount);
 
   @override
   String toString() {
-    return 'IncomeState(isLoading: $isLoading, incomes: $incomes, errorMessage: $errorMessage)';
+    return 'IncomeState(incomes: $incomes, focusedDay: $focusedDay, selectedDate: $selectedDate, totalAmount: $totalAmount)';
   }
 }
 
@@ -53,7 +63,11 @@ abstract mixin class $IncomeStateCopyWith<$Res> {
           IncomeState value, $Res Function(IncomeState) _then) =
       _$IncomeStateCopyWithImpl;
   @useResult
-  $Res call({bool isLoading, List<Income> incomes, String errorMessage});
+  $Res call(
+      {AsyncValue<List<Income>> incomes,
+      DateTime focusedDay,
+      DateTime? selectedDate,
+      double totalAmount});
 }
 
 /// @nodoc
@@ -68,23 +82,28 @@ class _$IncomeStateCopyWithImpl<$Res> implements $IncomeStateCopyWith<$Res> {
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? isLoading = null,
     Object? incomes = null,
-    Object? errorMessage = null,
+    Object? focusedDay = null,
+    Object? selectedDate = freezed,
+    Object? totalAmount = null,
   }) {
     return _then(_self.copyWith(
-      isLoading: null == isLoading
-          ? _self.isLoading
-          : isLoading // ignore: cast_nullable_to_non_nullable
-              as bool,
       incomes: null == incomes
           ? _self.incomes
           : incomes // ignore: cast_nullable_to_non_nullable
-              as List<Income>,
-      errorMessage: null == errorMessage
-          ? _self.errorMessage
-          : errorMessage // ignore: cast_nullable_to_non_nullable
-              as String,
+              as AsyncValue<List<Income>>,
+      focusedDay: null == focusedDay
+          ? _self.focusedDay
+          : focusedDay // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      selectedDate: freezed == selectedDate
+          ? _self.selectedDate
+          : selectedDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      totalAmount: null == totalAmount
+          ? _self.totalAmount
+          : totalAmount // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
@@ -180,14 +199,16 @@ extension IncomeStatePatterns on IncomeState {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(bool isLoading, List<Income> incomes, String errorMessage)?
+    TResult Function(AsyncValue<List<Income>> incomes, DateTime focusedDay,
+            DateTime? selectedDate, double totalAmount)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _IncomeState() when $default != null:
-        return $default(_that.isLoading, _that.incomes, _that.errorMessage);
+        return $default(_that.incomes, _that.focusedDay, _that.selectedDate,
+            _that.totalAmount);
       case _:
         return orElse();
     }
@@ -208,13 +229,15 @@ extension IncomeStatePatterns on IncomeState {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(bool isLoading, List<Income> incomes, String errorMessage)
+    TResult Function(AsyncValue<List<Income>> incomes, DateTime focusedDay,
+            DateTime? selectedDate, double totalAmount)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _IncomeState():
-        return $default(_that.isLoading, _that.incomes, _that.errorMessage);
+        return $default(_that.incomes, _that.focusedDay, _that.selectedDate,
+            _that.totalAmount);
     }
   }
 
@@ -232,14 +255,15 @@ extension IncomeStatePatterns on IncomeState {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(
-            bool isLoading, List<Income> incomes, String errorMessage)?
+    TResult? Function(AsyncValue<List<Income>> incomes, DateTime focusedDay,
+            DateTime? selectedDate, double totalAmount)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _IncomeState() when $default != null:
-        return $default(_that.isLoading, _that.incomes, _that.errorMessage);
+        return $default(_that.incomes, _that.focusedDay, _that.selectedDate,
+            _that.totalAmount);
       case _:
         return null;
     }
@@ -248,29 +272,30 @@ extension IncomeStatePatterns on IncomeState {
 
 /// @nodoc
 
-class _IncomeState extends IncomeState {
+class _IncomeState implements IncomeState {
   const _IncomeState(
-      {this.isLoading = false,
-      final List<Income> incomes = const [],
-      this.errorMessage = ''})
-      : _incomes = incomes,
-        super._();
+      {this.incomes = const AsyncValue.loading(),
+      required this.focusedDay,
+      this.selectedDate,
+      this.totalAmount = 0});
 
+  /// 수입 목록 (AsyncValue로 로딩/에러 상태 관리)
   @override
   @JsonKey()
-  final bool isLoading;
-  final List<Income> _incomes;
-  @override
-  @JsonKey()
-  List<Income> get incomes {
-    if (_incomes is EqualUnmodifiableListView) return _incomes;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_incomes);
-  }
+  final AsyncValue<List<Income>> incomes;
 
+  /// 현재 보여지는 달력의 기준 날짜 (월 단위 조회를 위함)
+  @override
+  final DateTime focusedDay;
+
+  /// 사용자가 선택한 특정 날짜 (null이면 해당 월 전체)
+  @override
+  final DateTime? selectedDate;
+
+  /// 총 수입 금액 (현재 조회된 목록 기준)
   @override
   @JsonKey()
-  final String errorMessage;
+  final double totalAmount;
 
   /// Create a copy of IncomeState
   /// with the given fields replaced by the non-null parameter values.
@@ -285,20 +310,22 @@ class _IncomeState extends IncomeState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _IncomeState &&
-            (identical(other.isLoading, isLoading) ||
-                other.isLoading == isLoading) &&
-            const DeepCollectionEquality().equals(other._incomes, _incomes) &&
-            (identical(other.errorMessage, errorMessage) ||
-                other.errorMessage == errorMessage));
+            (identical(other.incomes, incomes) || other.incomes == incomes) &&
+            (identical(other.focusedDay, focusedDay) ||
+                other.focusedDay == focusedDay) &&
+            (identical(other.selectedDate, selectedDate) ||
+                other.selectedDate == selectedDate) &&
+            (identical(other.totalAmount, totalAmount) ||
+                other.totalAmount == totalAmount));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, isLoading,
-      const DeepCollectionEquality().hash(_incomes), errorMessage);
+  int get hashCode =>
+      Object.hash(runtimeType, incomes, focusedDay, selectedDate, totalAmount);
 
   @override
   String toString() {
-    return 'IncomeState(isLoading: $isLoading, incomes: $incomes, errorMessage: $errorMessage)';
+    return 'IncomeState(incomes: $incomes, focusedDay: $focusedDay, selectedDate: $selectedDate, totalAmount: $totalAmount)';
   }
 }
 
@@ -310,7 +337,11 @@ abstract mixin class _$IncomeStateCopyWith<$Res>
       __$IncomeStateCopyWithImpl;
   @override
   @useResult
-  $Res call({bool isLoading, List<Income> incomes, String errorMessage});
+  $Res call(
+      {AsyncValue<List<Income>> incomes,
+      DateTime focusedDay,
+      DateTime? selectedDate,
+      double totalAmount});
 }
 
 /// @nodoc
@@ -325,23 +356,28 @@ class __$IncomeStateCopyWithImpl<$Res> implements _$IncomeStateCopyWith<$Res> {
   @override
   @pragma('vm:prefer-inline')
   $Res call({
-    Object? isLoading = null,
     Object? incomes = null,
-    Object? errorMessage = null,
+    Object? focusedDay = null,
+    Object? selectedDate = freezed,
+    Object? totalAmount = null,
   }) {
     return _then(_IncomeState(
-      isLoading: null == isLoading
-          ? _self.isLoading
-          : isLoading // ignore: cast_nullable_to_non_nullable
-              as bool,
       incomes: null == incomes
-          ? _self._incomes
+          ? _self.incomes
           : incomes // ignore: cast_nullable_to_non_nullable
-              as List<Income>,
-      errorMessage: null == errorMessage
-          ? _self.errorMessage
-          : errorMessage // ignore: cast_nullable_to_non_nullable
-              as String,
+              as AsyncValue<List<Income>>,
+      focusedDay: null == focusedDay
+          ? _self.focusedDay
+          : focusedDay // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      selectedDate: freezed == selectedDate
+          ? _self.selectedDate
+          : selectedDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      totalAmount: null == totalAmount
+          ? _self.totalAmount
+          : totalAmount // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }

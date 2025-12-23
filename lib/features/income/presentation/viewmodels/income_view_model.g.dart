@@ -41,7 +41,7 @@ final class IncomeViewModelProvider
   }
 }
 
-String _$incomeViewModelHash() => r'f7f02c207b5700efc2c00e9ae7de0f9eb6cd8f96';
+String _$incomeViewModelHash() => r'24296dc7151e38d84e01265d6835c5b47a717843';
 
 abstract class _$IncomeViewModel extends $Notifier<IncomeState> {
   IncomeState build();

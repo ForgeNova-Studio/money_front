@@ -101,11 +101,9 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     );
 
     try {
-      final createdIncome = await ref
-          .read(incomeViewModelProvider.notifier)
-          .createIncome(income: income);
+      await ref.read(incomeViewModelProvider.notifier).createIncome(income);
 
-      if (mounted && createdIncome != null) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('수입이 등록되었습니다'),

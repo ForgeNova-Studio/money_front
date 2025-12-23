@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:moneyflow/core/constants/api_constants.dart';
 import 'package:moneyflow/core/exceptions/exceptions.dart';
 
+import 'package:moneyflow/features/income/data/models/income_list_response_model.dart';
 // models
 import 'package:moneyflow/features/income/data/models/income_model.dart';
 
@@ -20,7 +21,7 @@ class IncomeRemoteDataSourceImpl implements IncomeRemoteDataSource {
   IncomeRemoteDataSourceImpl({required this.dio});
 
   @override
-  Future<List<IncomeModel>> getIncomeList({
+  Future<IncomeListResponseModel> getIncomeList({
     required DateTime startDate,
     required DateTime endDate,
     String? source,
@@ -40,8 +41,7 @@ class IncomeRemoteDataSourceImpl implements IncomeRemoteDataSource {
         queryParameters: queryParams,
       );
 
-      final List<dynamic> data = response.data;
-      return data.map((json) => IncomeModel.fromJson(json)).toList();
+      return IncomeListResponseModel.fromJson(response.data);
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     }
