@@ -62,6 +62,7 @@ dependencies:
   logger: ^2.0.2                     # 구조화된 로깅
   url_launcher: ^6.2.2               # 외부 URL/앱 실행
   share_plus: ^12.0.1                # 네이티브 공유 기능
+  synchronized: ^3.1.0               # 비동기 작업 동기화 (토큰 갱신 race condition 방지)
 
   # ==================== 앱 초기화 ====================
   flutter_native_splash: ^2.4.7      # 네이티브 스플래시 스크린

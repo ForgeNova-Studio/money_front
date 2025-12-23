@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +8,7 @@ import 'package:moneyflow/features/auth/presentation/providers/auth_providers.da
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:synchronized/synchronized.dart';
 
 /// SharedPreferences Provider
 ///
@@ -69,8 +68,9 @@ final dioProvider = Provider<Dio>((ref) {
 class _AuthInterceptor extends Interceptor {
   final Ref ref;
 
-  // Refresh Token 요청이 한 번만 실행되도록 관리
-  Completer<AuthTokenModel>? _refreshCompleter;
+  // Refresh Token 요청이 한 번만 실행되도록 관리 (Race Condition 방지)
+  final Lock _lock = Lock();
+  AuthTokenModel? _cachedToken;
 
   _AuthInterceptor(this.ref);
 
@@ -132,101 +132,74 @@ class _AuthInterceptor extends Interceptor {
       return handler.next(err);
     }
 
-    // 🚀 Race Condition 방지: 이미 토큰이 갱신되었는지 확인
-    // 실패한 요청의 헤더에 있는 토큰과 현재 저장된 토큰이 다르면,
-    // 다른 요청에 의해 이미 갱신된 것이므로 Refresh 없이 재시도
-    final failedRequestToken = err.requestOptions.headers['Authorization'];
-    final currentTokenHeader = 'Bearer ${token.accessToken}';
-
-    if (failedRequestToken != currentTokenHeader) {
-      debugPrint('[AuthInterceptor] 토큰이 이미 갱신되었습니다. 재시도합니다.');
-      final newOptions =
-          _applyNewToken(err.requestOptions, token.accessToken);
-      final retryDio = _createBasicDio();
-
-      try {
-        final response = await retryDio.fetch(newOptions);
-        return handler.resolve(response);
-      } catch (e) {
-        if (e is DioException) return handler.reject(e);
-        return handler.next(err);
-      }
-    }
-
     try {
-      // refresh 요청이 이미 실행 중이면 기다리기
-      if (_refreshCompleter != null) {
-        debugPrint("다른 refresh 요청을 기다리는 중");
-        final newToken = await _refreshCompleter!.future;
+      // Lock으로 보호: 동시에 여러 요청이 401을 받더라도 refresh는 한 번만 실행
+      final newToken = await _lock.synchronized(() async {
+        // 다른 요청이 이미 토큰을 갱신했는지 확인 (캐시 체크)
+        if (_cachedToken != null) {
+          debugPrint('[AuthInterceptor] 캐시된 토큰 재사용 (다른 요청이 이미 갱신함)');
+          return _cachedToken!;
+        }
 
-        final newOptions =
-            _applyNewToken(err.requestOptions, newToken.accessToken);
-        final retryDio = _createBasicDio();
+        // 새로운 refresh 요청 실행 (첫 번째 요청만 여기 도달)
+        debugPrint('[AuthInterceptor] 새로운 Refresh Token 요청 실행');
+        final refreshDio = _createBasicDio();
 
-        final response = await retryDio.fetch(newOptions);
-        return handler.resolve(response);
-      }
+        final response = await refreshDio.post(
+          ApiConstants.refreshToken,
+          data: {'refreshToken': token.refreshToken},
+        );
 
-      // 새로운 refresh 요청 실행
-      _refreshCompleter = Completer<AuthTokenModel>();
+        final newAuthToken = AuthTokenModel.fromJson(response.data);
+        await localDataSource.saveToken(newAuthToken);
 
-      debugPrint("새로운 refresh 요청 실행");
-      final refreshDio = _createBasicDio();
+        // 캐시에 저장 (다른 대기 중인 요청들이 재사용하도록)
+        _cachedToken = newAuthToken;
+        debugPrint('[AuthInterceptor] 토큰 갱신 성공 → 캐시에 저장');
 
-      final response = await refreshDio.post(
-        ApiConstants.refreshToken,
-        data: {'refreshToken': token.refreshToken},
-      );
+        return newAuthToken;
+      });
 
-      final newAuthToken = AuthTokenModel.fromJson(response.data);
-
-      await localDataSource.saveToken(newAuthToken);
-
-      _refreshCompleter?.complete(newAuthToken);
-
-      final newOptions =
-          _applyNewToken(err.requestOptions, newAuthToken.accessToken);
+      // 원래 실패했던 요청을 새 토큰으로 재시도
+      final newOptions = _applyNewToken(err.requestOptions, newToken.accessToken);
       final retryDio = _createBasicDio();
+      final response = await retryDio.fetch(newOptions);
 
-      final newResponse = await retryDio.fetch(newOptions);
-      return handler.resolve(newResponse);
+      debugPrint('[AuthInterceptor] 원래 요청 재시도 성공');
+      return handler.resolve(response);
     } catch (e) {
-      // Refresh Token 과정 중 에러가 발생했고, 아직 Completer가 완료되지 않은 경우에만 처리
-      if (_refreshCompleter != null && !_refreshCompleter!.isCompleted) {
-        _refreshCompleter?.completeError(e);
+      // TODO(auth): Refresh Token 실패 원인별 로깅 분리
+      // 1️⃣ 네트워크 오류 (인터넷 끊김, 타임아웃)
+      //    - e is DioException && e.type == DioExceptionType.connectionTimeout
+      //
+      // 2️⃣ 서버 오류 (5xx)
+      //    - e is DioException && e.response?.statusCode >= 500
+      //
+      // 3️⃣ Refresh Token 만료 / 무효 (401)
+      //    - e is DioException && e.response?.statusCode == 401
+      //    - 서버에서 refreshToken expired / invalid 응답
+      //
+      // 4️⃣ 기타 예외 (파싱 오류, 예상 못한 에러)
+      //
+      // 👉 추후 Crashlytics / Sentry 연동 시
+      //    원인별 tag 또는 error code로 분리 수집 권장
 
-        // TODO(auth): Refresh Token 실패 원인별 로깅 분리
-        // 1️⃣ 네트워크 오류 (인터넷 끊김, 타임아웃)
-        //    - e is DioException && e.type == DioExceptionType.connectionTimeout
-        //
-        // 2️⃣ 서버 오류 (5xx)
-        //    - e is DioException && e.response?.statusCode >= 500
-        //
-        // 3️⃣ Refresh Token 만료 / 무효 (401)
-        //    - e is DioException && e.response?.statusCode == 401
-        //    - 서버에서 refreshToken expired / invalid 응답
-        //
-        // 4️⃣ 기타 예외 (파싱 오류, 예상 못한 에러)
-        //
-        // 👉 추후 Crashlytics / Sentry 연동 시
-        //    원인별 tag 또는 error code로 분리 수집 권장
+      // 1. 로컬 데이터 삭제 (토큰 + 사용자 정보)
+      await localDataSource.clearAll();
 
-        // 1. 로컬 데이터 삭제 (토큰 + 사용자 정보)
-        await localDataSource.clearAll();
+      // 2. AuthViewModel 상태를 unauthenticated로 변경
+      // → GoRouter의 redirect가 자동으로 /login으로 이동
+      ref
+          .read(authViewModelProvider.notifier)
+          .forceUnauthenticated(errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.');
 
-        // 2. AuthViewModel 상태를 unauthenticated로 변경
-        // → GoRouter의 redirect가 자동으로 /login으로 이동
-        ref
-            .read(authViewModelProvider.notifier)
-            .forceUnauthenticated(errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.');
-
-        debugPrint('[AuthInterceptor] Refresh Token 실패 → 자동 로그아웃 처리');
-      }
+      debugPrint('[AuthInterceptor] Refresh Token 실패 → 자동 로그아웃 처리');
 
       if (e is DioException) return handler.reject(e);
       return handler.next(err);
     } finally {
-      _refreshCompleter = null;
+      // 캐시 초기화 (다음 401 에러를 위해)
+      _cachedToken = null;
     }
   }
 
