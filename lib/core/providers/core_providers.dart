@@ -70,7 +70,6 @@ class _AuthInterceptor extends Interceptor {
 
   // Refresh Token 요청이 한 번만 실행되도록 관리 (Race Condition 방지)
   final Lock _lock = Lock();
-  AuthTokenModel? _cachedToken;
 
   _AuthInterceptor(this.ref);
 
@@ -135,33 +134,45 @@ class _AuthInterceptor extends Interceptor {
     try {
       // Lock으로 보호: 동시에 여러 요청이 401을 받더라도 refresh는 한 번만 실행
       final newToken = await _lock.synchronized(() async {
-        // 다른 요청이 이미 토큰을 갱신했는지 확인 (캐시 체크)
-        if (_cachedToken != null) {
-          debugPrint('[AuthInterceptor] 캐시된 토큰 재사용 (다른 요청이 이미 갱신함)');
-          return _cachedToken!;
+        // 1. 현재 저장된 토큰 다시 확인
+        final currentToken = await localDataSource.getToken();
+        if (currentToken == null) {
+          throw DioException(
+            requestOptions: err.requestOptions,
+            error: 'Token cleared during refresh',
+          );
         }
 
-        // 새로운 refresh 요청 실행 (첫 번째 요청만 여기 도달)
+        // 2. Race Condition 방지 로직
+        // 실패한 요청의 토큰과 현재 저장된 토큰을 비교
+        final failedRequestTokenHeader =
+            err.requestOptions.headers['Authorization'];
+        final currentTokenHeader = 'Bearer ${currentToken.accessToken}';
+
+        if (failedRequestTokenHeader != currentTokenHeader) {
+          debugPrint('[AuthInterceptor] 토큰이 이미 갱신되었습니다. (Storage Check)');
+          return currentToken;
+        }
+
+        // 3. 진짜 갱신이 필요한 경우에만 요청 실행
         debugPrint('[AuthInterceptor] 새로운 Refresh Token 요청 실행');
         final refreshDio = _createBasicDio();
 
         final response = await refreshDio.post(
           ApiConstants.refreshToken,
-          data: {'refreshToken': token.refreshToken},
+          data: {'refreshToken': currentToken.refreshToken},
         );
 
         final newAuthToken = AuthTokenModel.fromJson(response.data);
         await localDataSource.saveToken(newAuthToken);
 
-        // 캐시에 저장 (다른 대기 중인 요청들이 재사용하도록)
-        _cachedToken = newAuthToken;
-        debugPrint('[AuthInterceptor] 토큰 갱신 성공 → 캐시에 저장');
-
+        debugPrint('[AuthInterceptor] 토큰 갱신 성공');
         return newAuthToken;
       });
 
       // 원래 실패했던 요청을 새 토큰으로 재시도
-      final newOptions = _applyNewToken(err.requestOptions, newToken.accessToken);
+      final newOptions =
+          _applyNewToken(err.requestOptions, newToken.accessToken);
       final retryDio = _createBasicDio();
       final response = await retryDio.fetch(newOptions);
 
@@ -197,9 +208,6 @@ class _AuthInterceptor extends Interceptor {
 
       if (e is DioException) return handler.reject(e);
       return handler.next(err);
-    } finally {
-      // 캐시 초기화 (다음 401 에러를 위해)
-      _cachedToken = null;
     }
   }
 
