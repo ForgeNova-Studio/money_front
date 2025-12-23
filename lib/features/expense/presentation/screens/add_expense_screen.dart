@@ -3,8 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_constants.dart';
-import '../../domain/entities/expense_model.dart';
-import '../providers/expense_provider.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({super.key});
@@ -79,25 +77,25 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       return;
     }
 
-    final expenseProvider = context.read<ExpenseProvider>();
+    // final expenseProvider = context.read<ExpenseProvider>();
     final amount = double.parse(_amountController.text.replaceAll(',', ''));
 
-    final expense = ExpenseModel(
-      amount: amount,
-      date: _selectedDate,
-      category: _selectedCategory,
-      merchant: _merchantController.text.trim().isEmpty
-          ? null
-          : _merchantController.text.trim(),
-      memo: _memoController.text.trim().isEmpty
-          ? null
-          : _memoController.text.trim(),
-      paymentMethod: _selectedPaymentMethod,
-      isAutoCategorized: false,
-    );
+    // final expense = ExpenseModel(
+    //   amount: amount,
+    //   date: _selectedDate,
+    //   category: _selectedCategory,
+    //   merchant: _merchantController.text.trim().isEmpty
+    //       ? null
+    //       : _merchantController.text.trim(),
+    //   memo: _memoController.text.trim().isEmpty
+    //       ? null
+    //       : _memoController.text.trim(),
+    //   paymentMethod: _selectedPaymentMethod,
+    //   isAutoCategorized: false,
+    // );
 
     try {
-      await expenseProvider.createExpense(expense);
+      // await expenseProvider.createExpense(expense);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -110,12 +108,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(expenseProvider.errorMessage ?? '지출 등록에 실패했습니다'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text(expenseProvider.errorMessage ?? '지출 등록에 실패했습니다'),
+        //     backgroundColor: AppColors.error,
+        //   ),
+        // );
       }
     }
   }
