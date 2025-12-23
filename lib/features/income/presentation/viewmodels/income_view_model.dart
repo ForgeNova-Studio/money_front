@@ -51,7 +51,7 @@ class IncomeViewModel extends _$IncomeViewModel {
     // 낙관적 업데이트 또는 로딩 표시를 할 수 있지만,
     // 여기서는 심플하게 API 호출 후 목록을 다시 로드하는 방식을 사용
     await createUseCase(income: income);
-    await loadIncome();
+    // await loadIncome();
   }
 
   /// 수입 상세 조회

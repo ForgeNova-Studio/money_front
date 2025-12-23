@@ -51,7 +51,7 @@ class ExpenseViewModel extends _$ExpenseViewModel {
     // 낙관적 업데이트 또는 로딩 표시를 할 수 있지만,
     // 여기서는 심플하게 API 호출 후 목록을 다시 로드하는 방식을 사용
     await createUseCase(expense);
-    await loadExpenses();
+    // await loadExpenses();
   }
 
   // 지출 상세 조회
