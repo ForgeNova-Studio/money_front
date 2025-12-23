@@ -15,10 +15,7 @@ import 'package:moneyflow/features/auth/presentation/screens/reset_password_scre
 import 'package:moneyflow/features/home/presentation/screens/home_screen.dart';
 
 // Expense Screens
-import 'package:moneyflow/features/expense/presentation/screens/expense_list_screen.dart';
 import 'package:moneyflow/features/expense/presentation/screens/add_expense_screen.dart';
-import 'package:moneyflow/features/expense/presentation/screens/expense_detail_screen.dart';
-import 'package:moneyflow/features/expense/presentation/screens/edit_expense_screen.dart';
 
 // Income Screens
 import 'package:moneyflow/features/income/presentation/screens/add_income_screen.dart';
@@ -33,7 +30,6 @@ import 'package:moneyflow/features/couple/presentation/screens/couple_invite_scr
 import 'package:moneyflow/features/couple/presentation/screens/couple_join_screen.dart';
 
 // Models (for extra parameter)
-import 'package:moneyflow/features/expense/domain/entities/expense_model.dart';
 import 'package:moneyflow/features/income/domain/entities/income.dart';
 
 /// 앱 라우트 설정 클래스
@@ -89,47 +85,9 @@ class AppRouter {
 
         // ==================== Expense Routes ====================
         GoRoute(
-          path: RouteNames.expenses,
-          name: 'expenses',
-          builder: (context, state) => const ExpenseListScreen(),
-        ),
-        GoRoute(
           path: RouteNames.addExpense,
           name: 'addExpense',
           builder: (context, state) => const AddExpenseScreen(),
-        ),
-        GoRoute(
-          path: '/expenses/:id',
-          name: 'expenseDetail',
-          builder: (context, state) {
-            // extra로 ExpenseModel 전달받기
-            final expense = state.extra as ExpenseModel?;
-            if (expense == null) {
-              // Deep Link 등으로 직접 접근 시 에러 처리
-              return Scaffold(
-                body: Center(
-                  child: Text('잘못된 접근입니다.'),
-                ),
-              );
-            }
-            return ExpenseDetailScreen(expense: expense);
-          },
-        ),
-        GoRoute(
-          path: '/expenses/:id/edit',
-          name: 'editExpense',
-          builder: (context, state) {
-            // extra로 ExpenseModel 전달받기
-            final expense = state.extra as ExpenseModel?;
-            if (expense == null) {
-              return Scaffold(
-                body: Center(
-                  child: Text('잘못된 접근입니다.'),
-                ),
-              );
-            }
-            return EditExpenseScreen(expense: expense);
-          },
         ),
 
         // ==================== Income Routes ====================
