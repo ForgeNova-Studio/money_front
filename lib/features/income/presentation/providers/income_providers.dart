@@ -13,8 +13,10 @@ import 'package:moneyflow/features/income/domain/usecases/get_income_detail_usec
 import 'package:moneyflow/features/income/domain/usecases/get_income_list_usecase.dart';
 import 'package:moneyflow/features/income/domain/usecases/update_income_usecase.dart';
 
-// providers
+// packages
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+// providers
 import 'package:moneyflow/core/providers/core_providers.dart';
 
 part 'income_providers.g.dart';
