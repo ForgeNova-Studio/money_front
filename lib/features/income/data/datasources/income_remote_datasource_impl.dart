@@ -62,7 +62,7 @@ class IncomeRemoteDataSourceImpl implements IncomeRemoteDataSource {
   }
 
   @override
-  Future<IncomeModel> getIncome({required String incomeId}) async {
+  Future<IncomeModel> getIncomeDetail({required String incomeId}) async {
     try {
       final response = await dio.get(
         ApiConstants.incomeById(incomeId),

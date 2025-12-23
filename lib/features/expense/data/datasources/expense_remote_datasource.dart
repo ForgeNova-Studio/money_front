@@ -8,8 +8,6 @@ abstract class ExpenseRemoteDataSource {
     String? category,
   });
 
-  Future<List<ExpenseModel>> getRecentExpenses();
-
   Future<ExpenseModel> createExpense({
     required ExpenseModel expense,
   });

@@ -18,7 +18,7 @@ abstract class IncomeRemoteDataSource {
   Future<IncomeModel> createIncome({required IncomeModel income});
 
   /// 수입 상세 조회
-  Future<IncomeModel> getIncome({required String incomeId});
+  Future<IncomeModel> getIncomeDetail({required String incomeId});
 
   /// 수입 수정
   Future<IncomeModel> updateIncome({

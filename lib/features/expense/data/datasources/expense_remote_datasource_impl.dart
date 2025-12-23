@@ -38,17 +38,6 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
   }
 
   @override
-  Future<List<ExpenseModel>> getRecentExpenses() async {
-    try {
-      final response = await dio.get(ApiConstants.expensesRecent);
-      final List<dynamic> data = response.data;
-      return data.map((json) => ExpenseModel.fromJson(json)).toList();
-    } on DioException catch (e) {
-      throw ExceptionHandler.handleDioException(e);
-    }
-  }
-
-  @override
   Future<ExpenseModel> createExpense({required ExpenseModel expense}) async {
     try {
       final response = await dio.post(

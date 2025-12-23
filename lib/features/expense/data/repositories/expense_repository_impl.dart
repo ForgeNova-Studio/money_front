@@ -23,12 +23,6 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   }
 
   @override
-  Future<List<Expense>> getRecentExpenses() async {
-    final models = await _remoteDataSource.getRecentExpenses();
-    return models.map((model) => model.toEntity()).toList();
-  }
-
-  @override
   Future<Expense> createExpense({required Expense expense}) async {
     final model = ExpenseModel.fromEntity(expense);
     final response = await _remoteDataSource.createExpense(expense: model);

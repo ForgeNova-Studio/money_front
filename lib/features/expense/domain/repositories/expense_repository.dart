@@ -15,9 +15,6 @@ abstract class ExpenseRepository {
     String? category,
   });
 
-  /// 최근 지출 내역 조회 (홈 화면용)
-  Future<List<Expense>> getRecentExpenses();
-
   /// 지출 생성
   Future<Expense> createExpense({
     required Expense expense,
