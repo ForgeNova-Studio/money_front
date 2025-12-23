@@ -133,21 +133,6 @@ class _AuthInterceptor extends Interceptor {
     }
 
     try {
-      // Race Condition 방지:
-      // 실패한 요청의 토큰과 현재 저장된 토큰이 다르면, 이미 다른 요청에서 갱신이 완료된 것임.
-      // 갱신 없이 새로운 토큰으로 바로 재시도.
-      final requestToken = err.requestOptions.headers['Authorization'];
-      final currentToken = 'Bearer ${token.accessToken}';
-
-      if (requestToken != currentToken) {
-        debugPrint("[AuthInterceptor] 토큰이 이미 갱신되었습니다. 재시도합니다.");
-        final newOptions =
-            _applyNewToken(err.requestOptions, token.accessToken);
-        final retryDio = _createBasicDio();
-        final response = await retryDio.fetch(newOptions);
-        return handler.resolve(response);
-      }
-
       // refresh 요청이 이미 실행 중이면 기다리기
       if (_refreshCompleter != null) {
         debugPrint("다른 refresh 요청을 기다리는 중");
