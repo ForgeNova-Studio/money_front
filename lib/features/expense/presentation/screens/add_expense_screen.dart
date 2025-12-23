@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:moneyflow/features/expense/domain/entities/expense.dart';
+import 'package:moneyflow/features/expense/presentation/viewmodels/expense_view_model.dart';
 import '../../../../core/constants/app_constants.dart';
 
-class AddExpenseScreen extends StatefulWidget {
+class AddExpenseScreen extends ConsumerStatefulWidget {
   const AddExpenseScreen({super.key});
 
   @override
-  State<AddExpenseScreen> createState() => _AddExpenseScreenState();
+  ConsumerState<AddExpenseScreen> createState() => _AddExpenseScreenState();
 }
 
-class _AddExpenseScreenState extends State<AddExpenseScreen> {
+class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _merchantController = TextEditingController();
@@ -77,25 +79,23 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       return;
     }
 
-    // final expenseProvider = context.read<ExpenseProvider>();
     final amount = double.parse(_amountController.text.replaceAll(',', ''));
 
-    // final expense = ExpenseModel(
-    //   amount: amount,
-    //   date: _selectedDate,
-    //   category: _selectedCategory,
-    //   merchant: _merchantController.text.trim().isEmpty
-    //       ? null
-    //       : _merchantController.text.trim(),
-    //   memo: _memoController.text.trim().isEmpty
-    //       ? null
-    //       : _memoController.text.trim(),
-    //   paymentMethod: _selectedPaymentMethod,
-    //   isAutoCategorized: false,
-    // );
+    final expense = Expense(
+      amount: amount,
+      date: _selectedDate,
+      category: _selectedCategory,
+      store: _merchantController.text.trim().isEmpty
+          ? null
+          : _merchantController.text.trim(),
+      memo: _memoController.text.trim().isEmpty
+          ? null
+          : _memoController.text.trim(),
+      paymentMethod: _selectedPaymentMethod,
+    );
 
     try {
-      // await expenseProvider.createExpense(expense);
+      await ref.read(expenseViewModelProvider.notifier).createExpense(expense);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -108,12 +108,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       }
     } catch (e) {
       if (mounted) {
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //     content: Text(expenseProvider.errorMessage ?? '지출 등록에 실패했습니다'),
-        //     backgroundColor: AppColors.error,
-        //   ),
-        // );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('지출 등록에 실패했습니다: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
       }
     }
   }

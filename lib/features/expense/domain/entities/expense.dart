@@ -8,6 +8,7 @@ class Expense {
   final String category; // 식비, 교통, 쇼핑 등
   final String? store; // 가맹점명
   final String? memo;
+  final String paymentMethod; // CARD, CASH, TRANSFER
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -20,6 +21,7 @@ class Expense {
     required this.category,
     this.store,
     this.memo,
+    required this.paymentMethod,
     this.createdAt,
     this.updatedAt,
   });
@@ -33,6 +35,7 @@ class Expense {
     String? category,
     String? store,
     String? memo,
+    String? paymentMethod,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -45,6 +48,7 @@ class Expense {
       category: category ?? this.category,
       store: store ?? this.store,
       memo: memo ?? this.memo,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

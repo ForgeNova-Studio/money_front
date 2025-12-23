@@ -51,7 +51,7 @@ final class ExpenseRemoteDataSourceProvider extends $FunctionalProvider<
 }
 
 String _$expenseRemoteDataSourceHash() =>
-    r'1a5fa4f00e12120a6c09e519b2963761215633d8';
+    r'cd71f338f5a9a4fc84d0890754b041739ad0b222';
 
 @ProviderFor(expenseRepository)
 const expenseRepositoryProvider = ExpenseRepositoryProvider._();
@@ -94,7 +94,7 @@ final class ExpenseRepositoryProvider extends $FunctionalProvider<
   }
 }
 
-String _$expenseRepositoryHash() => r'93d8988a6bf7e5421deb1cc92abdf733de1df073';
+String _$expenseRepositoryHash() => r'dbb2fd91adc3ff09b46a37f56d08ae01cc83d7fc';
 
 @ProviderFor(getExpenseListUseCase)
 const getExpenseListUseCaseProvider = GetExpenseListUseCaseProvider._();
@@ -138,7 +138,7 @@ final class GetExpenseListUseCaseProvider extends $FunctionalProvider<
 }
 
 String _$getExpenseListUseCaseHash() =>
-    r'7c6dff2322aeda6a80c6048ab77fc72347449558';
+    r'0370f8b186ef15928c3382c0c1f4ec1d0a9de016';
 
 @ProviderFor(getRecentExpensesUseCase)
 const getRecentExpensesUseCaseProvider = GetRecentExpensesUseCaseProvider._();
@@ -182,7 +182,7 @@ final class GetRecentExpensesUseCaseProvider extends $FunctionalProvider<
 }
 
 String _$getRecentExpensesUseCaseHash() =>
-    r'dae7c903a1316b09d504c1bb685a7df656f94f0f';
+    r'a66731406fe36d28af2281ee679bac21a0eecf89';
 
 @ProviderFor(createExpenseUseCase)
 const createExpenseUseCaseProvider = CreateExpenseUseCaseProvider._();
@@ -226,7 +226,7 @@ final class CreateExpenseUseCaseProvider extends $FunctionalProvider<
 }
 
 String _$createExpenseUseCaseHash() =>
-    r'29208d4a4289db081f7a73e7dcd5ba97d00f1e80';
+    r'a3443e52ece0fbf3c644b1aa8c18d36831f806d1';
 
 @ProviderFor(updateExpenseUseCase)
 const updateExpenseUseCaseProvider = UpdateExpenseUseCaseProvider._();
@@ -270,7 +270,7 @@ final class UpdateExpenseUseCaseProvider extends $FunctionalProvider<
 }
 
 String _$updateExpenseUseCaseHash() =>
-    r'14fa09bd041cc6065ceb5a6595c67a579b8b8518';
+    r'9855f34d50528983b81985cee8c17b937ed2f227';
 
 @ProviderFor(deleteExpenseUseCase)
 const deleteExpenseUseCaseProvider = DeleteExpenseUseCaseProvider._();
@@ -314,7 +314,7 @@ final class DeleteExpenseUseCaseProvider extends $FunctionalProvider<
 }
 
 String _$deleteExpenseUseCaseHash() =>
-    r'47abc92f4cb90d3ba642c0fca787901566e7add1';
+    r'c4cdb8b4807a70e77d574ffdde2662f1be29022a';
 
 @ProviderFor(getExpenseDetailUseCase)
 const getExpenseDetailUseCaseProvider = GetExpenseDetailUseCaseProvider._();
@@ -358,4 +358,4 @@ final class GetExpenseDetailUseCaseProvider extends $FunctionalProvider<
 }
 
 String _$getExpenseDetailUseCaseHash() =>
-    r'c474b5c9a1970c999043fb51da1f939e56962185';
+    r'817325b5092330e39000cc792ef123c86f9aa753';

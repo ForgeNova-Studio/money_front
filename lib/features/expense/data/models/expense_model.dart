@@ -20,6 +20,7 @@ sealed class ExpenseModel with _$ExpenseModel {
     required String category,
     String? store,
     String? memo,
+    required String paymentMethod,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _ExpenseModel;
@@ -38,6 +39,7 @@ sealed class ExpenseModel with _$ExpenseModel {
       category: category,
       store: store,
       memo: memo,
+      paymentMethod: paymentMethod,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
@@ -54,6 +56,7 @@ sealed class ExpenseModel with _$ExpenseModel {
       category: expense.category,
       store: expense.store,
       memo: expense.memo,
+      paymentMethod: expense.paymentMethod,
       createdAt: expense.createdAt,
       updatedAt: expense.updatedAt,
     );
