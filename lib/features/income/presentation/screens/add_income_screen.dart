@@ -122,231 +122,235 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     // Provider를 watch하여 화면이 살아있는 동안 Provider가 dispose되지 않도록 함
     ref.watch(incomeViewModelProvider);
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          '수입 등록',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
+    return PopScope(
+        canPop: false,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            title: const Text(
+              '수입 등록',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.close, color: AppColors.textPrimary),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
           ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: AppColors.textPrimary),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(height: 32),
-                    // 1. Large Amount Input
-                    Center(
-                      child: IntrinsicWidth(
-                        child: TextFormField(
-                          controller: _amountController,
-                          validator: _validateAmount,
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.income,
-                          ),
-                          decoration: const InputDecoration(
-                            filled: false,
-                            hintText: '0',
-                            hintStyle: TextStyle(
-                              color: AppColors.gray300,
-                              fontSize: 40,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            errorBorder: InputBorder.none,
-                            disabledBorder: InputBorder.none,
-                            suffixText: '원',
-                            suffixStyle: TextStyle(
-                              fontSize: 40,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            _ThousandsSeparatorInputFormatter(),
-                          ],
-                          autofocus: true,
-                          showCursor: false,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-
-                    // 2. Date Selection
-                    GestureDetector(
-                      onTap: () => _selectDate(context),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: AppColors.backgroundLight,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.calendar_today,
-                                color: AppColors.textSecondary, size: 20),
-                            const SizedBox(width: 12),
-                            Text(
-                              DateFormat('yyyy년 M월 d일 (E)', 'ko_KR')
-                                  .format(_selectedDate),
+          body: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 32),
+                        // 1. Large Amount Input
+                        Center(
+                          child: IntrinsicWidth(
+                            child: TextFormField(
+                              controller: _amountController,
+                              validator: _validateAmount,
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.center,
                               style: const TextStyle(
-                                fontSize: 16,
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.income,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // 3. Source Selection (Similar to Category in Expense)
-                    const Text(
-                      '수입 출처',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 90,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _sources.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(width: 20),
-                        itemBuilder: (context, index) {
-                          final source = _sources[index];
-                          final isSelected = _selectedSource == source['code'];
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedSource = source['code'];
-                              });
-                            },
-                            child: Column(
-                              children: [
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  width: 56,
-                                  height: 56,
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? AppColors.income
-                                        : AppColors.backgroundLight,
-                                    shape: BoxShape.circle,
-                                    boxShadow: isSelected
-                                        ? [
-                                            BoxShadow(
-                                              color: AppColors.income
-                                                  .withOpacity(0.3),
-                                              blurRadius: 8,
-                                              offset: const Offset(0, 4),
-                                            )
-                                          ]
-                                        : [],
-                                  ),
-                                  child: Icon(
-                                    source['icon'],
-                                    color: isSelected
-                                        ? Colors.white
-                                        : AppColors.textSecondary,
-                                    size: 24,
-                                  ),
+                              decoration: const InputDecoration(
+                                filled: false,
+                                hintText: '0',
+                                hintStyle: TextStyle(
+                                  color: AppColors.gray300,
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                const SizedBox(height: 8),
+                                border: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                errorBorder: InputBorder.none,
+                                disabledBorder: InputBorder.none,
+                                suffixText: '원',
+                                suffixStyle: TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary,
+                                ),
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                _ThousandsSeparatorInputFormatter(),
+                              ],
+                              autofocus: true,
+                              showCursor: false,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+
+                        // 2. Date Selection
+                        GestureDetector(
+                          onTap: () => _selectDate(context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: AppColors.backgroundLight,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.calendar_today,
+                                    color: AppColors.textSecondary, size: 20),
+                                const SizedBox(width: 12),
                                 Text(
-                                  source['name'],
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: isSelected
-                                        ? AppColors.income
-                                        : AppColors.textSecondary,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w600
-                                        : FontWeight.normal,
+                                  DateFormat('yyyy년 M월 d일 (E)', 'ko_KR')
+                                      .format(_selectedDate),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ],
                             ),
-                          );
-                        },
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // 3. Source Selection (Similar to Category in Expense)
+                        const Text(
+                          '수입 출처',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          height: 90,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _sources.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(width: 20),
+                            itemBuilder: (context, index) {
+                              final source = _sources[index];
+                              final isSelected =
+                                  _selectedSource == source['code'];
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _selectedSource = source['code'];
+                                  });
+                                },
+                                child: Column(
+                                  children: [
+                                    AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      width: 56,
+                                      height: 56,
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? AppColors.income
+                                            : AppColors.backgroundLight,
+                                        shape: BoxShape.circle,
+                                        boxShadow: isSelected
+                                            ? [
+                                                BoxShadow(
+                                                  color: AppColors.income
+                                                      .withOpacity(0.3),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 4),
+                                                )
+                                              ]
+                                            : [],
+                                      ),
+                                      child: Icon(
+                                        source['icon'],
+                                        color: isSelected
+                                            ? Colors.white
+                                            : AppColors.textSecondary,
+                                        size: 24,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      source['name'],
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: isSelected
+                                            ? AppColors.income
+                                            : AppColors.textSecondary,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w600
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // 4. Description Field
+                        _buildCleanTextField(
+                          controller: _descriptionController,
+                          label: '설명',
+                          hint: '어떤 수입인가요?',
+                          icon: Icons.edit_outlined,
+                        ),
+
+                        const SizedBox(height: 48),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Bottom Button
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _handleSubmit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.income,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      '등록하기',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 32),
-
-                    // 4. Description Field
-                    _buildCleanTextField(
-                      controller: _descriptionController,
-                      label: '설명',
-                      hint: '어떤 수입인가요?',
-                      icon: Icons.edit_outlined,
-                    ),
-
-                    const SizedBox(height: 48),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Bottom Button
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
-            child: SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: _handleSubmit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.income,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  '등록하기',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 
   Widget _buildCleanTextField({

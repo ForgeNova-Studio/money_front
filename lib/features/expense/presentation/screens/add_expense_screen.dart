@@ -131,289 +131,294 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   Widget build(BuildContext context) {
     ref.watch(expenseViewModelProvider);
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          '지출 등록',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
+    return PopScope(
+        canPop: false,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            title: const Text(
+              '지출 등록',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.close, color: AppColors.textPrimary),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
           ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: AppColors.textPrimary),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(height: 32),
-                    // 1. Large Amount Input
-                    Center(
-                      child: IntrinsicWidth(
-                        child: TextFormField(
-                          controller: _amountController,
-                          validator: _validateAmount,
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
-                          ),
-                          decoration: const InputDecoration(
-                            hintText: '0',
-                            hintStyle: TextStyle(
-                              color: AppColors.gray300,
-                              fontSize: 40,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            errorBorder: InputBorder.none,
-                            disabledBorder: InputBorder.none,
-                            suffixText: '원',
-                            suffixStyle: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            _ThousandsSeparatorInputFormatter(),
-                          ],
-                          autofocus: true,
-                          showCursor: false,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-
-                    // 2. Date Selection
-                    GestureDetector(
-                      onTap: () => _selectDate(context),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: AppColors.backgroundLight,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.calendar_today,
-                                color: AppColors.textSecondary, size: 20),
-                            const SizedBox(width: 12),
-                            Text(
-                              DateFormat('yyyy년 M월 d일 (E)', 'ko_KR')
-                                  .format(_selectedDate),
+          body: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 32),
+                        // 1. Large Amount Input
+                        Center(
+                          child: IntrinsicWidth(
+                            child: TextFormField(
+                              controller: _amountController,
+                              validator: _validateAmount,
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.center,
                               style: const TextStyle(
-                                fontSize: 16,
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // 3. Category Selection
-                    const Text(
-                      '카테고리',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 90,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: DefaultCategories.all.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(width: 20),
-                        itemBuilder: (context, index) {
-                          final category = DefaultCategories.all[index];
-                          final isSelected = _selectedCategory == category.id;
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedCategory = category.id;
-                              });
-                            },
-                            child: Column(
-                              children: [
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  width: 56,
-                                  height: 56,
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? AppColors.primary
-                                        : AppColors.backgroundLight,
-                                    shape: BoxShape.circle,
-                                    boxShadow: isSelected
-                                        ? [
-                                            BoxShadow(
-                                              color: AppColors.primary
-                                                  .withOpacity(0.3),
-                                              blurRadius: 8,
-                                              offset: const Offset(0, 4),
-                                            )
-                                          ]
-                                        : [],
-                                  ),
-                                  child: Icon(
-                                    _getIconData(category.icon),
-                                    color: isSelected
-                                        ? Colors.white
-                                        : AppColors.textSecondary,
-                                    size: 24,
-                                  ),
+                              decoration: const InputDecoration(
+                                hintText: '0',
+                                hintStyle: TextStyle(
+                                  color: AppColors.gray300,
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                const SizedBox(height: 8),
+                                border: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                errorBorder: InputBorder.none,
+                                disabledBorder: InputBorder.none,
+                                suffixText: '원',
+                                suffixStyle: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary,
+                                ),
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                _ThousandsSeparatorInputFormatter(),
+                              ],
+                              autofocus: true,
+                              showCursor: false,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+
+                        // 2. Date Selection
+                        GestureDetector(
+                          onTap: () => _selectDate(context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: AppColors.backgroundLight,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.calendar_today,
+                                    color: AppColors.textSecondary, size: 20),
+                                const SizedBox(width: 12),
                                 Text(
-                                  category.name,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: isSelected
-                                        ? AppColors.primary
-                                        : AppColors.textSecondary,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w600
-                                        : FontWeight.normal,
+                                  DateFormat('yyyy년 M월 d일 (E)', 'ko_KR')
+                                      .format(_selectedDate),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ],
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // 4. Additional Fields (Merchant, Memo)
-                    _buildCleanTextField(
-                      controller: _merchantController,
-                      label: '가맹점',
-                      hint: '어디서 썼나요?',
-                      icon: Icons.store_outlined,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Divider(height: 1, color: AppColors.gray200),
-                    ),
-                    _buildCleanTextField(
-                      controller: _memoController,
-                      label: '메모',
-                      hint: '메모를 남겨주세요',
-                      icon: Icons.edit_outlined,
-                    ),
-                    const SizedBox(height: 24),
-
-                    // 5. Payment Method
-                    const Text(
-                      '결제 수단',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: PaymentMethod.values.map((method) {
-                        final isSelected = _selectedPaymentMethod == method;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: ChoiceChip(
-                            label: Text(method.label),
-                            selected: isSelected,
-                            onSelected: (selected) {
-                              if (selected) {
-                                setState(() {
-                                  _selectedPaymentMethod = method;
-                                });
-                              }
-                            },
-                            backgroundColor: AppColors.backgroundLight,
-                            selectedColor: AppColors.primary.withOpacity(0.1),
-                            labelStyle: TextStyle(
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : AppColors.textSecondary,
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
-                            ),
-                            side: BorderSide(
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : Colors.transparent,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            showCheckmark: false,
                           ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 48),
-                  ],
-                ),
-              ),
-            ),
-          ),
+                        ),
+                        const SizedBox(height: 32),
 
-          // Bottom Button
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
-            child: SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: _handleSubmit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  '등록하기',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                        // 3. Category Selection
+                        const Text(
+                          '카테고리',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          height: 90,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: DefaultCategories.all.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(width: 20),
+                            itemBuilder: (context, index) {
+                              final category = DefaultCategories.all[index];
+                              final isSelected =
+                                  _selectedCategory == category.id;
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _selectedCategory = category.id;
+                                  });
+                                },
+                                child: Column(
+                                  children: [
+                                    AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      width: 56,
+                                      height: 56,
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? AppColors.primary
+                                            : AppColors.backgroundLight,
+                                        shape: BoxShape.circle,
+                                        boxShadow: isSelected
+                                            ? [
+                                                BoxShadow(
+                                                  color: AppColors.primary
+                                                      .withOpacity(0.3),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 4),
+                                                )
+                                              ]
+                                            : [],
+                                      ),
+                                      child: Icon(
+                                        _getIconData(category.icon),
+                                        color: isSelected
+                                            ? Colors.white
+                                            : AppColors.textSecondary,
+                                        size: 24,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      category.name,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: isSelected
+                                            ? AppColors.primary
+                                            : AppColors.textSecondary,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w600
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // 4. Additional Fields (Merchant, Memo)
+                        _buildCleanTextField(
+                          controller: _merchantController,
+                          label: '가맹점',
+                          hint: '어디서 썼나요?',
+                          icon: Icons.store_outlined,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Divider(height: 1, color: AppColors.gray200),
+                        ),
+                        _buildCleanTextField(
+                          controller: _memoController,
+                          label: '메모',
+                          hint: '메모를 남겨주세요',
+                          icon: Icons.edit_outlined,
+                        ),
+                        const SizedBox(height: 24),
+
+                        // 5. Payment Method
+                        const Text(
+                          '결제 수단',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: PaymentMethod.values.map((method) {
+                            final isSelected = _selectedPaymentMethod == method;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 12),
+                              child: ChoiceChip(
+                                label: Text(method.label),
+                                selected: isSelected,
+                                onSelected: (selected) {
+                                  if (selected) {
+                                    setState(() {
+                                      _selectedPaymentMethod = method;
+                                    });
+                                  }
+                                },
+                                backgroundColor: AppColors.backgroundLight,
+                                selectedColor:
+                                    AppColors.primary.withOpacity(0.1),
+                                labelStyle: TextStyle(
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : AppColors.textSecondary,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                                ),
+                                side: BorderSide(
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : Colors.transparent,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                showCheckmark: false,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 48),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
+
+              // Bottom Button
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _handleSubmit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      '등록하기',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 
   Widget _buildCleanTextField({
