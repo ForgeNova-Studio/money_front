@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:moneyflow/features/expense/domain/entities/expense.dart';
+import 'package:moneyflow/features/expense/domain/entities/expense_category.dart';
+import 'package:moneyflow/features/expense/domain/entities/payment_method.dart';
 import 'package:moneyflow/features/expense/presentation/viewmodels/expense_view_model.dart';
 import '../../../../core/constants/app_constants.dart';
 
@@ -21,25 +23,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
   DateTime _selectedDate = DateTime.now();
   String _selectedCategory = 'FOOD';
-  String _selectedPaymentMethod = 'CARD';
-
-  final List<Map<String, dynamic>> _categories = [
-    {'code': 'FOOD', 'name': '식비', 'icon': Icons.restaurant},
-    {'code': 'TRANSPORT', 'name': '교통', 'icon': Icons.directions_car},
-    {'code': 'SHOPPING', 'name': '쇼핑', 'icon': Icons.shopping_bag},
-    {'code': 'CULTURE', 'name': '문화생활', 'icon': Icons.movie},
-    {'code': 'HOUSING', 'name': '주거/통신', 'icon': Icons.home},
-    {'code': 'MEDICAL', 'name': '의료/건강', 'icon': Icons.local_hospital},
-    {'code': 'EDUCATION', 'name': '교육', 'icon': Icons.school},
-    {'code': 'EVENT', 'name': '경조사', 'icon': Icons.card_giftcard},
-    {'code': 'ETC', 'name': '기타', 'icon': Icons.more_horiz},
-  ];
-
-  final List<Map<String, String>> _paymentMethods = [
-    {'code': 'CARD', 'name': '카드'},
-    {'code': 'CASH', 'name': '현금'},
-    {'code': 'TRANSFER', 'name': '계좌이체'},
-  ];
+  PaymentMethod _selectedPaymentMethod = PaymentMethod.card;
 
   @override
   void dispose() {
@@ -74,6 +58,31 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     return null;
   }
 
+  IconData _getIconData(String iconName) {
+    switch (iconName) {
+      case 'restaurant':
+        return Icons.restaurant;
+      case 'local_cafe':
+        return Icons.local_cafe;
+      case 'directions_bus':
+        return Icons.directions_bus;
+      case 'shopping_bag':
+        return Icons.shopping_bag;
+      case 'home':
+        return Icons.home;
+      case 'movie':
+        return Icons.movie;
+      case 'medical_services':
+        return Icons.medical_services;
+      case 'school':
+        return Icons.school;
+      case 'more_horiz':
+        return Icons.more_horiz;
+      default:
+        return Icons.category;
+    }
+  }
+
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -91,7 +100,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       memo: _memoController.text.trim().isEmpty
           ? null
           : _memoController.text.trim(),
-      paymentMethod: _selectedPaymentMethod,
+      paymentMethod: _selectedPaymentMethod.code,
     );
 
     try {
@@ -239,17 +248,16 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                       height: 90,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        itemCount: _categories.length,
+                        itemCount: DefaultCategories.all.length,
                         separatorBuilder: (context, index) =>
                             const SizedBox(width: 20),
                         itemBuilder: (context, index) {
-                          final category = _categories[index];
-                          final isSelected =
-                              _selectedCategory == category['code'];
+                          final category = DefaultCategories.all[index];
+                          final isSelected = _selectedCategory == category.id;
                           return GestureDetector(
                             onTap: () {
                               setState(() {
-                                _selectedCategory = category['code'];
+                                _selectedCategory = category.id;
                               });
                             },
                             child: Column(
@@ -275,7 +283,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                         : [],
                                   ),
                                   child: Icon(
-                                    category['icon'],
+                                    _getIconData(category.icon),
                                     color: isSelected
                                         ? Colors.white
                                         : AppColors.textSecondary,
@@ -284,7 +292,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  category['name'],
+                                  category.name,
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: isSelected
@@ -333,18 +341,17 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                     ),
                     const SizedBox(height: 12),
                     Row(
-                      children: _paymentMethods.map((method) {
-                        final isSelected =
-                            _selectedPaymentMethod == method['code'];
+                      children: PaymentMethod.values.map((method) {
+                        final isSelected = _selectedPaymentMethod == method;
                         return Padding(
                           padding: const EdgeInsets.only(right: 12),
                           child: ChoiceChip(
-                            label: Text(method['name']!),
+                            label: Text(method.label),
                             selected: isSelected,
                             onSelected: (selected) {
                               if (selected) {
                                 setState(() {
-                                  _selectedPaymentMethod = method['code']!;
+                                  _selectedPaymentMethod = method;
                                 });
                               }
                             },
