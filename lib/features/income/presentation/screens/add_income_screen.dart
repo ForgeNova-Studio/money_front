@@ -356,19 +356,34 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     required IconData icon,
   }) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: AppColors.textSecondary, size: 24),
+        Padding(
+          padding: const EdgeInsets.only(top: 12.0),
+          child: Icon(icon, color: AppColors.textSecondary, size: 24),
+        ),
         const SizedBox(width: 16),
         Expanded(
-          child: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: const TextStyle(color: AppColors.gray400),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+          child: SizedBox(
+            height: 120,
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: hint,
+                hintStyle: const TextStyle(color: AppColors.gray400),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.all(16),
+              ),
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 16,
+                height: 1.5,
+              ),
+              maxLines: null,
+              expands: true,
+              keyboardType: TextInputType.multiline,
+              textAlignVertical: TextAlignVertical.top,
             ),
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
           ),
         ),
       ],
