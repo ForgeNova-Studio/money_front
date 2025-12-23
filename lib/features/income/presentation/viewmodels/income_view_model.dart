@@ -20,7 +20,7 @@ class IncomeViewModel extends _$IncomeViewModel {
   }
 
   /// 수입 생성
-  Future<void> createIncome({required Income income}) async {
+  Future<Income?> createIncome({required Income income}) async {
     state = IncomeState.loading();
 
     try {
@@ -30,6 +30,7 @@ class IncomeViewModel extends _$IncomeViewModel {
       state = state.copyWith(
         isLoading: false,
       );
+      return createdIncome;
     } on ValidationException catch (e) {
       state = IncomeState.error(e.message);
       rethrow;
