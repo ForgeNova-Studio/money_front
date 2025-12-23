@@ -1,11 +1,17 @@
+// packages
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:moneyflow/features/income/presentation/providers/income_providers.dart';
 import 'package:intl/intl.dart';
-import 'package:moneyflow/features/income/presentation/viewmodels/income_view_model.dart';
+
+// core
 import '../../../../core/constants/app_constants.dart';
-import '../../domain/entities/income.dart';
+
+// features
+import 'package:moneyflow/features/income/presentation/viewmodels/income_view_model.dart';
+
+// entities
+import 'package:moneyflow/features/income/domain/entities/income.dart';
 
 class AddIncomeScreen extends ConsumerStatefulWidget {
   const AddIncomeScreen({super.key});
@@ -61,7 +67,15 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
 
   String? _validateAmount(String? value) {
     if (value == null || value.isEmpty) {
-      return '금액을 입력하세요';
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('금액을 입력하세요'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      return '';
     }
     final amount = double.tryParse(value.replaceAll(',', ''));
     if (amount == null || amount <= 0) {
@@ -100,23 +114,13 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
         );
         Navigator.of(context).pop(true);
       }
-    } catch (e) {
-      if (mounted) {
-        debugPrint(e.toString());
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //     content: Text(incomeProvider.errorMessage ?? '수입 등록에 실패했습니다'),
-        //     backgroundColor: AppColors.error,
-        //   ),
-        // );
-      }
-    }
+    } catch (e) {}
   }
 
   @override
   Widget build(BuildContext context) {
     // Provider를 watch하여 화면이 살아있는 동안 Provider가 dispose되지 않도록 함
-    final incomeState = ref.watch(incomeViewModelProvider);
+    ref.watch(incomeViewModelProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -161,6 +165,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                             color: AppColors.income,
                           ),
                           decoration: const InputDecoration(
+                            filled: false,
                             hintText: '0',
                             hintStyle: TextStyle(
                               color: AppColors.gray300,
@@ -174,7 +179,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                             disabledBorder: InputBorder.none,
                             suffixText: '원',
                             suffixStyle: TextStyle(
-                              fontSize: 24,
+                              fontSize: 40,
                               fontWeight: FontWeight.w600,
                               color: AppColors.textPrimary,
                             ),
