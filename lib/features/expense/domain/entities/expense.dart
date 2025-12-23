@@ -1,0 +1,52 @@
+/// 지출 엔티티
+class Expense {
+  final String? expenseId;
+  final String? userId;
+  final String? coupleId;
+  final double amount;
+  final DateTime date;
+  final String category; // 식비, 교통, 쇼핑 등
+  final String? store; // 가맹점명
+  final String? memo;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  Expense({
+    this.expenseId,
+    this.userId,
+    this.coupleId,
+    required this.amount,
+    required this.date,
+    required this.category,
+    this.store,
+    this.memo,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  Expense copyWith({
+    String? expenseId,
+    String? userId,
+    String? coupleId,
+    double? amount,
+    DateTime? date,
+    String? category,
+    String? store,
+    String? memo,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return Expense(
+      expenseId: expenseId ?? this.expenseId,
+      userId: userId ?? this.userId,
+      coupleId: coupleId ?? this.coupleId,
+      amount: amount ?? this.amount,
+      date: date ?? this.date,
+      category: category ?? this.category,
+      store: store ?? this.store,
+      memo: memo ?? this.memo,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+}
