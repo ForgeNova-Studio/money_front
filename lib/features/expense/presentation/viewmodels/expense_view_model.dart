@@ -54,31 +54,11 @@ class ExpenseViewModel extends _$ExpenseViewModel {
     await loadExpenses();
   }
 
+  // 지출 상세 조회
+
   /// 지출 수정
-  Future<void> updateExpense(String expenseId, Expense expense) async {
-    final updateUseCase = ref.read(updateExpenseUseCaseProvider);
-    await updateUseCase(expenseId: expenseId, expense: expense);
-    await loadExpenses();
-  }
 
   /// 지출 삭제
-  Future<void> deleteExpense(String expenseId) async {
-    final deleteUseCase = ref.read(deleteExpenseUseCaseProvider);
-    await deleteUseCase(expenseId);
-    await loadExpenses();
-  }
-
-  /// 날짜 선택 변경
-  void updateSelectedDate(DateTime date) {
-    state = state.copyWith(selectedDate: date);
-    // 필요하다면 여기서 필터링 로직을 추가하거나 UI에서 selectedDate를 보고 필터링
-  }
-
-  /// 달력 월 변경
-  void updateFocusedDay(DateTime day) {
-    state = state.copyWith(focusedDay: day);
-    loadExpenses();
-  }
 
   /// 총 금액 계산
   double _calculateTotalAmount(List<Expense> expenses) {

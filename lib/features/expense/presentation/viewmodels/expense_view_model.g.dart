@@ -41,7 +41,7 @@ final class ExpenseViewModelProvider
   }
 }
 
-String _$expenseViewModelHash() => r'3a4ab381de02bca9aeeab2c5520cdb255a4f79a7';
+String _$expenseViewModelHash() => r'adc67aa9967236ebb4ecd5acba516bcdea535936';
 
 abstract class _$ExpenseViewModel extends $Notifier<ExpenseState> {
   ExpenseState build();
