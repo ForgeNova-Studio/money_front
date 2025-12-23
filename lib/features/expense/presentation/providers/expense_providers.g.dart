@@ -140,50 +140,6 @@ final class GetExpenseListUseCaseProvider extends $FunctionalProvider<
 String _$getExpenseListUseCaseHash() =>
     r'0370f8b186ef15928c3382c0c1f4ec1d0a9de016';
 
-@ProviderFor(getRecentExpensesUseCase)
-const getRecentExpensesUseCaseProvider = GetRecentExpensesUseCaseProvider._();
-
-final class GetRecentExpensesUseCaseProvider extends $FunctionalProvider<
-    GetRecentExpensesUseCase,
-    GetRecentExpensesUseCase,
-    GetRecentExpensesUseCase> with $Provider<GetRecentExpensesUseCase> {
-  const GetRecentExpensesUseCaseProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'getRecentExpensesUseCaseProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
-
-  @override
-  String debugGetCreateSourceHash() => _$getRecentExpensesUseCaseHash();
-
-  @$internal
-  @override
-  $ProviderElement<GetRecentExpensesUseCase> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  GetRecentExpensesUseCase create(Ref ref) {
-    return getRecentExpensesUseCase(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(GetRecentExpensesUseCase value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<GetRecentExpensesUseCase>(value),
-    );
-  }
-}
-
-String _$getRecentExpensesUseCaseHash() =>
-    r'a66731406fe36d28af2281ee679bac21a0eecf89';
-
 @ProviderFor(createExpenseUseCase)
 const createExpenseUseCaseProvider = CreateExpenseUseCaseProvider._();
 
@@ -227,6 +183,50 @@ final class CreateExpenseUseCaseProvider extends $FunctionalProvider<
 
 String _$createExpenseUseCaseHash() =>
     r'a3443e52ece0fbf3c644b1aa8c18d36831f806d1';
+
+@ProviderFor(getExpenseDetailUseCase)
+const getExpenseDetailUseCaseProvider = GetExpenseDetailUseCaseProvider._();
+
+final class GetExpenseDetailUseCaseProvider extends $FunctionalProvider<
+    GetExpenseDetailUseCase,
+    GetExpenseDetailUseCase,
+    GetExpenseDetailUseCase> with $Provider<GetExpenseDetailUseCase> {
+  const GetExpenseDetailUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'getExpenseDetailUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$getExpenseDetailUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<GetExpenseDetailUseCase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  GetExpenseDetailUseCase create(Ref ref) {
+    return getExpenseDetailUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GetExpenseDetailUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GetExpenseDetailUseCase>(value),
+    );
+  }
+}
+
+String _$getExpenseDetailUseCaseHash() =>
+    r'817325b5092330e39000cc792ef123c86f9aa753';
 
 @ProviderFor(updateExpenseUseCase)
 const updateExpenseUseCaseProvider = UpdateExpenseUseCaseProvider._();
@@ -315,47 +315,3 @@ final class DeleteExpenseUseCaseProvider extends $FunctionalProvider<
 
 String _$deleteExpenseUseCaseHash() =>
     r'c4cdb8b4807a70e77d574ffdde2662f1be29022a';
-
-@ProviderFor(getExpenseDetailUseCase)
-const getExpenseDetailUseCaseProvider = GetExpenseDetailUseCaseProvider._();
-
-final class GetExpenseDetailUseCaseProvider extends $FunctionalProvider<
-    GetExpenseDetailUseCase,
-    GetExpenseDetailUseCase,
-    GetExpenseDetailUseCase> with $Provider<GetExpenseDetailUseCase> {
-  const GetExpenseDetailUseCaseProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'getExpenseDetailUseCaseProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
-
-  @override
-  String debugGetCreateSourceHash() => _$getExpenseDetailUseCaseHash();
-
-  @$internal
-  @override
-  $ProviderElement<GetExpenseDetailUseCase> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  GetExpenseDetailUseCase create(Ref ref) {
-    return getExpenseDetailUseCase(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(GetExpenseDetailUseCase value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<GetExpenseDetailUseCase>(value),
-    );
-  }
-}
-
-String _$getExpenseDetailUseCaseHash() =>
-    r'817325b5092330e39000cc792ef123c86f9aa753';

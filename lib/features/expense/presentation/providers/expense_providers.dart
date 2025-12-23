@@ -13,32 +13,38 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'expense_providers.g.dart';
 
-// DataSource
+// ============================================================================
+// DataSource Providers
+// ============================================================================
 @riverpod
 ExpenseRemoteDataSource expenseRemoteDataSource(Ref ref) {
   return ExpenseRemoteDataSourceImpl(dio: ref.read(dioProvider));
 }
 
-// Repository
+// ============================================================================
+// Repository Provider
+// ============================================================================
 @riverpod
 ExpenseRepository expenseRepository(Ref ref) {
   return ExpenseRepositoryImpl(ref.read(expenseRemoteDataSourceProvider));
 }
 
-// UseCases
+// ============================================================================
+// UseCase Providers
+// ============================================================================
 @riverpod
 GetExpenseListUseCase getExpenseListUseCase(Ref ref) {
   return GetExpenseListUseCase(ref.read(expenseRepositoryProvider));
 }
 
 @riverpod
-GetRecentExpensesUseCase getRecentExpensesUseCase(Ref ref) {
-  return GetRecentExpensesUseCase(ref.read(expenseRepositoryProvider));
+CreateExpenseUseCase createExpenseUseCase(Ref ref) {
+  return CreateExpenseUseCase(ref.read(expenseRepositoryProvider));
 }
 
 @riverpod
-CreateExpenseUseCase createExpenseUseCase(Ref ref) {
-  return CreateExpenseUseCase(ref.read(expenseRepositoryProvider));
+GetExpenseDetailUseCase getExpenseDetailUseCase(Ref ref) {
+  return GetExpenseDetailUseCase(ref.read(expenseRepositoryProvider));
 }
 
 @riverpod
@@ -49,9 +55,4 @@ UpdateExpenseUseCase updateExpenseUseCase(Ref ref) {
 @riverpod
 DeleteExpenseUseCase deleteExpenseUseCase(Ref ref) {
   return DeleteExpenseUseCase(ref.read(expenseRepositoryProvider));
-}
-
-@riverpod
-GetExpenseDetailUseCase getExpenseDetailUseCase(Ref ref) {
-  return GetExpenseDetailUseCase(ref.read(expenseRepositoryProvider));
 }

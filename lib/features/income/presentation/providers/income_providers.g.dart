@@ -8,18 +8,14 @@ part of 'income_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Remote DataSource Provider
 
 @ProviderFor(incomeRemoteDataSource)
 const incomeRemoteDataSourceProvider = IncomeRemoteDataSourceProvider._();
-
-/// Remote DataSource Provider
 
 final class IncomeRemoteDataSourceProvider extends $FunctionalProvider<
     IncomeRemoteDataSource,
     IncomeRemoteDataSource,
     IncomeRemoteDataSource> with $Provider<IncomeRemoteDataSource> {
-  /// Remote DataSource Provider
   const IncomeRemoteDataSourceProvider._()
       : super(
           from: null,
@@ -57,18 +53,13 @@ final class IncomeRemoteDataSourceProvider extends $FunctionalProvider<
 String _$incomeRemoteDataSourceHash() =>
     r'0fd73014e28eb69ef7ba6adc5b301ea8cceb9927';
 
-/// Income Repository Provider
-
 @ProviderFor(incomeRepository)
 const incomeRepositoryProvider = IncomeRepositoryProvider._();
-
-/// Income Repository Provider
 
 final class IncomeRepositoryProvider extends $FunctionalProvider<
     IncomeRepository,
     IncomeRepository,
     IncomeRepository> with $Provider<IncomeRepository> {
-  /// Income Repository Provider
   const IncomeRepositoryProvider._()
       : super(
           from: null,
@@ -104,18 +95,13 @@ final class IncomeRepositoryProvider extends $FunctionalProvider<
 
 String _$incomeRepositoryHash() => r'7db0ff9cc7fcbf265f76551521eddd67638e6718';
 
-/// Get Income List UseCase Provider
-
 @ProviderFor(getIncomeListUsecase)
 const getIncomeListUsecaseProvider = GetIncomeListUsecaseProvider._();
-
-/// Get Income List UseCase Provider
 
 final class GetIncomeListUsecaseProvider extends $FunctionalProvider<
     GetIncomeListUsecase,
     GetIncomeListUsecase,
     GetIncomeListUsecase> with $Provider<GetIncomeListUsecase> {
-  /// Get Income List UseCase Provider
   const GetIncomeListUsecaseProvider._()
       : super(
           from: null,
@@ -153,18 +139,13 @@ final class GetIncomeListUsecaseProvider extends $FunctionalProvider<
 String _$getIncomeListUsecaseHash() =>
     r'ae61a3e27f0ce6ea5c5a5b6be7de6c9873e3d2f1';
 
-/// Create Income UseCase Provider
-
 @ProviderFor(createIncomeUsecase)
 const createIncomeUsecaseProvider = CreateIncomeUsecaseProvider._();
-
-/// Create Income UseCase Provider
 
 final class CreateIncomeUsecaseProvider extends $FunctionalProvider<
     CreateIncomeUsecase,
     CreateIncomeUsecase,
     CreateIncomeUsecase> with $Provider<CreateIncomeUsecase> {
-  /// Create Income UseCase Provider
   const CreateIncomeUsecaseProvider._()
       : super(
           from: null,
@@ -202,18 +183,13 @@ final class CreateIncomeUsecaseProvider extends $FunctionalProvider<
 String _$createIncomeUsecaseHash() =>
     r'97d6593d86ec0de8deb8ad767c7657eda5ef9207';
 
-/// Get Income Detail UseCase Provider
-
 @ProviderFor(getIncomeDetailUsecase)
 const getIncomeDetailUsecaseProvider = GetIncomeDetailUsecaseProvider._();
-
-/// Get Income Detail UseCase Provider
 
 final class GetIncomeDetailUsecaseProvider extends $FunctionalProvider<
     GetIncomeDetailUsecase,
     GetIncomeDetailUsecase,
     GetIncomeDetailUsecase> with $Provider<GetIncomeDetailUsecase> {
-  /// Get Income Detail UseCase Provider
   const GetIncomeDetailUsecaseProvider._()
       : super(
           from: null,
@@ -251,18 +227,13 @@ final class GetIncomeDetailUsecaseProvider extends $FunctionalProvider<
 String _$getIncomeDetailUsecaseHash() =>
     r'8e068973d2e0d5749b46aacdb8fd99d697cbab6f';
 
-/// Update Income UseCase Provider
-
 @ProviderFor(updateIncomeUsecase)
 const updateIncomeUsecaseProvider = UpdateIncomeUsecaseProvider._();
-
-/// Update Income UseCase Provider
 
 final class UpdateIncomeUsecaseProvider extends $FunctionalProvider<
     UpdateIncomeUsecase,
     UpdateIncomeUsecase,
     UpdateIncomeUsecase> with $Provider<UpdateIncomeUsecase> {
-  /// Update Income UseCase Provider
   const UpdateIncomeUsecaseProvider._()
       : super(
           from: null,
@@ -300,18 +271,13 @@ final class UpdateIncomeUsecaseProvider extends $FunctionalProvider<
 String _$updateIncomeUsecaseHash() =>
     r'452d030af56274a97b841baa10979781107eca4d';
 
-/// Delete Income UseCase Provider
-
 @ProviderFor(deleteIncomeUsecase)
 const deleteIncomeUsecaseProvider = DeleteIncomeUsecaseProvider._();
-
-/// Delete Income UseCase Provider
 
 final class DeleteIncomeUsecaseProvider extends $FunctionalProvider<
     DeleteIncomeUsecase,
     DeleteIncomeUsecase,
     DeleteIncomeUsecase> with $Provider<DeleteIncomeUsecase> {
-  /// Delete Income UseCase Provider
   const DeleteIncomeUsecaseProvider._()
       : super(
           from: null,
