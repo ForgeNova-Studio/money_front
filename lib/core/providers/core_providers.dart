@@ -170,34 +170,37 @@ class _AuthInterceptor extends Interceptor {
       final newResponse = await retryDio.fetch(newOptions);
       return handler.resolve(newResponse);
     } catch (e) {
-      _refreshCompleter?.completeError(e);
+      // Refresh Token 과정 중 에러가 발생했고, 아직 Completer가 완료되지 않은 경우에만 처리
+      if (_refreshCompleter != null && !_refreshCompleter!.isCompleted) {
+        _refreshCompleter?.completeError(e);
 
-      // TODO(auth): Refresh Token 실패 원인별 로깅 분리
-      // 1️⃣ 네트워크 오류 (인터넷 끊김, 타임아웃)
-      //    - e is DioException && e.type == DioExceptionType.connectionTimeout
-      //
-      // 2️⃣ 서버 오류 (5xx)
-      //    - e is DioException && e.response?.statusCode >= 500
-      //
-      // 3️⃣ Refresh Token 만료 / 무효 (401)
-      //    - e is DioException && e.response?.statusCode == 401
-      //    - 서버에서 refreshToken expired / invalid 응답
-      //
-      // 4️⃣ 기타 예외 (파싱 오류, 예상 못한 에러)
-      //
-      // 👉 추후 Crashlytics / Sentry 연동 시
-      //    원인별 tag 또는 error code로 분리 수집 권장
+        // TODO(auth): Refresh Token 실패 원인별 로깅 분리
+        // 1️⃣ 네트워크 오류 (인터넷 끊김, 타임아웃)
+        //    - e is DioException && e.type == DioExceptionType.connectionTimeout
+        //
+        // 2️⃣ 서버 오류 (5xx)
+        //    - e is DioException && e.response?.statusCode >= 500
+        //
+        // 3️⃣ Refresh Token 만료 / 무효 (401)
+        //    - e is DioException && e.response?.statusCode == 401
+        //    - 서버에서 refreshToken expired / invalid 응답
+        //
+        // 4️⃣ 기타 예외 (파싱 오류, 예상 못한 에러)
+        //
+        // 👉 추후 Crashlytics / Sentry 연동 시
+        //    원인별 tag 또는 error code로 분리 수집 권장
 
-      // 1. 로컬 데이터 삭제 (토큰 + 사용자 정보)
-      await localDataSource.clearAll();
+        // 1. 로컬 데이터 삭제 (토큰 + 사용자 정보)
+        await localDataSource.clearAll();
 
-      // 2. AuthViewModel 상태를 unauthenticated로 변경
-      // → GoRouter의 redirect가 자동으로 /login으로 이동
-      ref
-          .read(authViewModelProvider.notifier)
-          .forceUnauthenticated(errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.');
+        // 2. AuthViewModel 상태를 unauthenticated로 변경
+        // → GoRouter의 redirect가 자동으로 /login으로 이동
+        ref
+            .read(authViewModelProvider.notifier)
+            .forceUnauthenticated(errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.');
 
-      debugPrint('[AuthInterceptor] Refresh Token 실패 → 자동 로그아웃 처리');
+        debugPrint('[AuthInterceptor] Refresh Token 실패 → 자동 로그아웃 처리');
+      }
 
       if (e is DioException) return handler.reject(e);
       return handler.next(err);
