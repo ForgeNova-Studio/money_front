@@ -1,12 +1,19 @@
+// packages
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+
+// entities
 import 'package:moneyflow/features/expense/domain/entities/expense.dart';
 import 'package:moneyflow/features/expense/domain/entities/expense_category.dart';
 import 'package:moneyflow/features/expense/domain/entities/payment_method.dart';
+
+// viewmodels
 import 'package:moneyflow/features/expense/presentation/viewmodels/expense_view_model.dart';
-import '../../../../core/constants/app_constants.dart';
+
+// constants
+import 'package:moneyflow/core/constants/app_constants.dart';
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
   final DateTime? initialDate;
@@ -60,7 +67,15 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
   String? _validateAmount(String? value) {
     if (value == null || value.isEmpty) {
-      return '금액을 입력하세요';
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('금액을 입력하세요'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      return '';
     }
     final amount = double.tryParse(value.replaceAll(',', ''));
     if (amount == null || amount <= 0) {
@@ -128,12 +143,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('지출 등록에 실패했습니다: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        debugPrint(e.toString());
       }
     }
   }
@@ -187,6 +197,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                 color: AppColors.primary,
                               ),
                               decoration: const InputDecoration(
+                                filled: false,
                                 hintText: '0',
                                 hintStyle: TextStyle(
                                   color: AppColors.gray300,
@@ -200,7 +211,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                 disabledBorder: InputBorder.none,
                                 suffixText: '원',
                                 suffixStyle: TextStyle(
-                                  fontSize: 24,
+                                  fontSize: 40,
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.textPrimary,
                                 ),
