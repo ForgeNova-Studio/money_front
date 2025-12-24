@@ -28,8 +28,8 @@ class IncomeRemoteDataSourceImpl implements IncomeRemoteDataSource {
   }) async {
     try {
       final queryParams = <String, dynamic>{
-        'startDate': startDate.toIso8601String(),
-        'endDate': endDate.toIso8601String(),
+        'startDate': startDate.toIso8601String().split('T')[0],
+        'endDate': endDate.toIso8601String().split('T')[0],
       };
 
       if (source != null) {

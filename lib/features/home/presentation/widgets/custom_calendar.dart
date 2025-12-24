@@ -4,13 +4,21 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:moneyflow/features/home/presentation/widgets/custom_month_picker.dart';
 
 class CustomCalendar extends StatefulWidget {
+  final DateTime focusedDay;
+  final DateTime selectedDay;
   final void Function(DateTime, DateTime)? onDateSelected;
+  final void Function(DateTime)? onPageChanged;
+  final List<dynamic> Function(DateTime)? eventLoader;
   final CalendarFormat? format;
   final void Function(CalendarFormat)? onFormatChanged;
 
   const CustomCalendar({
     super.key,
+    required this.focusedDay,
+    required this.selectedDay,
     this.onDateSelected,
+    this.onPageChanged,
+    this.eventLoader,
     this.format,
     this.onFormatChanged,
   });
@@ -20,8 +28,6 @@ class CustomCalendar extends StatefulWidget {
 }
 
 class _CustomCalendarState extends State<CustomCalendar> {
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
   late CalendarFormat _calendarFormat;
 
   @override
@@ -39,13 +45,6 @@ class _CustomCalendarState extends State<CustomCalendar> {
       });
     }
   }
-
-  // 이벤트 목록
-  Map<DateTime, List<String>> events = {
-    DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day):
-        ['today'],
-    DateTime.utc(2025, 11, 19): ['event1', 'event2'],
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -71,19 +70,16 @@ class _CustomCalendarState extends State<CustomCalendar> {
         }
       },
 
-      // 현재 포커스된 날짜 (화면에 표시되는 오늘 날짜가 아님)
-      // 어떤 달이 화면에 보일지 결정하는 용도
-      focusedDay: _focusedDay,
+      // 현재 포커스된 날짜
+      focusedDay: widget.focusedDay,
       firstDay: DateTime(2000),
       lastDay: DateTime(2050, 12, 31),
 
+      // 페이지(월) 변경 시 콜백
+      onPageChanged: widget.onPageChanged,
+
       // 각 날짜 셀에 표시할 이벤트 로드
-      // - TableCalendar이 각 날짜(day)마다 이 함수를 호출함
-      eventLoader: (day) {
-        // events에 없음 → [] 반환
-        // events에 있음 → 해당 날짜의 이벤트 리스트['event1', 'event2']를 반환
-        return events[day] ?? [];
-      },
+      eventLoader: widget.eventLoader,
 
       // 달력 헤더 스타일 설정
       headerStyle: const HeaderStyle(
@@ -138,21 +134,12 @@ class _CustomCalendarState extends State<CustomCalendar> {
       // day : 각 날짜 셀의 날짜
       // 각 날짜를 매개변수로 전달하여 _selectedDay와 같은 날짜인지 비교, 같으면 해당 날짜 셀 강조
       selectedDayPredicate: (day) {
-        return isSameDay(day, _selectedDay);
+        return isSameDay(day, widget.selectedDay);
       },
 
       // 날짜 선택 시 호출되는 콜백 함수
-      // selectedDay : 선택된 날짜
-      // focusedDay :
-      // - 같은 달 내 선택: focusedDay는 선택한 날짜와 동일
-      // - 다른 달 선택: focusedDay는 현재 보고 있는 달의 마지막 날로 설정됨
-      // - pageJumpingEnabled = true 설정 시 -> focusedDay는 선택한 날짜로 설정되고 달이 전환됨
       onDaySelected: (selectedDay, focusedDay) {
         debugPrint('Selected Day: $selectedDay, Focused Day: $focusedDay');
-        setState(() {
-          _selectedDay = selectedDay;
-          _focusedDay = focusedDay;
-        });
         widget.onDateSelected?.call(selectedDay, focusedDay);
       },
 
@@ -163,11 +150,16 @@ class _CustomCalendarState extends State<CustomCalendar> {
               showDialog(
                 context: context,
                 builder: (context) => CustomMonthPicker(
-                  initialDate: _focusedDay,
+                  initialDate: widget.focusedDay,
                   onDateSelected: (selectedDate) {
-                    setState(() {
-                      _focusedDay = selectedDate;
-                    });
+                    // 월 선택 시 focusedDay 변경 요청 (보통 부모 위젯에서 처리해야 함)
+                    // 현재 CustomMonthPicker는 단순히 날짜만 반환하므로,
+                    // 상위 위젯에서 onPageChanged 등을 통해 처리하도록 유도하거나
+                    // 여기서는 단순히 콜백을 호출해줘야 함.
+                    // 하지만 onPageChanged는 TableCalendar 내부 스와이프용이므로,
+                    // 별도의 onMonthSelected 같은 콜백이 필요할 수도 있음.
+                    // 임시로 onPageChanged를 재활용하여 호출
+                    widget.onPageChanged?.call(selectedDate);
                   },
                 ),
               );
@@ -183,8 +175,6 @@ class _CustomCalendarState extends State<CustomCalendar> {
         },
 
         // 오늘 날짜 셀 커스텀
-        // - 선택된 날짜 X : 흰색 배경 + 핑크색 테두리 + 검은색 텍스트 스타일 적용
-        // - 선택된 날짜 O : 핑크색 원형 배경 + 흰색 텍스트 스타일 적용
         todayBuilder: (context, day, focusedDay) {
           return Container(
             margin: const EdgeInsets.all(8.0),
@@ -194,7 +184,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
                 color: AppColors.primaryPinkLight,
                 width: 2.0,
               ),
-              color: _selectedDay == null
+              color: isSameDay(day, widget.selectedDay)
                   ? AppColors.primary
                   : AppColors.backgroundLight,
             ),
@@ -202,9 +192,9 @@ class _CustomCalendarState extends State<CustomCalendar> {
               child: Text(
                 '${day.day}',
                 style: TextStyle(
-                    color: _selectedDay != null
-                        ? AppColors.textPrimary
-                        : AppColors.textWhite,
+                    color: isSameDay(day, widget.selectedDay)
+                        ? AppColors.textWhite
+                        : AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0),
               ),
@@ -213,8 +203,6 @@ class _CustomCalendarState extends State<CustomCalendar> {
         },
 
         // 선택한 날짜 셀 커스텀
-        // - 사용자가 선택한 날짜 셀에 [ 핑크색 원형 배경 + 흰색 텍스트 스타일 적용 (애니메이션 X) ]
-        // - TableCalendar의 기본 선택 동작에는 애니메이션이 포함되어 있음
         selectedBuilder: (context, day, focusedDay) {
           return Container(
             margin: const EdgeInsets.all(8.0),
@@ -235,10 +223,6 @@ class _CustomCalendarState extends State<CustomCalendar> {
         },
 
         markerBuilder: (context, day, events) {
-          // events = eventLoader가 반환한 List
-          // 오늘 날짜 : ['today']
-          // 2025년 11월 19일 : ['event1', 'event2']
-
           if (events.isEmpty) return null;
 
           // events가 10개여도 3개만 표시
@@ -249,7 +233,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
           return Positioned(
             bottom:
-                isSameDay(day, _selectedDay) || isSameDay(day, today) ? 1 : 2,
+                isSameDay(day, widget.selectedDay) || isSameDay(day, today) ? 1 : 2,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: displayEvents.map((event) {
