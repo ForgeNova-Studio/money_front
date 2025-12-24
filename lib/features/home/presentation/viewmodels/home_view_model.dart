@@ -13,7 +13,7 @@ class HomeViewModel extends _$HomeViewModel {
     final now = DateTime.now();
     // 초기 상태 설정 후 데이터 로드
     Future.microtask(() => fetchMonthlyData(now));
-    
+
     return HomeState(
       focusedMonth: now,
       selectedDate: now,
@@ -28,7 +28,7 @@ class HomeViewModel extends _$HomeViewModel {
     );
 
     final useCase = ref.read(getHomeMonthlyDataUseCaseProvider);
-    
+
     final result = await AsyncValue.guard(
       () => useCase(yearMonth: month),
     );
@@ -38,14 +38,26 @@ class HomeViewModel extends _$HomeViewModel {
 
   /// 날짜가 선택되었을 때 호출
   void selectDate(DateTime selectedDate) {
-    state = state.copyWith(selectedDate: selectedDate);
+    state = state.copyWith(
+      selectedDate: selectedDate,
+      focusedMonth: selectedDate, // 선택된 날짜로 포커스 이동
+    );
+
+    // 만약 월이 바뀌었다면 데이터도 새로 불러옴 (예: 주간 달력에서 월이 걸쳐있는 경우)
+    if (selectedDate.year != state.focusedMonth.year ||
+        selectedDate.month != state.focusedMonth.month) {
+      changeMonth(selectedDate);
+    }
   }
 
   /// 달력의 달이 바뀌었을 때 호출
   void changeMonth(DateTime focusedMonth) {
-    if (focusedMonth.year != state.focusedMonth.year || 
+    if (focusedMonth.year != state.focusedMonth.year ||
         focusedMonth.month != state.focusedMonth.month) {
       fetchMonthlyData(focusedMonth);
+    } else {
+      // 월이 변경되지 않았더라도(주간 이동 등) 포커스 업데이트
+      state = state.copyWith(focusedMonth: focusedMonth);
     }
   }
 
