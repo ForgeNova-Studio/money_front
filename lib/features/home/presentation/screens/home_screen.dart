@@ -145,11 +145,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         // 데이터 로딩 중이거나 에러일 때는 빈 리스트 반환
                         return homeState.monthlyData.when(
                           data: (data) {
-                            final dateKey = DateFormat('yyyy-MM-dd').format(day);
+                            final dateKey =
+                                DateFormat('yyyy-MM-dd').format(day);
                             final summary = data[dateKey];
-                            if (summary != null && summary.transactions.isNotEmpty) {
+                            if (summary != null &&
+                                summary.transactions.isNotEmpty) {
                               // 트랜잭션 개수만큼 마커 표시 (최대 3개는 내부에서 처리)
-                              return List.filled(summary.transactions.length, 'event');
+                              return List.filled(
+                                  summary.transactions.length, 'event');
                             }
                             return [];
                           },
@@ -362,7 +365,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final dateKey = DateFormat('yyyy-MM-dd').format(selectedDate);
         final summary = data[dateKey];
         final transactions = summary?.transactions ?? [];
-        final totalAmount = (summary?.totalIncome ?? 0) - (summary?.totalExpense ?? 0);
+        final totalAmount =
+            (summary?.totalIncome ?? 0) - (summary?.totalExpense ?? 0);
         final hasData = transactions.isNotEmpty;
 
         return Column(
@@ -382,8 +386,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                     Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: AppColors.gray100,
                         borderRadius: BorderRadius.circular(20),
@@ -476,7 +480,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
             ],
-            
             if (!hasData)
               Container(
                 height: 200,
@@ -504,7 +507,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   final tx = transactions[index];
                   final isExpense = tx.type == TransactionType.expense;
                   // 지출은 검정색(기본), 수입은 초록색/파란색 등으로 표시
-                  final color = isExpense ? AppColors.textPrimary : AppColors.success;
+                  final color = isExpense ? AppColors.error : AppColors.success;
+                  final prefix = isExpense ? '-' : '+';
                   final amountStr = NumberFormat('#,###').format(tx.amount);
                   final timeStr = DateFormat('HH:mm').format(tx.date);
 
@@ -513,8 +517,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       // TODO: Show transaction details modal
                     },
                     child: Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 6),
                       child: Row(
                         children: [
                           // Leading Icon
@@ -538,20 +542,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 Text(
                                   tx.title,
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 16),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   '$timeStr · ${tx.category}',
                                   style: const TextStyle(
-                                      color: AppColors.textTertiary, fontSize: 12),
+                                      color: AppColors.textTertiary,
+                                      fontSize: 12),
                                 ),
                               ],
                             ),
                           ),
                           // Trailing Amount
                           Text(
-                            '$amountStr원',
+                            '$prefix$amountStr원',
                             style: TextStyle(
                               color: color,
                               fontWeight: FontWeight.bold,
@@ -662,4 +668,3 @@ void _showAddTransactionModal(BuildContext context) {
     ),
   );
 }
-
