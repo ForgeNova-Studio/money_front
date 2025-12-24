@@ -9,7 +9,12 @@ import 'package:moneyflow/features/expense/presentation/viewmodels/expense_view_
 import '../../../../core/constants/app_constants.dart';
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
-  const AddExpenseScreen({super.key});
+  final DateTime? initialDate;
+
+  const AddExpenseScreen({
+    super.key,
+    this.initialDate,
+  });
 
   @override
   ConsumerState<AddExpenseScreen> createState() => _AddExpenseScreenState();
@@ -21,9 +26,15 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   final _merchantController = TextEditingController();
   final _memoController = TextEditingController();
 
-  DateTime _selectedDate = DateTime.now();
+  late DateTime _selectedDate;
   String _selectedCategory = 'FOOD';
   PaymentMethod _selectedPaymentMethod = PaymentMethod.card;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = widget.initialDate ?? DateTime.now();
+  }
 
   @override
   void dispose() {

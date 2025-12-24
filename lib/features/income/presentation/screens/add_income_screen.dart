@@ -14,7 +14,12 @@ import 'package:moneyflow/features/income/presentation/viewmodels/income_view_mo
 import 'package:moneyflow/features/income/domain/entities/income.dart';
 
 class AddIncomeScreen extends ConsumerStatefulWidget {
-  const AddIncomeScreen({super.key});
+  final DateTime? initialDate;
+
+  const AddIncomeScreen({
+    super.key,
+    this.initialDate,
+  });
 
   @override
   ConsumerState<AddIncomeScreen> createState() => _AddIncomeScreenState();
@@ -25,8 +30,14 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  DateTime _selectedDate = DateTime.now();
+  late DateTime _selectedDate;
   String _selectedSource = IncomeSource.salary;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = widget.initialDate ?? DateTime.now();
+  }
 
   final List<Map<String, dynamic>> _sources = [
     {'code': IncomeSource.salary, 'name': '급여', 'icon': Icons.work},

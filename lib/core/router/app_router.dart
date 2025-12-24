@@ -87,7 +87,10 @@ class AppRouter {
         GoRoute(
           path: RouteNames.addExpense,
           name: 'addExpense',
-          builder: (context, state) => const AddExpenseScreen(),
+          builder: (context, state) {
+            final initialDate = state.extra as DateTime?;
+            return AddExpenseScreen(initialDate: initialDate);
+          },
         ),
 
         // ==================== Income Routes ====================
@@ -99,7 +102,10 @@ class AppRouter {
         GoRoute(
           path: RouteNames.addIncome,
           name: 'addIncome',
-          builder: (context, state) => const AddIncomeScreen(),
+          builder: (context, state) {
+            final initialDate = state.extra as DateTime?;
+            return AddIncomeScreen(initialDate: initialDate);
+          },
         ),
         // GoRoute(
         //   path: '/incomes/:id',

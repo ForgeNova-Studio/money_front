@@ -257,15 +257,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           );
         },
       ),
-      floatingActionButton: _calendarFormat == CalendarFormat.month
-          ? FloatingActionButton(
-              onPressed: () {
-                _showAddTransactionModal(context);
-              },
-              backgroundColor: AppColors.primary,
-              child: const Icon(Icons.add, color: Colors.white),
-            )
-          : null,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () =>
+            _showAddTransactionModal(context, homeState.selectedDate),
+        backgroundColor: AppColors.primary,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -605,7 +602,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-void _showAddTransactionModal(BuildContext context) {
+void _showAddTransactionModal(BuildContext context, DateTime selectedDate) {
   showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
@@ -633,7 +630,7 @@ void _showAddTransactionModal(BuildContext context) {
                 child: InkWell(
                   onTap: () {
                     Navigator.pop(context);
-                    context.push(RouteNames.addIncome);
+                    context.push(RouteNames.addIncome, extra: selectedDate);
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -663,7 +660,7 @@ void _showAddTransactionModal(BuildContext context) {
                 child: InkWell(
                   onTap: () {
                     Navigator.pop(context);
-                    context.push(RouteNames.addExpense);
+                    context.push(RouteNames.addExpense, extra: selectedDate);
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 16),
