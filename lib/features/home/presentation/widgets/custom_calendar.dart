@@ -11,6 +11,7 @@ class CustomCalendar extends StatefulWidget {
   final List<dynamic> Function(DateTime)? eventLoader;
   final CalendarFormat? format;
   final void Function(CalendarFormat)? onFormatChanged;
+  final Widget Function(BuildContext, DateTime)? dayBottomBuilder;
 
   const CustomCalendar({
     super.key,
@@ -21,6 +22,7 @@ class CustomCalendar extends StatefulWidget {
     this.eventLoader,
     this.format,
     this.onFormatChanged,
+    this.dayBottomBuilder, // Add this
   });
 
   @override
@@ -116,6 +118,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
       ),
 
       daysOfWeekHeight: 40.0,
+      rowHeight: 62.0, // Slightly increased for compact content
 
       // 달력 바디 스타일 설정
       calendarStyle: const CalendarStyle(
@@ -152,13 +155,6 @@ class _CustomCalendarState extends State<CustomCalendar> {
                 builder: (context) => CustomMonthPicker(
                   initialDate: widget.focusedDay,
                   onDateSelected: (selectedDate) {
-                    // 월 선택 시 focusedDay 변경 요청 (보통 부모 위젯에서 처리해야 함)
-                    // 현재 CustomMonthPicker는 단순히 날짜만 반환하므로,
-                    // 상위 위젯에서 onPageChanged 등을 통해 처리하도록 유도하거나
-                    // 여기서는 단순히 콜백을 호출해줘야 함.
-                    // 하지만 onPageChanged는 TableCalendar 내부 스와이프용이므로,
-                    // 별도의 onMonthSelected 같은 콜백이 필요할 수도 있음.
-                    // 임시로 onPageChanged를 재활용하여 호출
                     widget.onPageChanged?.call(selectedDate);
                   },
                 ),
@@ -174,79 +170,81 @@ class _CustomCalendarState extends State<CustomCalendar> {
           );
         },
 
-        // 오늘 날짜 셀 커스텀
+        // 오늘 날짜 셀 커스텀 (기본과 동일하게 처리)
         todayBuilder: (context, day, focusedDay) {
           return Container(
-            margin: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.primaryPinkLight,
-                width: 2.0,
-              ),
-              color: isSameDay(day, widget.selectedDay)
-                  ? AppColors.primary
-                  : AppColors.backgroundLight,
-            ),
-            child: Center(
-              child: Text(
-                '${day.day}',
-                style: TextStyle(
-                    color: isSameDay(day, widget.selectedDay)
-                        ? AppColors.textWhite
-                        : AppColors.textPrimary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.0),
-              ),
+            margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
+            padding: const EdgeInsets.only(top: 6.0),
+            alignment: Alignment.topCenter,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  '${day.day}',
+                  style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13.0),
+                ),
+                if (widget.dayBottomBuilder != null)
+                  Expanded(child: widget.dayBottomBuilder!(context, day)),
+              ],
             ),
           );
         },
 
-        // 선택한 날짜 셀 커스텀
+        // 선택한 날짜 셀 커스텀 (테두리만 표시)
         selectedBuilder: (context, day, focusedDay) {
           return Container(
-            margin: const EdgeInsets.all(8.0),
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                '${day.day}',
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.0),
+            margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
+            padding: const EdgeInsets.only(
+                top: 4.0), // Padding slightly reduced to account for border
+            alignment: Alignment.topCenter,
+            decoration: BoxDecoration(
+              color: Colors.transparent, // No background
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: AppColors.primary,
+                width: 1.5,
               ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  '${day.day}',
+                  style: const TextStyle(
+                      color: AppColors
+                          .textPrimary, // Changed from White to Primary
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13.0),
+                ),
+                if (widget.dayBottomBuilder != null)
+                  Expanded(child: widget.dayBottomBuilder!(context, day)),
+              ],
             ),
           );
         },
 
-        markerBuilder: (context, day, events) {
-          if (events.isEmpty) return null;
-
-          // events가 10개여도 3개만 표시
-          final displayEvents = events.take(3).toList();
-
-          final today = DateTime.utc(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day);
-
-          return Positioned(
-            bottom:
-                isSameDay(day, widget.selectedDay) || isSameDay(day, today) ? 1 : 2,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: displayEvents.map((event) {
-                return Container(
-                  width: 6,
-                  height: 6,
-                  margin: const EdgeInsets.symmetric(horizontal: 1.0),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.primaryPinkLight,
-                  ),
-                );
-              }).toList(),
+        // 기본 날짜 셀 커스텀
+        defaultBuilder: (context, day, focusedDay) {
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
+            padding: const EdgeInsets.only(top: 6.0),
+            alignment: Alignment.topCenter,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  '${day.day}',
+                  style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13.0),
+                ),
+                if (widget.dayBottomBuilder != null)
+                  Expanded(child: widget.dayBottomBuilder!(context, day)),
+              ],
             ),
           );
         },

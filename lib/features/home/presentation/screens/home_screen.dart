@@ -15,6 +15,7 @@ import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
 import 'package:moneyflow/features/home/presentation/widgets/custom_calendar.dart';
 import 'package:moneyflow/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
+import 'package:moneyflow/core/utils/format_utils.dart'; // Add this
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -141,23 +142,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       onPageChanged: (focused) {
                         viewModel.changeMonth(focused);
                       },
-                      eventLoader: (day) {
-                        // 데이터 로딩 중이거나 에러일 때는 빈 리스트 반환
+                      dayBottomBuilder: (context, day) {
                         return homeState.monthlyData.when(
                           data: (data) {
                             final dateKey =
                                 DateFormat('yyyy-MM-dd').format(day);
                             final summary = data[dateKey];
-                            if (summary != null &&
-                                summary.transactions.isNotEmpty) {
-                              // 트랜잭션 개수만큼 마커 표시 (최대 3개는 내부에서 처리)
-                              return List.filled(
-                                  summary.transactions.length, 'event');
-                            }
-                            return [];
+                            if (summary == null) return const SizedBox.shrink();
+
+                            final hasIncome = summary.totalIncome > 0;
+                            final hasExpense = summary.totalExpense > 0;
+
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (hasIncome)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 1.0),
+                                    child: Text(
+                                      '+${formatMoneyCompact(summary.totalIncome)}',
+                                      style: const TextStyle(
+                                        color: AppColors.success,
+                                        fontSize: 9, // Minimum size 9pt
+                                        fontWeight: FontWeight.w500,
+                                        letterSpacing: -0.5, // Tight spacing
+                                        height: 1.0,
+                                      ),
+                                    ),
+                                  ),
+                                if (hasExpense)
+                                  Text(
+                                    '-${formatMoneyCompact(summary.totalExpense)}',
+                                    style: const TextStyle(
+                                      color: AppColors.error,
+                                      fontSize: 9, // Minimum size 9pt
+                                      fontWeight: FontWeight.w500,
+                                      letterSpacing: -0.5, // Tight spacing
+                                      height: 1.0,
+                                    ),
+                                  ),
+                              ],
+                            );
                           },
-                          loading: () => [],
-                          error: (_, __) => [],
+                          loading: () => const SizedBox.shrink(),
+                          error: (_, __) => const SizedBox.shrink(),
                         );
                       },
                     ),
