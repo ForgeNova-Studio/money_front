@@ -99,163 +99,143 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          // Estimate header height (Budget + Week Calendar)
-          const double estimatedHeaderHeight = 320.0;
-          final double bodyHeight = constraints.maxHeight;
+      body: Column(
+        children: [
+          // 1. Budget Info Area
+          _buildBudgetInfo(),
 
-          // Calculate fraction
-          double initialSheetSize =
-              (bodyHeight - estimatedHeaderHeight) / bodyHeight;
-          // Clamp for safety
-          if (initialSheetSize < 0.2) initialSheetSize = 0.2;
-          if (initialSheetSize > 0.8) initialSheetSize = 0.8;
+          // 2. Custom Calendar
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 16.0, vertical: 8.0),
+            child: CustomCalendar(
+              format: _calendarFormat,
+              focusedDay: homeState.focusedMonth,
+              selectedDay: homeState.selectedDate,
+              onFormatChanged: (format) {
+                setState(() {
+                  _calendarFormat = format;
+                });
+              },
+              onDateSelected: (selected, focused) {
+                viewModel.selectDate(selected);
+                setState(() {
+                  _calendarFormat = CalendarFormat.week;
+                });
+              },
+              onPageChanged: (focused) {
+                viewModel.changeMonth(focused);
+              },
+              dayBottomBuilder: (context, day) {
+                return homeState.monthlyData.when(
+                  data: (data) {
+                    final dateKey =
+                        DateFormat('yyyy-MM-dd').format(day);
+                    final summary = data[dateKey];
+                    if (summary == null) return const SizedBox.shrink();
 
-          return Stack(
-            children: [
-              // Layer 1: Main Content (Budget + Calendar)
-              Column(
-                children: [
-                  // 1. Budget Info Area
-                  _buildBudgetInfo(),
+                    final hasIncome = summary.totalIncome > 0;
+                    final hasExpense = summary.totalExpense > 0;
 
-                  // 2. Custom Calendar
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: CustomCalendar(
-                      format: _calendarFormat,
-                      focusedDay: homeState.focusedMonth,
-                      selectedDay: homeState.selectedDate,
-                      onFormatChanged: (format) {
-                        setState(() {
-                          _calendarFormat = format;
-                        });
-                      },
-                      onDateSelected: (selected, focused) {
-                        viewModel.selectDate(selected);
-                        setState(() {
-                          _calendarFormat = CalendarFormat.week;
-                        });
-                      },
-                      onPageChanged: (focused) {
-                        viewModel.changeMonth(focused);
-                      },
-                      dayBottomBuilder: (context, day) {
-                        return homeState.monthlyData.when(
-                          data: (data) {
-                            final dateKey =
-                                DateFormat('yyyy-MM-dd').format(day);
-                            final summary = data[dateKey];
-                            if (summary == null) return const SizedBox.shrink();
-
-                            final hasIncome = summary.totalIncome > 0;
-                            final hasExpense = summary.totalExpense > 0;
-
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (hasIncome)
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 1.0),
-                                    child: Text(
-                                      '+${formatMoneyCompact(summary.totalIncome)}',
-                                      style: const TextStyle(
-                                        color: AppColors.success,
-                                        fontSize: 9, // Minimum size 9pt
-                                        fontWeight: FontWeight.w500,
-                                        letterSpacing: -0.5, // Tight spacing
-                                        height: 1.0,
-                                      ),
-                                    ),
-                                  ),
-                                if (hasExpense)
-                                  Text(
-                                    '-${formatMoneyCompact(summary.totalExpense)}',
-                                    style: const TextStyle(
-                                      color: AppColors.error,
-                                      fontSize: 9, // Minimum size 9pt
-                                      fontWeight: FontWeight.w500,
-                                      letterSpacing: -0.5, // Tight spacing
-                                      height: 1.0,
-                                    ),
-                                  ),
-                              ],
-                            );
-                          },
-                          loading: () => const SizedBox.shrink(),
-                          error: (_, __) => const SizedBox.shrink(),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-
-              // Layer 2: Draggable Sheet (Transactions)
-              Positioned.fill(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) {
-                    final offsetAnimation = Tween<Offset>(
-                      begin: const Offset(0, 1),
-                      end: Offset.zero,
-                    ).animate(CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.easeInOut,
-                    ));
-                    return SlideTransition(
-                      position: offsetAnimation,
-                      child: child,
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (hasIncome)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 1.0),
+                            child: Text(
+                              '+${formatMoneyCompact(summary.totalIncome)}',
+                              style: const TextStyle(
+                                color: AppColors.success,
+                                fontSize: 9, // Minimum size 9pt
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: -0.5, // Tight spacing
+                                height: 1.0,
+                              ),
+                            ),
+                          ),
+                        if (hasExpense)
+                          Text(
+                            '-${formatMoneyCompact(summary.totalExpense)}',
+                            style: const TextStyle(
+                              color: AppColors.error,
+                              fontSize: 9, // Minimum size 9pt
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: -0.5, // Tight spacing
+                              height: 1.0,
+                            ),
+                          ),
+                      ],
                     );
                   },
-                  child: _calendarFormat == CalendarFormat.week
-                      ? NotificationListener<DraggableScrollableNotification>(
-                          key: const ValueKey('modal'),
-                          onNotification: (notification) {
-                            if (notification.extent <= 0.05) {
-                              setState(() {
-                                _calendarFormat = CalendarFormat.month;
-                              });
-                            }
-                            return true;
-                          },
-                          child: DraggableScrollableSheet(
-                            initialChildSize: initialSheetSize,
-                            minChildSize: 0.0,
-                            maxChildSize: initialSheetSize,
-                            snap: true,
-                            builder: (context, scrollController) {
-                              return Container(
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(20)),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 10,
-                                      spreadRadius: 2,
-                                      offset: Offset(0, -2),
-                                    ),
-                                  ],
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, __) => const SizedBox.shrink(),
+                );
+              },
+            ),
+          ),
+
+          // 3. Transactions Sheet (Fills remaining space)
+          Expanded(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                final offsetAnimation = Tween<Offset>(
+                  begin: const Offset(0, 1),
+                  end: Offset.zero,
+                ).animate(CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeInOut,
+                ));
+                return SlideTransition(
+                  position: offsetAnimation,
+                  child: child,
+                );
+              },
+              child: _calendarFormat == CalendarFormat.week
+                  ? NotificationListener<DraggableScrollableNotification>(
+                      key: const ValueKey('modal'),
+                      onNotification: (notification) {
+                        if (notification.extent <= 0.05) {
+                          setState(() {
+                            _calendarFormat = CalendarFormat.month;
+                          });
+                        }
+                        return true;
+                      },
+                      child: DraggableScrollableSheet(
+                        initialChildSize: 1.0,
+                        minChildSize: 0.0,
+                        maxChildSize: 1.0,
+                        snap: true,
+                        builder: (context, scrollController) {
+                          return Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                  offset: Offset(0, -2),
                                 ),
-                                padding: const EdgeInsets.only(top: 16),
-                                child: SingleChildScrollView(
-                                  controller: scrollController,
-                                  child: _buildTransactionList(isModal: true),
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : const SizedBox.shrink(key: ValueKey('empty')),
-                ),
-              ),
-            ],
-          );
-        },
+                              ],
+                            ),
+                            padding: const EdgeInsets.only(top: 16),
+                            child: SingleChildScrollView(
+                              controller: scrollController,
+                              child: _buildTransactionList(isModal: true),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  : const SizedBox.shrink(key: ValueKey('empty')),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () =>
