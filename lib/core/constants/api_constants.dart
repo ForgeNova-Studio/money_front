@@ -24,6 +24,9 @@ class ApiConstants {
   static const String devDeleteUser = '/api/auth/dev/users';
   static const String logout = '/api/auth/logout';
 
+  // ========== Home endpoints ==========
+  static const String homeMonthly = '/api/home/monthly';
+
   // ========== Expense endpoints ==========
   static const String expenses = '/api/expenses';
   static const String expensesRecent = '/api/expenses/recent';
