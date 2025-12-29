@@ -1,41 +1,50 @@
+// packages
 import 'package:intl/intl.dart';
-import 'package:moneyflow/features/expense/domain/repositories/expense_repository.dart';
-import 'package:moneyflow/features/income/domain/repositories/income_repository.dart';
+
+// models
+import 'package:moneyflow/features/expense/data/models/expense_model.dart';
+import 'package:moneyflow/features/income/data/models/income_model.dart';
+
+// entities
 import 'package:moneyflow/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
+
+// repository
 import 'package:moneyflow/features/home/domain/repositories/home_repository.dart';
 
+// dataSource
+import 'package:moneyflow/features/home/data/datasources/home_remote_data_source.dart';
+
 class HomeRepositoryImpl implements HomeRepository {
-  final ExpenseRepository _expenseRepository;
-  final IncomeRepository _incomeRepository;
+  final HomeRemoteDataSource _homeRemoteDataSource;
 
   HomeRepositoryImpl({
-    required ExpenseRepository expenseRepository,
-    required IncomeRepository incomeRepository,
-  })  : _expenseRepository = expenseRepository,
-        _incomeRepository = incomeRepository;
+    required HomeRemoteDataSource homeRemoteDataSource,
+  }) : _homeRemoteDataSource = homeRemoteDataSource;
 
   @override
   Future<Map<String, DailyTransactionSummary>> getMonthlyHomeData({
     required DateTime yearMonth,
   }) async {
-    final startDate = DateTime(yearMonth.year, yearMonth.month, 1);
-    final endDate = DateTime(yearMonth.year, yearMonth.month + 1, 0);
+    final yearMonthStr = DateFormat('yyyy-MM').format(yearMonth);
+    
+    final response = await _homeRemoteDataSource.getMonthlyData(yearMonth: yearMonthStr);
 
-    // 지출과 수입 데이터를 병렬로 가져옴
-    final results = await Future.wait([
-      _expenseRepository.getExpenseList(startDate: startDate, endDate: endDate),
-      _incomeRepository.getIncomeList(startDate: startDate, endDate: endDate),
-    ]);
-
-    final expenses = results[0] as List;
-    final incomes = results[1] as List;
+    final expensesList = (response['expenses'] as List?)
+            ?.map((e) => ExpenseModel.fromJson(e).toEntity())
+            .toList() ??
+        [];
+    
+    final incomesList = (response['incomes'] as List?)
+            ?.map((e) => IncomeModel.fromJson(e).toEntity())
+            .toList() ??
+        [];
 
     final Map<String, DailyTransactionSummary> dailyMap = {};
     final dateFormat = DateFormat('yyyy-MM-dd');
 
     // 지출 데이터 가공
-    for (var expense in expenses) {
+    for (var expense in expensesList) {
       final dateKey = dateFormat.format(expense.date);
       final transaction = TransactionEntity.fromExpense(expense);
       
@@ -43,7 +52,7 @@ class HomeRepositoryImpl implements HomeRepository {
     }
 
     // 수입 데이터 가공
-    for (var income in incomes) {
+    for (var income in incomesList) {
       final dateKey = dateFormat.format(income.date);
       final transaction = TransactionEntity.fromIncome(income);
       
