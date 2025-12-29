@@ -14,12 +14,12 @@ T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$HomeTransactionModel {
-  String get id;
-  double get amount;
-  DateTime get date;
+  int get id;
+  String get type; // "INCOME" or "EXPENSE"
+  int get amount;
   String get title;
   String get category;
-  String get type;
+  String get time;
 
   /// Create a copy of HomeTransactionModel
   /// with the given fields replaced by the non-null parameter values.
@@ -38,22 +38,22 @@ mixin _$HomeTransactionModel {
         (other.runtimeType == runtimeType &&
             other is HomeTransactionModel &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.type, type) || other.type == type) &&
             (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.date, date) || other.date == date) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.category, category) ||
                 other.category == category) &&
-            (identical(other.type, type) || other.type == type));
+            (identical(other.time, time) || other.time == time));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, id, amount, date, title, category, type);
+      Object.hash(runtimeType, id, type, amount, title, category, time);
 
   @override
   String toString() {
-    return 'HomeTransactionModel(id: $id, amount: $amount, date: $date, title: $title, category: $category, type: $type)';
+    return 'HomeTransactionModel(id: $id, type: $type, amount: $amount, title: $title, category: $category, time: $time)';
   }
 }
 
@@ -64,12 +64,12 @@ abstract mixin class $HomeTransactionModelCopyWith<$Res> {
       _$HomeTransactionModelCopyWithImpl;
   @useResult
   $Res call(
-      {String id,
-      double amount,
-      DateTime date,
+      {int id,
+      String type,
+      int amount,
       String title,
       String category,
-      String type});
+      String time});
 }
 
 /// @nodoc
@@ -86,25 +86,25 @@ class _$HomeTransactionModelCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? type = null,
     Object? amount = null,
-    Object? date = null,
     Object? title = null,
     Object? category = null,
-    Object? type = null,
+    Object? time = null,
   }) {
     return _then(_self.copyWith(
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      type: null == type
+          ? _self.type
+          : type // ignore: cast_nullable_to_non_nullable
               as String,
       amount: null == amount
           ? _self.amount
           : amount // ignore: cast_nullable_to_non_nullable
-              as double,
-      date: null == date
-          ? _self.date
-          : date // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as int,
       title: null == title
           ? _self.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -113,9 +113,9 @@ class _$HomeTransactionModelCopyWithImpl<$Res>
           ? _self.category
           : category // ignore: cast_nullable_to_non_nullable
               as String,
-      type: null == type
-          ? _self.type
-          : type // ignore: cast_nullable_to_non_nullable
+      time: null == time
+          ? _self.time
+          : time // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -170,8 +170,6 @@ extension HomeTransactionModelPatterns on HomeTransactionModel {
     switch (_that) {
       case _HomeTransactionModel():
         return $default(_that);
-      case _:
-        throw StateError('Unexpected subclass');
     }
   }
 
@@ -214,16 +212,16 @@ extension HomeTransactionModelPatterns on HomeTransactionModel {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(String id, double amount, DateTime date, String title,
-            String category, String type)?
+    TResult Function(int id, String type, int amount, String title,
+            String category, String time)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _HomeTransactionModel() when $default != null:
-        return $default(_that.id, _that.amount, _that.date, _that.title,
-            _that.category, _that.type);
+        return $default(_that.id, _that.type, _that.amount, _that.title,
+            _that.category, _that.time);
       case _:
         return orElse();
     }
@@ -244,17 +242,15 @@ extension HomeTransactionModelPatterns on HomeTransactionModel {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(String id, double amount, DateTime date, String title,
-            String category, String type)
+    TResult Function(int id, String type, int amount, String title,
+            String category, String time)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _HomeTransactionModel():
-        return $default(_that.id, _that.amount, _that.date, _that.title,
-            _that.category, _that.type);
-      case _:
-        throw StateError('Unexpected subclass');
+        return $default(_that.id, _that.type, _that.amount, _that.title,
+            _that.category, _that.time);
     }
   }
 
@@ -272,15 +268,15 @@ extension HomeTransactionModelPatterns on HomeTransactionModel {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(String id, double amount, DateTime date, String title,
-            String category, String type)?
+    TResult? Function(int id, String type, int amount, String title,
+            String category, String time)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _HomeTransactionModel() when $default != null:
-        return $default(_that.id, _that.amount, _that.date, _that.title,
-            _that.category, _that.type);
+        return $default(_that.id, _that.type, _that.amount, _that.title,
+            _that.category, _that.time);
       case _:
         return null;
     }
@@ -292,27 +288,28 @@ extension HomeTransactionModelPatterns on HomeTransactionModel {
 class _HomeTransactionModel extends HomeTransactionModel {
   const _HomeTransactionModel(
       {required this.id,
+      required this.type,
       required this.amount,
-      required this.date,
       required this.title,
       required this.category,
-      required this.type})
+      required this.time})
       : super._();
   factory _HomeTransactionModel.fromJson(Map<String, dynamic> json) =>
       _$HomeTransactionModelFromJson(json);
 
   @override
-  final String id;
+  final int id;
   @override
-  final double amount;
+  final String type;
+// "INCOME" or "EXPENSE"
   @override
-  final DateTime date;
+  final int amount;
   @override
   final String title;
   @override
   final String category;
   @override
-  final String type;
+  final String time;
 
   /// Create a copy of HomeTransactionModel
   /// with the given fields replaced by the non-null parameter values.
@@ -336,22 +333,22 @@ class _HomeTransactionModel extends HomeTransactionModel {
         (other.runtimeType == runtimeType &&
             other is _HomeTransactionModel &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.type, type) || other.type == type) &&
             (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.date, date) || other.date == date) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.category, category) ||
                 other.category == category) &&
-            (identical(other.type, type) || other.type == type));
+            (identical(other.time, time) || other.time == time));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, id, amount, date, title, category, type);
+      Object.hash(runtimeType, id, type, amount, title, category, time);
 
   @override
   String toString() {
-    return 'HomeTransactionModel(id: $id, amount: $amount, date: $date, title: $title, category: $category, type: $type)';
+    return 'HomeTransactionModel(id: $id, type: $type, amount: $amount, title: $title, category: $category, time: $time)';
   }
 }
 
@@ -364,12 +361,12 @@ abstract mixin class _$HomeTransactionModelCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String id,
-      double amount,
-      DateTime date,
+      {int id,
+      String type,
+      int amount,
       String title,
       String category,
-      String type});
+      String time});
 }
 
 /// @nodoc
@@ -386,25 +383,25 @@ class __$HomeTransactionModelCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   $Res call({
     Object? id = null,
+    Object? type = null,
     Object? amount = null,
-    Object? date = null,
     Object? title = null,
     Object? category = null,
-    Object? type = null,
+    Object? time = null,
   }) {
     return _then(_HomeTransactionModel(
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      type: null == type
+          ? _self.type
+          : type // ignore: cast_nullable_to_non_nullable
               as String,
       amount: null == amount
           ? _self.amount
           : amount // ignore: cast_nullable_to_non_nullable
-              as double,
-      date: null == date
-          ? _self.date
-          : date // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as int,
       title: null == title
           ? _self.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -413,9 +410,9 @@ class __$HomeTransactionModelCopyWithImpl<$Res>
           ? _self.category
           : category // ignore: cast_nullable_to_non_nullable
               as String,
-      type: null == type
-          ? _self.type
-          : type // ignore: cast_nullable_to_non_nullable
+      time: null == time
+          ? _self.time
+          : time // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -423,9 +420,9 @@ class __$HomeTransactionModelCopyWithImpl<$Res>
 
 /// @nodoc
 mixin _$DailyTransactionSummaryModel {
-  DateTime get date;
-  double get totalIncome;
-  double get totalExpense;
+  String get date; // "2025-12-24"
+  int get totalIncome;
+  int get totalExpense;
   List<HomeTransactionModel> get transactions;
 
   /// Create a copy of DailyTransactionSummaryModel
@@ -473,9 +470,9 @@ abstract mixin class $DailyTransactionSummaryModelCopyWith<$Res> {
       _$DailyTransactionSummaryModelCopyWithImpl;
   @useResult
   $Res call(
-      {DateTime date,
-      double totalIncome,
-      double totalExpense,
+      {String date,
+      int totalIncome,
+      int totalExpense,
       List<HomeTransactionModel> transactions});
 }
 
@@ -501,15 +498,15 @@ class _$DailyTransactionSummaryModelCopyWithImpl<$Res>
       date: null == date
           ? _self.date
           : date // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as String,
       totalIncome: null == totalIncome
           ? _self.totalIncome
           : totalIncome // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       totalExpense: null == totalExpense
           ? _self.totalExpense
           : totalExpense // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       transactions: null == transactions
           ? _self.transactions
           : transactions // ignore: cast_nullable_to_non_nullable
@@ -567,8 +564,6 @@ extension DailyTransactionSummaryModelPatterns on DailyTransactionSummaryModel {
     switch (_that) {
       case _DailyTransactionSummaryModel():
         return $default(_that);
-      case _:
-        throw StateError('Unexpected subclass');
     }
   }
 
@@ -611,7 +606,7 @@ extension DailyTransactionSummaryModelPatterns on DailyTransactionSummaryModel {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(DateTime date, double totalIncome, double totalExpense,
+    TResult Function(String date, int totalIncome, int totalExpense,
             List<HomeTransactionModel> transactions)?
         $default, {
     required TResult orElse(),
@@ -641,7 +636,7 @@ extension DailyTransactionSummaryModelPatterns on DailyTransactionSummaryModel {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(DateTime date, double totalIncome, double totalExpense,
+    TResult Function(String date, int totalIncome, int totalExpense,
             List<HomeTransactionModel> transactions)
         $default,
   ) {
@@ -650,8 +645,6 @@ extension DailyTransactionSummaryModelPatterns on DailyTransactionSummaryModel {
       case _DailyTransactionSummaryModel():
         return $default(_that.date, _that.totalIncome, _that.totalExpense,
             _that.transactions);
-      case _:
-        throw StateError('Unexpected subclass');
     }
   }
 
@@ -669,7 +662,7 @@ extension DailyTransactionSummaryModelPatterns on DailyTransactionSummaryModel {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(DateTime date, double totalIncome, double totalExpense,
+    TResult? Function(String date, int totalIncome, int totalExpense,
             List<HomeTransactionModel> transactions)?
         $default,
   ) {
@@ -698,11 +691,12 @@ class _DailyTransactionSummaryModel extends DailyTransactionSummaryModel {
       _$DailyTransactionSummaryModelFromJson(json);
 
   @override
-  final DateTime date;
+  final String date;
+// "2025-12-24"
   @override
-  final double totalIncome;
+  final int totalIncome;
   @override
-  final double totalExpense;
+  final int totalExpense;
   final List<HomeTransactionModel> _transactions;
   @override
   List<HomeTransactionModel> get transactions {
@@ -762,9 +756,9 @@ abstract mixin class _$DailyTransactionSummaryModelCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {DateTime date,
-      double totalIncome,
-      double totalExpense,
+      {String date,
+      int totalIncome,
+      int totalExpense,
       List<HomeTransactionModel> transactions});
 }
 
@@ -790,15 +784,15 @@ class __$DailyTransactionSummaryModelCopyWithImpl<$Res>
       date: null == date
           ? _self.date
           : date // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as String,
       totalIncome: null == totalIncome
           ? _self.totalIncome
           : totalIncome // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       totalExpense: null == totalExpense
           ? _self.totalExpense
           : totalExpense // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       transactions: null == transactions
           ? _self._transactions
           : transactions // ignore: cast_nullable_to_non_nullable

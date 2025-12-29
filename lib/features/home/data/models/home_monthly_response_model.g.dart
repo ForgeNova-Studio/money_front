@@ -9,31 +9,31 @@ part of 'home_monthly_response_model.dart';
 _HomeTransactionModel _$HomeTransactionModelFromJson(
         Map<String, dynamic> json) =>
     _HomeTransactionModel(
-      id: json['id'] as String,
-      amount: (json['amount'] as num).toDouble(),
-      date: DateTime.parse(json['date'] as String),
+      id: (json['id'] as num).toInt(),
+      type: json['type'] as String,
+      amount: (json['amount'] as num).toInt(),
       title: json['title'] as String,
       category: json['category'] as String,
-      type: json['type'] as String,
+      time: json['time'] as String,
     );
 
 Map<String, dynamic> _$HomeTransactionModelToJson(
         _HomeTransactionModel instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'type': instance.type,
       'amount': instance.amount,
-      'date': instance.date.toIso8601String(),
       'title': instance.title,
       'category': instance.category,
-      'type': instance.type,
+      'time': instance.time,
     };
 
 _DailyTransactionSummaryModel _$DailyTransactionSummaryModelFromJson(
         Map<String, dynamic> json) =>
     _DailyTransactionSummaryModel(
-      date: DateTime.parse(json['date'] as String),
-      totalIncome: (json['totalIncome'] as num).toDouble(),
-      totalExpense: (json['totalExpense'] as num).toDouble(),
+      date: json['date'] as String,
+      totalIncome: (json['totalIncome'] as num).toInt(),
+      totalExpense: (json['totalExpense'] as num).toInt(),
       transactions: (json['transactions'] as List<dynamic>)
           .map((e) => HomeTransactionModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -42,7 +42,7 @@ _DailyTransactionSummaryModel _$DailyTransactionSummaryModelFromJson(
 Map<String, dynamic> _$DailyTransactionSummaryModelToJson(
         _DailyTransactionSummaryModel instance) =>
     <String, dynamic>{
-      'date': instance.date.toIso8601String(),
+      'date': instance.date,
       'totalIncome': instance.totalIncome,
       'totalExpense': instance.totalExpense,
       'transactions': instance.transactions,

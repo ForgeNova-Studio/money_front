@@ -10,26 +10,38 @@ sealed class HomeTransactionModel with _$HomeTransactionModel {
   const HomeTransactionModel._();
 
   const factory HomeTransactionModel({
-    required String id,
-    required double amount,
-    required DateTime date,
+    required int id,
+    required String type, // "INCOME" or "EXPENSE"
+    required int amount,
     required String title,
     required String category,
-    required String type, // "INCOME" or "EXPENSE"
+    required String time, // "14:30"
   }) = _HomeTransactionModel;
 
   factory HomeTransactionModel.fromJson(Map<String, dynamic> json) =>
       _$HomeTransactionModelFromJson(json);
 
-  TransactionEntity toEntity() {
+  TransactionEntity toEntity(DateTime date) {
+    // time을 파싱하여 date와 합침
+    DateTime dateTime;
+    if (time.isEmpty || !time.contains(':')) {
+      // time이 빈 문자열이거나 형식이 잘못된 경우 날짜만 사용
+      dateTime = DateTime(date.year, date.month, date.day);
+    } else {
+      final timeParts = time.split(':');
+      final hour = int.tryParse(timeParts[0]) ?? 0;
+      final minute = timeParts.length > 1 ? (int.tryParse(timeParts[1]) ?? 0) : 0;
+      dateTime = DateTime(date.year, date.month, date.day, hour, minute);
+    }
+
     return TransactionEntity(
-      id: id,
-      amount: amount,
-      date: date,
+      id: id.toString(),
+      amount: amount.toDouble(),
+      date: dateTime,
       title: title,
       category: category,
       type: type == 'INCOME' ? TransactionType.income : TransactionType.expense,
-      createdAt: date, // 임시로 date 사용
+      createdAt: dateTime,
     );
   }
 }
@@ -39,9 +51,9 @@ sealed class DailyTransactionSummaryModel with _$DailyTransactionSummaryModel {
   const DailyTransactionSummaryModel._();
 
   const factory DailyTransactionSummaryModel({
-    required DateTime date,
-    required double totalIncome,
-    required double totalExpense,
+    required String date, // "2025-12-24"
+    required int totalIncome,
+    required int totalExpense,
     required List<HomeTransactionModel> transactions,
   }) = _DailyTransactionSummaryModel;
 
@@ -49,11 +61,13 @@ sealed class DailyTransactionSummaryModel with _$DailyTransactionSummaryModel {
       _$DailyTransactionSummaryModelFromJson(json);
 
   DailyTransactionSummary toEntity() {
+    final dateTime = DateTime.parse(date); // String -> DateTime 변환
+
     return DailyTransactionSummary(
-      date: date,
-      totalIncome: totalIncome,
-      totalExpense: totalExpense,
-      transactions: transactions.map((t) => t.toEntity()).toList(),
+      date: dateTime,
+      totalIncome: totalIncome.toDouble(),
+      totalExpense: totalExpense.toDouble(),
+      transactions: transactions.map((t) => t.toEntity(dateTime)).toList(),
     );
   }
 }
