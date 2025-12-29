@@ -1,10 +1,6 @@
 // packages
 import 'package:intl/intl.dart';
 
-// models
-import 'package:moneyflow/features/expense/data/models/expense_model.dart';
-import 'package:moneyflow/features/income/data/models/income_model.dart';
-
 // entities
 import 'package:moneyflow/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
@@ -28,17 +24,15 @@ class HomeRepositoryImpl implements HomeRepository {
   }) async {
     final yearMonthStr = DateFormat('yyyy-MM').format(yearMonth);
     
-    final response = await _homeRemoteDataSource.getMonthlyData(yearMonth: yearMonthStr);
+    final responseModel = await _homeRemoteDataSource.getMonthlyData(yearMonth: yearMonthStr);
 
-    final expensesList = (response['expenses'] as List?)
-            ?.map((e) => ExpenseModel.fromJson(e).toEntity())
-            .toList() ??
-        [];
+    final expensesList = responseModel.expenses
+            .map((e) => e.toEntity())
+            .toList();
     
-    final incomesList = (response['incomes'] as List?)
-            ?.map((e) => IncomeModel.fromJson(e).toEntity())
-            .toList() ??
-        [];
+    final incomesList = responseModel.incomes
+            .map((e) => e.toEntity())
+            .toList();
 
     final Map<String, DailyTransactionSummary> dailyMap = {};
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -95,3 +89,4 @@ class HomeRepositoryImpl implements HomeRepository {
     );
   }
 }
+
