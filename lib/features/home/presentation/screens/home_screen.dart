@@ -113,17 +113,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               focusedDay: homeState.focusedMonth,
               selectedDay: homeState.selectedDate,
               onFormatChanged: (format) {
+                debugPrint('onFormatchanged');
                 setState(() {
                   _calendarFormat = format;
                 });
               },
               onDateSelected: (selected, focused) {
+                debugPrint('onDateSelected');
                 viewModel.selectDate(selected);
                 setState(() {
                   _calendarFormat = CalendarFormat.week;
                 });
               },
               onPageChanged: (focused) {
+                debugPrint('onPageChanged');
                 viewModel.changeMonth(focused);
               },
               dayBottomBuilder: (context, day) {
@@ -177,7 +180,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           // 3. Transactions Sheet (Fills remaining space)
           Expanded(
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 1),
               transitionBuilder: (child, animation) {
                 final offsetAnimation = Tween<Offset>(
                   begin: const Offset(0, 1),

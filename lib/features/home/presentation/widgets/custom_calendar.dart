@@ -143,7 +143,6 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
       // 날짜 선택 시 호출되는 콜백 함수
       onDaySelected: (selectedDay, focusedDay) {
-        debugPrint('Selected Day: $selectedDay, Focused Day: $focusedDay');
         widget.onDateSelected?.call(selectedDay, focusedDay);
       },
 
