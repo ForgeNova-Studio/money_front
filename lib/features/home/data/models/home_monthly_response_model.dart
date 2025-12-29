@@ -1,20 +1,59 @@
-// packages
 import 'package:freezed_annotation/freezed_annotation.dart';
-
-// models
-import 'package:moneyflow/features/expense/data/models/expense_model.dart';
-import 'package:moneyflow/features/income/data/models/income_model.dart';
+import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
+import 'package:moneyflow/features/home/domain/entities/daily_transaction_summary.dart';
 
 part 'home_monthly_response_model.freezed.dart';
 part 'home_monthly_response_model.g.dart';
 
 @freezed
-sealed class HomeMonthlyResponseModel with _$HomeMonthlyResponseModel {
-  const factory HomeMonthlyResponseModel({
-    @Default([]) List<ExpenseModel> expenses,
-    @Default([]) List<IncomeModel> incomes,
-  }) = _HomeMonthlyResponseModel;
+sealed class HomeTransactionModel with _$HomeTransactionModel {
+  const HomeTransactionModel._();
 
-  factory HomeMonthlyResponseModel.fromJson(Map<String, dynamic> json) =>
-      _$HomeMonthlyResponseModelFromJson(json);
+  const factory HomeTransactionModel({
+    required String id,
+    required double amount,
+    required DateTime date,
+    required String title,
+    required String category,
+    required String type, // "INCOME" or "EXPENSE"
+  }) = _HomeTransactionModel;
+
+  factory HomeTransactionModel.fromJson(Map<String, dynamic> json) =>
+      _$HomeTransactionModelFromJson(json);
+
+  TransactionEntity toEntity() {
+    return TransactionEntity(
+      id: id,
+      amount: amount,
+      date: date,
+      title: title,
+      category: category,
+      type: type == 'INCOME' ? TransactionType.income : TransactionType.expense,
+      createdAt: date, // 임시로 date 사용
+    );
+  }
+}
+
+@freezed
+sealed class DailyTransactionSummaryModel with _$DailyTransactionSummaryModel {
+  const DailyTransactionSummaryModel._();
+
+  const factory DailyTransactionSummaryModel({
+    required DateTime date,
+    required double totalIncome,
+    required double totalExpense,
+    required List<HomeTransactionModel> transactions,
+  }) = _DailyTransactionSummaryModel;
+
+  factory DailyTransactionSummaryModel.fromJson(Map<String, dynamic> json) =>
+      _$DailyTransactionSummaryModelFromJson(json);
+
+  DailyTransactionSummary toEntity() {
+    return DailyTransactionSummary(
+      date: date,
+      totalIncome: totalIncome,
+      totalExpense: totalExpense,
+      transactions: transactions.map((t) => t.toEntity()).toList(),
+    );
+  }
 }

@@ -13,83 +13,116 @@ part of 'home_monthly_response_model.dart';
 T _$identity<T>(T value) => value;
 
 /// @nodoc
-mixin _$HomeMonthlyResponseModel {
-  List<ExpenseModel> get expenses;
-  List<IncomeModel> get incomes;
+mixin _$HomeTransactionModel {
+  String get id;
+  double get amount;
+  DateTime get date;
+  String get title;
+  String get category;
+  String get type;
 
-  /// Create a copy of HomeMonthlyResponseModel
+  /// Create a copy of HomeTransactionModel
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  $HomeMonthlyResponseModelCopyWith<HomeMonthlyResponseModel> get copyWith =>
-      _$HomeMonthlyResponseModelCopyWithImpl<HomeMonthlyResponseModel>(
-          this as HomeMonthlyResponseModel, _$identity);
+  $HomeTransactionModelCopyWith<HomeTransactionModel> get copyWith =>
+      _$HomeTransactionModelCopyWithImpl<HomeTransactionModel>(
+          this as HomeTransactionModel, _$identity);
 
-  /// Serializes this HomeMonthlyResponseModel to a JSON map.
+  /// Serializes this HomeTransactionModel to a JSON map.
   Map<String, dynamic> toJson();
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is HomeMonthlyResponseModel &&
-            const DeepCollectionEquality().equals(other.expenses, expenses) &&
-            const DeepCollectionEquality().equals(other.incomes, incomes));
+            other is HomeTransactionModel &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.amount, amount) || other.amount == amount) &&
+            (identical(other.date, date) || other.date == date) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.category, category) ||
+                other.category == category) &&
+            (identical(other.type, type) || other.type == type));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(expenses),
-      const DeepCollectionEquality().hash(incomes));
+  int get hashCode =>
+      Object.hash(runtimeType, id, amount, date, title, category, type);
 
   @override
   String toString() {
-    return 'HomeMonthlyResponseModel(expenses: $expenses, incomes: $incomes)';
+    return 'HomeTransactionModel(id: $id, amount: $amount, date: $date, title: $title, category: $category, type: $type)';
   }
 }
 
 /// @nodoc
-abstract mixin class $HomeMonthlyResponseModelCopyWith<$Res> {
-  factory $HomeMonthlyResponseModelCopyWith(HomeMonthlyResponseModel value,
-          $Res Function(HomeMonthlyResponseModel) _then) =
-      _$HomeMonthlyResponseModelCopyWithImpl;
+abstract mixin class $HomeTransactionModelCopyWith<$Res> {
+  factory $HomeTransactionModelCopyWith(HomeTransactionModel value,
+          $Res Function(HomeTransactionModel) _then) =
+      _$HomeTransactionModelCopyWithImpl;
   @useResult
-  $Res call({List<ExpenseModel> expenses, List<IncomeModel> incomes});
+  $Res call(
+      {String id,
+      double amount,
+      DateTime date,
+      String title,
+      String category,
+      String type});
 }
 
 /// @nodoc
-class _$HomeMonthlyResponseModelCopyWithImpl<$Res>
-    implements $HomeMonthlyResponseModelCopyWith<$Res> {
-  _$HomeMonthlyResponseModelCopyWithImpl(this._self, this._then);
+class _$HomeTransactionModelCopyWithImpl<$Res>
+    implements $HomeTransactionModelCopyWith<$Res> {
+  _$HomeTransactionModelCopyWithImpl(this._self, this._then);
 
-  final HomeMonthlyResponseModel _self;
-  final $Res Function(HomeMonthlyResponseModel) _then;
+  final HomeTransactionModel _self;
+  final $Res Function(HomeTransactionModel) _then;
 
-  /// Create a copy of HomeMonthlyResponseModel
+  /// Create a copy of HomeTransactionModel
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? expenses = null,
-    Object? incomes = null,
+    Object? id = null,
+    Object? amount = null,
+    Object? date = null,
+    Object? title = null,
+    Object? category = null,
+    Object? type = null,
   }) {
     return _then(_self.copyWith(
-      expenses: null == expenses
-          ? _self.expenses
-          : expenses // ignore: cast_nullable_to_non_nullable
-              as List<ExpenseModel>,
-      incomes: null == incomes
-          ? _self.incomes
-          : incomes // ignore: cast_nullable_to_non_nullable
-              as List<IncomeModel>,
+      id: null == id
+          ? _self.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      amount: null == amount
+          ? _self.amount
+          : amount // ignore: cast_nullable_to_non_nullable
+              as double,
+      date: null == date
+          ? _self.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      title: null == title
+          ? _self.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      category: null == category
+          ? _self.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as String,
+      type: null == type
+          ? _self.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
 
-/// Adds pattern-matching-related methods to [HomeMonthlyResponseModel].
-extension HomeMonthlyResponseModelPatterns on HomeMonthlyResponseModel {
+/// Adds pattern-matching-related methods to [HomeTransactionModel].
+extension HomeTransactionModelPatterns on HomeTransactionModel {
   /// A variant of `map` that fallback to returning `orElse`.
   ///
   /// It is equivalent to doing:
@@ -104,12 +137,12 @@ extension HomeMonthlyResponseModelPatterns on HomeMonthlyResponseModel {
 
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>(
-    TResult Function(_HomeMonthlyResponseModel value)? $default, {
+    TResult Function(_HomeTransactionModel value)? $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
-      case _HomeMonthlyResponseModel() when $default != null:
+      case _HomeTransactionModel() when $default != null:
         return $default(_that);
       case _:
         return orElse();
@@ -131,11 +164,11 @@ extension HomeMonthlyResponseModelPatterns on HomeMonthlyResponseModel {
 
   @optionalTypeArgs
   TResult map<TResult extends Object?>(
-    TResult Function(_HomeMonthlyResponseModel value) $default,
+    TResult Function(_HomeTransactionModel value) $default,
   ) {
     final _that = this;
     switch (_that) {
-      case _HomeMonthlyResponseModel():
+      case _HomeTransactionModel():
         return $default(_that);
       case _:
         throw StateError('Unexpected subclass');
@@ -156,11 +189,11 @@ extension HomeMonthlyResponseModelPatterns on HomeMonthlyResponseModel {
 
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(_HomeMonthlyResponseModel value)? $default,
+    TResult? Function(_HomeTransactionModel value)? $default,
   ) {
     final _that = this;
     switch (_that) {
-      case _HomeMonthlyResponseModel() when $default != null:
+      case _HomeTransactionModel() when $default != null:
         return $default(_that);
       case _:
         return null;
@@ -181,14 +214,16 @@ extension HomeMonthlyResponseModelPatterns on HomeMonthlyResponseModel {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(List<ExpenseModel> expenses, List<IncomeModel> incomes)?
+    TResult Function(String id, double amount, DateTime date, String title,
+            String category, String type)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
-      case _HomeMonthlyResponseModel() when $default != null:
-        return $default(_that.expenses, _that.incomes);
+      case _HomeTransactionModel() when $default != null:
+        return $default(_that.id, _that.amount, _that.date, _that.title,
+            _that.category, _that.type);
       case _:
         return orElse();
     }
@@ -209,13 +244,15 @@ extension HomeMonthlyResponseModelPatterns on HomeMonthlyResponseModel {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(List<ExpenseModel> expenses, List<IncomeModel> incomes)
+    TResult Function(String id, double amount, DateTime date, String title,
+            String category, String type)
         $default,
   ) {
     final _that = this;
     switch (_that) {
-      case _HomeMonthlyResponseModel():
-        return $default(_that.expenses, _that.incomes);
+      case _HomeTransactionModel():
+        return $default(_that.id, _that.amount, _that.date, _that.title,
+            _that.category, _that.type);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -235,13 +272,15 @@ extension HomeMonthlyResponseModelPatterns on HomeMonthlyResponseModel {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(List<ExpenseModel> expenses, List<IncomeModel> incomes)?
+    TResult? Function(String id, double amount, DateTime date, String title,
+            String category, String type)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
-      case _HomeMonthlyResponseModel() when $default != null:
-        return $default(_that.expenses, _that.incomes);
+      case _HomeTransactionModel() when $default != null:
+        return $default(_that.id, _that.amount, _that.date, _that.title,
+            _that.category, _that.type);
       case _:
         return null;
     }
@@ -250,45 +289,43 @@ extension HomeMonthlyResponseModelPatterns on HomeMonthlyResponseModel {
 
 /// @nodoc
 @JsonSerializable()
-class _HomeMonthlyResponseModel implements HomeMonthlyResponseModel {
-  const _HomeMonthlyResponseModel(
-      {final List<ExpenseModel> expenses = const [],
-      final List<IncomeModel> incomes = const []})
-      : _expenses = expenses,
-        _incomes = incomes;
-  factory _HomeMonthlyResponseModel.fromJson(Map<String, dynamic> json) =>
-      _$HomeMonthlyResponseModelFromJson(json);
+class _HomeTransactionModel extends HomeTransactionModel {
+  const _HomeTransactionModel(
+      {required this.id,
+      required this.amount,
+      required this.date,
+      required this.title,
+      required this.category,
+      required this.type})
+      : super._();
+  factory _HomeTransactionModel.fromJson(Map<String, dynamic> json) =>
+      _$HomeTransactionModelFromJson(json);
 
-  final List<ExpenseModel> _expenses;
   @override
-  @JsonKey()
-  List<ExpenseModel> get expenses {
-    if (_expenses is EqualUnmodifiableListView) return _expenses;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_expenses);
-  }
-
-  final List<IncomeModel> _incomes;
+  final String id;
   @override
-  @JsonKey()
-  List<IncomeModel> get incomes {
-    if (_incomes is EqualUnmodifiableListView) return _incomes;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_incomes);
-  }
+  final double amount;
+  @override
+  final DateTime date;
+  @override
+  final String title;
+  @override
+  final String category;
+  @override
+  final String type;
 
-  /// Create a copy of HomeMonthlyResponseModel
+  /// Create a copy of HomeTransactionModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  _$HomeMonthlyResponseModelCopyWith<_HomeMonthlyResponseModel> get copyWith =>
-      __$HomeMonthlyResponseModelCopyWithImpl<_HomeMonthlyResponseModel>(
+  _$HomeTransactionModelCopyWith<_HomeTransactionModel> get copyWith =>
+      __$HomeTransactionModelCopyWithImpl<_HomeTransactionModel>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$HomeMonthlyResponseModelToJson(
+    return _$HomeTransactionModelToJson(
       this,
     );
   }
@@ -297,60 +334,475 @@ class _HomeMonthlyResponseModel implements HomeMonthlyResponseModel {
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _HomeMonthlyResponseModel &&
-            const DeepCollectionEquality().equals(other._expenses, _expenses) &&
-            const DeepCollectionEquality().equals(other._incomes, _incomes));
+            other is _HomeTransactionModel &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.amount, amount) || other.amount == amount) &&
+            (identical(other.date, date) || other.date == date) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.category, category) ||
+                other.category == category) &&
+            (identical(other.type, type) || other.type == type));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(_expenses),
-      const DeepCollectionEquality().hash(_incomes));
+  int get hashCode =>
+      Object.hash(runtimeType, id, amount, date, title, category, type);
 
   @override
   String toString() {
-    return 'HomeMonthlyResponseModel(expenses: $expenses, incomes: $incomes)';
+    return 'HomeTransactionModel(id: $id, amount: $amount, date: $date, title: $title, category: $category, type: $type)';
   }
 }
 
 /// @nodoc
-abstract mixin class _$HomeMonthlyResponseModelCopyWith<$Res>
-    implements $HomeMonthlyResponseModelCopyWith<$Res> {
-  factory _$HomeMonthlyResponseModelCopyWith(_HomeMonthlyResponseModel value,
-          $Res Function(_HomeMonthlyResponseModel) _then) =
-      __$HomeMonthlyResponseModelCopyWithImpl;
+abstract mixin class _$HomeTransactionModelCopyWith<$Res>
+    implements $HomeTransactionModelCopyWith<$Res> {
+  factory _$HomeTransactionModelCopyWith(_HomeTransactionModel value,
+          $Res Function(_HomeTransactionModel) _then) =
+      __$HomeTransactionModelCopyWithImpl;
   @override
   @useResult
-  $Res call({List<ExpenseModel> expenses, List<IncomeModel> incomes});
+  $Res call(
+      {String id,
+      double amount,
+      DateTime date,
+      String title,
+      String category,
+      String type});
 }
 
 /// @nodoc
-class __$HomeMonthlyResponseModelCopyWithImpl<$Res>
-    implements _$HomeMonthlyResponseModelCopyWith<$Res> {
-  __$HomeMonthlyResponseModelCopyWithImpl(this._self, this._then);
+class __$HomeTransactionModelCopyWithImpl<$Res>
+    implements _$HomeTransactionModelCopyWith<$Res> {
+  __$HomeTransactionModelCopyWithImpl(this._self, this._then);
 
-  final _HomeMonthlyResponseModel _self;
-  final $Res Function(_HomeMonthlyResponseModel) _then;
+  final _HomeTransactionModel _self;
+  final $Res Function(_HomeTransactionModel) _then;
 
-  /// Create a copy of HomeMonthlyResponseModel
+  /// Create a copy of HomeTransactionModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $Res call({
-    Object? expenses = null,
-    Object? incomes = null,
+    Object? id = null,
+    Object? amount = null,
+    Object? date = null,
+    Object? title = null,
+    Object? category = null,
+    Object? type = null,
   }) {
-    return _then(_HomeMonthlyResponseModel(
-      expenses: null == expenses
-          ? _self._expenses
-          : expenses // ignore: cast_nullable_to_non_nullable
-              as List<ExpenseModel>,
-      incomes: null == incomes
-          ? _self._incomes
-          : incomes // ignore: cast_nullable_to_non_nullable
-              as List<IncomeModel>,
+    return _then(_HomeTransactionModel(
+      id: null == id
+          ? _self.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      amount: null == amount
+          ? _self.amount
+          : amount // ignore: cast_nullable_to_non_nullable
+              as double,
+      date: null == date
+          ? _self.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      title: null == title
+          ? _self.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      category: null == category
+          ? _self.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as String,
+      type: null == type
+          ? _self.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+mixin _$DailyTransactionSummaryModel {
+  DateTime get date;
+  double get totalIncome;
+  double get totalExpense;
+  List<HomeTransactionModel> get transactions;
+
+  /// Create a copy of DailyTransactionSummaryModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $DailyTransactionSummaryModelCopyWith<DailyTransactionSummaryModel>
+      get copyWith => _$DailyTransactionSummaryModelCopyWithImpl<
+              DailyTransactionSummaryModel>(
+          this as DailyTransactionSummaryModel, _$identity);
+
+  /// Serializes this DailyTransactionSummaryModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is DailyTransactionSummaryModel &&
+            (identical(other.date, date) || other.date == date) &&
+            (identical(other.totalIncome, totalIncome) ||
+                other.totalIncome == totalIncome) &&
+            (identical(other.totalExpense, totalExpense) ||
+                other.totalExpense == totalExpense) &&
+            const DeepCollectionEquality()
+                .equals(other.transactions, transactions));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, date, totalIncome, totalExpense,
+      const DeepCollectionEquality().hash(transactions));
+
+  @override
+  String toString() {
+    return 'DailyTransactionSummaryModel(date: $date, totalIncome: $totalIncome, totalExpense: $totalExpense, transactions: $transactions)';
+  }
+}
+
+/// @nodoc
+abstract mixin class $DailyTransactionSummaryModelCopyWith<$Res> {
+  factory $DailyTransactionSummaryModelCopyWith(
+          DailyTransactionSummaryModel value,
+          $Res Function(DailyTransactionSummaryModel) _then) =
+      _$DailyTransactionSummaryModelCopyWithImpl;
+  @useResult
+  $Res call(
+      {DateTime date,
+      double totalIncome,
+      double totalExpense,
+      List<HomeTransactionModel> transactions});
+}
+
+/// @nodoc
+class _$DailyTransactionSummaryModelCopyWithImpl<$Res>
+    implements $DailyTransactionSummaryModelCopyWith<$Res> {
+  _$DailyTransactionSummaryModelCopyWithImpl(this._self, this._then);
+
+  final DailyTransactionSummaryModel _self;
+  final $Res Function(DailyTransactionSummaryModel) _then;
+
+  /// Create a copy of DailyTransactionSummaryModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? date = null,
+    Object? totalIncome = null,
+    Object? totalExpense = null,
+    Object? transactions = null,
+  }) {
+    return _then(_self.copyWith(
+      date: null == date
+          ? _self.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      totalIncome: null == totalIncome
+          ? _self.totalIncome
+          : totalIncome // ignore: cast_nullable_to_non_nullable
+              as double,
+      totalExpense: null == totalExpense
+          ? _self.totalExpense
+          : totalExpense // ignore: cast_nullable_to_non_nullable
+              as double,
+      transactions: null == transactions
+          ? _self.transactions
+          : transactions // ignore: cast_nullable_to_non_nullable
+              as List<HomeTransactionModel>,
+    ));
+  }
+}
+
+/// Adds pattern-matching-related methods to [DailyTransactionSummaryModel].
+extension DailyTransactionSummaryModelPatterns on DailyTransactionSummaryModel {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_DailyTransactionSummaryModel value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _DailyTransactionSummaryModel() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_DailyTransactionSummaryModel value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _DailyTransactionSummaryModel():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_DailyTransactionSummaryModel value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _DailyTransactionSummaryModel() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(DateTime date, double totalIncome, double totalExpense,
+            List<HomeTransactionModel> transactions)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _DailyTransactionSummaryModel() when $default != null:
+        return $default(_that.date, _that.totalIncome, _that.totalExpense,
+            _that.transactions);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(DateTime date, double totalIncome, double totalExpense,
+            List<HomeTransactionModel> transactions)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _DailyTransactionSummaryModel():
+        return $default(_that.date, _that.totalIncome, _that.totalExpense,
+            _that.transactions);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(DateTime date, double totalIncome, double totalExpense,
+            List<HomeTransactionModel> transactions)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _DailyTransactionSummaryModel() when $default != null:
+        return $default(_that.date, _that.totalIncome, _that.totalExpense,
+            _that.transactions);
+      case _:
+        return null;
+    }
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _DailyTransactionSummaryModel extends DailyTransactionSummaryModel {
+  const _DailyTransactionSummaryModel(
+      {required this.date,
+      required this.totalIncome,
+      required this.totalExpense,
+      required final List<HomeTransactionModel> transactions})
+      : _transactions = transactions,
+        super._();
+  factory _DailyTransactionSummaryModel.fromJson(Map<String, dynamic> json) =>
+      _$DailyTransactionSummaryModelFromJson(json);
+
+  @override
+  final DateTime date;
+  @override
+  final double totalIncome;
+  @override
+  final double totalExpense;
+  final List<HomeTransactionModel> _transactions;
+  @override
+  List<HomeTransactionModel> get transactions {
+    if (_transactions is EqualUnmodifiableListView) return _transactions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_transactions);
+  }
+
+  /// Create a copy of DailyTransactionSummaryModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$DailyTransactionSummaryModelCopyWith<_DailyTransactionSummaryModel>
+      get copyWith => __$DailyTransactionSummaryModelCopyWithImpl<
+          _DailyTransactionSummaryModel>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$DailyTransactionSummaryModelToJson(
+      this,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _DailyTransactionSummaryModel &&
+            (identical(other.date, date) || other.date == date) &&
+            (identical(other.totalIncome, totalIncome) ||
+                other.totalIncome == totalIncome) &&
+            (identical(other.totalExpense, totalExpense) ||
+                other.totalExpense == totalExpense) &&
+            const DeepCollectionEquality()
+                .equals(other._transactions, _transactions));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, date, totalIncome, totalExpense,
+      const DeepCollectionEquality().hash(_transactions));
+
+  @override
+  String toString() {
+    return 'DailyTransactionSummaryModel(date: $date, totalIncome: $totalIncome, totalExpense: $totalExpense, transactions: $transactions)';
+  }
+}
+
+/// @nodoc
+abstract mixin class _$DailyTransactionSummaryModelCopyWith<$Res>
+    implements $DailyTransactionSummaryModelCopyWith<$Res> {
+  factory _$DailyTransactionSummaryModelCopyWith(
+          _DailyTransactionSummaryModel value,
+          $Res Function(_DailyTransactionSummaryModel) _then) =
+      __$DailyTransactionSummaryModelCopyWithImpl;
+  @override
+  @useResult
+  $Res call(
+      {DateTime date,
+      double totalIncome,
+      double totalExpense,
+      List<HomeTransactionModel> transactions});
+}
+
+/// @nodoc
+class __$DailyTransactionSummaryModelCopyWithImpl<$Res>
+    implements _$DailyTransactionSummaryModelCopyWith<$Res> {
+  __$DailyTransactionSummaryModelCopyWithImpl(this._self, this._then);
+
+  final _DailyTransactionSummaryModel _self;
+  final $Res Function(_DailyTransactionSummaryModel) _then;
+
+  /// Create a copy of DailyTransactionSummaryModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? date = null,
+    Object? totalIncome = null,
+    Object? totalExpense = null,
+    Object? transactions = null,
+  }) {
+    return _then(_DailyTransactionSummaryModel(
+      date: null == date
+          ? _self.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      totalIncome: null == totalIncome
+          ? _self.totalIncome
+          : totalIncome // ignore: cast_nullable_to_non_nullable
+              as double,
+      totalExpense: null == totalExpense
+          ? _self.totalExpense
+          : totalExpense // ignore: cast_nullable_to_non_nullable
+              as double,
+      transactions: null == transactions
+          ? _self._transactions
+          : transactions // ignore: cast_nullable_to_non_nullable
+              as List<HomeTransactionModel>,
     ));
   }
 }
