@@ -16,11 +16,17 @@ import 'package:moneyflow/features/home/domain/usecases/get_home_monthly_data_us
 
 part 'home_providers.g.dart';
 
+// ============================================================================
+// DataSource Providers
+// ============================================================================
 @riverpod
 HomeRemoteDataSource homeRemoteDataSource(Ref ref) {
   return HomeRemoteDataSourceImpl(dio: ref.read(dioProvider));
 }
 
+// ============================================================================
+// Repository Provider
+// ============================================================================
 @riverpod
 HomeRepository homeRepository(Ref ref) {
   return HomeRepositoryImpl(
@@ -28,6 +34,9 @@ HomeRepository homeRepository(Ref ref) {
   );
 }
 
+// ============================================================================
+// UseCase Provider
+// ============================================================================
 @riverpod
 GetHomeMonthlyDataUseCase getHomeMonthlyDataUseCase(Ref ref) {
   return GetHomeMonthlyDataUseCase(ref.read(homeRepositoryProvider));

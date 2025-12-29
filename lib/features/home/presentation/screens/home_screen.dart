@@ -106,8 +106,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
           // 2. Custom Calendar
           Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: CustomCalendar(
               format: _calendarFormat,
               focusedDay: homeState.focusedMonth,
@@ -129,8 +129,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               dayBottomBuilder: (context, day) {
                 return homeState.monthlyData.when(
                   data: (data) {
-                    final dateKey =
-                        DateFormat('yyyy-MM-dd').format(day);
+                    final dateKey = DateFormat('yyyy-MM-dd').format(day);
                     final summary = data[dateKey];
                     if (summary == null) return const SizedBox.shrink();
 
