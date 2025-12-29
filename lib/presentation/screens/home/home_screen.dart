@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moneyflow/core/router/route_names.dart';
 import 'package:moneyflow/presentation/widgets/home/custom_calendar.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
@@ -61,6 +63,12 @@ class HomeScreen extends ConsumerWidget {
         ),
         backgroundColor: AppColors.backgroundLight,
         actions: [
+          // OCR 테스트 버튼
+          IconButton(
+            icon: const Icon(Icons.document_scanner, color: AppColors.textPrimary),
+            onPressed: () => context.push(RouteNames.ocrTest),
+            tooltip: 'OCR 테스트',
+          ),
           IconButton(
             icon: const Icon(Icons.logout, color: AppColors.textPrimary),
             onPressed: () => _handleLogout(context, ref),

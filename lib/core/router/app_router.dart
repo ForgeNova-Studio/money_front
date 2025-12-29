@@ -32,6 +32,9 @@ import 'package:moneyflow/features/budget/presentation/screens/budget_setting_sc
 import 'package:moneyflow/features/couple/presentation/screens/couple_invite_screen.dart';
 import 'package:moneyflow/features/couple/presentation/screens/couple_join_screen.dart';
 
+// OCR Screens
+import 'package:moneyflow/features/ocr/presentation/screens/ocr_test_screen.dart';
+
 // Models (for extra parameter)
 import 'package:moneyflow/features/expense/domain/entities/expense_model.dart';
 import 'package:moneyflow/features/income/domain/entities/income_model.dart';
@@ -198,6 +201,13 @@ class AppRouter {
           path: RouteNames.coupleJoin,
           name: 'coupleJoin',
           builder: (context, state) => const CoupleJoinScreen(),
+        ),
+
+        // ==================== OCR Route ====================
+        GoRoute(
+          path: RouteNames.ocrTest,
+          name: 'ocrTest',
+          builder: (context, state) => const OcrTestScreen(),
         ),
       ];
 

@@ -26,11 +26,20 @@ dependencies:
   shared_preferences: ^2.2.2
   sqflite: ^2.3.0
   path: ^1.8.3
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
 
   # 이미지 처리
   image_picker: ^1.0.5
   image_cropper: ^11.0.0
   cached_network_image: ^3.3.0
+  permission_handler: ^11.3.1
+  image: ^4.1.0  # 이미지 전처리 (OCR 정확도 향상)
+  path_provider: ^2.1.1  # 임시 파일 저장
+
+  # OCR (ML Kit)
+  # 한글 + 영어/숫자 인식을 위해 최신 버전 사용
+  google_mlkit_text_recognition: ^0.15.0
 
   # UI/차트
   fl_chart: ^1.1.1
@@ -85,6 +94,7 @@ flutter:
 
   assets:
     - assets/animation/
+    - assets/data/brands.json
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
