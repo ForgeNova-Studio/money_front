@@ -55,7 +55,8 @@ class _CustomCalendarState extends State<CustomCalendar> {
       locale: 'ko_KR',
 
       // 애니메이션 설정
-      formatAnimationDuration: const Duration(milliseconds: 300),
+      pageAnimationDuration: const Duration(milliseconds: 1),
+      formatAnimationDuration: const Duration(milliseconds: 200),
       formatAnimationCurve: Curves.easeInOut,
 
       // 세로 스와이프로 포맷 변경 방지 (좌우 스와이프로 월 이동만 허용)
