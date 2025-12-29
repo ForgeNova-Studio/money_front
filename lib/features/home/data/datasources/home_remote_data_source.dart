@@ -4,7 +4,7 @@ import 'package:moneyflow/core/exceptions/exceptions.dart';
 import 'package:moneyflow/features/home/data/models/home_monthly_response_model.dart';
 
 abstract class HomeRemoteDataSource {
-  Future<HomeMonthlyResponseModel> getMonthlyData({required String yearMonth});
+  Future<Map<String, DailyTransactionSummaryModel>> getMonthlyData({required String yearMonth});
 }
 
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
@@ -13,13 +13,20 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   HomeRemoteDataSourceImpl({required this.dio});
 
   @override
-  Future<HomeMonthlyResponseModel> getMonthlyData({required String yearMonth}) async {
+  Future<Map<String, DailyTransactionSummaryModel>> getMonthlyData({required String yearMonth}) async {
     try {
       final response = await dio.get(
         ApiConstants.homeMonthlyData,
         queryParameters: {'yearMonth': yearMonth},
       );
-      return HomeMonthlyResponseModel.fromJson(response.data);
+      
+      final Map<String, dynamic> data = response.data;
+      
+      return data.map((key, value) => MapEntry(
+        key, 
+        DailyTransactionSummaryModel.fromJson(value as Map<String, dynamic>)
+      ));
+      
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     }

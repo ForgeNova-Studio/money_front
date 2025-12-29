@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 
 // entities
 import 'package:moneyflow/features/home/domain/entities/daily_transaction_summary.dart';
-import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
 
 // repository
 import 'package:moneyflow/features/home/domain/repositories/home_repository.dart';
@@ -24,69 +23,10 @@ class HomeRepositoryImpl implements HomeRepository {
   }) async {
     final yearMonthStr = DateFormat('yyyy-MM').format(yearMonth);
     
-    final responseModel = await _homeRemoteDataSource.getMonthlyData(yearMonth: yearMonthStr);
+    // API 호출 (이미 날짜별로 정리된 데이터를 받아옴)
+    final responseMap = await _homeRemoteDataSource.getMonthlyData(yearMonth: yearMonthStr);
 
-    final expensesList = responseModel.expenses
-            .map((e) => e.toEntity())
-            .toList();
-    
-    final incomesList = responseModel.incomes
-            .map((e) => e.toEntity())
-            .toList();
-
-    final Map<String, DailyTransactionSummary> dailyMap = {};
-    final dateFormat = DateFormat('yyyy-MM-dd');
-
-    // 지출 데이터 가공
-    for (var expense in expensesList) {
-      final dateKey = dateFormat.format(expense.date);
-      final transaction = TransactionEntity.fromExpense(expense);
-      
-      _updateDailyMap(dailyMap, dateKey, transaction, expense.date);
-    }
-
-    // 수입 데이터 가공
-    for (var income in incomesList) {
-      final dateKey = dateFormat.format(income.date);
-      final transaction = TransactionEntity.fromIncome(income);
-      
-      _updateDailyMap(dailyMap, dateKey, transaction, income.date);
-    }
-
-    return dailyMap;
-  }
-
-  void _updateDailyMap(
-    Map<String, DailyTransactionSummary> map,
-    String key,
-    TransactionEntity transaction,
-    DateTime date,
-  ) {
-    if (!map.containsKey(key)) {
-      map[key] = DailyTransactionSummary.empty(date);
-    }
-
-    final current = map[key]!;
-    
-    double newIncome = current.totalIncome;
-    double newExpense = current.totalExpense;
-
-    if (transaction.type == TransactionType.income) {
-      newIncome += transaction.amount;
-    } else {
-      newExpense += transaction.amount;
-    }
-
-    // 리스트에 추가하고 시간순 정렬 (필요 시)
-    final newTransactions = List<TransactionEntity>.from(current.transactions)..add(transaction);
-    newTransactions.sort((a, b) => b.date.compareTo(a.date));
-
-    map[key] = DailyTransactionSummary(
-      date: current.date,
-      totalIncome: newIncome,
-      totalExpense: newExpense,
-      transactions: newTransactions,
-    );
+    // Model -> Entity 변환
+    return responseMap.map((key, model) => MapEntry(key, model.toEntity()));
   }
 }
-
