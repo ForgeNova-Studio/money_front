@@ -26,6 +26,7 @@ class ApiConstants {
 
   // ========== Home endpoints ==========
   static const String homeMonthly = '/api/home/monthly';
+  static const String homeMonthlyData = '/api/home/monthly-data';
 
   // ========== Expense endpoints ==========
   static const String expenses = '/api/expenses';
@@ -38,7 +39,6 @@ class ApiConstants {
   static const String incomes = '/api/incomes';
   // 동적 경로: /api/incomes/{incomeId}
   static String incomeById(String incomeId) => '/api/incomes/$incomeId';
-
 
   // ========== Budget endpoints ==========
   static const String budgets = '/api/budgets';
