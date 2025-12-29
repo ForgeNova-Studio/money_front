@@ -9,6 +9,50 @@ part of 'home_providers.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(homeRemoteDataSource)
+const homeRemoteDataSourceProvider = HomeRemoteDataSourceProvider._();
+
+final class HomeRemoteDataSourceProvider extends $FunctionalProvider<
+    HomeRemoteDataSource,
+    HomeRemoteDataSource,
+    HomeRemoteDataSource> with $Provider<HomeRemoteDataSource> {
+  const HomeRemoteDataSourceProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'homeRemoteDataSourceProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$homeRemoteDataSourceHash();
+
+  @$internal
+  @override
+  $ProviderElement<HomeRemoteDataSource> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  HomeRemoteDataSource create(Ref ref) {
+    return homeRemoteDataSource(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(HomeRemoteDataSource value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<HomeRemoteDataSource>(value),
+    );
+  }
+}
+
+String _$homeRemoteDataSourceHash() =>
+    r'ebbd6560e7de2f1a548ba80347ca1f247fa2092c';
+
 @ProviderFor(homeRepository)
 const homeRepositoryProvider = HomeRepositoryProvider._();
 
@@ -48,7 +92,7 @@ final class HomeRepositoryProvider
   }
 }
 
-String _$homeRepositoryHash() => r'8eb06f1318c3bd0321cc61d303e221041882eaef';
+String _$homeRepositoryHash() => r'2e2746fa904c1b0476b47008dc448378da3dc5f6';
 
 @ProviderFor(getHomeMonthlyDataUseCase)
 const getHomeMonthlyDataUseCaseProvider = GetHomeMonthlyDataUseCaseProvider._();
