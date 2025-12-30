@@ -90,6 +90,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         backgroundColor: AppColors.backgroundLight,
         elevation: 0,
         actions: [
+          // OCR 테스트 버튼
+          IconButton(
+            icon: const Icon(Icons.document_scanner,
+                color: AppColors.textPrimary),
+            onPressed: () => context.push(RouteNames.ocrTest),
+            tooltip: 'OCR 테스트',
+          ),
           IconButton(
             icon: const Icon(Icons.logout, color: AppColors.textSecondary),
             onPressed: _handleLogout,
