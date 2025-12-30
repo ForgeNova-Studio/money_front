@@ -45,11 +45,8 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
 
-    # ML Kit 시뮬레이터 지원을 위한 아키텍처 설정
+    # ML Kit 요구사항 및 호환성 설정
     target.build_configurations.each do |config|
-      # 시뮬레이터용 arm64 아키텍처 제외 (M1/M2 Mac에서 발생하는 문제 해결)
-      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
-
       # 최소 iOS 버전 설정 (ML Kit 요구사항)
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'
     end
