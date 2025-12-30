@@ -29,6 +29,9 @@ import 'package:moneyflow/features/budget/presentation/screens/budget_setting_sc
 import 'package:moneyflow/features/couple/presentation/screens/couple_invite_screen.dart';
 import 'package:moneyflow/features/couple/presentation/screens/couple_join_screen.dart';
 
+// OCR Screens
+import 'package:moneyflow/features/ocr/presentation/screens/ocr_test_screen.dart';
+
 /// 앱 라우트 설정 클래스
 class AppRouter {
   AppRouter._();
@@ -166,6 +169,13 @@ class AppRouter {
           path: RouteNames.coupleJoin,
           name: 'coupleJoin',
           builder: (context, state) => const CoupleJoinScreen(),
+        ),
+
+        // ==================== OCR Route ====================
+        GoRoute(
+          path: RouteNames.ocrTest,
+          name: 'ocrTest',
+          builder: (context, state) => const OcrTestScreen(),
         ),
       ];
 

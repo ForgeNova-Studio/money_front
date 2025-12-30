@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 // core
 import 'package:moneyflow/core/providers/core_providers.dart';
@@ -12,6 +13,11 @@ import 'package:moneyflow/core/router/router_provider.dart';
 
 // features
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+
+// OCR
+import 'package:moneyflow/features/ocr/data/datasources/memory/global_brand_source.dart';
+import 'package:moneyflow/features/ocr/data/datasources/local/user_brand_source.dart';
+import 'package:moneyflow/features/ocr/presentation/providers/ocr_providers.dart';
 
 void main() async {
   /// Native Splash Screen 유지 (Flutter 엔진 초기화 중 표시)
@@ -26,10 +32,28 @@ void main() async {
   // SharedPreferences 인스턴스 생성
   final sharedPreferences = await SharedPreferences.getInstance();
 
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // OCR 초기화 (비동기 데이터 로딩)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  // 1. Hive 초기화
+  await Hive.initFlutter();
+
+  // 2. GlobalBrandSource 초기화 (JSON 로딩)
+  final globalBrandSource = GlobalBrandSource();
+  await globalBrandSource.initialize();
+
+  // 3. UserBrandSource 초기화 (Hive Box 열기)
+  final userBrandSource = UserBrandSource();
+  await userBrandSource.init();
+
   // Riverpod 컨테이너 생성 및 초기화
   final container = ProviderContainer(
     overrides: [
       sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+      // OCR DataSource 주입
+      globalBrandSourceProvider.overrideWithValue(globalBrandSource),
+      userBrandSourceProvider.overrideWithValue(userBrandSource),
     ],
   );
 

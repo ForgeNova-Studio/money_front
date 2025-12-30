@@ -1,0 +1,283 @@
+{
+  "brands": [
+    {
+      "keywords": [
+        "스타벅스",
+        "starbucks"
+      ],
+      "name": "스타벅스",
+      "category": "CAFE"
+    },
+    {
+      "keywords": [
+        "이디야",
+        "ediya"
+      ],
+      "name": "이디야커피",
+      "category": "CAFE"
+    },
+    {
+      "keywords": [
+        "투썸",
+        "투썸플레이스",
+        "twosome"
+      ],
+      "name": "투썸플레이스",
+      "category": "CAFE"
+    },
+    {
+      "keywords": [
+        "메가커피",
+        "mega"
+      ],
+      "name": "메가커피",
+      "category": "CAFE"
+    },
+    {
+      "keywords": [
+        "컴포즈",
+        "compose"
+      ],
+      "name": "컴포즈커피",
+      "category": "CAFE"
+    },
+    {
+      "keywords": [
+        "맥도날드",
+        "맥날",
+        "mcdonald"
+      ],
+      "name": "맥도날드",
+      "category": "FOOD"
+    },
+    {
+      "keywords": [
+        "버거킹",
+        "burgerking"
+      ],
+      "name": "버거킹",
+      "category": "FOOD"
+    },
+    {
+      "keywords": [
+        "롯데리아",
+        "lotteria"
+      ],
+      "name": "롯데리아",
+      "category": "FOOD"
+    },
+    {
+      "keywords": [
+        "배민",
+        "baemin"
+      ],
+      "name": "배달의민족",
+      "category": "FOOD"
+    },
+    {
+      "keywords": [
+        "파리바게뜨",
+        "파바",
+        "parisbaguette"
+      ],
+      "name": "파리바게뜨",
+      "category": "FOOD"
+    },
+    {
+      "keywords": [
+        "뚜레쥬르",
+        "touslesjours"
+      ],
+      "name": "뚜레쥬르",
+      "category": "FOOD"
+    },
+    {
+      "keywords": [
+        "올리브영",
+        "올영",
+        "oliveyoung"
+      ],
+      "name": "올리브영",
+      "category": "SHOPPING"
+    },
+    {
+      "keywords": [
+        "온누리약국",
+        "onnuri"
+      ],
+      "name": "온누리약국",
+      "category": "HEALTH"
+    },
+    {
+      "keywords": [
+        "네이버페이",
+        "naverpay",
+        "네이버파이낸셜"
+      ],
+      "name": "네이버페이",
+      "category": "SHOPPING"
+    },
+    {
+      "keywords": [
+        "gs25"
+      ],
+      "name": "GS25",
+      "category": "FOOD"
+    },
+    {
+      "keywords": [
+        "cu",
+        "씨유"
+      ],
+      "name": "CU",
+      "category": "FOOD"
+    },
+    {
+      "keywords": [
+        "세븐일레븐",
+        "7eleven",
+        "711"
+      ],
+      "name": "세븐일레븐",
+      "category": "FOOD"
+    },
+    {
+      "keywords": [
+        "이마트",
+        "emart"
+      ],
+      "name": "이마트",
+      "category": "SHOPPING"
+    },
+    {
+      "keywords": [
+        "홈플러스",
+        "homeplus"
+      ],
+      "name": "홈플러스",
+      "category": "SHOPPING"
+    },
+    {
+      "keywords": [
+        "롯데마트",
+        "lottemart"
+      ],
+      "name": "롯데마트",
+      "category": "SHOPPING"
+    },
+    {
+      "keywords": [
+        "다이소",
+        "daiso"
+      ],
+      "name": "다이소",
+      "category": "SHOPPING"
+    },
+    {
+      "keywords": [
+        "네이버페이",
+        "naverpay"
+      ],
+      "name": "네이버페이",
+      "category": "SHOPPING"
+    },
+    {
+      "keywords": [
+        "카카오택시",
+        "카카오T",
+        "kakaot"
+      ],
+      "name": "카카오T",
+      "category": "TRANSPORT"
+    },
+    {
+      "keywords": [
+        "타다",
+        "tada"
+      ],
+      "name": "타다",
+      "category": "TRANSPORT"
+    },
+    {
+      "keywords": [
+        "KTX",
+        "korail"
+      ],
+      "name": "KTX",
+      "category": "TRANSPORT"
+    },
+    {
+      "keywords": [
+        "cgv"
+      ],
+      "name": "CGV",
+      "category": "CULTURE"
+    },
+    {
+      "keywords": [
+        "롯데시네마",
+        "lottecinema"
+      ],
+      "name": "롯데시네마",
+      "category": "CULTURE"
+    },
+    {
+      "keywords": [
+        "메가박스",
+        "megabox"
+      ],
+      "name": "메가박스",
+      "category": "CULTURE"
+    },
+    {
+      "keywords": [
+        "넷플릭스",
+        "netflix"
+      ],
+      "name": "넷플릭스",
+      "category": "CULTURE"
+    },
+    {
+      "keywords": [
+        "모빌리언스",
+        "mobilians"
+      ],
+      "name": "모빌리언스",
+      "category": "ETC"
+    },
+    {
+      "keywords": [
+        "삼성전자",
+        "samsung",
+        "삼성"
+      ],
+      "name": "삼성전자",
+      "category": "SHOPPING"
+    },
+    {
+      "keywords": [
+        "현대카드",
+        "hyundaicard"
+      ],
+      "name": "현대카드",
+      "category": "ETC"
+    },
+    {
+      "keywords": [
+        "신한카드",
+        "shinhancard"
+      ],
+      "name": "신한카드",
+      "category": "ETC"
+    },
+    {
+      "keywords": [
+        "국민카드",
+        "kbcard",
+        "KB카드"
+      ],
+      "name": "국민카드",
+      "category": "ETC"
+    }
+  ]
+}

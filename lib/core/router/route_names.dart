@@ -71,6 +71,10 @@ class RouteNames {
   /// 설정 화면
   static const String settings = '/settings';
 
+  // ==================== OCR Route ====================
+  /// OCR 테스트 화면
+  static const String ocrTest = '/ocr-test';
+
   // ==================== Helper Methods ====================
   /// 인증 화면 여부 확인
   static bool isAuthRoute(String location) {
