@@ -13,8 +13,8 @@ import 'package:moneyflow/core/router/route_names.dart';
 // features
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/home/presentation/widgets/custom_calendar.dart';
+import 'package:moneyflow/features/home/presentation/widgets/transaction_list_section.dart';
 import 'package:moneyflow/features/home/presentation/viewmodels/home_view_model.dart';
-import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -187,7 +187,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             padding: const EdgeInsets.only(top: 16),
                             child: SingleChildScrollView(
                               controller: scrollController,
-                              child: _buildTransactionList(isModal: true),
+                              child: TransactionListSection(
+                                monthlyData: homeState.monthlyData,
+                                selectedDate: homeState.selectedDate,
+                                isModal: true,
+                                onCameraTap: () {
+                                  // TODO: Navigate to OCR screen
+                                },
+                              ),
                             ),
                           );
                         },
@@ -279,234 +286,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           )
         ],
       ),
-    );
-  }
-
-  Widget _buildTransactionList({bool isModal = false}) {
-    final homeState = ref.watch(homeViewModelProvider);
-    final selectedDate = homeState.selectedDate;
-
-    return homeState.monthlyData.when(
-      loading: () => const Padding(
-        padding: EdgeInsets.all(32.0),
-        child: Center(child: CircularProgressIndicator()),
-      ),
-      error: (error, stack) => Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Center(child: Text('데이터를 불러오는데 실패했습니다.')),
-      ),
-      data: (data) {
-        final dateKey = DateFormat('yyyy-MM-dd').format(selectedDate);
-        final summary = data[dateKey];
-        final transactions = summary?.transactions ?? [];
-        final totalAmount =
-            (summary?.totalIncome ?? 0) - (summary?.totalExpense ?? 0);
-        final hasData = transactions.isNotEmpty;
-
-        return Column(
-          children: [
-            if (!isModal) ...[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${selectedDate.month}월 ${selectedDate.day}일',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppColors.gray100,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        '전체 ${NumberFormat('#,###').format(totalAmount)}원',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ] else ...[
-              // Modal Header
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                child: Column(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${selectedDate.month}월 ${selectedDate.day}일 (${[
-                                '월',
-                                '화',
-                                '수',
-                                '목',
-                                '금',
-                                '토',
-                                '일'
-                              ][selectedDate.weekday - 1]})',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondary,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${totalAmount < 0 ? '-' : ''}${NumberFormat('#,###').format(totalAmount.abs())}원',
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
-                        InkWell(
-                          onTap: () {
-                            // TODO: Navigate to OCR screen
-                          },
-                          borderRadius: BorderRadius.circular(16),
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(
-                                color: AppColors.primaryPinkLight,
-                                width: 1.5,
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: const Icon(
-                              Icons.camera_alt_outlined,
-                              color: AppColors.primaryPinkLight,
-                              size: 24,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            if (!hasData)
-              Container(
-                height: 200,
-                alignment: Alignment.center,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.receipt_long_outlined,
-                        size: 48, color: AppColors.gray300),
-                    const SizedBox(height: 16),
-                    Text(
-                      '${selectedDate.month}월 ${selectedDate.day}일 내역이 없습니다.',
-                      style: const TextStyle(color: AppColors.textTertiary),
-                    ),
-                  ],
-                ),
-              )
-            else
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: transactions.length,
-                padding: EdgeInsets.zero,
-                itemBuilder: (context, index) {
-                  final tx = transactions[index];
-                  final isExpense = tx.type == TransactionType.expense;
-                  // 지출은 검정색(기본), 수입은 초록색/파란색 등으로 표시
-                  final color = isExpense ? AppColors.error : AppColors.success;
-                  final prefix = isExpense ? '-' : '+';
-                  final amountStr = NumberFormat('#,###').format(tx.amount);
-                  final timeStr = DateFormat('HH:mm').format(tx.date);
-
-                  return InkWell(
-                    onTap: () {
-                      // TODO: Show transaction details modal
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 6),
-                      child: Row(
-                        children: [
-                          // Leading Icon
-                          CircleAvatar(
-                            radius: 20,
-                            backgroundColor: AppColors.gray50,
-                            child: Icon(
-                              isExpense ? Icons.coffee : Icons.attach_money,
-                              color: isExpense
-                                  ? AppColors.textSecondary
-                                  : AppColors.success,
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          // Title & Subtitle
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  tx.title,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  '$timeStr · ${tx.category}',
-                                  style: const TextStyle(
-                                      color: AppColors.textTertiary,
-                                      fontSize: 12),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Trailing Amount
-                          Text(
-                            '$prefix$amountStr원',
-                            style: TextStyle(
-                              color: color,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-          ],
-        );
-      },
     );
   }
 
