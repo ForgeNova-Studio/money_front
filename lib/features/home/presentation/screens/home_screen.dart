@@ -16,6 +16,7 @@ import 'package:moneyflow/features/home/presentation/widgets/custom_calendar.dar
 import 'package:moneyflow/features/home/presentation/widgets/transaction_list_section.dart';
 import 'package:moneyflow/features/home/presentation/states/home_state.dart';
 import 'package:moneyflow/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -68,6 +69,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => TransactionModal(selectedDate: selectedDate),
     );
+  }
+
+  // 수입/지출 삭제
+  Future<void> _handleDeleteTransaction(TransactionEntity transaction) async {
+    if (transaction.id.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('삭제할 수 없는 항목입니다.')),
+        );
+      }
+      return;
+    }
+
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('삭제'),
+        content: const Text('이 내역을 삭제할까요?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('취소'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('삭제'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDelete != true || !mounted) {
+      return;
+    }
+
+    try {
+      await ref
+          .read(homeViewModelProvider.notifier)
+          .deleteTransaction(transaction);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('삭제되었습니다.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('삭제 실패: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -199,6 +251,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         monthlyData: homeState.monthlyData,
                         selectedDate: homeState.selectedDate,
                         isModal: true,
+                        onDelete: _handleDeleteTransaction,
                         onCameraTap: () {
                           // TODO: Navigate to OCR screen
                         },

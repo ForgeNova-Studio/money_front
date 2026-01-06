@@ -1,5 +1,9 @@
+import 'package:flutter/widgets.dart';
+import 'package:moneyflow/features/expense/presentation/providers/expense_providers.dart';
+import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
 import 'package:moneyflow/features/home/presentation/providers/home_providers.dart';
 import 'package:moneyflow/features/home/presentation/states/home_state.dart';
+import 'package:moneyflow/features/income/presentation/providers/income_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -33,6 +37,8 @@ class HomeViewModel extends _$HomeViewModel {
     );
 
     state = state.copyWith(monthlyData: result);
+
+    debugPrint(result.toString());
   }
 
   /// 날짜가 선택되었을 때 호출
@@ -80,5 +86,22 @@ class HomeViewModel extends _$HomeViewModel {
   /// 데이터 새로고침
   Future<void> refresh() async {
     await fetchMonthlyData(state.focusedMonth);
+  }
+
+  // 지출/수입 삭제
+  Future<void> deleteTransaction(TransactionEntity transaction) async {
+    if (transaction.id.isEmpty) {
+      throw StateError('Invalid transaction id');
+    }
+
+    if (transaction.type == TransactionType.expense) {
+      await ref.read(deleteExpenseUseCaseProvider).call(transaction.id);
+    } else {
+      await ref
+          .read(deleteIncomeUsecaseProvider)
+          .call(incomeId: transaction.id);
+    }
+
+    await refresh();
   }
 }

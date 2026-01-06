@@ -15,12 +15,14 @@ class TransactionListSection extends StatelessWidget {
     required this.selectedDate,
     this.isModal = false,
     this.onCameraTap,
+    this.onDelete,
   });
 
   final AsyncValue<Map<String, DailyTransactionSummary>> monthlyData;
   final DateTime selectedDate;
   final bool isModal;
   final VoidCallback? onCameraTap;
+  final Future<void> Function(TransactionEntity transaction)? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +110,9 @@ class TransactionListSection extends StatelessWidget {
           onTap: () {
             // TODO: Show transaction details modal
           },
+          onDelete: tx.id.isEmpty || onDelete == null
+              ? null
+              : () => onDelete!(tx),
         );
       },
     );
