@@ -67,7 +67,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
+      lastDate: DateTime(DateTime.now().year + 5),
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
