@@ -1,6 +1,7 @@
 import 'package:moneyflow/features/home/presentation/providers/home_providers.dart';
 import 'package:moneyflow/features/home/presentation/states/home_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 part 'home_view_model.g.dart';
 
@@ -36,15 +37,20 @@ class HomeViewModel extends _$HomeViewModel {
 
   /// 날짜가 선택되었을 때 호출
   void selectDate(DateTime selectedDate) {
+    final previousFocusedMonth = state.focusedMonth;
+    final shouldFetchMonthlyData =
+        previousFocusedMonth.year != selectedDate.year ||
+            previousFocusedMonth.month != selectedDate.month;
+
     state = state.copyWith(
       selectedDate: selectedDate,
       focusedMonth: selectedDate, // 선택된 날짜로 포커스 이동
+      calendarFormat: CalendarFormat.week,
     );
 
     // 만약 월이 바뀌었다면 데이터도 새로 불러옴 (예: 주간 달력에서 월이 걸쳐있는 경우)
-    if (selectedDate.year != state.focusedMonth.year ||
-        selectedDate.month != state.focusedMonth.month) {
-      changeMonth(selectedDate);
+    if (shouldFetchMonthlyData) {
+      fetchMonthlyData(selectedDate);
     }
   }
 
@@ -56,6 +62,18 @@ class HomeViewModel extends _$HomeViewModel {
     } else {
       // 월이 변경되지 않았더라도(주간 이동 등) 포커스 업데이트
       state = state.copyWith(focusedMonth: focusedMonth);
+    }
+  }
+
+  /// 달력 표시 형식 변경
+  void setCalendarFormat(CalendarFormat format) {
+    state = state.copyWith(calendarFormat: format);
+  }
+
+  /// 드래그 시트 닫힘 등에서 월간 보기로 복귀
+  void resetToMonthView() {
+    if (state.calendarFormat != CalendarFormat.month) {
+      state = state.copyWith(calendarFormat: CalendarFormat.month);
     }
   }
 

@@ -24,8 +24,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-
   Future<void> _handleLogout() async {
     final shouldLogout = await showDialog<bool>(
       context: context,
@@ -75,6 +73,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final homeState = ref.watch(homeViewModelProvider);
     final viewModel = ref.read(homeViewModelProvider.notifier);
+    final calendarFormat = homeState.calendarFormat;
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
@@ -115,20 +114,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             padding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: CustomCalendar(
-              format: _calendarFormat,
+              format: calendarFormat,
               focusedDay: homeState.focusedMonth,
               selectedDay: homeState.selectedDate,
               monthlyData: homeState.monthlyData,
               onFormatChanged: (format) {
-                setState(() {
-                  _calendarFormat = format;
-                });
+                viewModel.setCalendarFormat(format);
               },
               onDateSelected: (selected, focused) {
                 viewModel.selectDate(selected);
-                setState(() {
-                  _calendarFormat = CalendarFormat.week;
-                });
               },
               onPageChanged: (focused) {
                 viewModel.changeMonth(focused);
@@ -139,7 +133,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           // 3. Transactions Sheet (Fills remaining space)
           Expanded(
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 1),
+              duration: const Duration(milliseconds: 200),
               transitionBuilder: (child, animation) {
                 final offsetAnimation = Tween<Offset>(
                   begin: const Offset(0, 1),
@@ -153,14 +147,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: child,
                 );
               },
-              child: _calendarFormat == CalendarFormat.week
+              child: calendarFormat == CalendarFormat.week
                   ? NotificationListener<DraggableScrollableNotification>(
                       key: const ValueKey('modal'),
                       onNotification: (notification) {
                         if (notification.extent <= 0.05) {
-                          setState(() {
-                            _calendarFormat = CalendarFormat.month;
-                          });
+                          viewModel.resetToMonthView();
                         }
                         return true;
                       },

@@ -23,6 +23,9 @@ mixin _$HomeState {
   /// 사용자가 선택한 구체적인 날짜
   DateTime get selectedDate;
 
+  /// 달력 표시 형식
+  CalendarFormat get calendarFormat;
+
   /// Create a copy of HomeState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -40,16 +43,18 @@ mixin _$HomeState {
             (identical(other.focusedMonth, focusedMonth) ||
                 other.focusedMonth == focusedMonth) &&
             (identical(other.selectedDate, selectedDate) ||
-                other.selectedDate == selectedDate));
+                other.selectedDate == selectedDate) &&
+            (identical(other.calendarFormat, calendarFormat) ||
+                other.calendarFormat == calendarFormat));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, monthlyData, focusedMonth, selectedDate);
+  int get hashCode => Object.hash(
+      runtimeType, monthlyData, focusedMonth, selectedDate, calendarFormat);
 
   @override
   String toString() {
-    return 'HomeState(monthlyData: $monthlyData, focusedMonth: $focusedMonth, selectedDate: $selectedDate)';
+    return 'HomeState(monthlyData: $monthlyData, focusedMonth: $focusedMonth, selectedDate: $selectedDate, calendarFormat: $calendarFormat)';
   }
 }
 
@@ -61,7 +66,8 @@ abstract mixin class $HomeStateCopyWith<$Res> {
   $Res call(
       {AsyncValue<Map<String, DailyTransactionSummary>> monthlyData,
       DateTime focusedMonth,
-      DateTime selectedDate});
+      DateTime selectedDate,
+      CalendarFormat calendarFormat});
 }
 
 /// @nodoc
@@ -79,6 +85,7 @@ class _$HomeStateCopyWithImpl<$Res> implements $HomeStateCopyWith<$Res> {
     Object? monthlyData = null,
     Object? focusedMonth = null,
     Object? selectedDate = null,
+    Object? calendarFormat = null,
   }) {
     return _then(_self.copyWith(
       monthlyData: null == monthlyData
@@ -93,6 +100,10 @@ class _$HomeStateCopyWithImpl<$Res> implements $HomeStateCopyWith<$Res> {
           ? _self.selectedDate
           : selectedDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      calendarFormat: null == calendarFormat
+          ? _self.calendarFormat
+          : calendarFormat // ignore: cast_nullable_to_non_nullable
+              as CalendarFormat,
     ));
   }
 }
@@ -191,15 +202,16 @@ extension HomeStatePatterns on HomeState {
     TResult Function(
             AsyncValue<Map<String, DailyTransactionSummary>> monthlyData,
             DateTime focusedMonth,
-            DateTime selectedDate)?
+            DateTime selectedDate,
+            CalendarFormat calendarFormat)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _HomeState() when $default != null:
-        return $default(
-            _that.monthlyData, _that.focusedMonth, _that.selectedDate);
+        return $default(_that.monthlyData, _that.focusedMonth,
+            _that.selectedDate, _that.calendarFormat);
       case _:
         return orElse();
     }
@@ -223,14 +235,15 @@ extension HomeStatePatterns on HomeState {
     TResult Function(
             AsyncValue<Map<String, DailyTransactionSummary>> monthlyData,
             DateTime focusedMonth,
-            DateTime selectedDate)
+            DateTime selectedDate,
+            CalendarFormat calendarFormat)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _HomeState():
-        return $default(
-            _that.monthlyData, _that.focusedMonth, _that.selectedDate);
+        return $default(_that.monthlyData, _that.focusedMonth,
+            _that.selectedDate, _that.calendarFormat);
     }
   }
 
@@ -251,14 +264,15 @@ extension HomeStatePatterns on HomeState {
     TResult? Function(
             AsyncValue<Map<String, DailyTransactionSummary>> monthlyData,
             DateTime focusedMonth,
-            DateTime selectedDate)?
+            DateTime selectedDate,
+            CalendarFormat calendarFormat)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _HomeState() when $default != null:
-        return $default(
-            _that.monthlyData, _that.focusedMonth, _that.selectedDate);
+        return $default(_that.monthlyData, _that.focusedMonth,
+            _that.selectedDate, _that.calendarFormat);
       case _:
         return null;
     }
@@ -271,7 +285,8 @@ class _HomeState implements HomeState {
   const _HomeState(
       {this.monthlyData = const AsyncValue.loading(),
       required this.focusedMonth,
-      required this.selectedDate});
+      required this.selectedDate,
+      this.calendarFormat = CalendarFormat.month});
 
   /// 월별 데이터 (날짜 문자열 Key: "yyyy-MM-dd")
   @override
@@ -285,6 +300,11 @@ class _HomeState implements HomeState {
   /// 사용자가 선택한 구체적인 날짜
   @override
   final DateTime selectedDate;
+
+  /// 달력 표시 형식
+  @override
+  @JsonKey()
+  final CalendarFormat calendarFormat;
 
   /// Create a copy of HomeState
   /// with the given fields replaced by the non-null parameter values.
@@ -304,16 +324,18 @@ class _HomeState implements HomeState {
             (identical(other.focusedMonth, focusedMonth) ||
                 other.focusedMonth == focusedMonth) &&
             (identical(other.selectedDate, selectedDate) ||
-                other.selectedDate == selectedDate));
+                other.selectedDate == selectedDate) &&
+            (identical(other.calendarFormat, calendarFormat) ||
+                other.calendarFormat == calendarFormat));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, monthlyData, focusedMonth, selectedDate);
+  int get hashCode => Object.hash(
+      runtimeType, monthlyData, focusedMonth, selectedDate, calendarFormat);
 
   @override
   String toString() {
-    return 'HomeState(monthlyData: $monthlyData, focusedMonth: $focusedMonth, selectedDate: $selectedDate)';
+    return 'HomeState(monthlyData: $monthlyData, focusedMonth: $focusedMonth, selectedDate: $selectedDate, calendarFormat: $calendarFormat)';
   }
 }
 
@@ -328,7 +350,8 @@ abstract mixin class _$HomeStateCopyWith<$Res>
   $Res call(
       {AsyncValue<Map<String, DailyTransactionSummary>> monthlyData,
       DateTime focusedMonth,
-      DateTime selectedDate});
+      DateTime selectedDate,
+      CalendarFormat calendarFormat});
 }
 
 /// @nodoc
@@ -346,6 +369,7 @@ class __$HomeStateCopyWithImpl<$Res> implements _$HomeStateCopyWith<$Res> {
     Object? monthlyData = null,
     Object? focusedMonth = null,
     Object? selectedDate = null,
+    Object? calendarFormat = null,
   }) {
     return _then(_HomeState(
       monthlyData: null == monthlyData
@@ -360,6 +384,10 @@ class __$HomeStateCopyWithImpl<$Res> implements _$HomeStateCopyWith<$Res> {
           ? _self.selectedDate
           : selectedDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      calendarFormat: null == calendarFormat
+          ? _self.calendarFormat
+          : calendarFormat // ignore: cast_nullable_to_non_nullable
+              as CalendarFormat,
     ));
   }
 }
