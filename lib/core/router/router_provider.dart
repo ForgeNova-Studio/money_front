@@ -10,7 +10,7 @@ import 'package:moneyflow/features/auth/presentation/states/auth_state.dart';
 /// AuthViewModel의 상태를 watching하여 인증 상태 변화에 따라 자동 리다이렉션
 final routerProvider = Provider<GoRouter>((ref) {
   // AuthViewModel의 상태를 읽기
-  final authState = ref.watch(authViewModelProvider);
+  final authState = ref.read(authViewModelProvider);
 
   // authState 변화를 GoRouter에 알리기 위한 Notifier
   // authState.isAuthenticated 값만 추출하여 Notifier 초기화
