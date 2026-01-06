@@ -8,7 +8,11 @@ class GetHomeMonthlyDataUseCase {
 
   Future<Map<String, DailyTransactionSummary>> call({
     required DateTime yearMonth,
+    required String userId,
   }) async {
-    return await _repository.getMonthlyHomeData(yearMonth: yearMonth);
+    return await _repository.getMonthlyHomeData(
+      yearMonth: yearMonth,
+      userId: userId,
+    );
   }
 }

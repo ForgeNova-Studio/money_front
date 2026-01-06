@@ -1,10 +1,12 @@
 // packages
+import 'package:flutter_riverpod/flutter_riverpod.dart' as flutter_riverpod;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // core
 import 'package:moneyflow/core/providers/core_providers.dart';
 
 // dataSource
+import 'package:moneyflow/features/home/data/datasources/home_local_data_source.dart';
 import 'package:moneyflow/features/home/data/datasources/home_remote_data_source.dart';
 
 // repository
@@ -24,6 +26,11 @@ HomeRemoteDataSource homeRemoteDataSource(Ref ref) {
   return HomeRemoteDataSourceImpl(dio: ref.read(dioProvider));
 }
 
+final homeLocalDataSourceProvider =
+    flutter_riverpod.Provider<HomeLocalDataSource>((ref) {
+  return HomeLocalDataSourceImpl();
+});
+
 // ============================================================================
 // Repository Provider
 // ============================================================================
@@ -31,6 +38,7 @@ HomeRemoteDataSource homeRemoteDataSource(Ref ref) {
 HomeRepository homeRepository(Ref ref) {
   return HomeRepositoryImpl(
     homeRemoteDataSource: ref.read(homeRemoteDataSourceProvider),
+    homeLocalDataSource: ref.read(homeLocalDataSourceProvider),
   );
 }
 

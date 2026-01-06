@@ -92,7 +92,7 @@ final class HomeRepositoryProvider
   }
 }
 
-String _$homeRepositoryHash() => r'2e2746fa904c1b0476b47008dc448378da3dc5f6';
+String _$homeRepositoryHash() => r'5a13bdee285d28d83d0de1c429a4561cb7eb55c0';
 
 @ProviderFor(getHomeMonthlyDataUseCase)
 const getHomeMonthlyDataUseCaseProvider = GetHomeMonthlyDataUseCaseProvider._();
