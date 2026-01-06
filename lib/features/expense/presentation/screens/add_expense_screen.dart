@@ -185,45 +185,53 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                         const SizedBox(height: 32),
                         // 1. Large Amount Input
                         Center(
-                          child: IntrinsicWidth(
-                            child: TextFormField(
-                              controller: _amountController,
-                              validator: _validateAmount,
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
-                              ),
-                              decoration: const InputDecoration(
-                                filled: false,
-                                hintText: '0',
-                                hintStyle: TextStyle(
-                                  color: AppColors.gray300,
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IntrinsicWidth(
+                                child: TextFormField(
+                                  controller: _amountController,
+                                  validator: _validateAmount,
+                                  keyboardType: TextInputType.number,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.primary,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    filled: false,
+                                    hintText: '0',
+                                    hintStyle: TextStyle(
+                                      color: AppColors.gray300,
+                                      fontSize: 40,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    border: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    errorBorder: InputBorder.none,
+                                    disabledBorder: InputBorder.none,
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    _ThousandsSeparatorInputFormatter(),
+                                  ],
+                                  autofocus: true,
+                                  showCursor: false,
                                 ),
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                suffixText: '원',
-                                suffixStyle: TextStyle(
+                              ),
+                              const SizedBox(width: 4),
+                              const Text(
+                                '원',
+                                style: TextStyle(
                                   fontSize: 40,
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.textPrimary,
                                 ),
-                                contentPadding: EdgeInsets.zero,
                               ),
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                                _ThousandsSeparatorInputFormatter(),
-                              ],
-                              autofocus: true,
-                              showCursor: false,
-                            ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 40),
