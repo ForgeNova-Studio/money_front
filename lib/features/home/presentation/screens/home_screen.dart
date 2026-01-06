@@ -11,7 +11,6 @@ import 'package:moneyflow/core/router/route_names.dart';
 
 // features
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
-import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
 import 'package:moneyflow/features/home/presentation/widgets/custom_calendar.dart';
 import 'package:moneyflow/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
@@ -51,10 +50,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       try {
         await ref.read(authViewModelProvider.notifier).logout();
         if (mounted) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
-            (route) => false,
-          );
+          // GoRouter의 redirect 로직이 자동으로 로그인 화면으로 이동시킴
+          context.go(RouteNames.login);
         }
       } catch (e) {
         if (mounted) {

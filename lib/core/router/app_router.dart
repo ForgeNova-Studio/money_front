@@ -39,8 +39,12 @@ class AppRouter {
   /// 모든 라우트 정의
   static List<RouteBase> get routes => [
         // ==================== Root Route ====================
-        // Note: Root 경로(/)의 redirect는 router_provider.dart에서 처리됨
-        // 인증 상태에 따라 /home 또는 /login으로 자동 리다이렉션
+        // Note: Root 경로(/)는 router_provider.dart의 redirect에서 처리됨
+        // Hot reload나 일시적인 상황을 위해 SplashScreen 표시
+        GoRoute(
+          path: '/',
+          builder: (context, state) => const SplashScreen(),
+        ),
 
         // ==================== Splash Route ====================
         GoRoute(

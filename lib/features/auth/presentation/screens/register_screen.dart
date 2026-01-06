@@ -1,9 +1,11 @@
 // packages
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 // core
 import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moneyflow/core/router/route_names.dart';
 
 // widgets
 import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
@@ -187,7 +189,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       // 회원가입 성공 시
       if (next.isAuthenticated && next.user != null) {
         // 홈 화면으로 이동 (뒤로가기 불가)
-        Navigator.of(context).pushReplacementNamed('/home');
+        context.go(RouteNames.home);
       }
 
       // 에러 발생 시
