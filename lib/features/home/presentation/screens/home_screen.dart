@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moneyflow/features/home/presentation/widgets/transaction_modal.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 // core
@@ -14,7 +15,6 @@ import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.
 import 'package:moneyflow/features/home/presentation/widgets/custom_calendar.dart';
 import 'package:moneyflow/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
-import 'package:moneyflow/core/utils/format_utils.dart'; // Add this
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -69,6 +69,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
+  // 수입/지출 추가 모달 열기
+  void _showAddTransactionModal(BuildContext context, DateTime selectedDate) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => TransactionModal(selectedDate: selectedDate),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final homeState = ref.watch(homeViewModelProvider);
@@ -116,67 +125,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               format: _calendarFormat,
               focusedDay: homeState.focusedMonth,
               selectedDay: homeState.selectedDate,
+              monthlyData: homeState.monthlyData,
               onFormatChanged: (format) {
-                debugPrint('onFormatchanged');
                 setState(() {
                   _calendarFormat = format;
                 });
               },
               onDateSelected: (selected, focused) {
-                debugPrint('onDateSelected');
                 viewModel.selectDate(selected);
                 setState(() {
                   _calendarFormat = CalendarFormat.week;
                 });
               },
               onPageChanged: (focused) {
-                debugPrint('onPageChanged');
                 viewModel.changeMonth(focused);
-              },
-              dayBottomBuilder: (context, day) {
-                return homeState.monthlyData.when(
-                  data: (data) {
-                    final dateKey = DateFormat('yyyy-MM-dd').format(day);
-                    final summary = data[dateKey];
-                    if (summary == null) return const SizedBox.shrink();
-
-                    final hasIncome = summary.totalIncome > 0;
-                    final hasExpense = summary.totalExpense > 0;
-
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (hasIncome)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 1.0),
-                            child: Text(
-                              '+${formatMoneyCompact(summary.totalIncome)}',
-                              style: const TextStyle(
-                                color: AppColors.success,
-                                fontSize: 9, // Minimum size 9pt
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: -0.5, // Tight spacing
-                                height: 1.0,
-                              ),
-                            ),
-                          ),
-                        if (hasExpense)
-                          Text(
-                            '-${formatMoneyCompact(summary.totalExpense)}',
-                            style: const TextStyle(
-                              color: AppColors.error,
-                              fontSize: 9, // Minimum size 9pt
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: -0.5, // Tight spacing
-                              height: 1.0,
-                            ),
-                          ),
-                      ],
-                    );
-                  },
-                  loading: () => const SizedBox.shrink(),
-                  error: (_, __) => const SizedBox.shrink(),
-                );
               },
             ),
           ),
@@ -243,12 +205,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            _showAddTransactionModal(context, homeState.selectedDate),
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+      floatingActionButton: _buildFloatingActionButton(homeState.selectedDate),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -586,96 +543,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       },
     );
   }
-}
 
-void _showAddTransactionModal(BuildContext context, DateTime selectedDate) {
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: Colors.transparent,
-    builder: (context) => Container(
-      padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            '내역 추가',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.push(RouteNames.addIncome, extra: selectedDate);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: BoxDecoration(
-                      color: AppColors.backgroundLight,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Column(
-                      children: [
-                        Icon(Icons.arrow_downward,
-                            color: AppColors.success, size: 32),
-                        SizedBox(height: 8),
-                        Text(
-                          '입금',
-                          style: TextStyle(
-                            color: AppColors.success,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.push(RouteNames.addExpense, extra: selectedDate);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: BoxDecoration(
-                      color: AppColors.backgroundLight,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Column(
-                      children: [
-                        Icon(Icons.arrow_upward,
-                            color: AppColors.error, size: 32),
-                        SizedBox(height: 8),
-                        Text(
-                          '지출',
-                          style: TextStyle(
-                            color: AppColors.error,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-        ],
-      ),
-    ),
-  );
+  Widget _buildFloatingActionButton(DateTime selectedDate) {
+    return FloatingActionButton(
+      onPressed: () => _showAddTransactionModal(context, selectedDate),
+      backgroundColor: AppColors.primary,
+      child: const Icon(Icons.add, color: Colors.white),
+    );
+  }
 }

@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:moneyflow/core/utils/format_utils.dart';
+import 'package:moneyflow/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:moneyflow/features/home/presentation/widgets/custom_month_picker.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class CustomCalendar extends StatefulWidget {
   final DateTime focusedDay;
   final DateTime selectedDay;
+  final AsyncValue<Map<String, DailyTransactionSummary>> monthlyData;
   final void Function(DateTime, DateTime)? onDateSelected;
   final void Function(DateTime)? onPageChanged;
   final List<dynamic> Function(DateTime)? eventLoader;
   final CalendarFormat? format;
   final void Function(CalendarFormat)? onFormatChanged;
-  final Widget Function(BuildContext, DateTime)? dayBottomBuilder;
 
   const CustomCalendar({
     super.key,
     required this.focusedDay,
     required this.selectedDay,
+    required this.monthlyData,
     this.onDateSelected,
     this.onPageChanged,
     this.eventLoader,
     this.format,
     this.onFormatChanged,
-    this.dayBottomBuilder, // Add this
   });
 
   @override
@@ -186,8 +190,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
                       fontWeight: FontWeight.bold,
                       fontSize: 13.0),
                 ),
-                if (widget.dayBottomBuilder != null)
-                  Expanded(child: widget.dayBottomBuilder!(context, day)),
+                Expanded(child: _buildDayBottom(day)),
               ],
             ),
           );
@@ -219,8 +222,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
                       fontWeight: FontWeight.bold,
                       fontSize: 13.0),
                 ),
-                if (widget.dayBottomBuilder != null)
-                  Expanded(child: widget.dayBottomBuilder!(context, day)),
+                Expanded(child: _buildDayBottom(day)),
               ],
             ),
           );
@@ -242,13 +244,58 @@ class _CustomCalendarState extends State<CustomCalendar> {
                       fontWeight: FontWeight.bold,
                       fontSize: 13.0),
                 ),
-                if (widget.dayBottomBuilder != null)
-                  Expanded(child: widget.dayBottomBuilder!(context, day)),
+                Expanded(child: _buildDayBottom(day)),
               ],
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildDayBottom(DateTime day) {
+    return widget.monthlyData.when(
+      data: (data) {
+        final dateKey = DateFormat('yyyy-MM-dd').format(day);
+        final summary = data[dateKey];
+        if (summary == null) return const SizedBox.shrink();
+
+        final hasIncome = summary.totalIncome > 0;
+        final hasExpense = summary.totalExpense > 0;
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (hasIncome)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 1.0),
+                child: Text(
+                  '+${formatMoneyCompact(summary.totalIncome)}',
+                  style: const TextStyle(
+                    color: AppColors.success,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: -0.5,
+                    height: 1.0,
+                  ),
+                ),
+              ),
+            if (hasExpense)
+              Text(
+                '-${formatMoneyCompact(summary.totalExpense)}',
+                style: const TextStyle(
+                  color: AppColors.error,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: -0.5,
+                  height: 1.0,
+                ),
+              ),
+          ],
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
     );
   }
 }
