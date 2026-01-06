@@ -42,6 +42,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     });
 
     try {
+      FocusManager.instance.primaryFocus?.unfocus();
       await ref.read(authViewModelProvider.notifier).login(
             email: _emailController.text,
             password: _passwordController.text,
@@ -61,6 +62,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     });
 
     try {
+      FocusManager.instance.primaryFocus?.unfocus();
       await ref.read(authViewModelProvider.notifier).loginWithApple();
     } finally {
       if (mounted) {
@@ -77,6 +79,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     });
 
     try {
+      FocusManager.instance.primaryFocus?.unfocus();
       await ref.read(authViewModelProvider.notifier).loginWithGoogle();
     } finally {
       if (mounted) {
