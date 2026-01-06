@@ -1,10 +1,11 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart'; // compute 함수 사용을 위해 필수
 import 'package:image/image.dart' as img;
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
 class ImagePreprocessor {
-  final _logger = Logger();
+  final _logger = Logger(level: kDebugMode ? Level.debug : Level.nothing);
 
   /// OCR용 이미지 전처리 (비동기 + 격리 스레드 실행)
   ///

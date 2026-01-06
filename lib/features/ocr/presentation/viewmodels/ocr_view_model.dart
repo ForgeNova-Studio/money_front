@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import '../../domain/entities/receipt_data.dart';
 import '../../domain/repositories/ocr_repository.dart';
@@ -55,7 +56,7 @@ class OcrState {
 /// ```
 class OcrViewModel extends Notifier<OcrState> {
   late final OcrRepository _repository;
-  final _logger = Logger();
+  final _logger = Logger(level: kDebugMode ? Level.debug : Level.nothing);
 
   @override
   OcrState build() {

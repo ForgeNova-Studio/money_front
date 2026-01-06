@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -49,18 +50,20 @@ final dioProvider = Provider<Dio>((ref) {
   ));
 
   dio.interceptors.add(_AuthInterceptor(ref));
-  dio.interceptors.add(PrettyDioLogger(
-    requestHeader: true,
-    requestBody: true,
-    responseHeader: true,
-    responseBody: true,
-    error: true,
-    compact: true,
-    // filter: (options, args) {
-    //   options.headers['Authorization'] = 'Bearer ***';
-    //   return true;
-    // },
-  ));
+  if (kDebugMode) {
+    dio.interceptors.add(PrettyDioLogger(
+      requestHeader: true,
+      requestBody: true,
+      responseHeader: true,
+      responseBody: true,
+      error: true,
+      compact: true,
+      // filter: (options, args) {
+      //   options.headers['Authorization'] = 'Bearer ***';
+      //   return true;
+      // },
+    ));
+  }
 
   return dio;
 });
@@ -114,7 +117,9 @@ class _AuthInterceptor extends Interceptor {
           .read(authViewModelProvider.notifier)
           .forceUnauthenticated(errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.');
 
-      debugPrint('[AuthInterceptor] Refresh Token 엔드포인트 401 → 자동 로그아웃 처리');
+      if (kDebugMode) {
+        debugPrint('[AuthInterceptor] Refresh Token 엔드포인트 401 → 자동 로그아웃 처리');
+      }
       return handler.next(err);
     }
 
@@ -127,7 +132,9 @@ class _AuthInterceptor extends Interceptor {
           .read(authViewModelProvider.notifier)
           .forceUnauthenticated(errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.');
 
-      debugPrint('[AuthInterceptor] 토큰 없음 → 자동 로그아웃 처리');
+      if (kDebugMode) {
+        debugPrint('[AuthInterceptor] 토큰 없음 → 자동 로그아웃 처리');
+      }
       return handler.next(err);
     }
 
@@ -150,12 +157,16 @@ class _AuthInterceptor extends Interceptor {
         final currentTokenHeader = 'Bearer ${currentToken.accessToken}';
 
         if (failedRequestTokenHeader != currentTokenHeader) {
-          debugPrint('[AuthInterceptor] 토큰이 이미 갱신되었습니다. (Storage Check)');
+          if (kDebugMode) {
+            debugPrint('[AuthInterceptor] 토큰이 이미 갱신되었습니다. (Storage Check)');
+          }
           return currentToken;
         }
 
         // 3. 진짜 갱신이 필요한 경우에만 요청 실행
-        debugPrint('[AuthInterceptor] 새로운 Refresh Token 요청 실행');
+        if (kDebugMode) {
+          debugPrint('[AuthInterceptor] 새로운 Refresh Token 요청 실행');
+        }
         final refreshDio = _createBasicDio();
 
         final response = await refreshDio.post(
@@ -166,7 +177,9 @@ class _AuthInterceptor extends Interceptor {
         final newAuthToken = AuthTokenModel.fromJson(response.data);
         await localDataSource.saveToken(newAuthToken);
 
-        debugPrint('[AuthInterceptor] 토큰 갱신 성공');
+        if (kDebugMode) {
+          debugPrint('[AuthInterceptor] 토큰 갱신 성공');
+        }
         return newAuthToken;
       });
 
@@ -176,7 +189,9 @@ class _AuthInterceptor extends Interceptor {
       final retryDio = _createBasicDio();
       final response = await retryDio.fetch(newOptions);
 
-      debugPrint('[AuthInterceptor] 원래 요청 재시도 성공');
+      if (kDebugMode) {
+        debugPrint('[AuthInterceptor] 원래 요청 재시도 성공');
+      }
       return handler.resolve(response);
     } catch (e) {
       // TODO(auth): Refresh Token 실패 원인별 로깅 분리
@@ -204,7 +219,9 @@ class _AuthInterceptor extends Interceptor {
           .read(authViewModelProvider.notifier)
           .forceUnauthenticated(errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.');
 
-      debugPrint('[AuthInterceptor] Refresh Token 실패 → 자동 로그아웃 처리');
+      if (kDebugMode) {
+        debugPrint('[AuthInterceptor] Refresh Token 실패 → 자동 로그아웃 처리');
+      }
 
       if (e is DioException) return handler.reject(e);
       return handler.next(err);

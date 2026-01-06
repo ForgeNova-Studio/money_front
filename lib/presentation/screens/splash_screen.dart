@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -46,7 +48,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       }
     } catch (e) {
       // 초기화 중 에러 발생 시 처리
-      debugPrint('[SplashScreen] 초기화 에러: $e');
+      if (kDebugMode) {
+        debugPrint('[SplashScreen] 초기화 에러: $e');
+      }
 
       if (mounted) {
         // 에러 발생 시 로그인 화면으로 이동

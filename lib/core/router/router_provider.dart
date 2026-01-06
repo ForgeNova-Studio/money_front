@@ -16,15 +16,23 @@ final routerProvider = Provider<GoRouter>((ref) {
   // authState.isAuthenticated 값만 추출하여 Notifier 초기화
   final authStateNotifier = ValueNotifier<bool>(authState.isAuthenticated);
 
-  debugPrint('[RouterProvider] 초기 authState.isAuthenticated: ${authState.isAuthenticated}');
+  if (kDebugMode) {
+    debugPrint(
+        '[RouterProvider] 초기 authState.isAuthenticated: ${authState.isAuthenticated}');
+  }
 
   // authState 변화 감지하여 Notifier 업데이트
   ref.listen<AuthState>(authViewModelProvider, (previous, next) {
-    debugPrint('[RouterProvider] authState 변화 감지! '
-        'previous.isAuthenticated: ${previous?.isAuthenticated}, '
-        'next.isAuthenticated: ${next.isAuthenticated}');
+    if (kDebugMode) {
+      debugPrint('[RouterProvider] authState 변화 감지! '
+          'previous.isAuthenticated: ${previous?.isAuthenticated}, '
+          'next.isAuthenticated: ${next.isAuthenticated}');
+    }
     authStateNotifier.value = next.isAuthenticated;
-    debugPrint('[RouterProvider] authStateNotifier 업데이트 완료: ${authStateNotifier.value}');
+    if (kDebugMode) {
+      debugPrint(
+          '[RouterProvider] authStateNotifier 업데이트 완료: ${authStateNotifier.value}');
+    }
   });
 
   // Provider dispose 시 Notifier도 dispose
@@ -34,7 +42,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     initialLocation: '/',
-    debugLogDiagnostics: true, // 디버그 로그 활성화
+    debugLogDiagnostics: kDebugMode, // 디버그 로그 활성화
     refreshListenable: authStateNotifier, // authState 변화 시 라우터 새로고침
 
     // ==================== Redirect 로직 ====================
@@ -52,24 +60,32 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isRoot = currentLocation == '/';
 
       // 디버그 로그
-      debugPrint('[GoRouter Redirect] location: $currentLocation, '
-          'isLoading: $isLoading, isAuthenticated: $isAuthenticated, '
-          'hasUser: $hasUser, isGoingToAuth: $isGoingToAuth, isRoot: $isRoot');
+      if (kDebugMode) {
+        debugPrint('[GoRouter Redirect] location: $currentLocation, '
+            'isLoading: $isLoading, isAuthenticated: $isAuthenticated, '
+            'hasUser: $hasUser, isGoingToAuth: $isGoingToAuth, isRoot: $isRoot');
+      }
 
       // Priority 1: 로딩 중일 때는 redirect 하지 않음
       // (초기화가 완료되면 자동으로 redirect 실행됨)
       if (isLoading) {
-        debugPrint('[GoRouter Redirect] 로딩 중 - redirect 안 함');
+        if (kDebugMode) {
+          debugPrint('[GoRouter Redirect] 로딩 중 - redirect 안 함');
+        }
         return null;
       }
 
       // Priority 2: Root 경로(/) 처리
       if (isRoot) {
         if (isAuthenticated && hasUser) {
-          debugPrint('[GoRouter Redirect] Root - 인증된 사용자 → /home');
+          if (kDebugMode) {
+            debugPrint('[GoRouter Redirect] Root - 인증된 사용자 → /home');
+          }
           return RouteNames.home;
         } else {
-          debugPrint('[GoRouter Redirect] Root - 미인증 사용자 → /login');
+          if (kDebugMode) {
+            debugPrint('[GoRouter Redirect] Root - 미인증 사용자 → /login');
+          }
           return RouteNames.login;
         }
       }
@@ -78,11 +94,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (isAuthenticated && hasUser) {
         // 인증된 사용자가 로그인/회원가입 등의 화면에 접근하려는 경우
         if (isGoingToAuth) {
-          debugPrint('[GoRouter Redirect] 인증된 사용자 → /home으로 리다이렉션');
+          if (kDebugMode) {
+            debugPrint('[GoRouter Redirect] 인증된 사용자 → /home으로 리다이렉션');
+          }
           return RouteNames.home;
         }
         // 이미 protected 화면에 있으면 그대로 유지
-        debugPrint('[GoRouter Redirect] 인증된 사용자 - protected 화면 유지');
+        if (kDebugMode) {
+          debugPrint('[GoRouter Redirect] 인증된 사용자 - protected 화면 유지');
+        }
         return null;
       }
 
@@ -90,16 +110,22 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (!isAuthenticated) {
         // 이미 public 화면(로그인/회원가입 등)에 있으면 그대로 유지
         if (isGoingToAuth) {
-          debugPrint('[GoRouter Redirect] 미인증 사용자 - public 화면 유지');
+          if (kDebugMode) {
+            debugPrint('[GoRouter Redirect] 미인증 사용자 - public 화면 유지');
+          }
           return null;
         }
         // Protected 화면에 접근하려는 경우 로그인 화면으로
-        debugPrint('[GoRouter Redirect] 미인증 사용자 → /login으로 리다이렉션');
+        if (kDebugMode) {
+          debugPrint('[GoRouter Redirect] 미인증 사용자 → /login으로 리다이렉션');
+        }
         return RouteNames.login;
       }
 
       // 기본값: 리다이렉션 없음
-      debugPrint('[GoRouter Redirect] 기본 - redirect 안 함');
+      if (kDebugMode) {
+        debugPrint('[GoRouter Redirect] 기본 - redirect 안 함');
+      }
       return null;
     },
 

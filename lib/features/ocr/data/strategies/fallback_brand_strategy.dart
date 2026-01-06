@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import '../../domain/strategies/brand_match_strategy.dart';
 import '../../domain/entities/brand_info.dart';
@@ -22,7 +23,7 @@ import '../datasources/memory/global_brand_source.dart';
 class FallbackBrandStrategy implements BrandMatchStrategy {
   final UserBrandSource _userSource;
   final GlobalBrandSource _globalSource;
-  final _logger = Logger();
+  final _logger = Logger(level: kDebugMode ? Level.debug : Level.nothing);
 
   FallbackBrandStrategy({
     required UserBrandSource userSource,

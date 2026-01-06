@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:moneyflow/features/ocr/domain/entities/receipt_data.dart';
 
@@ -13,7 +14,7 @@ import 'package:moneyflow/features/ocr/domain/entities/receipt_data.dart';
 /// - 분석: 11월(3개), 12월(1개), 1월(1개) → 1월은 이상치
 /// - 보정: 01/27 → 11/27로 자동 수정
 class DateCorrector {
-  final _logger = Logger();
+  final _logger = Logger(level: kDebugMode ? Level.debug : Level.nothing);
 
   /// 보정 결과를 담는 클래스
   static const double _highConfidenceThreshold = 0.8;

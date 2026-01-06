@@ -32,15 +32,19 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
               DailyTransactionSummaryModel.fromJson(
                   value as Map<String, dynamic>));
         } catch (e) {
-          debugPrint('[HomeRemoteDataSource] Unexpected error: $e');
+          if (kDebugMode) {
+            debugPrint('[HomeRemoteDataSource] Unexpected error: $e');
+          }
           rethrow;
         }
       });
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e, stackTrace) {
-      debugPrint('[HomeRemoteDataSource] Unexpected error: $e');
-      debugPrint('[HomeRemoteDataSource] Stack trace: $stackTrace');
+      if (kDebugMode) {
+        debugPrint('[HomeRemoteDataSource] Unexpected error: $e');
+        debugPrint('[HomeRemoteDataSource] Stack trace: $stackTrace');
+      }
       rethrow;
     }
   }

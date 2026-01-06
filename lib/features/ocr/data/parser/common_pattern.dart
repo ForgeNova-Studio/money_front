@@ -2,12 +2,13 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:moneyflow/features/ocr/domain/entities/receipt_data.dart';
 import 'package:moneyflow/features/ocr/domain/patterns/receipt_pattern.dart';
 
 class CommonPattern implements ReceiptPattern {
-  final _logger = Logger();
+  final _logger = Logger(level: kDebugMode ? Level.debug : Level.nothing);
 
   @override
   String get name => 'CommonPattern (Dual Date Regex)';

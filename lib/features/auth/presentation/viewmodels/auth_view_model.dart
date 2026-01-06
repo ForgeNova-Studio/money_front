@@ -46,38 +46,52 @@ class AuthViewModel extends _$AuthViewModel {
   /// - 토큰이 없으면: unauthenticated 상태로 변경
   Future<void> _checkCurrentUser() async {
     try {
-      debugPrint('[AuthViewModel] 토큰 확인 시작');
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] 토큰 확인 시작');
+      }
       // 로컬 저장소에서 토큰 확인 (원격 API 호출 없이)
       final localDataSource = ref.read(authLocalDataSourceProvider);
       final hasToken = await localDataSource.hasToken();
 
-      debugPrint('[AuthViewModel] 토큰 존재 여부: $hasToken');
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] 토큰 존재 여부: $hasToken');
+      }
 
       if (hasToken) {
         // 토큰이 있으면 로컬 사용자 정보 불러오기
         final user = await localDataSource.getUser();
-        debugPrint('[AuthViewModel] 사용자 정보: ${user?.email}');
+        if (kDebugMode) {
+          debugPrint('[AuthViewModel] 사용자 정보: ${user?.email}');
+        }
 
         if (!ref.mounted) return; // Provider가 해제되었으면 작업 중단
 
         if (user != null) {
           state = AuthState.authenticated(user.toEntity());
-          debugPrint('[AuthViewModel] 인증된 상태로 변경됨');
+          if (kDebugMode) {
+            debugPrint('[AuthViewModel] 인증된 상태로 변경됨');
+          }
         } else {
           // 토큰은 있지만 사용자 정보가 없는 경우 (비정상 상태)
           state = AuthState.unauthenticated();
-          debugPrint('[AuthViewModel] 사용자 정보 없음 - 미인증 상태로 변경');
+          if (kDebugMode) {
+            debugPrint('[AuthViewModel] 사용자 정보 없음 - 미인증 상태로 변경');
+          }
         }
       } else {
         if (!ref.mounted) return; // Provider가 해제되었으면 작업 중단
         // 토큰이 없으면 로그아웃 상태
         state = AuthState.unauthenticated();
-        debugPrint('[AuthViewModel] 토큰 없음 - 미인증 상태로 변경');
+        if (kDebugMode) {
+          debugPrint('[AuthViewModel] 토큰 없음 - 미인증 상태로 변경');
+        }
       }
     } catch (e) {
       // 에러 발생 시 로그아웃 상태로 처리
       if (!ref.mounted) return; // Provider가 해제되었으면 작업 중단
-      debugPrint('[AuthViewModel] 에러 발생: $e');
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] 에러 발생: $e');
+      }
       state = AuthState.unauthenticated();
     } finally {
       // 어떤 경우에도 초기화가 완료되었음을 보장
@@ -248,7 +262,9 @@ class AuthViewModel extends _$AuthViewModel {
     required String email,
     required String newPassword,
   }) async {
-    debugPrint("======== email: ${state.user?.email} =======");
+    if (kDebugMode) {
+      debugPrint("======== email: ${state.user?.email} =======");
+    }
 
     await _handleAuthRequest(() async {
       final useCase = ref.read(resetPasswordUseCaseProvider);
@@ -283,7 +299,9 @@ class AuthViewModel extends _$AuthViewModel {
       if (rethrowError) rethrow;
     } catch (e) {
       state = AuthState.error(defaultErrorMessage);
-      debugPrint('$defaultErrorMessage: $e');
+      if (kDebugMode) {
+        debugPrint('$defaultErrorMessage: $e');
+      }
       if (rethrowError) rethrow;
     }
     // rethrowError가 false이고 에러가 발생한 경우,
