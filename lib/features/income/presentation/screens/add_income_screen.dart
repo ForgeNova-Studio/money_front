@@ -9,6 +9,7 @@ import '../../../../core/constants/app_constants.dart';
 
 // features
 import 'package:moneyflow/features/income/presentation/viewmodels/income_view_model.dart';
+import 'package:moneyflow/features/home/presentation/viewmodels/home_view_model.dart';
 
 // entities
 import 'package:moneyflow/features/income/domain/entities/income.dart';
@@ -115,6 +116,10 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
       await ref.read(incomeViewModelProvider.notifier).createIncome(income);
 
       if (mounted) {
+        // 새로운 데이터 즉시 갱신 되도록 변경
+        ref
+            .read(homeViewModelProvider.notifier)
+            .fetchMonthlyData(_selectedDate, forceRefresh: true);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('수입이 등록되었습니다'),

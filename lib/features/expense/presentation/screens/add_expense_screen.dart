@@ -1,6 +1,5 @@
 // packages
 import 'package:flutter/foundation.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +12,7 @@ import 'package:moneyflow/features/expense/domain/entities/payment_method.dart';
 
 // viewmodels
 import 'package:moneyflow/features/expense/presentation/viewmodels/expense_view_model.dart';
+import 'package:moneyflow/features/home/presentation/viewmodels/home_view_model.dart';
 
 // constants
 import 'package:moneyflow/core/constants/app_constants.dart';
@@ -135,6 +135,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       await ref.read(expenseViewModelProvider.notifier).createExpense(expense);
 
       if (mounted) {
+        // 새로운 데이터 즉시 갱신 되도록 변경
+        ref
+            .read(homeViewModelProvider.notifier)
+            .fetchMonthlyData(_selectedDate, forceRefresh: true);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('지출이 등록되었습니다'),
