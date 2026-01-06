@@ -74,6 +74,7 @@ dependencies:
 
   # ==================== 앱 초기화 ====================
   flutter_native_splash: ^2.4.7      # 네이티브 스플래시 스크린
+  flutter_slidable: ^4.0.3
 
 
 dev_dependencies:
