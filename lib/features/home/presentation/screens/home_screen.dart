@@ -14,6 +14,7 @@ import 'package:moneyflow/core/router/route_names.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/home/presentation/widgets/custom_calendar.dart';
 import 'package:moneyflow/features/home/presentation/widgets/transaction_list_section.dart';
+import 'package:moneyflow/features/home/presentation/states/home_state.dart';
 import 'package:moneyflow/features/home/presentation/viewmodels/home_view_model.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -72,7 +73,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final homeState = ref.watch(homeViewModelProvider);
-    final viewModel = ref.read(homeViewModelProvider.notifier);
     final calendarFormat = homeState.calendarFormat;
 
     return Scaffold(
@@ -118,86 +118,97 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               focusedDay: homeState.focusedMonth,
               selectedDay: homeState.selectedDate,
               monthlyData: homeState.monthlyData,
-              onFormatChanged: (format) {
-                viewModel.setCalendarFormat(format);
-              },
-              onDateSelected: (selected, focused) {
-                viewModel.selectDate(selected);
-              },
-              onPageChanged: (focused) {
-                viewModel.changeMonth(focused);
-              },
+              onFormatChanged: _handleFormatChanged,
+              onDateSelected: _handleDateSelected,
+              onPageChanged: _handlePageChanged,
             ),
           ),
 
           // 3. Transactions Sheet (Fills remaining space)
-          Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              transitionBuilder: (child, animation) {
-                final offsetAnimation = Tween<Offset>(
-                  begin: const Offset(0, 1),
-                  end: Offset.zero,
-                ).animate(CurvedAnimation(
-                  parent: animation,
-                  curve: Curves.easeInOut,
-                ));
-                return SlideTransition(
-                  position: offsetAnimation,
-                  child: child,
-                );
-              },
-              child: calendarFormat == CalendarFormat.week
-                  ? NotificationListener<DraggableScrollableNotification>(
-                      key: const ValueKey('modal'),
-                      onNotification: (notification) {
-                        if (notification.extent <= 0.05) {
-                          viewModel.resetToMonthView();
-                        }
-                        return true;
-                      },
-                      child: DraggableScrollableSheet(
-                        initialChildSize: 1.0,
-                        minChildSize: 0.0,
-                        maxChildSize: 1.0,
-                        snap: true,
-                        builder: (context, scrollController) {
-                          return Container(
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20)),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 10,
-                                  spreadRadius: 2,
-                                  offset: Offset(0, -2),
-                                ),
-                              ],
-                            ),
-                            padding: const EdgeInsets.only(top: 16),
-                            child: SingleChildScrollView(
-                              controller: scrollController,
-                              child: TransactionListSection(
-                                monthlyData: homeState.monthlyData,
-                                selectedDate: homeState.selectedDate,
-                                isModal: true,
-                                onCameraTap: () {
-                                  // TODO: Navigate to OCR screen
-                                },
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  : const SizedBox.shrink(key: ValueKey('empty')),
-            ),
-          ),
+          Expanded(child: _buildTransactionSheet(homeState)),
         ],
       ),
       floatingActionButton: _buildFloatingActionButton(homeState.selectedDate),
+    );
+  }
+
+  // Calendar Format 변경(월간/주간)
+  void _handleFormatChanged(CalendarFormat format) {
+    ref.read(homeViewModelProvider.notifier).setCalendarFormat(format);
+  }
+
+  // Calendar 날짜 선택
+  void _handleDateSelected(DateTime selected, DateTime focused) {
+    ref.read(homeViewModelProvider.notifier).selectDate(selected);
+  }
+
+  // Calendar 페이지 변경(월/주 변경)
+  void _handlePageChanged(DateTime focused) {
+    ref.read(homeViewModelProvider.notifier).changeMonth(focused);
+  }
+
+  Widget _buildTransactionSheet(HomeState homeState) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 200),
+      transitionBuilder: (child, animation) {
+        final offsetAnimation = Tween<Offset>(
+          begin: const Offset(0, 1),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        ));
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
+        );
+      },
+      child: homeState.calendarFormat == CalendarFormat.week
+          ? NotificationListener<DraggableScrollableNotification>(
+              key: const ValueKey('modal'),
+              onNotification: (notification) {
+                if (notification.extent <= 0.05) {
+                  ref.read(homeViewModelProvider.notifier).resetToMonthView();
+                }
+                return true;
+              },
+              child: DraggableScrollableSheet(
+                initialChildSize: 1.0,
+                minChildSize: 0.0,
+                maxChildSize: 1.0,
+                snap: true,
+                builder: (context, scrollController) {
+                  return Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(20)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                          offset: Offset(0, -2),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.only(top: 16),
+                    child: SingleChildScrollView(
+                      controller: scrollController,
+                      child: TransactionListSection(
+                        monthlyData: homeState.monthlyData,
+                        selectedDate: homeState.selectedDate,
+                        isModal: true,
+                        onCameraTap: () {
+                          // TODO: Navigate to OCR screen
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
+          : const SizedBox.shrink(key: ValueKey('empty')),
     );
   }
 
