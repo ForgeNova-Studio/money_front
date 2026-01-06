@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:moneyflow/features/home/data/models/home_monthly_response_model.dart';
 
@@ -40,7 +39,6 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
     final box = _box;
     if (box == null) return null;
 
-    debugPrint('[HomeCache] GET key=$cacheKey box=${box.length}');
     final stored = box.get(cacheKey);
     if (stored is! Map) return null;
 
@@ -79,28 +77,16 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
       (key, value) => MapEntry(key, _serializeSummary(value)),
     );
 
-    try {
-      await box.put(cacheKey, {
-        'cachedAt': DateTime.now().millisecondsSinceEpoch,
-        'data': serialized,
-      });
-      debugPrint('[HomeCache] PUT key=$cacheKey items=${data.length}');
-    } catch (e) {
-      debugPrint('[HomeCache] PUT failed key=$cacheKey error=$e');
-      rethrow;
-    }
+    await box.put(cacheKey, {
+      'cachedAt': DateTime.now().millisecondsSinceEpoch,
+      'data': serialized,
+    });
   }
 
   @override
   Future<void> deleteMonthlyData({required String cacheKey}) async {
     await _ensureInitialized();
-    try {
-      await _box?.delete(cacheKey);
-      debugPrint('[HomeCache] DELETE key=$cacheKey');
-    } catch (e) {
-      debugPrint('[HomeCache] DELETE failed key=$cacheKey error=$e');
-      rethrow;
-    }
+    await _box?.delete(cacheKey);
   }
 
   Map<String, dynamic> _serializeSummary(

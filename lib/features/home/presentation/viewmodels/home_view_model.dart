@@ -19,9 +19,6 @@ class HomeViewModel extends _$HomeViewModel {
   @override
   HomeState build() {
     final now = DateTime.now();
-    // 초기 상태 설정 후 데이터 로드
-    Future.microtask(() => fetchMonthlyData(now));
-
     return HomeState(
       focusedMonth: now,
       selectedDate: now,
@@ -46,20 +43,14 @@ class HomeViewModel extends _$HomeViewModel {
 
       if (cached != null) {
         hasCache = true;
-        debugPrint(
-          '[HomeCache] HIT key=$userId ${month.year}-${month.month.toString().padLeft(2, '0')} cachedAt=${cached.cachedAt.toIso8601String()}',
-        );
         state = state.copyWith(
           monthlyData: AsyncValue.data(cached.data),
           focusedMonth: month,
         );
 
         if (!cached.isExpired(_cacheTtl)) {
-          debugPrint('[HomeCache] FRESH ttl=${_cacheTtl.inMinutes}m');
           _prefetchAdjacentMonths(month, userId);
           return;
-        } else {
-          debugPrint('[HomeCache] STALE ttl=${_cacheTtl.inMinutes}m');
         }
       }
     }
@@ -81,7 +72,7 @@ class HomeViewModel extends _$HomeViewModel {
     if (!ref.mounted) return;
 
     if (result.hasError && hasCache) {
-      debugPrint('[HomeViewModel] Remote fetch failed, using cache: $result');
+      // Remote failure should not break cache usage.
     } else {
       state = state.copyWith(monthlyData: result);
     }
@@ -184,7 +175,7 @@ class HomeViewModel extends _$HomeViewModel {
       final useCase = ref.read(getHomeMonthlyDataUseCaseProvider);
       await useCase(yearMonth: month, userId: userId);
     } catch (e) {
-      debugPrint('[HomeViewModel] Prefetch failed: $e');
+      // Ignore prefetch failures.
     }
   }
 

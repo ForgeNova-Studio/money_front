@@ -37,11 +37,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       // AuthViewModel의 초기화 완료 대기
       await ref.read(authViewModelProvider.notifier).isInitialized;
 
-      // ============================================================
-      // [테스트용] 2초 딜레이 - 스플래시 화면 확인용
-      // 실제 배포 시에는 아래 라인을 주석 처리하거나 제거하세요
-      // ============================================================
-      // await Future.delayed(const Duration(seconds: 2));
 
       // 초기화 완료 후 자동으로 다음 화면으로 이동
       // GoRouter의 redirect 로직이 인증 상태에 따라 자동으로 처리
@@ -62,70 +57,35 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 인증 상태 감시 (디버그용)
-    final authState = ref.watch(authViewModelProvider);
-
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // 앱 로고 또는 브랜드 이미지
-            // TODO: 실제 로고 이미지로 교체
+          children: const [
             Icon(
               Icons.account_balance_wallet_rounded,
-              size: 120,
+              size: 96,
               color: Colors.white,
             ),
-
-            const SizedBox(height: 24),
-
-            // 앱 이름
+            SizedBox(height: 20),
             Text(
               'MoneyFlow',
               style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
                 color: Colors.white,
               ),
             ),
-
-            const SizedBox(height: 48),
-
-            // 로딩 인디케이터
-            const SizedBox(
-              width: 40,
-              height: 40,
+            SizedBox(height: 28),
+            SizedBox(
+              width: 32,
+              height: 32,
               child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                strokeWidth: 3,
+                strokeWidth: 2.5,
               ),
             ),
-
-            const SizedBox(height: 16),
-
-            // 로딩 텍스트
-            Text(
-              '초기화 중...',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white.withOpacity(0.8),
-              ),
-            ),
-
-            // 디버그 정보 (개발 중에만 표시)
-            if (authState.isLoading)
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: Text(
-                  '인증 상태 확인 중',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white.withOpacity(0.6),
-                  ),
-                ),
-              ),
           ],
         ),
       ),
