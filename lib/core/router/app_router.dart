@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moneyflow/core/router/route_names.dart';
+import 'package:moneyflow/core/widgets/app_shell.dart';
 
 // Splash Screen
 import 'package:moneyflow/presentation/screens/splash_screen.dart';
+import 'package:moneyflow/presentation/screens/settings_screen.dart';
 
 // Auth Screens
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
@@ -79,12 +81,53 @@ class AppRouter {
         ),
 
         // ==================== Protected Routes (인증 필요) ====================
-
-        // Main Home
-        GoRoute(
-          path: RouteNames.home,
-          name: 'home',
-          builder: (context, state) => const HomeScreen(),
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) {
+            return AppShell(navigationShell: navigationShell);
+          },
+          branches: [
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: RouteNames.home,
+                  name: 'home',
+                  builder: (context, state) => const HomeScreen(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: RouteNames.statistics,
+                  name: 'statistics',
+                  builder: (context, state) => const StatisticsScreen(),
+                ),
+                GoRoute(
+                  path: RouteNames.weeklyStatistics,
+                  name: 'weeklyStatistics',
+                  builder: (context, state) => const WeeklyStatisticsScreen(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: RouteNames.budget,
+                  name: 'budget',
+                  builder: (context, state) => const BudgetSettingScreen(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: RouteNames.settings,
+                  name: 'settings',
+                  builder: (context, state) => const SettingsScreen(),
+                ),
+              ],
+            ),
+          ],
         ),
 
         // ==================== Expense Routes ====================
@@ -143,25 +186,6 @@ class AppRouter {
         //     return EditIncomeScreen(income: income);
         //   },
         // ),
-
-        // ==================== Statistics Routes ====================
-        GoRoute(
-          path: RouteNames.statistics,
-          name: 'statistics',
-          builder: (context, state) => const StatisticsScreen(),
-        ),
-        GoRoute(
-          path: RouteNames.weeklyStatistics,
-          name: 'weeklyStatistics',
-          builder: (context, state) => const WeeklyStatisticsScreen(),
-        ),
-
-        // ==================== Budget Route ====================
-        GoRoute(
-          path: RouteNames.budget,
-          name: 'budget',
-          builder: (context, state) => const BudgetSettingScreen(),
-        ),
 
         // ==================== Couple Routes ====================
         GoRoute(
