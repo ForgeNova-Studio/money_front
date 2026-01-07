@@ -26,6 +26,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  bool _isFabExpanded = false;
+
   @override
   void initState() {
     super.initState();
@@ -148,13 +150,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         backgroundColor: context.appColors.backgroundLight,
         elevation: 0,
         actions: [
-          // OCR 테스트 버튼
-          IconButton(
-            icon: Icon(Icons.document_scanner,
-                color: context.appColors.textPrimary),
-            onPressed: () => context.push(RouteNames.ocrTest),
-            tooltip: 'OCR 테스트',
-          ),
           IconButton(
             icon: Icon(Icons.logout, color: context.appColors.textSecondary),
             onPressed: _handleLogout,
@@ -354,17 +349,106 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildFloatingActionButton(DateTime selectedDate) {
-    return SizedBox(
-      width: 80,
-      height: 35,
-      child: FloatingActionButton(
-        onPressed: () => _showAddTransactionModal(context, selectedDate),
-        backgroundColor: context.appColors.primary,
-        foregroundColor: context.appColors.textWhite,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        // 확장된 메뉴
+        if (_isFabExpanded) ...[
+          _buildFabMenuItem(
+            icon: Icons.arrow_downward,
+            label: '수입',
+            color: Colors.blue,
+            onTap: () {
+              setState(() => _isFabExpanded = false);
+              context.push(RouteNames.addIncome, extra: selectedDate);
+            },
+          ),
+          const SizedBox(height: 12),
+          _buildFabMenuItem(
+            icon: Icons.arrow_upward,
+            label: '지출',
+            color: Colors.orange,
+            onTap: () {
+              setState(() => _isFabExpanded = false);
+              context.push(RouteNames.addExpense, extra: selectedDate);
+            },
+          ),
+          const SizedBox(height: 12),
+          _buildFabMenuItem(
+            icon: Icons.document_scanner,
+            label: 'OCR',
+            color: Colors.green,
+            onTap: () {
+              setState(() => _isFabExpanded = false);
+              context.push(RouteNames.ocrTest);
+            },
+          ),
+          const SizedBox(height: 16),
+        ],
+        // 메인 FAB 버튼 (+ 또는 X)
+        SizedBox(
+          width: 80,
+          height: 35,
+          child: FloatingActionButton(
+            onPressed: () => setState(() => _isFabExpanded = !_isFabExpanded),
+            backgroundColor: _isFabExpanded
+                ? context.appColors.gray600
+                : context.appColors.primary,
+            foregroundColor: context.appColors.textWhite,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              transitionBuilder: (child, animation) {
+                return ScaleTransition(scale: animation, child: child);
+              },
+              child: Icon(
+                _isFabExpanded ? Icons.close : Icons.add,
+                key: ValueKey(_isFabExpanded),
+              ),
+            ),
+          ),
         ),
-        child: const Icon(Icons.add),
+      ],
+    );
+  }
+
+  Widget _buildFabMenuItem({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          width: 104,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: context.appColors.gray800,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: color, size: 22),
+              const SizedBox(width: 10),
+              Text(
+                label,
+                style: TextStyle(
+                  color: context.appColors.textWhite,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
