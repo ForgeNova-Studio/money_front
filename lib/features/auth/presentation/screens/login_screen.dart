@@ -121,7 +121,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
             ),
           );
         // 에러 메시지 표시 후 초기화
-        Future.delayed(const Duration(milliseconds: 100), () {
+        Future.delayed(Duration(milliseconds: 100), () {
           if (mounted) {
             ref.read(authViewModelProvider.notifier).clearError();
           }
@@ -132,7 +132,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(), // 키보드 닫기
       child: Scaffold(
-        backgroundColor: AppColors.backgroundWhite,
+        backgroundColor: context.appColors.backgroundWhite,
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -142,7 +142,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 24),
 
                 // 타이틀
-                _buildLoginTitle(),
+                _buildLoginTitle(context),
 
                 const SizedBox(height: 40),
 
@@ -169,7 +169,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                   },
                 ),
 
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 // 비밀번호 찾기 링크
                 Align(
@@ -177,19 +177,19 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                   child: TextButton(
                     onPressed: _handleForgotPassword,
                     child: Container(
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         border: Border(
                           bottom: BorderSide(
-                            color: AppColors.textSecondary,
+                            color: context.appColors.textSecondary,
                             width: 1.0,
                           ),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         '비밀번호를 잊으셨나요?',
                         style: TextStyle(
                           fontSize: 15,
-                          color: AppColors.textSecondary,
+                          color: context.appColors.textSecondary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -197,7 +197,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 // 로그인 버튼
                 SizedBox(
@@ -206,22 +206,22 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryPink,
-                      foregroundColor: AppColors.textWhite,
-                      disabledBackgroundColor: AppColors.primaryPinkPale,
+                      backgroundColor: context.appColors.primaryPink,
+                      foregroundColor: context.appColors.textWhite,
+                      disabledBackgroundColor: context.appColors.primaryPinkPale,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
                     child: _isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(
                               strokeWidth: 2.5,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColors.textWhite,
+                                context.appColors.textWhite,
                               ),
                             ),
                           )
@@ -235,25 +235,25 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // 구분선 (or)
-                _buildRowDivider(),
+                _buildRowDivider(context),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // Apple 로그인 버튼
                 SocialLoginButton(
                   label: 'Apple로 로그인',
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.apple,
-                    color: AppColors.textPrimary,
+                    color: context.appColors.textPrimary,
                     size: 24,
                   ),
                   onPressed: _isLoading ? null : () => _handleAppleLogin(),
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 // Google 로그인 버튼
                 SocialLoginButton(
@@ -263,9 +263,9 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                     width: 24,
                     height: 24,
                     errorBuilder: (context, error, stackTrace) {
-                      return const Icon(
+                      return Icon(
                         Icons.g_mobiledata,
-                        color: AppColors.textPrimary,
+                        color: context.appColors.textPrimary,
                         size: 24,
                       );
                     },
@@ -273,18 +273,18 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                   onPressed: _isLoading ? null : () => _handleGoogleLogin(),
                 ),
 
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
 
                 // 회원가입 링크
                 Center(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
+                      Text(
                         'MoneyFlow가 처음이신가요? ',
                         style: TextStyle(
                           fontSize: 15,
-                          color: AppColors.textSecondary,
+                          color: context.appColors.textSecondary,
                         ),
                       ),
                       TextButton(
@@ -294,11 +294,11 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        child: const Text(
+                        child: Text(
                           '회원가입',
                           style: TextStyle(
                             fontSize: 15,
-                            color: AppColors.primaryPink,
+                            color: context.appColors.primaryPink,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -307,7 +307,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
               ],
             ),
           ),
@@ -318,8 +318,8 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 }
 
 // LoginScreen 타이틀 위젯
-Widget _buildLoginTitle() {
-  return const Column(
+Widget _buildLoginTitle(BuildContext context) {
+  return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
@@ -327,7 +327,7 @@ Widget _buildLoginTitle() {
         style: TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.bold,
-          color: AppColors.textPrimary,
+          color: context.appColors.textPrimary,
           height: 1.2,
         ),
       ),
@@ -339,7 +339,7 @@ Widget _buildLoginTitle() {
         '계정을 선택해주세요.',
         style: TextStyle(
           fontSize: 16,
-          color: AppColors.textSecondary,
+          color: context.appColors.textSecondary,
           height: 1.5,
         ),
       )
@@ -348,12 +348,12 @@ Widget _buildLoginTitle() {
 }
 
 // 가로 구분선 위젯
-Widget _buildRowDivider() {
-  return const Row(
+Widget _buildRowDivider(BuildContext context) {
+  return Row(
     children: [
       Expanded(
         child: Divider(
-          color: AppColors.gray200,
+          color: context.appColors.gray200,
           thickness: 1,
         ),
       ),
@@ -363,14 +363,14 @@ Widget _buildRowDivider() {
           'or',
           style: TextStyle(
             fontSize: 14,
-            color: AppColors.textTertiary,
+            color: context.appColors.textTertiary,
             fontWeight: FontWeight.w500,
           ),
         ),
       ),
       Expanded(
         child: Divider(
-          color: AppColors.gray200,
+          color: context.appColors.gray200,
           thickness: 1,
         ),
       ),

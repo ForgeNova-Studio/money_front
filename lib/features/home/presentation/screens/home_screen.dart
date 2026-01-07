@@ -120,7 +120,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           .deleteTransaction(transaction);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('삭제되었습니다.')),
+          SnackBar(content: Text('삭제되었습니다.')),
         );
       }
     } catch (e) {
@@ -138,27 +138,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final calendarFormat = homeState.calendarFormat;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: context.appColors.backgroundLight,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'MoneyFlow',
           style: TextStyle(
-            color: AppColors.textPrimary,
+            color: context.appColors.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: AppColors.backgroundLight,
+        backgroundColor: context.appColors.backgroundLight,
         elevation: 0,
         actions: [
           // OCR 테스트 버튼
           IconButton(
-            icon: const Icon(Icons.document_scanner,
-                color: AppColors.textPrimary),
+            icon: Icon(Icons.document_scanner,
+                color: context.appColors.textPrimary),
             onPressed: () => context.push(RouteNames.ocrTest),
             tooltip: 'OCR 테스트',
           ),
           IconButton(
-            icon: const Icon(Icons.logout, color: AppColors.textSecondary),
+            icon: Icon(Icons.logout, color: context.appColors.textSecondary),
             onPressed: _handleLogout,
             tooltip: '로그아웃',
           ),
@@ -271,7 +271,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 },
               ),
             )
-          : const SizedBox.shrink(key: ValueKey('empty')),
+          : SizedBox.shrink(key: ValueKey('empty')),
     );
   }
 
@@ -283,16 +283,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final progress = usedAmount / totalBudget;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-      padding: const EdgeInsets.all(20),
+      margin: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow.withOpacity(0.05),
+            color: context.appColors.shadow.withOpacity(0.05),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -304,49 +304,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             children: [
               Text(
                 '${DateTime.now().month}월 예산',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
-                  color: AppColors.textSecondary,
+                  color: context.appColors.textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios,
-                  size: 14, color: AppColors.gray400),
+              Icon(Icons.arrow_forward_ios,
+                  size: 14, color: context.appColors.gray400),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             '${NumberFormat('#,###').format(remainingAmount)}원 남음',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: context.appColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
               value: progress,
-              backgroundColor: AppColors.gray100,
+              backgroundColor: context.appColors.gray100,
               valueColor:
-                  const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  AlwaysStoppedAnimation<Color>(context.appColors.primary),
               minHeight: 8,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 '지출 ${NumberFormat('#,###').format(usedAmount)}원',
-                style: const TextStyle(
-                    fontSize: 12, color: AppColors.textTertiary),
+                style: TextStyle(
+                    fontSize: 12, color: context.appColors.textTertiary),
               ),
               Text(
                 '예산 ${NumberFormat('#,###').format(totalBudget)}원',
-                style: const TextStyle(
-                    fontSize: 12, color: AppColors.textTertiary),
+                style: TextStyle(
+                    fontSize: 12, color: context.appColors.textTertiary),
               ),
             ],
           )
@@ -358,7 +358,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildFloatingActionButton(DateTime selectedDate) {
     return FloatingActionButton(
       onPressed: () => _showAddTransactionModal(context, selectedDate),
-      backgroundColor: AppColors.primary,
+      backgroundColor: context.appColors.primary,
       child: const Icon(Icons.add, color: Colors.white),
     );
   }

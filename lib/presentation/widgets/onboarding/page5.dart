@@ -100,21 +100,21 @@ class _Page5State extends State<Page5> with SingleTickerProviderStateMixin {
                           text: '🍔 식비',
                           top: 60,
                           right: 0,
-                          color: AppColors.error,
+                          color: context.appColors.error,
                           animation: _tag1Animation,
                         ),
                         _buildTag(
                           text: '🚕 교통',
                           top: 140,
                           right: -80,
-                          color: AppColors.info,
+                          color: context.appColors.info,
                           animation: _tag2Animation,
                         ),
                         _buildTag(
                           text: '☕ 카페',
                           top: 220,
                           right: -70,
-                          color: AppColors.warning,
+                          color: context.appColors.warning,
                           animation: _tag3Animation,
                         ),
                       ],
@@ -125,30 +125,30 @@ class _Page5State extends State<Page5> with SingleTickerProviderStateMixin {
             ),
           ),
 
-          const SizedBox(height: 40),
+          SizedBox(height: 40),
 
           // 중단 큰 제목
-          const Text(
+          Text(
             '사진 한 장으로 끝나는\n지출 기록',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: context.appColors.textPrimary,
               height: 1.3,
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // 하단 작은 설명 글귀
-          const Text(
+          Text(
             '영수증을 찍으면 자동으로\n분류되고 저장됩니다',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.normal,
-              color: AppColors.textSecondary,
+              color: context.appColors.textSecondary,
               height: 1.5,
             ),
           ),
@@ -161,7 +161,7 @@ class _Page5State extends State<Page5> with SingleTickerProviderStateMixin {
             totalPage: 5,
           ),
 
-          const Spacer(),
+          Spacer(),
         ],
       ),
     );
@@ -175,7 +175,7 @@ class _Page5State extends State<Page5> with SingleTickerProviderStateMixin {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.gray100, width: 2),
+        border: Border.all(color: context.appColors.gray100, width: 2),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -202,9 +202,9 @@ class _Page5State extends State<Page5> with SingleTickerProviderStateMixin {
                 _buildReceiptLine(0.85),
                 const SizedBox(height: 8),
                 _buildReceiptLine(0.75),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 _buildReceiptLine(0.65),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 _buildReceiptLine(0.8),
               ],
             ),
@@ -218,16 +218,16 @@ class _Page5State extends State<Page5> with SingleTickerProviderStateMixin {
             child: Container(
               height: 3,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   colors: [
                     Colors.transparent,
-                    AppColors.info,
+                    context.appColors.info,
                     Colors.transparent,
                   ],
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.info.withOpacity(0.6),
+                    color: context.appColors.info.withOpacity(0.6),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
@@ -248,8 +248,8 @@ class _Page5State extends State<Page5> with SingleTickerProviderStateMixin {
         width: 160 * widthFactor,
         height: 8,
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.gray200, AppColors.gray50],
+          gradient: LinearGradient(
+            colors: [context.appColors.gray200, context.appColors.gray50],
           ),
           borderRadius: BorderRadius.circular(4),
         ),
@@ -273,7 +273,7 @@ class _Page5State extends State<Page5> with SingleTickerProviderStateMixin {
         child: Transform.translate(
           offset: Offset(-50 * (1 - animation.value), 0),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.circular(20),
@@ -281,7 +281,7 @@ class _Page5State extends State<Page5> with SingleTickerProviderStateMixin {
                 BoxShadow(
                   color: color.withOpacity(0.3),
                   blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  offset: Offset(0, 4),
                 ),
               ],
             ),
@@ -290,8 +290,8 @@ class _Page5State extends State<Page5> with SingleTickerProviderStateMixin {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: color == AppColors.warning
-                    ? AppColors.textPrimary
+                color: color == context.appColors.warning
+                    ? context.appColors.textPrimary
                     : Colors.white,
               ),
             ),

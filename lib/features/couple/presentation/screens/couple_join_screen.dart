@@ -71,27 +71,27 @@ class _CoupleJoinScreenState extends State<CoupleJoinScreen> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.success.withValues(alpha: 0.1),
+                  color: context.appColors.success.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.check_circle,
                   size: 50,
-                  color: AppColors.success,
+                  color: context.appColors.success,
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               Text(
                 '커플 연동 완료!',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 '$partnerNickname님과 커플 연동이 완료되었습니다.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.appColors.textSecondary,
                     ),
                 textAlign: TextAlign.center,
               ),
@@ -103,7 +103,7 @@ class _CoupleJoinScreenState extends State<CoupleJoinScreen> {
                 Navigator.of(context).pop(); // 다이얼로그 닫기
                 Navigator.of(context).pop(); // 화면 닫기
               },
-              child: const Text('확인'),
+              child: Text('확인'),
             ),
           ],
         ),
@@ -112,7 +112,7 @@ class _CoupleJoinScreenState extends State<CoupleJoinScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(coupleProvider.errorMessage ?? '커플 가입에 실패했습니다'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.appColors.error,
         ),
       );
     }
@@ -121,36 +121,36 @@ class _CoupleJoinScreenState extends State<CoupleJoinScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
-        title: const Text('커플 가입'),
-        backgroundColor: AppColors.background,
+        title: Text('커플 가입'),
+        backgroundColor: context.appColors.background,
         elevation: 0,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 // 아이콘
                 Container(
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: context.appColors.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.favorite,
                     size: 60,
-                    color: AppColors.primary,
+                    color: context.appColors.primary,
                   ),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
 
                 // 설명 텍스트
                 Text(
@@ -160,11 +160,11 @@ class _CoupleJoinScreenState extends State<CoupleJoinScreen> {
                       ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text(
                   '파트너에게 받은 초대 코드를 입력하세요.\n커플 연동 후 함께 가계부를 관리할 수 있습니다.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.appColors.textSecondary,
                       ),
                   textAlign: TextAlign.center,
                 ),
@@ -207,7 +207,7 @@ class _CoupleJoinScreenState extends State<CoupleJoinScreen> {
                   },
                 ),
 
-                const SizedBox(height: 48),
+                SizedBox(height: 48),
 
                 // 안내 사항
                 _buildInfoCard(),
@@ -221,9 +221,9 @@ class _CoupleJoinScreenState extends State<CoupleJoinScreen> {
 
   Widget _buildInfoCard() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.05),
+        color: context.appColors.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -234,19 +234,19 @@ class _CoupleJoinScreenState extends State<CoupleJoinScreen> {
               Icon(
                 Icons.info_outline,
                 size: 20,
-                color: AppColors.primary,
+                color: context.appColors.primary,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 '안내 사항',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
+                      color: context.appColors.primary,
                     ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _buildInfoItem('초대 코드는 7일간 유효합니다'),
           _buildInfoItem('이미 다른 커플에 연동되어 있다면 가입할 수 없습니다'),
           _buildInfoItem('커플 연동 후에는 설정에서 언제든지 해제할 수 있습니다'),
@@ -258,21 +258,21 @@ class _CoupleJoinScreenState extends State<CoupleJoinScreen> {
 
   Widget _buildInfoItem(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             '• ',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
+                  color: context.appColors.textSecondary,
                 ),
           ),
           Expanded(
             child: Text(
               text,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.appColors.textSecondary,
                   ),
             ),
           ),

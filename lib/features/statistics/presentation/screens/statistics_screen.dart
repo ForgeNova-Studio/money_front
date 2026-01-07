@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../domain/entities/monthly_statistics_model.dart';
 import '../providers/statistics_provider.dart';
 
 /// 통계 화면
@@ -96,10 +97,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
-        title: const Text('통계'),
-        backgroundColor: AppColors.primary,
+        title: Text('통계'),
+        backgroundColor: context.appColors.primary,
         foregroundColor: Colors.white,
       ),
       body: RefreshIndicator(
@@ -107,7 +108,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         child: Consumer<StatisticsProvider>(
           builder: (context, statisticsProvider, child) {
             if (statisticsProvider.status == StatisticsStatus.loading) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator());
             }
 
             if (statisticsProvider.status == StatisticsStatus.error) {
@@ -115,15 +116,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.error_outline,
                       size: 64,
-                      color: AppColors.error,
+                      color: context.appColors.error,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Text(
                       statisticsProvider.errorMessage ?? '오류가 발생했습니다',
-                      style: const TextStyle(color: AppColors.textSecondary),
+                      style: TextStyle(color: context.appColors.textSecondary),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
@@ -156,29 +157,29 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         _buildPeriodSelector(),
 
         Padding(
-          padding: const EdgeInsets.all(48),
+          padding: EdgeInsets.all(48),
           child: Column(
             children: [
               Icon(
                 Icons.pie_chart_outline,
                 size: 80,
-                color: AppColors.textSecondary.withValues(alpha: 0.5),
+                color: context.appColors.textSecondary.withValues(alpha: 0.5),
               ),
-              const SizedBox(height: 24),
-              const Text(
+              SizedBox(height: 24),
+              Text(
                 '통계 데이터가 없습니다',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: context.appColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
+              SizedBox(height: 8),
+              Text(
                 '지출을 등록하면 통계를 확인할 수 있습니다',
                 style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: context.appColors.textSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -190,7 +191,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   /// 통계 위젯
-  Widget _buildStatistics(stats) {
+  Widget _buildStatistics(MonthlyStatisticsModel stats) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -221,7 +222,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   /// 기간 선택 위젯
   Widget _buildPeriodSelector() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -233,34 +234,34 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           InkWell(
             onTap: _selectYear,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: context.appColors.border),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 children: [
                   Text(
                     '$_selectedYear년',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.arrow_drop_down, size: 20),
+                  SizedBox(width: 8),
+                  Icon(Icons.arrow_drop_down, size: 20),
                 ],
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           // 월 선택
           InkWell(
             onTap: _selectMonth,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: context.appColors.border),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -272,8 +273,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.arrow_drop_down, size: 20),
+                  SizedBox(width: 8),
+                  Icon(Icons.arrow_drop_down, size: 20),
                 ],
               ),
             ),
@@ -284,12 +285,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   /// 총 지출 금액 카드
-  Widget _buildTotalAmountCard(stats) {
+  Widget _buildTotalAmountCard(MonthlyStatisticsModel stats) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryDark],
+        gradient: LinearGradient(
+          colors: [context.appColors.primary, context.appColors.primaryDark],
         ),
         borderRadius: BorderRadius.circular(16),
       ),
@@ -304,10 +305,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             '${NumberFormat('#,###').format(stats.totalAmount)}원',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -319,15 +320,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   /// 전월 대비 카드
-  Widget _buildComparisonCard(stats) {
+  Widget _buildComparisonCard(MonthlyStatisticsModel stats) {
     final comparison = stats.comparisonWithLastMonth;
     final isIncrease = comparison.diff >= 0;
-    final color = isIncrease ? AppColors.error : AppColors.success;
+    final color = isIncrease ? context.appColors.error : context.appColors.success;
     final icon = isIncrease ? Icons.arrow_upward : Icons.arrow_downward;
     final sign = isIncrease ? '+' : '';
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -335,16 +336,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       child: Row(
         children: [
           Icon(icon, color: color, size: 32),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   '전월 대비',
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: context.appColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -373,9 +374,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   /// 카테고리별 파이 차트
-  Widget _buildCategoryChart(stats) {
+  Widget _buildCategoryChart(MonthlyStatisticsModel stats) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -383,15 +384,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '카테고리별 지출',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: context.appColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           SizedBox(
             height: 200,
             child: PieChart(
@@ -409,14 +410,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   /// 파이 차트 섹션 생성
-  List<PieChartSectionData> _buildPieSections(List categoryBreakdown) {
+  List<PieChartSectionData> _buildPieSections(
+    List<CategoryBreakdown> categoryBreakdown,
+  ) {
     final colors = [
-      AppColors.primary,
-      AppColors.secondary,
-      AppColors.success,
-      AppColors.warning,
-      AppColors.error,
-      AppColors.info,
+      context.appColors.primary,
+      context.appColors.secondary,
+      context.appColors.success,
+      context.appColors.warning,
+      context.appColors.error,
+      context.appColors.info,
       const Color(0xFF9C27B0),
       const Color(0xFFE91E63),
       const Color(0xFF795548),
@@ -442,7 +445,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   /// 카테고리별 상세 리스트
-  Widget _buildCategoryList(stats) {
+  Widget _buildCategoryList(MonthlyStatisticsModel stats) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -451,54 +454,54 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(20),
             child: Text(
               '카테고리별 상세',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: context.appColors.textPrimary,
               ),
             ),
           ),
           ...stats.categoryBreakdown.map((item) {
             return Column(
               children: [
-                const Divider(height: 1),
+                Divider(height: 1),
                 ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
+                  contentPadding: EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 8,
                   ),
                   leading: CircleAvatar(
-                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                    backgroundColor: context.appColors.primary.withValues(alpha: 0.1),
                     child: Icon(
                       _getCategoryIcon(item.category),
-                      color: AppColors.primary,
+                      color: context.appColors.primary,
                       size: 24,
                     ),
                   ),
                   title: Text(
                     _getCategoryName(item.category),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   subtitle: Text(
                     '${item.percentage}%',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textSecondary,
+                      color: context.appColors.textSecondary,
                     ),
                   ),
                   trailing: Text(
                     '${NumberFormat('#,###').format(item.amount)}원',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: context.appColors.textPrimary,
                     ),
                   ),
                 ),

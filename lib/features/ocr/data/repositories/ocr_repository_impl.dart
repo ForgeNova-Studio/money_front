@@ -169,7 +169,7 @@ class OcrRepositoryImpl implements OcrRepository {
           // 기존에 있던 건과 비교
           final existingData = uniqueMap[uniqueKey]!;
           _logger.w('   🗑️ OCR 중복 제거됨: ${enrichedData.amount}원');
-          _logger.d('      충돌 rawText: "${rawTextTrimmed}" vs 기존: "${existingData.rawText}"');
+          _logger.d('      충돌 rawText: "$rawTextTrimmed" vs 기존: "${existingData.rawText}"');
         }
       }
 

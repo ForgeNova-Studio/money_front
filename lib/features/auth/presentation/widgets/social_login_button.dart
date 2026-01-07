@@ -22,9 +22,9 @@ class SocialLoginButton extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.textPrimary,
-          side: const BorderSide(
-            color: AppColors.gray300,
+          foregroundColor: context.appColors.textPrimary,
+          side: BorderSide(
+            color: context.appColors.gray300,
             width: 1.5,
           ),
           shape: RoundedRectangleBorder(

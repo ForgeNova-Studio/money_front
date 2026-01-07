@@ -37,21 +37,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('커플 연동 해제'),
-        content: const Text(
+        title: Text('커플 연동 해제'),
+        content: Text(
           '정말 커플 연동을 해제하시겠습니까?\n해제 후에도 각자의 지출 데이터는 유지됩니다.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('취소'),
+            child: Text('취소'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(
-              foregroundColor: AppColors.error,
+              foregroundColor: context.appColors.error,
             ),
-            child: const Text('해제'),
+            child: Text('해제'),
           ),
         ],
       ),
@@ -66,16 +66,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (coupleProvider.status == CoupleStatus.success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('커플 연동이 해제되었습니다'),
-          backgroundColor: AppColors.success,
+          backgroundColor: context.appColors.success,
         ),
       );
     } else if (coupleProvider.status == CoupleStatus.error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(coupleProvider.errorMessage ?? '커플 연동 해제에 실패했습니다'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.appColors.error,
         ),
       );
     }
@@ -85,17 +85,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('로그아웃'),
-        content: const Text('정말 로그아웃 하시겠습니까?'),
+        title: Text('로그아웃'),
+        content: Text('정말 로그아웃 하시겠습니까?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('취소'),
+            child: Text('취소'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(
-              foregroundColor: AppColors.error,
+              foregroundColor: context.appColors.error,
             ),
             child: const Text('로그아웃'),
           ),
@@ -110,7 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!mounted) return;
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      MaterialPageRoute(builder: (_) => LoginScreen()),
       (route) => false,
     );
   }
@@ -118,10 +118,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
-        title: const Text('설정'),
-        backgroundColor: AppColors.background,
+        title: Text('설정'),
+        backgroundColor: context.appColors.background,
         elevation: 0,
       ),
       body: Consumer<CoupleProvider>(
@@ -159,7 +159,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const CoupleJoinScreen(),
+                        builder: (_) => CoupleJoinScreen(),
                       ),
                     );
                   },
@@ -170,19 +170,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.link_off,
                   title: '커플 연동 해제',
                   subtitle: '파트너와의 연동을 해제합니다',
-                  iconColor: AppColors.error,
+                  iconColor: context.appColors.error,
                   onTap: _handleUnlinkCouple,
                 ),
               ],
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // 계정 섹션
               _buildSectionHeader('계정'),
               _buildMenuItem(
                 icon: Icons.logout,
                 title: '로그아웃',
-                iconColor: AppColors.error,
+                iconColor: context.appColors.error,
                 onTap: _handleLogout,
               ),
 
@@ -205,11 +205,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+      padding: EdgeInsets.fromLTRB(24, 16, 24, 8),
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: AppColors.textSecondary,
+              color: context.appColors.textSecondary,
               fontWeight: FontWeight.w600,
             ),
       ),
@@ -218,10 +218,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildCoupleStatusCard(dynamic couple, bool isLinked) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(20),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.appColors.surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -230,20 +230,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: isLinked
-                      ? AppColors.success.withValues(alpha: 0.1)
-                      : AppColors.primary.withValues(alpha: 0.1),
+                      ? context.appColors.success.withValues(alpha: 0.1)
+                      : context.appColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   isLinked ? Icons.favorite : Icons.favorite_border,
-                  color: isLinked ? AppColors.success : AppColors.primary,
+                  color: isLinked ? context.appColors.success : context.appColors.primary,
                   size: 24,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -255,11 +255,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                     ),
                     if (isLinked && couple != null) ...[
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         '${couple.user1.nickname} & ${couple.user2?.nickname ?? '나'}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
+                              color: context.appColors.textSecondary,
                             ),
                       ),
                     ],
@@ -269,15 +269,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (isLinked)
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppColors.success.withValues(alpha: 0.1),
+                    color: context.appColors.success.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     '활성',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.success,
+                          color: context.appColors.success,
                           fontWeight: FontWeight.w600,
                         ),
                   ),
@@ -285,11 +285,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           ),
           if (!isLinked) ...[
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               '파트너와 연동하여 함께 가계부를 관리하세요',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.appColors.textSecondary,
                   ),
             ),
           ],
@@ -306,31 +306,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
     VoidCallback? onTap,
   }) {
     return Material(
-      color: AppColors.surface,
+      color: context.appColors.surface,
       child: InkWell(
         onTap: onTap,
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          padding: const EdgeInsets.all(16),
+          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color:
-                      (iconColor ?? AppColors.primary).withValues(alpha: 0.1),
+                      (iconColor ?? context.appColors.primary).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   icon,
-                  color: iconColor ?? AppColors.primary,
+                  color: iconColor ?? context.appColors.primary,
                   size: 24,
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,11 +342,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                     ),
                     if (subtitle != null) ...[
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         subtitle,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
+                              color: context.appColors.textSecondary,
                             ),
                       ),
                     ],
@@ -356,7 +356,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (onTap != null)
                 Icon(
                   Icons.chevron_right,
-                  color: AppColors.textSecondary,
+                  color: context.appColors.textSecondary,
                 ),
             ],
           ),

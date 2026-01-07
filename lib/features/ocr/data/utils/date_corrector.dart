@@ -53,7 +53,7 @@ class DateCorrector {
       _logger.d('    다수 월을 결정할 수 없음 → 보정 스킵');
       return receipts;
     }
-    _logger.d('    다수 월: ${dominantMonth}월');
+    _logger.d('    다수 월: $dominantMonth월');
 
     // 4. 이상치 탐지 및 보정
     final correctedReceipts = <ReceiptData>[];

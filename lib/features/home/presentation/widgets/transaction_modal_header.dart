@@ -28,7 +28,7 @@ class TransactionModalHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -37,19 +37,19 @@ class TransactionModalHeader extends StatelessWidget {
                 children: [
                   Text(
                     '${selectedDate.month}월 ${selectedDate.day}일 (${_weekdayLabel(selectedDate.weekday)})',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      color: AppColors.textSecondary,
+                      color: context.appColors.textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     '${totalAmount < 0 ? '-' : ''}${NumberFormat('#,###').format(totalAmount.abs())}원',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: context.appColors.textPrimary,
                     ),
                   ),
                 ],
@@ -58,18 +58,18 @@ class TransactionModalHeader extends StatelessWidget {
                 onTap: onCameraTap,
                 borderRadius: BorderRadius.circular(16),
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(
-                      color: AppColors.primaryPinkLight,
+                      color: context.appColors.primaryPinkLight,
                       width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.camera_alt_outlined,
-                    color: AppColors.primaryPinkLight,
+                    color: context.appColors.primaryPinkLight,
                     size: 24,
                   ),
                 ),

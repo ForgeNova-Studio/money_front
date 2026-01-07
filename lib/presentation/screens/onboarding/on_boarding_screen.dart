@@ -34,7 +34,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundWhite,
+      backgroundColor: context.appColors.backgroundWhite,
       body: SafeArea(
         child: Column(
           children: [
@@ -59,18 +59,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
             // 하단 시작하기 버튼
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               child: SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const LoginScreen()));
+                        builder: (context) => LoginScreen()));
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryPink,
-                    foregroundColor: AppColors.textWhite,
+                    backgroundColor: context.appColors.primaryPink,
+                    foregroundColor: context.appColors.textWhite,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),

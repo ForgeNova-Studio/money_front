@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart'; // compute 함수 사용을 위해 필수
 import 'package:image/image.dart' as img;
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
@@ -89,7 +88,9 @@ class ImagePreprocessor {
       // ---------------------------------------------------------
       final thumb = img.copyResize(image, width: 50);
       double totalLum = 0;
-      for (var p in thumb) totalLum += p.luminanceNormalized;
+      for (var p in thumb) {
+        totalLum += p.luminanceNormalized;
+      }
 
       // 평균 밝기가 0.5 미만이면 다크 모드
       bool isDarkMode = (thumb.isNotEmpty) && (totalLum / thumb.length < 0.5);
@@ -120,7 +121,7 @@ class ImagePreprocessor {
 
     } catch (e) {
       // Isolate 내부 에러는 콘솔에만 찍고 null 반환
-      print('Isolate Processing Error: $e');
+      debugPrint('Isolate Processing Error: $e');
       return null;
     }
   }

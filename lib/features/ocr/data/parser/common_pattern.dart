@@ -173,7 +173,7 @@ class CommonPattern implements ReceiptPattern {
         } else if (lastKnownDate != null && linesSinceLastDate <= maxDateContextDistance) {
           // 날짜 헤더도 없으면 마지막 알려진 날짜 사용 (거리 제한 내)
           parsedDate = lastKnownDate;
-          _logger.d('    이전 컨텍스트 날짜 적용: $parsedDate (${linesSinceLastDate}라인 전)');
+          _logger.d('    이전 컨텍스트 날짜 적용: $parsedDate ($linesSinceLastDate라인 전)');
         }
       }
 

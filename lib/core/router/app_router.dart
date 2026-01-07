@@ -123,7 +123,7 @@ class AppRouter {
                 GoRoute(
                   path: RouteNames.settings,
                   name: 'settings',
-                  builder: (context, state) => const SettingsScreen(),
+                  builder: (context, state) => SettingsScreen(),
                 ),
               ],
             ),

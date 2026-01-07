@@ -51,9 +51,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('비밀번호를 입력해주세요.'),
-            backgroundColor: AppColors.warning,
+            backgroundColor: context.appColors.warning,
           ),
         );
       return;
@@ -63,9 +63,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('비밀번호가 일치하지 않습니다.'),
-            backgroundColor: AppColors.warning,
+            backgroundColor: context.appColors.warning,
           ),
         );
       return;
@@ -85,9 +85,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text('비밀번호가 성공적으로 변경되었습니다.'),
-              backgroundColor: AppColors.success,
+              backgroundColor: context.appColors.success,
             ),
           );
 
@@ -118,7 +118,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             ),
           );
         // 에러 메시지 표시 후 초기화
-        Future.delayed(const Duration(milliseconds: 100), () {
+        Future.delayed(Duration(milliseconds: 100), () {
           if (mounted) {
             ref.read(authViewModelProvider.notifier).clearError();
           }
@@ -131,34 +131,34 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
-          backgroundColor: AppColors.backgroundWhite,
+          backgroundColor: context.appColors.backgroundWhite,
           appBar: AppBar(
-            backgroundColor: AppColors.backgroundWhite,
+            backgroundColor: context.appColors.backgroundWhite,
             elevation: 0,
             automaticallyImplyLeading: false,
           ),
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 24),
-                const Text(
+                SizedBox(height: 24),
+                Text(
                   '비밀번호 재설정',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: context.appColors.textPrimary,
                     height: 1.3,
                   ),
                 ),
-                const SizedBox(height: 12),
-                const Text(
+                SizedBox(height: 12),
+                Text(
                   '새로운 비밀번호를 입력해주세요.',
                   style: TextStyle(
                     fontSize: 16,
-                    color: AppColors.textSecondary,
+                    color: context.appColors.textSecondary,
                     height: 1.5,
                   ),
                 ),
@@ -174,7 +174,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     });
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 CustomTextField(
                   controller: _confirmPasswordController,
                   hintText: '새 비밀번호 확인',
@@ -186,7 +186,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     });
                   },
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
                   height: 56,
@@ -194,22 +194,22 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     onPressed:
                         authState.isLoading ? null : _handleResetPassword,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryPink,
-                      foregroundColor: AppColors.textWhite,
-                      disabledBackgroundColor: AppColors.primaryPinkPale,
+                      backgroundColor: context.appColors.primaryPink,
+                      foregroundColor: context.appColors.textWhite,
+                      disabledBackgroundColor: context.appColors.primaryPinkPale,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
                     child: authState.isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(
                               strokeWidth: 2.5,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColors.textWhite,
+                                context.appColors.textWhite,
                               ),
                             ),
                           )

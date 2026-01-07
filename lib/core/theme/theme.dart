@@ -10,6 +10,9 @@ ThemeData buildLightTheme() {
     colorScheme: AppColorSchemes.light,
     textTheme: AppTextTheme.light,
     scaffoldBackgroundColor: AppColors.backgroundGray,
+    extensions: const <ThemeExtension<dynamic>>[
+      AppThemeColors.light,
+    ],
 
     // AppBar Theme
     appBarTheme: const AppBarTheme(

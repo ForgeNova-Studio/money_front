@@ -257,8 +257,8 @@ class _CustomMonthPickerState extends State<CustomMonthPicker> {
         final year = startYear + pageIndex;
 
         return GridView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
             crossAxisSpacing: 8.0,
             mainAxisSpacing: 8.0,
@@ -273,7 +273,7 @@ class _CustomMonthPickerState extends State<CustomMonthPicker> {
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isSelected ? AppColors.primary : null,
+                  color: isSelected ? context.appColors.primary : null,
                 ),
                 alignment: Alignment.center,
                 child: Text(
@@ -282,7 +282,7 @@ class _CustomMonthPickerState extends State<CustomMonthPicker> {
                     fontSize: 16.0,
                     fontWeight:
                         isSelected ? FontWeight.bold : FontWeight.normal,
-                    color: isSelected ? Colors.white : AppColors.textPrimary,
+                    color: isSelected ? Colors.white : context.appColors.textPrimary,
                   ),
                 ),
               ),
@@ -314,8 +314,8 @@ class _CustomMonthPickerState extends State<CustomMonthPicker> {
         final pageYears = years.sublist(startIndex, endIndex);
 
         return GridView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
             crossAxisSpacing: 8.0,
             mainAxisSpacing: 8.0,
@@ -330,7 +330,7 @@ class _CustomMonthPickerState extends State<CustomMonthPicker> {
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isSelected ? AppColors.primary : null,
+                  color: isSelected ? context.appColors.primary : null,
                 ),
                 alignment: Alignment.center,
                 child: Text(
@@ -339,7 +339,7 @@ class _CustomMonthPickerState extends State<CustomMonthPicker> {
                     fontSize: 14.0,
                     fontWeight:
                         isSelected ? FontWeight.bold : FontWeight.normal,
-                    color: isSelected ? Colors.white : AppColors.textPrimary,
+                    color: isSelected ? Colors.white : context.appColors.textPrimary,
                   ),
                 ),
               ),
@@ -356,23 +356,23 @@ class _CustomMonthPickerState extends State<CustomMonthPicker> {
       children: [
         TextButton(
           onPressed: _onCancel,
-          child: const Text(
+          child: Text(
             '취소',
             style: TextStyle(
               fontSize: 16.0,
-              color: AppColors.textSecondary,
+              color: context.appColors.textSecondary,
             ),
           ),
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         TextButton(
           onPressed: _onConfirm,
-          child: const Text(
+          child: Text(
             '확인',
             style: TextStyle(
               fontSize: 16.0,
               fontWeight: FontWeight.bold,
-              color: AppColors.primary,
+              color: context.appColors.primary,
             ),
           ),
         ),

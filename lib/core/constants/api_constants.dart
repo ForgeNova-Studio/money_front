@@ -1,8 +1,8 @@
 class ApiConstants {
   // Base URL
   // 로컬 개발: 맥의 IP 주소 사용 (아이폰에서 접근 가능)
-  // static const String baseUrl = 'http://localhost:8080';
-  static const String baseUrl = 'http://172.20.10.3:8080';
+  static const String baseUrl = 'http://localhost:8080';
+  // static const String baseUrl = 'http://172.20.10.3:8080';
 
   // ========== Auth endpoints ==========
   static const String register = '/api/auth/register';

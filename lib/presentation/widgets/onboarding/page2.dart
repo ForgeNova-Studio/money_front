@@ -45,11 +45,11 @@ class _Page2State extends State<Page2> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+      padding: EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Spacer(),
+          Spacer(),
 
           // 상단 이미지 - 돼지 저금통 컨셉
           SizedBox(
@@ -65,18 +65,18 @@ class _Page2State extends State<Page2> with SingleTickerProviderStateMixin {
                       width: 150,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: AppColors.primaryPinkLight,
+                        color: context.appColors.primaryPinkLight,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: AppColors.primaryPink,
+                          color: context.appColors.primaryPink,
                           width: 4,
                         ),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Icon(
                           Icons.savings_rounded,
                           size: 60,
-                          color: AppColors.primaryPink,
+                          color: context.appColors.primaryPink,
                         ),
                       ),
                     ),
@@ -106,30 +106,30 @@ class _Page2State extends State<Page2> with SingleTickerProviderStateMixin {
             ),
           ),
 
-          const SizedBox(height: 40),
+          SizedBox(height: 40),
 
           // 중단 큰 제목
-          const Text(
+          Text(
             '함께 모으는 재미\n공동의 목표 달성',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: context.appColors.textPrimary,
               height: 1.3,
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // 하단 작은 설명 글귀
-          const Text(
+          Text(
             '작은 돈도 함께 모으면 큰 힘이 됩니다\n우리의 꿈을 위해 저축하세요',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.normal,
-              color: AppColors.textSecondary,
+              color: context.appColors.textSecondary,
               height: 1.5,
             ),
           ),

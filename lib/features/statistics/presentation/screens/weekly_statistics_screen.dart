@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../domain/entities/weekly_statistics_model.dart';
 import '../providers/statistics_provider.dart';
 
 /// 주간 통계 화면
@@ -59,16 +60,16 @@ class _WeeklyStatisticsScreenState extends State<WeeklyStatisticsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
-        title: const Text('주간 통계'),
-        backgroundColor: AppColors.primary,
+        title: Text('주간 통계'),
+        backgroundColor: context.appColors.primary,
         foregroundColor: Colors.white,
       ),
       body: Consumer<StatisticsProvider>(
         builder: (context, statsProvider, child) {
           if (statsProvider.status == StatisticsStatus.loading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
 
           if (statsProvider.status == StatisticsStatus.error) {
@@ -76,12 +77,12 @@ class _WeeklyStatisticsScreenState extends State<WeeklyStatisticsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline,
-                      size: 64, color: AppColors.error),
-                  const SizedBox(height: 16),
+                  Icon(Icons.error_outline,
+                      size: 64, color: context.appColors.error),
+                  SizedBox(height: 16),
                   Text(
                     statsProvider.errorMessage ?? '오류가 발생했습니다',
-                    style: const TextStyle(color: AppColors.textSecondary),
+                    style: TextStyle(color: context.appColors.textSecondary),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -127,33 +128,33 @@ class _WeeklyStatisticsScreenState extends State<WeeklyStatisticsScreen> {
 
   /// 날짜 선택 버튼
   Widget _buildDateSelector() {
-    final endDate = _startDate.add(const Duration(days: 6));
+    final endDate = _startDate.add(Duration(days: 6));
     return InkWell(
       onTap: _selectStartDate,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: context.appColors.border),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                const Icon(Icons.calendar_today, color: AppColors.primary),
-                const SizedBox(width: 12),
+                Icon(Icons.calendar_today, color: context.appColors.primary),
+                SizedBox(width: 12),
                 Text(
                   '${DateFormat('MM.dd').format(_startDate)} ~ ${DateFormat('MM.dd').format(endDate)}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
-            const Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+            Icon(Icons.arrow_drop_down, color: context.appColors.textSecondary),
           ],
         ),
       ),
@@ -161,66 +162,66 @@ class _WeeklyStatisticsScreenState extends State<WeeklyStatisticsScreen> {
   }
 
   /// 요약 카드
-  Widget _buildSummaryCards(weeklyStats) {
+  Widget _buildSummaryCards(WeeklyStatisticsModel weeklyStats) {
     return Row(
       children: [
         // 최다 지출 카테고리
         Expanded(
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: context.appColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   '최다 지출',
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: context.appColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   _getCategoryName(weeklyStats.topCategory),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
+                    color: context.appColors.primary,
                   ),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         // 일평균 지출
         Expanded(
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.secondary.withValues(alpha: 0.1),
+              color: context.appColors.secondary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   '일평균',
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: context.appColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   '${NumberFormat('#,###').format(weeklyStats.averageDaily)}원',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.secondary,
+                    color: context.appColors.secondary,
                   ),
                 ),
               ],
@@ -232,7 +233,7 @@ class _WeeklyStatisticsScreenState extends State<WeeklyStatisticsScreen> {
   }
 
   /// 라인 차트
-  Widget _buildLineChart(weeklyStats) {
+  Widget _buildLineChart(WeeklyStatisticsModel weeklyStats) {
     if (weeklyStats.dailyExpenses.isEmpty) {
       return Container(
         height: 300,
@@ -240,10 +241,10 @@ class _WeeklyStatisticsScreenState extends State<WeeklyStatisticsScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
             '지출 데이터가 없습니다',
-            style: TextStyle(color: AppColors.textSecondary),
+            style: TextStyle(color: context.appColors.textSecondary),
           ),
         ),
       );
@@ -268,14 +269,14 @@ class _WeeklyStatisticsScreenState extends State<WeeklyStatisticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '일별 지출 추이',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           Expanded(
             child: LineChart(
               LineChartData(
@@ -285,7 +286,7 @@ class _WeeklyStatisticsScreenState extends State<WeeklyStatisticsScreen> {
                   horizontalInterval: maxAmount > 0 ? maxAmount / 5 : 10000,
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: AppColors.border,
+                      color: context.appColors.border,
                       strokeWidth: 1,
                     );
                   },
@@ -295,7 +296,7 @@ class _WeeklyStatisticsScreenState extends State<WeeklyStatisticsScreen> {
                   rightTitles: const AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
                   ),
-                  topTitles: const AxisTitles(
+                  topTitles: AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
                   ),
                   bottomTitles: AxisTitles(
@@ -309,17 +310,17 @@ class _WeeklyStatisticsScreenState extends State<WeeklyStatisticsScreen> {
                             index < weeklyStats.dailyExpenses.length) {
                           final date = weeklyStats.dailyExpenses[index].date;
                           return Padding(
-                            padding: const EdgeInsets.only(top: 8),
+                            padding: EdgeInsets.only(top: 8),
                             child: Text(
                               DateFormat('MM/dd').format(date),
-                              style: const TextStyle(
-                                color: AppColors.textSecondary,
+                              style: TextStyle(
+                                color: context.appColors.textSecondary,
                                 fontSize: 10,
                               ),
                             ),
                           );
                         }
-                        return const Text('');
+                        return Text('');
                       },
                     ),
                   ),
@@ -331,8 +332,8 @@ class _WeeklyStatisticsScreenState extends State<WeeklyStatisticsScreen> {
                       getTitlesWidget: (value, meta) {
                         return Text(
                           '${(value / 1000).toInt()}k',
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
+                          style: TextStyle(
+                            color: context.appColors.textSecondary,
                             fontSize: 10,
                           ),
                         );
@@ -349,7 +350,7 @@ class _WeeklyStatisticsScreenState extends State<WeeklyStatisticsScreen> {
                   LineChartBarData(
                     spots: spots,
                     isCurved: true,
-                    color: AppColors.primary,
+                    color: context.appColors.primary,
                     barWidth: 3,
                     isStrokeCapRound: true,
                     dotData: FlDotData(
@@ -359,13 +360,13 @@ class _WeeklyStatisticsScreenState extends State<WeeklyStatisticsScreen> {
                           radius: 4,
                           color: Colors.white,
                           strokeWidth: 2,
-                          strokeColor: AppColors.primary,
+                          strokeColor: context.appColors.primary,
                         );
                       },
                     ),
                     belowBarData: BarAreaData(
                       show: true,
-                      color: AppColors.primary.withValues(alpha: 0.1),
+                      color: context.appColors.primary.withValues(alpha: 0.1),
                     ),
                   ),
                 ],

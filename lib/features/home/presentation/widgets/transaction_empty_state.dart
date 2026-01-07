@@ -14,12 +14,12 @@ class TransactionEmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.receipt_long_outlined,
-              size: 48, color: AppColors.gray300),
-          const SizedBox(height: 16),
+          Icon(Icons.receipt_long_outlined,
+              size: 48, color: context.appColors.gray300),
+          SizedBox(height: 16),
           Text(
             '${selectedDate.month}월 ${selectedDate.day}일 내역이 없습니다.',
-            style: const TextStyle(color: AppColors.textTertiary),
+            style: TextStyle(color: context.appColors.textTertiary),
           ),
         ],
       ),

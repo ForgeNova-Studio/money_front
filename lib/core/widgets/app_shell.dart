@@ -22,8 +22,8 @@ class AppShell extends StatelessWidget {
         currentIndex: navigationShell.currentIndex,
         onTap: _onTap,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.gray400,
+        selectedItemColor: context.appColors.primary,
+        unselectedItemColor: context.appColors.gray400,
         backgroundColor: Colors.white,
         showUnselectedLabels: true,
         items: const [

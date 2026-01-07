@@ -100,14 +100,14 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
     if (mounted) {
       if (budgetProvider.status == BudgetStatus.success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('예산이 설정되었습니다')),
+          SnackBar(content: Text('예산이 설정되었습니다')),
         );
         Navigator.of(context).pop(true);
       } else if (budgetProvider.status == BudgetStatus.error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(budgetProvider.errorMessage ?? '예산 설정에 실패했습니다'),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.appColors.error,
           ),
         );
       }
@@ -117,20 +117,20 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
-        title: const Text('목표 예산 설정'),
-        backgroundColor: AppColors.primary,
+        title: Text('목표 예산 설정'),
+        backgroundColor: context.appColors.primary,
         foregroundColor: Colors.white,
       ),
       body: Consumer<BudgetProvider>(
         builder: (context, budgetProvider, child) {
           if (budgetProvider.status == BudgetStatus.loading && !_isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24),
             child: Form(
               key: _formKey,
               child: Column(
@@ -138,16 +138,16 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                 children: [
                   // 안내 문구
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
+                      color: context.appColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.info_outline,
-                          color: AppColors.primary,
+                          color: context.appColors.primary,
                           size: 24,
                         ),
                         const SizedBox(width: 12),
@@ -164,27 +164,27 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
 
                   // 년도/월 선택
-                  const Text(
+                  Text(
                     '기간 선택',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   Row(
                     children: [
                       // 년도 선택
                       Expanded(
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.border),
+                            border: Border.all(color: context.appColors.border),
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<int>(
@@ -213,15 +213,15 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       // 월 선택
                       Expanded(
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.border),
+                            border: Border.all(color: context.appColors.border),
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<int>(
@@ -289,16 +289,16 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                       fillColor: Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.border),
+                        borderSide: BorderSide(color: context.appColors.border),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.border),
+                        borderSide: BorderSide(color: context.appColors.border),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                            color: AppColors.primary, width: 2),
+                        borderSide: BorderSide(
+                            color: context.appColors.primary, width: 2),
                       ),
                     ),
                     style: const TextStyle(
@@ -317,7 +317,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     '월간 지출 목표 금액을 설정하세요',
                     style: TextStyle(
@@ -325,14 +325,14 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                       color: Colors.grey[600],
                     ),
                   ),
-                  const SizedBox(height: 48),
+                  SizedBox(height: 48),
 
                   // 저장 버튼
                   ElevatedButton(
                     onPressed: _isLoading ? null : _saveBudget,
                     style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 52),
-                      backgroundColor: AppColors.primary,
+                      minimumSize: Size(double.infinity, 52),
+                      backgroundColor: context.appColors.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),

@@ -52,7 +52,7 @@ class TransactionListSection extends StatelessWidget {
                 onCameraTap: onCameraTap,
               )
             else
-              _buildHeader(selectedDate, totalAmount),
+              _buildHeader(context, selectedDate, totalAmount),
             if (!hasData)
               TransactionEmptyState(selectedDate: selectedDate)
             else
@@ -63,31 +63,35 @@ class TransactionListSection extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(DateTime date, double totalAmount) {
+  Widget _buildHeader(
+    BuildContext context,
+    DateTime date,
+    double totalAmount,
+  ) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+      padding: EdgeInsets.fromLTRB(20, 12, 20, 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             '${date.month}월 ${date.day}일',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: context.appColors.textPrimary,
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.gray100,
+              color: context.appColors.gray100,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               '전체 ${NumberFormat('#,###').format(totalAmount)}원',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                color: AppColors.textSecondary,
+                color: context.appColors.textSecondary,
                 fontWeight: FontWeight.w600,
               ),
             ),

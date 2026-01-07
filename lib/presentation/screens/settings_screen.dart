@@ -7,17 +7,17 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: context.appColors.backgroundLight,
       appBar: AppBar(
-        title: const Text('더보기'),
-        backgroundColor: AppColors.backgroundLight,
+        title: Text('더보기'),
+        backgroundColor: context.appColors.backgroundLight,
         elevation: 0,
         centerTitle: true,
       ),
-      body: const Center(
+      body: Center(
         child: Text(
           '준비 중입니다.',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: TextStyle(color: context.appColors.textSecondary),
         ),
       ),
     );

@@ -40,20 +40,20 @@ class CustomTextField extends StatelessWidget {
                   isPasswordVisible
                       ? Icons.visibility_outlined
                       : Icons.visibility_off_outlined,
-                  color: AppColors.textTertiary,
+                  color: context.appColors.textTertiary,
                   size: 20,
                 ),
               )
             : (icon != null
                 ? Icon(
                     icon,
-                    color: AppColors.textTertiary,
+                    color: context.appColors.textTertiary,
                     size: 20,
                   )
                 : null),
         filled: true,
-        fillColor: AppColors.gray100,
-        contentPadding: const EdgeInsets.symmetric(
+        fillColor: context.appColors.gray100,
+        contentPadding: EdgeInsets.symmetric(
           horizontal: 20,
           vertical: 18,
         ),
@@ -67,8 +67,8 @@ class CustomTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: AppColors.primaryPink,
+          borderSide: BorderSide(
+            color: context.appColors.primaryPink,
             width: 2,
           ),
         ),

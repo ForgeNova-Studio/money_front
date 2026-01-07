@@ -72,9 +72,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('금액을 입력하세요'),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.appColors.error,
           ),
         );
       return '';
@@ -140,9 +140,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
             .read(homeViewModelProvider.notifier)
             .fetchMonthlyData(_selectedDate, forceRefresh: true);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('지출이 등록되었습니다'),
-            backgroundColor: AppColors.success,
+            backgroundColor: context.appColors.success,
           ),
         );
         Navigator.of(context).pop(true);
@@ -165,10 +165,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            title: const Text(
+            title: Text(
               '지출 등록',
               style: TextStyle(
-                color: AppColors.textPrimary,
+                color: context.appColors.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -176,7 +176,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
             backgroundColor: Colors.white,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.close, color: AppColors.textPrimary),
+              icon: Icon(Icons.close, color: context.appColors.textPrimary),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
@@ -190,7 +190,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const SizedBox(height: 32),
+                        SizedBox(height: 32),
                         // 1. Large Amount Input
                         Center(
                           child: Row(
@@ -202,16 +202,16 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                   validator: _validateAmount,
                                   keyboardType: TextInputType.number,
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 40,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.primary,
+                                    color: context.appColors.primary,
                                   ),
-                                  decoration: const InputDecoration(
+                                  decoration: InputDecoration(
                                     filled: false,
                                     hintText: '0',
                                     hintStyle: TextStyle(
-                                      color: AppColors.gray300,
+                                      color: context.appColors.gray300,
                                       fontSize: 40,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -230,41 +230,41 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                   showCursor: false,
                                 ),
                               ),
-                              const SizedBox(width: 4),
-                              const Text(
+                              SizedBox(width: 4),
+                              Text(
                                 '원',
                                 style: TextStyle(
                                   fontSize: 40,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimary,
+                                  color: context.appColors.textPrimary,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 40),
+                        SizedBox(height: 40),
 
                         // 2. Date Selection
                         GestureDetector(
                           onTap: () => _selectDate(context),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
+                            padding: EdgeInsets.symmetric(
                                 vertical: 12, horizontal: 16),
                             decoration: BoxDecoration(
-                              color: AppColors.backgroundLight,
+                              color: context.appColors.backgroundLight,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.calendar_today,
-                                    color: AppColors.textSecondary, size: 20),
-                                const SizedBox(width: 12),
+                                Icon(Icons.calendar_today,
+                                    color: context.appColors.textSecondary, size: 20),
+                                SizedBox(width: 12),
                                 Text(
                                   DateFormat('yyyy년 M월 d일 (E)', 'ko_KR')
                                       .format(_selectedDate),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 16,
-                                    color: AppColors.textPrimary,
+                                    color: context.appColors.textPrimary,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -272,15 +272,15 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 32),
+                        SizedBox(height: 32),
 
                         // 3. Category Selection
-                        const Text(
+                        Text(
                           '카테고리',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textSecondary,
+                            color: context.appColors.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -290,7 +290,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                             scrollDirection: Axis.horizontal,
                             itemCount: DefaultCategories.all.length,
                             separatorBuilder: (context, index) =>
-                                const SizedBox(width: 20),
+                                SizedBox(width: 20),
                             itemBuilder: (context, index) {
                               final category = DefaultCategories.all[index];
                               final isSelected =
@@ -305,21 +305,21 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                   children: [
                                     AnimatedContainer(
                                       duration:
-                                          const Duration(milliseconds: 200),
+                                          Duration(milliseconds: 200),
                                       width: 56,
                                       height: 56,
                                       decoration: BoxDecoration(
                                         color: isSelected
-                                            ? AppColors.primary
-                                            : AppColors.backgroundLight,
+                                            ? context.appColors.primary
+                                            : context.appColors.backgroundLight,
                                         shape: BoxShape.circle,
                                         boxShadow: isSelected
                                             ? [
                                                 BoxShadow(
-                                                  color: AppColors.primary
+                                                  color: context.appColors.primary
                                                       .withOpacity(0.3),
                                                   blurRadius: 8,
-                                                  offset: const Offset(0, 4),
+                                                  offset: Offset(0, 4),
                                                 )
                                               ]
                                             : [],
@@ -328,18 +328,18 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                         _getIconData(category.icon),
                                         color: isSelected
                                             ? Colors.white
-                                            : AppColors.textSecondary,
+                                            : context.appColors.textSecondary,
                                         size: 24,
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
+                                    SizedBox(height: 8),
                                     Text(
                                       category.name,
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: isSelected
-                                            ? AppColors.primary
-                                            : AppColors.textSecondary,
+                                            ? context.appColors.primary
+                                            : context.appColors.textSecondary,
                                         fontWeight: isSelected
                                             ? FontWeight.w600
                                             : FontWeight.normal,
@@ -351,7 +351,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                             },
                           ),
                         ),
-                        const SizedBox(height: 32),
+                        SizedBox(height: 32),
 
                         // 4. Additional Fields (Merchant, Memo)
                         _buildCleanTextField(
@@ -360,9 +360,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                           hint: '어디서 썼나요?',
                           icon: Icons.store_outlined,
                         ),
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Divider(height: 1, color: AppColors.gray200),
+                          child: Divider(height: 1, color: context.appColors.gray200),
                         ),
                         _buildCleanTextField(
                           controller: _memoController,
@@ -370,23 +370,23 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                           hint: '메모를 남겨주세요',
                           icon: Icons.edit_outlined,
                         ),
-                        const SizedBox(height: 24),
+                        SizedBox(height: 24),
 
                         // 5. Payment Method
-                        const Text(
+                        Text(
                           '결제 수단',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textSecondary,
+                            color: context.appColors.textSecondary,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12),
                         Row(
                           children: PaymentMethod.values.map((method) {
                             final isSelected = _selectedPaymentMethod == method;
                             return Padding(
-                              padding: const EdgeInsets.only(right: 12),
+                              padding: EdgeInsets.only(right: 12),
                               child: ChoiceChip(
                                 label: Text(method.label),
                                 selected: isSelected,
@@ -397,20 +397,20 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                     });
                                   }
                                 },
-                                backgroundColor: AppColors.backgroundLight,
+                                backgroundColor: context.appColors.backgroundLight,
                                 selectedColor:
-                                    AppColors.primary.withOpacity(0.1),
+                                    context.appColors.primary.withOpacity(0.1),
                                 labelStyle: TextStyle(
                                   color: isSelected
-                                      ? AppColors.primary
-                                      : AppColors.textSecondary,
+                                      ? context.appColors.primary
+                                      : context.appColors.textSecondary,
                                   fontWeight: isSelected
                                       ? FontWeight.w600
                                       : FontWeight.normal,
                                 ),
                                 side: BorderSide(
                                   color: isSelected
-                                      ? AppColors.primary
+                                      ? context.appColors.primary
                                       : Colors.transparent,
                                 ),
                                 shape: RoundedRectangleBorder(
@@ -421,7 +421,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                             );
                           }).toList(),
                         ),
-                        const SizedBox(height: 48),
+                        SizedBox(height: 48),
                       ],
                     ),
                   ),
@@ -430,14 +430,14 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
               // Bottom Button
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+                padding: EdgeInsets.fromLTRB(24, 0, 24, 40),
                 child: SizedBox(
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
                     onPressed: _handleSubmit,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: context.appColors.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -467,18 +467,18 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   }) {
     return Row(
       children: [
-        Icon(icon, color: AppColors.textSecondary, size: 24),
-        const SizedBox(width: 16),
+        Icon(icon, color: context.appColors.textSecondary, size: 24),
+        SizedBox(width: 16),
         Expanded(
           child: TextField(
             controller: controller,
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: const TextStyle(color: AppColors.gray400),
+              hintStyle: TextStyle(color: context.appColors.gray400),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+              contentPadding: EdgeInsets.symmetric(vertical: 16),
             ),
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
+            style: TextStyle(color: context.appColors.textPrimary, fontSize: 16),
           ),
         ),
       ],

@@ -67,7 +67,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ..showSnackBar(
           SnackBar(
             content: Text(errorMessage),
-            backgroundColor: AppColors.warning,
+            backgroundColor: context.appColors.warning,
           ),
         );
       return;
@@ -97,7 +97,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        const SnackBar(content: Text('이용약관 상세 페이지로 이동 구현 예정')),
+        SnackBar(content: Text('이용약관 상세 페이지로 이동 구현 예정')),
       );
   }
 
@@ -106,7 +106,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        const SnackBar(content: Text('개인정보 이용동의 상세 페이지로 이동 구현 예정')),
+        SnackBar(content: Text('개인정보 이용동의 상세 페이지로 이동 구현 예정')),
       );
   }
 
@@ -115,9 +115,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('이메일을 입력해주세요.'),
-            backgroundColor: AppColors.warning,
+            backgroundColor: context.appColors.warning,
           ),
         );
       return;
@@ -133,7 +133,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
-            const SnackBar(content: Text('인증번호가 전송되었습니다.')),
+            SnackBar(content: Text('인증번호가 전송되었습니다.')),
           );
       }
     } catch (e) {
@@ -148,9 +148,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('인증번호를 입력해주세요.'),
-            backgroundColor: AppColors.warning,
+            backgroundColor: context.appColors.warning,
           ),
         );
       return;
@@ -203,7 +203,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             ),
           );
         // 에러 메시지 표시 후 초기화
-        Future.delayed(const Duration(milliseconds: 100), () {
+        Future.delayed(Duration(milliseconds: 100), () {
           if (mounted) {
             ref.read(authViewModelProvider.notifier).clearError();
           }
@@ -214,13 +214,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: AppColors.backgroundWhite,
+        backgroundColor: context.appColors.backgroundWhite,
         appBar: AppBar(
-          backgroundColor: AppColors.backgroundWhite,
+          backgroundColor: context.appColors.backgroundWhite,
           elevation: 0,
           leading: IconButton(
             icon:
-                const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
+                Icon(Icons.arrow_back_ios, color: context.appColors.textPrimary),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
@@ -244,7 +244,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   icon: Icons.person_outline,
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 // 성별 선택
                 Row(
@@ -260,12 +260,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           height: 56,
                           decoration: BoxDecoration(
                             color: formState.selectedGender == Gender.male
-                                ? AppColors.primaryPink.withValues(alpha: 0.1)
-                                : AppColors.gray100,
+                                ? context.appColors.primaryPink.withValues(alpha: 0.1)
+                                : context.appColors.gray100,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: formState.selectedGender == Gender.male
-                                  ? AppColors.primaryPink
+                                  ? context.appColors.primaryPink
                                   : Colors.transparent,
                               width: 1.5,
                             ),
@@ -277,14 +277,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: formState.selectedGender == Gender.male
-                                  ? AppColors.primaryPink
-                                  : AppColors.textTertiary,
+                                  ? context.appColors.primaryPink
+                                  : context.appColors.textTertiary,
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
@@ -296,12 +296,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           height: 56,
                           decoration: BoxDecoration(
                             color: formState.selectedGender == Gender.female
-                                ? AppColors.primaryPink.withValues(alpha: 0.1)
-                                : AppColors.gray100,
+                                ? context.appColors.primaryPink.withValues(alpha: 0.1)
+                                : context.appColors.gray100,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: formState.selectedGender == Gender.female
-                                  ? AppColors.primaryPink
+                                  ? context.appColors.primaryPink
                                   : Colors.transparent,
                               width: 1.5,
                             ),
@@ -313,8 +313,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: formState.selectedGender == Gender.female
-                                  ? AppColors.primaryPink
-                                  : AppColors.textTertiary,
+                                  ? context.appColors.primaryPink
+                                  : context.appColors.textTertiary,
                             ),
                           ),
                         ),
@@ -338,7 +338,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         enabled: !formState.isEmailVerified,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     SizedBox(
                       height: 56,
                       child: ElevatedButton(
@@ -348,9 +348,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 _handleSendVerificationCode();
                               },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryPink,
-                          foregroundColor: AppColors.textWhite,
-                          disabledBackgroundColor: AppColors.gray300,
+                          backgroundColor: context.appColors.primaryPink,
+                          foregroundColor: context.appColors.textWhite,
+                          disabledBackgroundColor: context.appColors.gray300,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -371,7 +371,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                 if (formState.isVerificationCodeSent &&
                     !formState.isEmailVerified) ...[
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   // 인증번호 입력 필드
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -384,21 +384,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           keyboardType: TextInputType.number,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       SizedBox(
                         height: 56,
                         child: ElevatedButton(
                           onPressed: _handleVerifyCode,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.textPrimary,
-                            foregroundColor: AppColors.textWhite,
+                            backgroundColor: context.appColors.textPrimary,
+                            foregroundColor: context.appColors.textWhite,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                           ),
-                          child: const Text(
+                          child: Text(
                             '인증확인',
                             style: TextStyle(
                               fontSize: 14,
@@ -409,15 +409,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   // 인증번호 유효 시간 안내
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(left: 4),
                     child: Text(
                       '※ 인증번호는 10분간 유효합니다.',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: context.appColors.textSecondary,
                         height: 1.4,
                       ),
                     ),
@@ -454,7 +454,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   },
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // 약관 동의 체크박스
                 Row(
@@ -469,75 +469,75 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               .read(registerViewModelProvider.notifier)
                               .toggleTermsAgreed();
                         },
-                        activeColor: AppColors.primaryPink,
+                        activeColor: context.appColors.primaryPink,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        side: const BorderSide(
-                          color: AppColors.gray300,
+                        side: BorderSide(
+                          color: context.appColors.gray300,
                           width: 1.5,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 6),
+                    SizedBox(width: 6),
                     Expanded(
                       child: Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Container(
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               border: Border(
                                 bottom: BorderSide(
-                                  color: AppColors.textSecondary,
+                                  color: context.appColors.textSecondary,
                                   width: 1.0,
                                 ),
                               ),
                             ),
                             child: GestureDetector(
                               onTap: _handleTermsClick,
-                              child: const Text(
+                              child: Text(
                                 '이용약관',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: AppColors.textPrimary,
+                                  color: context.appColors.textPrimary,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
                           ),
-                          const Text(
+                          Text(
                             ' 및 ',
                             style: TextStyle(
                               fontSize: 14,
-                              color: AppColors.textSecondary,
+                              color: context.appColors.textSecondary,
                             ),
                           ),
                           Container(
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               border: Border(
                                 bottom: BorderSide(
-                                  color: AppColors.textSecondary,
+                                  color: context.appColors.textSecondary,
                                   width: 1.0,
                                 ),
                               ),
                             ),
                             child: GestureDetector(
                               onTap: _handlePrivacyClick,
-                              child: const Text(
+                              child: Text(
                                 '개인정보 이용동의',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: AppColors.textPrimary,
+                                  color: context.appColors.textPrimary,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
                           ),
-                          const Text(
+                          Text(
                             '에 확인하고 동의합니다.',
                             style: TextStyle(
                               fontSize: 14,
-                              color: AppColors.textSecondary,
+                              color: context.appColors.textSecondary,
                             ),
                           ),
                         ],
@@ -546,7 +546,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ],
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // 회원가입 버튼
                 SizedBox(
@@ -555,22 +555,22 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   child: ElevatedButton(
                     onPressed: authState.isLoading ? null : _handleSignUp,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryPink,
-                      foregroundColor: AppColors.textWhite,
-                      disabledBackgroundColor: AppColors.primaryPinkPale,
+                      backgroundColor: context.appColors.primaryPink,
+                      foregroundColor: context.appColors.textWhite,
+                      disabledBackgroundColor: context.appColors.primaryPinkPale,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
                     child: authState.isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(
                               strokeWidth: 2.5,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColors.textWhite,
+                                context.appColors.textWhite,
                               ),
                             ),
                           )
@@ -592,7 +592,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Widget _buildRegisterTitle() {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -600,7 +600,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: context.appColors.textPrimary,
             height: 1.2,
           ),
         ),
@@ -609,7 +609,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           '새로운 계정을 생성합니다.',
           style: TextStyle(
             fontSize: 16,
-            color: AppColors.textSecondary,
+            color: context.appColors.textSecondary,
             height: 1.5,
           ),
         )

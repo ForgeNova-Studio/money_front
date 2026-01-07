@@ -19,7 +19,7 @@ class TransactionListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isExpense = transaction.type == TransactionType.expense;
-    final color = isExpense ? AppColors.error : AppColors.success;
+    final color = isExpense ? context.appColors.error : context.appColors.success;
     final prefix = isExpense ? '-' : '+';
     final amountStr = NumberFormat('#,###').format(transaction.amount);
     final timeStr = DateFormat('HH:mm').format(transaction.date);
@@ -29,12 +29,12 @@ class TransactionListItem extends StatelessWidget {
       endActionPane: onDelete == null
           ? null
           : ActionPane(
-              motion: const DrawerMotion(),
+              motion: DrawerMotion(),
               extentRatio: 0.24,
               children: [
                 SlidableAction(
                   onPressed: (_) => onDelete?.call(),
-                  backgroundColor: AppColors.error,
+                  backgroundColor: context.appColors.error,
                   foregroundColor: Colors.white,
                   icon: Icons.delete,
                   label: '삭제',
@@ -44,34 +44,34 @@ class TransactionListItem extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 6),
           child: Row(
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundColor: AppColors.gray50,
+                backgroundColor: context.appColors.gray50,
                 child: Icon(
                   isExpense ? Icons.coffee : Icons.attach_money,
                   color:
-                      isExpense ? AppColors.textSecondary : AppColors.success,
+                      isExpense ? context.appColors.textSecondary : context.appColors.success,
                   size: 20,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       transaction.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 16),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       '$timeStr · ${transaction.category}',
-                      style: const TextStyle(
-                          color: AppColors.textTertiary, fontSize: 12),
+                      style: TextStyle(
+                          color: context.appColors.textTertiary, fontSize: 12),
                     ),
                   ],
                 ),

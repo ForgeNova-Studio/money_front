@@ -89,19 +89,19 @@ class _CustomCalendarState extends State<CustomCalendar> {
       eventLoader: widget.eventLoader,
 
       // 달력 헤더 스타일 설정
-      headerStyle: const HeaderStyle(
+      headerStyle: HeaderStyle(
         // 왼쪽 화살표 아이콘 스타일 설정
         leftChevronIcon: Icon(
           Icons.chevron_left,
           size: 20.0,
-          color: AppColors.black,
+          color: context.appColors.black,
         ),
 
         // 오른쪽 화살표 아이콘 스타일 설정
         rightChevronIcon: Icon(
           Icons.chevron_right,
           size: 20.0,
-          color: AppColors.black,
+          color: context.appColors.black,
         ),
 
         // 왼쪽 화살표 아이콘 마진 조정
@@ -166,7 +166,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
             },
             child: Text(
               '${day.year}년 ${day.month}월',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
               ),
@@ -177,16 +177,16 @@ class _CustomCalendarState extends State<CustomCalendar> {
         // 오늘 날짜 셀 커스텀 (기본과 동일하게 처리)
         todayBuilder: (context, day, focusedDay) {
           return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
-            padding: const EdgeInsets.only(top: 6.0),
+            margin: EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
+            padding: EdgeInsets.only(top: 6.0),
             alignment: Alignment.topCenter,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   '${day.day}',
-                  style: const TextStyle(
-                      color: AppColors.textPrimary,
+                  style: TextStyle(
+                      color: context.appColors.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 13.0),
                 ),
@@ -199,15 +199,15 @@ class _CustomCalendarState extends State<CustomCalendar> {
         // 선택한 날짜 셀 커스텀 (테두리만 표시)
         selectedBuilder: (context, day, focusedDay) {
           return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
-            padding: const EdgeInsets.only(
+            margin: EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
+            padding: EdgeInsets.only(
                 top: 4.0), // Padding slightly reduced to account for border
             alignment: Alignment.topCenter,
             decoration: BoxDecoration(
               color: Colors.transparent, // No background
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: AppColors.primary,
+                color: context.appColors.primary,
                 width: 1.5,
               ),
             ),
@@ -231,16 +231,16 @@ class _CustomCalendarState extends State<CustomCalendar> {
         // 기본 날짜 셀 커스텀
         defaultBuilder: (context, day, focusedDay) {
           return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
-            padding: const EdgeInsets.only(top: 6.0),
+            margin: EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
+            padding: EdgeInsets.only(top: 6.0),
             alignment: Alignment.topCenter,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   '${day.day}',
-                  style: const TextStyle(
-                      color: AppColors.textPrimary,
+                  style: TextStyle(
+                      color: context.appColors.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 13.0),
                 ),
@@ -258,7 +258,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
       data: (data) {
         final dateKey = DateFormat('yyyy-MM-dd').format(day);
         final summary = data[dateKey];
-        if (summary == null) return const SizedBox.shrink();
+        if (summary == null) return SizedBox.shrink();
 
         final hasIncome = summary.totalIncome > 0;
         final hasExpense = summary.totalExpense > 0;
@@ -268,11 +268,11 @@ class _CustomCalendarState extends State<CustomCalendar> {
           children: [
             if (hasIncome)
               Padding(
-                padding: const EdgeInsets.only(bottom: 1.0),
+                padding: EdgeInsets.only(bottom: 1.0),
                 child: Text(
                   '+${formatMoneyCompact(summary.totalIncome)}',
-                  style: const TextStyle(
-                    color: AppColors.success,
+                  style: TextStyle(
+                    color: context.appColors.success,
                     fontSize: 9,
                     fontWeight: FontWeight.w500,
                     letterSpacing: -0.5,
@@ -283,8 +283,8 @@ class _CustomCalendarState extends State<CustomCalendar> {
             if (hasExpense)
               Text(
                 '-${formatMoneyCompact(summary.totalExpense)}',
-                style: const TextStyle(
-                  color: AppColors.error,
+                style: TextStyle(
+                  color: context.appColors.error,
                   fontSize: 9,
                   fontWeight: FontWeight.w500,
                   letterSpacing: -0.5,

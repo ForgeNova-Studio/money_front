@@ -70,9 +70,10 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
                   children: [
                     // 링 차트
                     CustomPaint(
-                      size: const Size(200, 200),
+                      size: Size(200, 200),
                       painter: RingChartPainter(
                         progress: _chartAnimation.value,
+                        backgroundColor: context.appColors.gray200,
                       ),
                     ),
                     // 중앙 금액 텍스트
@@ -81,18 +82,18 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
                       children: [
                         Text(
                           '${NumberFormat('#,###').format(_moneyAnimation.value)}원',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: context.appColors.textPrimary,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        const Text(
+                        SizedBox(height: 4),
+                        Text(
                           '모인 금액',
                           style: TextStyle(
                             fontSize: 14,
-                            color: AppColors.textSecondary,
+                            color: context.appColors.textSecondary,
                           ),
                         ),
                       ],
@@ -103,30 +104,30 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
             ),
           ),
 
-          const SizedBox(height: 40),
+          SizedBox(height: 40),
 
           // 중단 큰 제목
-          const Text(
+          Text(
             '빈틈 없는 관리\n서로의 지출을 한눈에',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: context.appColors.textPrimary,
               height: 1.3,
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // 하단 작은 설명 글귀
-          const Text(
+          Text(
             '어디에 얼마나 썼는지 투명하게\n더 나은 소비 습관을 만들어보세요',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.normal,
-              color: AppColors.textSecondary,
+              color: context.appColors.textSecondary,
               height: 1.5,
             ),
           ),
@@ -140,7 +141,7 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
             totalPage: 5,
           ),
 
-          const Spacer(),
+          Spacer(),
         ],
       ),
     );
@@ -149,18 +150,22 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
 
 class RingChartPainter extends CustomPainter {
   final double progress;
+  final Color backgroundColor;
 
-  RingChartPainter({required this.progress});
+  RingChartPainter({
+    required this.progress,
+    required this.backgroundColor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
-    const strokeWidth = 20.0;
+    final strokeWidth = 20.0;
 
     // 배경 링 (회색)
     final bgPaint = Paint()
-      ..color = AppColors.gray200
+      ..color = backgroundColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;

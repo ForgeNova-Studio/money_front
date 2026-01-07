@@ -50,9 +50,9 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('이메일을 입력해주세요.'),
-            backgroundColor: AppColors.warning,
+            backgroundColor: context.appColors.warning,
           ),
         );
       return;
@@ -68,7 +68,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
-            const SnackBar(content: Text('인증번호가 전송되었습니다.')),
+            SnackBar(content: Text('인증번호가 전송되었습니다.')),
           );
       }
     } catch (e) {
@@ -82,9 +82,9 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
     if (_verificationCodeController.text.isEmpty) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(const SnackBar(
+        ..showSnackBar(SnackBar(
           content: Text('인증번호를 입력해주세요.'),
-          backgroundColor: AppColors.warning,
+          backgroundColor: context.appColors.warning,
         ));
 
       return;
@@ -100,7 +100,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
-            const SnackBar(content: Text('인증번호가 확인되었습니다.')),
+            SnackBar(content: Text('인증번호가 확인되었습니다.')),
           );
       }
     } catch (e) {
@@ -114,9 +114,9 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('인증번호를 입력해주세요.'),
-            backgroundColor: AppColors.warning,
+            backgroundColor: context.appColors.warning,
           ),
         );
       return;
@@ -149,7 +149,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
             ),
           );
         // 에러 메시지 표시 후 초기화
-        Future.delayed(const Duration(milliseconds: 100), () {
+        Future.delayed(Duration(milliseconds: 100), () {
           if (mounted) {
             ref.read(authViewModelProvider.notifier).clearError();
           }
@@ -160,12 +160,12 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: AppColors.backgroundWhite,
+        backgroundColor: context.appColors.backgroundWhite,
         appBar: AppBar(
-          backgroundColor: AppColors.backgroundWhite,
+          backgroundColor: context.appColors.backgroundWhite,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            icon: Icon(Icons.arrow_back, color: context.appColors.textPrimary),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
@@ -176,7 +176,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 24),
-                _buildTitle(),
+                _buildTitle(context),
                 const SizedBox(height: 40),
 
                 // 이메일 입력 필드
@@ -191,7 +191,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                         enabled: !formState.isVerificationCodeSent,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     SizedBox(
                       height: 56,
                       child: ElevatedButton(
@@ -200,9 +200,9 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                             ? null
                             : _handleSendVerificationCode,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryPink,
-                          foregroundColor: AppColors.textWhite,
-                          disabledBackgroundColor: AppColors.gray300,
+                          backgroundColor: context.appColors.primaryPink,
+                          foregroundColor: context.appColors.textWhite,
+                          disabledBackgroundColor: context.appColors.gray300,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -236,7 +236,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                           enabled: !formState.isEmailVerified,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       SizedBox(
                         height: 56,
                         child: ElevatedButton(
@@ -245,9 +245,9 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                               ? null
                               : _handleVerifyCode,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.textPrimary,
-                            foregroundColor: AppColors.textWhite,
-                            disabledBackgroundColor: AppColors.gray300,
+                            backgroundColor: context.appColors.textPrimary,
+                            foregroundColor: context.appColors.textWhite,
+                            disabledBackgroundColor: context.appColors.gray300,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -256,7 +256,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                           ),
                           child: Text(
                             formState.isEmailVerified ? '인증완료' : '인증확인',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
@@ -265,22 +265,22 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   // 인증번호 유효 시간 안내
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(left: 4),
                     child: Text(
                       '※ 인증번호는 10분간 유효합니다.',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: context.appColors.textSecondary,
                         height: 1.4,
                       ),
                     ),
                   ),
                 ],
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
                   height: 56,
@@ -289,9 +289,9 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                         ? _handleContinue
                         : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryPink,
-                      foregroundColor: AppColors.textWhite,
-                      disabledBackgroundColor: AppColors.primaryPinkPale,
+                      backgroundColor: context.appColors.primaryPink,
+                      foregroundColor: context.appColors.textWhite,
+                      disabledBackgroundColor: context.appColors.primaryPinkPale,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -315,8 +315,8 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
   }
 }
 
-Widget _buildTitle() {
-  return const Column(
+Widget _buildTitle(BuildContext context) {
+  return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
@@ -324,7 +324,7 @@ Widget _buildTitle() {
         style: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.bold,
-          color: AppColors.textPrimary,
+          color: context.appColors.textPrimary,
           height: 1.3,
         ),
       ),
@@ -333,7 +333,7 @@ Widget _buildTitle() {
         '가입하신 이메일을 입력하고\n인증번호를 확인해주세요.',
         style: TextStyle(
           fontSize: 16,
-          color: AppColors.textSecondary,
+          color: context.appColors.textSecondary,
           height: 1.5,
         ),
       ),

@@ -35,16 +35,16 @@ class _CoupleInviteScreenState extends State<CoupleInviteScreen> {
 
     if (mounted && coupleProvider.status == CoupleStatus.success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('초대 코드가 생성되었습니다'),
-          backgroundColor: AppColors.success,
+          backgroundColor: context.appColors.success,
         ),
       );
     } else if (mounted && coupleProvider.status == CoupleStatus.error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(coupleProvider.errorMessage ?? '초대 코드 생성에 실패했습니다'),
-          backgroundColor: AppColors.error,
+          backgroundColor: context.appColors.error,
         ),
       );
     }
@@ -94,10 +94,10 @@ MoneyFlow 앱에서 위 초대 코드를 입력하여 커플 연동을 완료하
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
-        title: const Text('커플 초대'),
-        backgroundColor: AppColors.background,
+        title: Text('커플 초대'),
+        backgroundColor: context.appColors.background,
         elevation: 0,
       ),
       body: SafeArea(
@@ -113,26 +113,26 @@ MoneyFlow 앱에서 위 초대 코드를 입력하여 커플 연동을 완료하
             }
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                   // 아이콘
                   Container(
                     width: 120,
                     height: 120,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
+                      color: context.appColors.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.favorite,
                       size: 60,
-                      color: AppColors.primary,
+                      color: context.appColors.primary,
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
 
                   // 설명 텍스트
                   Text(
@@ -142,11 +142,11 @@ MoneyFlow 앱에서 위 초대 코드를 입력하여 커플 연동을 완료하
                         ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   Text(
                     '초대 코드를 생성하여 파트너에게 공유하세요.\n파트너가 코드를 입력하면 커플 연동이 완료됩니다.',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textSecondary,
+                          color: context.appColors.textSecondary,
                         ),
                     textAlign: TextAlign.center,
                   ),
@@ -212,16 +212,16 @@ MoneyFlow 앱에서 위 초대 코드를 입력하여 커플 연동을 완료하
     final isExpired = expiresAt.isBefore(DateTime.now());
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: isExpired
-            ? AppColors.error.withValues(alpha: 0.1)
-            : AppColors.surface,
+            ? context.appColors.error.withValues(alpha: 0.1)
+            : context.appColors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isExpired
-              ? AppColors.error
-              : AppColors.primary.withValues(alpha: 0.3),
+              ? context.appColors.error
+              : context.appColors.primary.withValues(alpha: 0.3),
           width: 2,
         ),
       ),
@@ -230,33 +230,33 @@ MoneyFlow 앱에서 위 초대 코드를 입력하여 커플 연동을 완료하
           Text(
             '초대 코드',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
+                  color: context.appColors.textSecondary,
                 ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           // 초대 코드 (크고 굵게)
           Text(
             code,
             style: Theme.of(context).textTheme.displaySmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   letterSpacing: 4,
-                  color: isExpired ? AppColors.error : AppColors.primary,
+                  color: isExpired ? context.appColors.error : context.appColors.primary,
                 ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           // 만료 시간
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: isExpired
-                  ? AppColors.error.withValues(alpha: 0.1)
-                  : AppColors.primary.withValues(alpha: 0.1),
+                  ? context.appColors.error.withValues(alpha: 0.1)
+                  : context.appColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               _formatExpiryTime(expiresAt),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: isExpired ? AppColors.error : AppColors.primary,
+                    color: isExpired ? context.appColors.error : context.appColors.primary,
                     fontWeight: FontWeight.w600,
                   ),
             ),
@@ -279,10 +279,10 @@ MoneyFlow 앱에서 위 초대 코드를 입력하여 커플 연동을 완료하
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: isExpired ? null : () => _shareInviteCode(code),
-                  icon: const Icon(Icons.share, size: 20),
-                  label: const Text('공유'),
+                  icon: Icon(Icons.share, size: 20),
+                  label: Text('공유'),
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
               ),
@@ -295,9 +295,9 @@ MoneyFlow 앱에서 위 초대 코드를 입력하여 커플 연동을 완료하
 
   Widget _buildInfoCard() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.05),
+        color: context.appColors.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -308,19 +308,19 @@ MoneyFlow 앱에서 위 초대 코드를 입력하여 커플 연동을 완료하
               Icon(
                 Icons.info_outline,
                 size: 20,
-                color: AppColors.primary,
+                color: context.appColors.primary,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 '안내 사항',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
+                      color: context.appColors.primary,
                     ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _buildInfoItem('초대 코드는 7일간 유효합니다'),
           _buildInfoItem('한 번에 한 명의 파트너만 연동 가능합니다'),
           _buildInfoItem('파트너가 코드를 입력하면 자동으로 연동됩니다'),
@@ -332,21 +332,21 @@ MoneyFlow 앱에서 위 초대 코드를 입력하여 커플 연동을 완료하
 
   Widget _buildInfoItem(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             '• ',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
+                  color: context.appColors.textSecondary,
                 ),
           ),
           Expanded(
             child: Text(
               text,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.appColors.textSecondary,
                   ),
             ),
           ),
@@ -358,7 +358,7 @@ MoneyFlow 앱에서 위 초대 코드를 입력하여 커플 연동을 완료하
   Widget _buildAlreadyLinkedView(String partnerNickname) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -366,27 +366,27 @@ MoneyFlow 앱에서 위 초대 코드를 입력하여 커플 연동을 완료하
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: AppColors.success.withValues(alpha: 0.1),
+                color: context.appColors.success.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.check_circle,
                 size: 60,
-                color: AppColors.success,
+                color: context.appColors.success,
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             Text(
               '커플 연동 완료',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               '$partnerNickname님과 이미 연동되어 있습니다',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.appColors.textSecondary,
                   ),
               textAlign: TextAlign.center,
             ),

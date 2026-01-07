@@ -70,7 +70,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: AppColors.gray400,
+                            color: context.appColors.gray400,
                             width: 2,
                           ),
                           boxShadow: [
@@ -81,10 +81,10 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                             ),
                           ],
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Icon(
                             Icons.person,
-                            color: AppColors.gray400,
+                            color: context.appColors.gray400,
                             size: 40,
                           ),
                         ),
@@ -100,7 +100,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: AppColors.gray400,
+                            color: context.appColors.gray400,
                             width: 2,
                           ),
                           boxShadow: [
@@ -111,10 +111,10 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                             ),
                           ],
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Icon(
                             Icons.person_outline,
-                            color: AppColors.gray400,
+                            color: context.appColors.gray400,
                             size: 40,
                           ),
                         ),
@@ -127,11 +127,11 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: AppColors.primaryPink,
+                          color: context.appColors.primaryPink,
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primaryPink.withOpacity(0.4),
+                              color: context.appColors.primaryPink.withOpacity(0.4),
                               blurRadius: 10,
                               spreadRadius: 2,
                             ),
@@ -150,30 +150,30 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
             ),
           ),
 
-          const SizedBox(height: 40),
+          SizedBox(height: 40),
 
           // 중단 큰 제목
-          const Text(
+          Text(
             '실시간 공유\n언제 어디서나 투명하게',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: context.appColors.textPrimary,
               height: 1.3,
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // 하단 작은 설명 글귀
-          const Text(
+          Text(
             '서로의 금융 생활을 실시간으로 확인하고\n더 투명한 관계를 만들어보세요',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.normal,
-              color: AppColors.textSecondary,
+              color: context.appColors.textSecondary,
               height: 1.5,
             ),
           ),

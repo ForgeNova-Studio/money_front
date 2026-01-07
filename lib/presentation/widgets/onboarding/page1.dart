@@ -77,14 +77,14 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                       child: Container(
                         width: 100,
                         height: 100,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              AppColors.primaryPinkDark,
-                              AppColors.primaryPink,
+                              context.appColors.primaryPinkDark,
+                              context.appColors.primaryPink,
                             ],
                           ),
                         ),
@@ -99,14 +99,14 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                       child: Container(
                         width: 100,
                         height: 100,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              AppColors.primaryPink,
-                              AppColors.primaryPinkLight,
+                              context.appColors.primaryPink,
+                              context.appColors.primaryPinkLight,
                             ],
                           ),
                         ),
@@ -118,30 +118,30 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
             ),
           ),
 
-          const SizedBox(height: 40),
+          SizedBox(height: 40),
 
           // 중단 큰 제목
-          const Text(
+          Text(
             '함께라서 더 쉬운\n돈 관리',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: context.appColors.textPrimary,
               height: 1.3,
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // 하단 작은 설명 글귀
-          const Text(
+          Text(
             '부부와 커플을 위한 스마트 가계부\n함께 기록하고, 함께 관리하세요',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.normal,
-              color: AppColors.textSecondary,
+              color: context.appColors.textSecondary,
               height: 1.5,
             ),
           ),
