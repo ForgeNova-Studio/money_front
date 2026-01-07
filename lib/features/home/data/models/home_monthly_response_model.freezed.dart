@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$HomeTransactionModel {
-  int get id;
+  String get id; // UUID String (예: "123e4567-e89b-12d3-a456-426614174000")
   String get type; // "INCOME" or "EXPENSE"
   int get amount;
   String get title;
@@ -64,7 +64,7 @@ abstract mixin class $HomeTransactionModelCopyWith<$Res> {
       _$HomeTransactionModelCopyWithImpl;
   @useResult
   $Res call(
-      {int id,
+      {String id,
       String type,
       int amount,
       String title,
@@ -96,7 +96,7 @@ class _$HomeTransactionModelCopyWithImpl<$Res>
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
-              as int,
+              as String,
       type: null == type
           ? _self.type
           : type // ignore: cast_nullable_to_non_nullable
@@ -212,7 +212,7 @@ extension HomeTransactionModelPatterns on HomeTransactionModel {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(int id, String type, int amount, String title,
+    TResult Function(String id, String type, int amount, String title,
             String category, String time)?
         $default, {
     required TResult orElse(),
@@ -242,7 +242,7 @@ extension HomeTransactionModelPatterns on HomeTransactionModel {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(int id, String type, int amount, String title,
+    TResult Function(String id, String type, int amount, String title,
             String category, String time)
         $default,
   ) {
@@ -268,7 +268,7 @@ extension HomeTransactionModelPatterns on HomeTransactionModel {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(int id, String type, int amount, String title,
+    TResult? Function(String id, String type, int amount, String title,
             String category, String time)?
         $default,
   ) {
@@ -298,7 +298,8 @@ class _HomeTransactionModel extends HomeTransactionModel {
       _$HomeTransactionModelFromJson(json);
 
   @override
-  final int id;
+  final String id;
+// UUID String (예: "123e4567-e89b-12d3-a456-426614174000")
   @override
   final String type;
 // "INCOME" or "EXPENSE"
@@ -361,7 +362,7 @@ abstract mixin class _$HomeTransactionModelCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int id,
+      {String id,
       String type,
       int amount,
       String title,
@@ -393,7 +394,7 @@ class __$HomeTransactionModelCopyWithImpl<$Res>
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
-              as int,
+              as String,
       type: null == type
           ? _self.type
           : type // ignore: cast_nullable_to_non_nullable

@@ -9,7 +9,7 @@ part of 'home_monthly_response_model.dart';
 _HomeTransactionModel _$HomeTransactionModelFromJson(
         Map<String, dynamic> json) =>
     _HomeTransactionModel(
-      id: (json['id'] as num).toInt(),
+      id: json['id'] as String,
       type: json['type'] as String,
       amount: (json['amount'] as num).toInt(),
       title: json['title'] as String,

@@ -10,7 +10,7 @@ sealed class HomeTransactionModel with _$HomeTransactionModel {
   const HomeTransactionModel._();
 
   const factory HomeTransactionModel({
-    required int id,
+    required String id,   // UUID String (예: "123e4567-e89b-12d3-a456-426614174000")
     required String type, // "INCOME" or "EXPENSE"
     required int amount,
     required String title,
@@ -35,7 +35,7 @@ sealed class HomeTransactionModel with _$HomeTransactionModel {
     }
 
     return TransactionEntity(
-      id: id.toString(),
+      id: id, // 이미 String이므로 toString() 불필요
       amount: amount.toDouble(),
       date: dateTime,
       title: title,
