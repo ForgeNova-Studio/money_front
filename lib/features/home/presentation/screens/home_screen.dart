@@ -30,9 +30,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(homeViewModelProvider.notifier)
-          .fetchMonthlyData(DateTime.now());
+      ref.read(homeViewModelProvider.notifier).fetchMonthlyData(DateTime.now());
     });
   }
 
@@ -356,10 +354,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildFloatingActionButton(DateTime selectedDate) {
-    return FloatingActionButton(
-      onPressed: () => _showAddTransactionModal(context, selectedDate),
-      backgroundColor: context.appColors.primary,
-      child: const Icon(Icons.add, color: Colors.white),
+    return SizedBox(
+      width: 80,
+      height: 35,
+      child: FloatingActionButton(
+        onPressed: () => _showAddTransactionModal(context, selectedDate),
+        backgroundColor: context.appColors.primary,
+        foregroundColor: context.appColors.textWhite,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
