@@ -60,8 +60,8 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
       // 애니메이션 설정
       pageAnimationDuration: const Duration(milliseconds: 1),
-      formatAnimationDuration: const Duration(milliseconds: 200),
-      formatAnimationCurve: Curves.easeInOut,
+      formatAnimationDuration: const Duration(milliseconds: 420),
+      formatAnimationCurve: Curves.easeInOutCubic,
 
       // 세로 스와이프로 포맷 변경 방지 (좌우 스와이프로 월 이동만 허용)
       availableGestures: AvailableGestures.horizontalSwipe,
