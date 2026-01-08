@@ -334,7 +334,7 @@ AuthResult Entity 생성
   }
   ↓
 AuthState 업데이트
-  ↓ (isAuthenticated = true, user = User(...))
+  ↓ (authenticated 상태, user = User(...))
 UI 업데이트: 홈 화면으로 자동 이동
 ```
 
@@ -352,8 +352,7 @@ UI 업데이트: 홈 화면으로 자동 이동
 3. 이후 앱 재시작 시 자동 로그인에 사용
 
 **상태 변화:**
-- `AuthState.isAuthenticated = true`
-- `AuthState.user = User(...)`
+- `AuthState = AuthState.authenticated(user: User(...))`
 - `AuthState.isLoading = false`
 
 **코드 위치:**
@@ -441,9 +440,10 @@ Navigator.of(context).pushReplacementNamed('/home')
 #### AuthState (`auth_state.dart`)
 인증 상태를 나타내는 Freezed State입니다.
 
-**상태 필드:**
-- `isAuthenticated`: 인증 여부
-- `user`: 현재 로그인한 사용자 (User?)
+**상태 타입:**
+- `unauthenticated`: 비로그인 상태
+- `authenticated`: 로그인 상태 (User 보장)
+**공통 필드:**
 - `isLoading`: 로딩 상태
 - `errorMessage`: 에러 메시지 (String?)
 
@@ -592,8 +592,8 @@ MoneyFlow 앱은 **Riverpod**를 사용하여 상태 관리를 수행합니다.
 #### AuthViewModel
 - **역할:** 인증 관련 비즈니스 로직 처리
 - **관리 상태:**
-  - `isAuthenticated`: 로그인 여부
-  - `user`: 현재 로그인한 사용자
+  - `authenticated/unauthenticated` 상태
+  - `user`: 인증 상태일 때 사용자 정보
   - `isLoading`: API 호출 중인지 여부
   - `errorMessage`: 에러 메시지
 - **사용처:** 로그인, 회원가입, 로그아웃, 소셜 로그인
@@ -632,7 +632,7 @@ UseCase에서 예외 전파
   ↓
 ViewModel에서 catch
   ↓
-state = state.copyWith(isLoading: false, errorMessage: e.message)
+state = _setErrorMessage(e.message)
   ↓
 UI에서 ref.listen으로 감지
   ↓

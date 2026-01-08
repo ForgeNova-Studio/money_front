@@ -15,8 +15,6 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AuthState {
   bool get isLoading;
-  bool get isAuthenticated;
-  User? get user;
   String? get errorMessage;
 
   /// Create a copy of AuthState
@@ -33,20 +31,16 @@ mixin _$AuthState {
             other is AuthState &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
-            (identical(other.isAuthenticated, isAuthenticated) ||
-                other.isAuthenticated == isAuthenticated) &&
-            (identical(other.user, user) || other.user == user) &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, isLoading, isAuthenticated, user, errorMessage);
+  int get hashCode => Object.hash(runtimeType, isLoading, errorMessage);
 
   @override
   String toString() {
-    return 'AuthState(isLoading: $isLoading, isAuthenticated: $isAuthenticated, user: $user, errorMessage: $errorMessage)';
+    return 'AuthState(isLoading: $isLoading, errorMessage: $errorMessage)';
   }
 }
 
@@ -55,8 +49,7 @@ abstract mixin class $AuthStateCopyWith<$Res> {
   factory $AuthStateCopyWith(AuthState value, $Res Function(AuthState) _then) =
       _$AuthStateCopyWithImpl;
   @useResult
-  $Res call(
-      {bool isLoading, bool isAuthenticated, User? user, String? errorMessage});
+  $Res call({bool isLoading, String? errorMessage});
 }
 
 /// @nodoc
@@ -72,8 +65,6 @@ class _$AuthStateCopyWithImpl<$Res> implements $AuthStateCopyWith<$Res> {
   @override
   $Res call({
     Object? isLoading = null,
-    Object? isAuthenticated = null,
-    Object? user = freezed,
     Object? errorMessage = freezed,
   }) {
     return _then(_self.copyWith(
@@ -81,14 +72,6 @@ class _$AuthStateCopyWithImpl<$Res> implements $AuthStateCopyWith<$Res> {
           ? _self.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
-      isAuthenticated: null == isAuthenticated
-          ? _self.isAuthenticated
-          : isAuthenticated // ignore: cast_nullable_to_non_nullable
-              as bool,
-      user: freezed == user
-          ? _self.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as User?,
       errorMessage: freezed == errorMessage
           ? _self.errorMessage
           : errorMessage // ignore: cast_nullable_to_non_nullable
@@ -112,14 +95,17 @@ extension AuthStatePatterns on AuthState {
   /// ```
 
   @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(_AuthState value)? $default, {
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(AuthUnauthenticated value)? unauthenticated,
+    TResult Function(AuthAuthenticated value)? authenticated,
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
-      case _AuthState() when $default != null:
-        return $default(_that);
+      case AuthUnauthenticated() when unauthenticated != null:
+        return unauthenticated(_that);
+      case AuthAuthenticated() when authenticated != null:
+        return authenticated(_that);
       case _:
         return orElse();
     }
@@ -139,13 +125,16 @@ extension AuthStatePatterns on AuthState {
   /// ```
 
   @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(_AuthState value) $default,
-  ) {
+  TResult map<TResult extends Object?>({
+    required TResult Function(AuthUnauthenticated value) unauthenticated,
+    required TResult Function(AuthAuthenticated value) authenticated,
+  }) {
     final _that = this;
     switch (_that) {
-      case _AuthState():
-        return $default(_that);
+      case AuthUnauthenticated():
+        return unauthenticated(_that);
+      case AuthAuthenticated():
+        return authenticated(_that);
     }
   }
 
@@ -162,13 +151,16 @@ extension AuthStatePatterns on AuthState {
   /// ```
 
   @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(_AuthState value)? $default,
-  ) {
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(AuthUnauthenticated value)? unauthenticated,
+    TResult? Function(AuthAuthenticated value)? authenticated,
+  }) {
     final _that = this;
     switch (_that) {
-      case _AuthState() when $default != null:
-        return $default(_that);
+      case AuthUnauthenticated() when unauthenticated != null:
+        return unauthenticated(_that);
+      case AuthAuthenticated() when authenticated != null:
+        return authenticated(_that);
       case _:
         return null;
     }
@@ -187,17 +179,18 @@ extension AuthStatePatterns on AuthState {
   /// ```
 
   @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function(bool isLoading, bool isAuthenticated, User? user,
-            String? errorMessage)?
-        $default, {
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(bool isLoading, String? errorMessage)? unauthenticated,
+    TResult Function(User user, bool isLoading, String? errorMessage)?
+        authenticated,
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
-      case _AuthState() when $default != null:
-        return $default(_that.isLoading, _that.isAuthenticated, _that.user,
-            _that.errorMessage);
+      case AuthUnauthenticated() when unauthenticated != null:
+        return unauthenticated(_that.isLoading, _that.errorMessage);
+      case AuthAuthenticated() when authenticated != null:
+        return authenticated(_that.user, _that.isLoading, _that.errorMessage);
       case _:
         return orElse();
     }
@@ -217,16 +210,18 @@ extension AuthStatePatterns on AuthState {
   /// ```
 
   @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function(bool isLoading, bool isAuthenticated, User? user,
-            String? errorMessage)
-        $default,
-  ) {
+  TResult when<TResult extends Object?>({
+    required TResult Function(bool isLoading, String? errorMessage)
+        unauthenticated,
+    required TResult Function(User user, bool isLoading, String? errorMessage)
+        authenticated,
+  }) {
     final _that = this;
     switch (_that) {
-      case _AuthState():
-        return $default(_that.isLoading, _that.isAuthenticated, _that.user,
-            _that.errorMessage);
+      case AuthUnauthenticated():
+        return unauthenticated(_that.isLoading, _that.errorMessage);
+      case AuthAuthenticated():
+        return authenticated(_that.user, _that.isLoading, _that.errorMessage);
     }
   }
 
@@ -243,16 +238,17 @@ extension AuthStatePatterns on AuthState {
   /// ```
 
   @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(bool isLoading, bool isAuthenticated, User? user,
-            String? errorMessage)?
-        $default,
-  ) {
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(bool isLoading, String? errorMessage)? unauthenticated,
+    TResult? Function(User user, bool isLoading, String? errorMessage)?
+        authenticated,
+  }) {
     final _that = this;
     switch (_that) {
-      case _AuthState() when $default != null:
-        return $default(_that.isLoading, _that.isAuthenticated, _that.user,
-            _that.errorMessage);
+      case AuthUnauthenticated() when unauthenticated != null:
+        return unauthenticated(_that.isLoading, _that.errorMessage);
+      case AuthAuthenticated() when authenticated != null:
+        return authenticated(_that.user, _that.isLoading, _that.errorMessage);
       case _:
         return null;
     }
@@ -261,22 +257,13 @@ extension AuthStatePatterns on AuthState {
 
 /// @nodoc
 
-class _AuthState extends AuthState {
-  const _AuthState(
-      {this.isLoading = false,
-      this.isAuthenticated = false,
-      this.user,
-      this.errorMessage})
+class AuthUnauthenticated extends AuthState {
+  const AuthUnauthenticated({this.isLoading = false, this.errorMessage})
       : super._();
 
   @override
   @JsonKey()
   final bool isLoading;
-  @override
-  @JsonKey()
-  final bool isAuthenticated;
-  @override
-  final User? user;
   @override
   final String? errorMessage;
 
@@ -285,51 +272,47 @@ class _AuthState extends AuthState {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  _$AuthStateCopyWith<_AuthState> get copyWith =>
-      __$AuthStateCopyWithImpl<_AuthState>(this, _$identity);
+  $AuthUnauthenticatedCopyWith<AuthUnauthenticated> get copyWith =>
+      _$AuthUnauthenticatedCopyWithImpl<AuthUnauthenticated>(this, _$identity);
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _AuthState &&
+            other is AuthUnauthenticated &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
-            (identical(other.isAuthenticated, isAuthenticated) ||
-                other.isAuthenticated == isAuthenticated) &&
-            (identical(other.user, user) || other.user == user) &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, isLoading, isAuthenticated, user, errorMessage);
+  int get hashCode => Object.hash(runtimeType, isLoading, errorMessage);
 
   @override
   String toString() {
-    return 'AuthState(isLoading: $isLoading, isAuthenticated: $isAuthenticated, user: $user, errorMessage: $errorMessage)';
+    return 'AuthState.unauthenticated(isLoading: $isLoading, errorMessage: $errorMessage)';
   }
 }
 
 /// @nodoc
-abstract mixin class _$AuthStateCopyWith<$Res>
+abstract mixin class $AuthUnauthenticatedCopyWith<$Res>
     implements $AuthStateCopyWith<$Res> {
-  factory _$AuthStateCopyWith(
-          _AuthState value, $Res Function(_AuthState) _then) =
-      __$AuthStateCopyWithImpl;
+  factory $AuthUnauthenticatedCopyWith(
+          AuthUnauthenticated value, $Res Function(AuthUnauthenticated) _then) =
+      _$AuthUnauthenticatedCopyWithImpl;
   @override
   @useResult
-  $Res call(
-      {bool isLoading, bool isAuthenticated, User? user, String? errorMessage});
+  $Res call({bool isLoading, String? errorMessage});
 }
 
 /// @nodoc
-class __$AuthStateCopyWithImpl<$Res> implements _$AuthStateCopyWith<$Res> {
-  __$AuthStateCopyWithImpl(this._self, this._then);
+class _$AuthUnauthenticatedCopyWithImpl<$Res>
+    implements $AuthUnauthenticatedCopyWith<$Res> {
+  _$AuthUnauthenticatedCopyWithImpl(this._self, this._then);
 
-  final _AuthState _self;
-  final $Res Function(_AuthState) _then;
+  final AuthUnauthenticated _self;
+  final $Res Function(AuthUnauthenticated) _then;
 
   /// Create a copy of AuthState
   /// with the given fields replaced by the non-null parameter values.
@@ -337,23 +320,101 @@ class __$AuthStateCopyWithImpl<$Res> implements _$AuthStateCopyWith<$Res> {
   @pragma('vm:prefer-inline')
   $Res call({
     Object? isLoading = null,
-    Object? isAuthenticated = null,
-    Object? user = freezed,
     Object? errorMessage = freezed,
   }) {
-    return _then(_AuthState(
+    return _then(AuthUnauthenticated(
       isLoading: null == isLoading
           ? _self.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
-      isAuthenticated: null == isAuthenticated
-          ? _self.isAuthenticated
-          : isAuthenticated // ignore: cast_nullable_to_non_nullable
-              as bool,
-      user: freezed == user
+      errorMessage: freezed == errorMessage
+          ? _self.errorMessage
+          : errorMessage // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+
+class AuthAuthenticated extends AuthState {
+  const AuthAuthenticated(
+      {required this.user, this.isLoading = false, this.errorMessage})
+      : super._();
+
+  final User user;
+  @override
+  @JsonKey()
+  final bool isLoading;
+  @override
+  final String? errorMessage;
+
+  /// Create a copy of AuthState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $AuthAuthenticatedCopyWith<AuthAuthenticated> get copyWith =>
+      _$AuthAuthenticatedCopyWithImpl<AuthAuthenticated>(this, _$identity);
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is AuthAuthenticated &&
+            (identical(other.user, user) || other.user == user) &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading) &&
+            (identical(other.errorMessage, errorMessage) ||
+                other.errorMessage == errorMessage));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, user, isLoading, errorMessage);
+
+  @override
+  String toString() {
+    return 'AuthState.authenticated(user: $user, isLoading: $isLoading, errorMessage: $errorMessage)';
+  }
+}
+
+/// @nodoc
+abstract mixin class $AuthAuthenticatedCopyWith<$Res>
+    implements $AuthStateCopyWith<$Res> {
+  factory $AuthAuthenticatedCopyWith(
+          AuthAuthenticated value, $Res Function(AuthAuthenticated) _then) =
+      _$AuthAuthenticatedCopyWithImpl;
+  @override
+  @useResult
+  $Res call({User user, bool isLoading, String? errorMessage});
+}
+
+/// @nodoc
+class _$AuthAuthenticatedCopyWithImpl<$Res>
+    implements $AuthAuthenticatedCopyWith<$Res> {
+  _$AuthAuthenticatedCopyWithImpl(this._self, this._then);
+
+  final AuthAuthenticated _self;
+  final $Res Function(AuthAuthenticated) _then;
+
+  /// Create a copy of AuthState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? user = null,
+    Object? isLoading = null,
+    Object? errorMessage = freezed,
+  }) {
+    return _then(AuthAuthenticated(
+      user: null == user
           ? _self.user
           : user // ignore: cast_nullable_to_non_nullable
-              as User?,
+              as User,
+      isLoading: null == isLoading
+          ? _self.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
       errorMessage: freezed == errorMessage
           ? _self.errorMessage
           : errorMessage // ignore: cast_nullable_to_non_nullable

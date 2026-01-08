@@ -35,7 +35,7 @@ class AuthViewModel extends _$AuthViewModel {
     // 초기화 시 로딩 상태로 시작
     // Future.microtask를 사용하여 비동기 초기화 실행
     Future.microtask(_checkCurrentUser);
-    return const AuthState(isLoading: true);
+    return const AuthState.unauthenticated(isLoading: true);
   }
 
   /// 현재 사용자 정보 확인 (로컬 토큰 기반)
@@ -67,7 +67,7 @@ class AuthViewModel extends _$AuthViewModel {
         if (!ref.mounted) return; // Provider가 해제되었으면 작업 중단
 
         if (user != null) {
-          state = AuthState.authenticated(user.toEntity());
+          state = AuthState.authenticated(user: user.toEntity());
           if (kDebugMode) {
             debugPrint('[AuthViewModel] 인증된 상태로 변경됨');
           }
@@ -109,7 +109,7 @@ class AuthViewModel extends _$AuthViewModel {
     await _handleAuthRequest(() async {
       final useCase = ref.read(loginUseCaseProvider);
       final result = await useCase(email: email, password: password);
-      state = AuthState.authenticated(result.user);
+      state = AuthState.authenticated(user: result.user);
     }, loading: true, defaultErrorMessage: '로그인 중 오류가 발생했습니다');
   }
 
@@ -174,7 +174,7 @@ class AuthViewModel extends _$AuthViewModel {
         nickname: nickname,
         gender: gender,
       );
-      state = AuthState.authenticated(result.user);
+      state = AuthState.authenticated(user: result.user);
     },
         loading: true,
         rethrowError: true,
@@ -189,10 +189,7 @@ class AuthViewModel extends _$AuthViewModel {
 
       state = AuthState.unauthenticated();
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: '로그아웃 중 오류가 발생했습니다: $e',
-      );
+      state = _setErrorMessage('로그아웃 중 오류가 발생했습니다: $e');
       rethrow;
     }
   }
@@ -202,7 +199,7 @@ class AuthViewModel extends _$AuthViewModel {
     await _handleAuthRequest(() async {
       final useCase = ref.read(googleLoginUseCaseProvider);
       final result = await useCase();
-      state = AuthState.authenticated(result.user);
+      state = AuthState.authenticated(user: result.user);
     },
         loading: true,
         rethrowError: true,
@@ -214,7 +211,7 @@ class AuthViewModel extends _$AuthViewModel {
     await _handleAuthRequest(() async {
       final useCase = ref.read(appleLoginUseCaseProvider);
       final result = await useCase();
-      state = AuthState.authenticated(result.user);
+      state = AuthState.authenticated(user: result.user);
     },
         loading: true,
         rethrowError: true,
@@ -223,7 +220,7 @@ class AuthViewModel extends _$AuthViewModel {
 
   /// 에러 메시지 초기화
   void clearError() {
-    state = state.copyWith(errorMessage: null);
+    state = _clearError();
   }
 
   /// 강제로 unauthenticated 상태로 변경
@@ -239,7 +236,7 @@ class AuthViewModel extends _$AuthViewModel {
       final user = await useCase();
 
       if (user != null) {
-        state = state.copyWith(user: user, isAuthenticated: true);
+        state = AuthState.authenticated(user: user);
       } else {
         state = AuthState.unauthenticated();
       }
@@ -279,6 +276,39 @@ class AuthViewModel extends _$AuthViewModel {
         defaultErrorMessage: '비밀번호 재설정 중 오류가 발생했습니다');
   }
 
+  AuthState _setLoading(bool isLoading) {
+    return state.map(
+      authenticated: (current) => current.copyWith(
+        isLoading: isLoading,
+        errorMessage: null,
+      ),
+      unauthenticated: (current) => current.copyWith(
+        isLoading: isLoading,
+        errorMessage: null,
+      ),
+    );
+  }
+
+  AuthState _setErrorMessage(String message) {
+    return state.map(
+      authenticated: (current) => current.copyWith(
+        isLoading: false,
+        errorMessage: message,
+      ),
+      unauthenticated: (current) => current.copyWith(
+        isLoading: false,
+        errorMessage: message,
+      ),
+    );
+  }
+
+  AuthState _clearError() {
+    return state.map(
+      authenticated: (current) => current.copyWith(errorMessage: null),
+      unauthenticated: (current) => current.copyWith(errorMessage: null),
+    );
+  }
+
   /// 공통 에러 처리 헬퍼 메서드
   Future<T> _handleAuthRequest<T>(
     Future<T> Function() request, {
@@ -287,24 +317,21 @@ class AuthViewModel extends _$AuthViewModel {
     String defaultErrorMessage = '오류가 발생했습니다',
   }) async {
     if (loading) {
-      state = state.copyWith(isLoading: true, errorMessage: null);
+      state = _setLoading(true);
     }
     try {
       return await request();
     } on ValidationException catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.message);
+      state = _setErrorMessage(e.message);
       if (rethrowError) rethrow;
     } on NetworkException catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.message);
+      state = _setErrorMessage(e.message);
       if (rethrowError) rethrow;
     } on ServerException catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.message);
+      state = _setErrorMessage(e.message);
       if (rethrowError) rethrow;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: defaultErrorMessage,
-      );
+      state = _setErrorMessage(defaultErrorMessage);
       if (kDebugMode) {
         debugPrint('$defaultErrorMessage: $e');
       }
