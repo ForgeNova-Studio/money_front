@@ -26,7 +26,6 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -37,57 +36,21 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
   // ViewModel의 login 메서드 호출
   Future<void> _handleLogin() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      FocusManager.instance.primaryFocus?.unfocus();
-      await ref.read(authViewModelProvider.notifier).login(
-            email: _emailController.text,
-            password: _passwordController.text,
-          );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+    FocusManager.instance.primaryFocus?.unfocus();
+    await ref.read(authViewModelProvider.notifier).login(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
   }
 
   Future<void> _handleAppleLogin() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      FocusManager.instance.primaryFocus?.unfocus();
-      await ref.read(authViewModelProvider.notifier).loginWithApple();
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+    FocusManager.instance.primaryFocus?.unfocus();
+    await ref.read(authViewModelProvider.notifier).loginWithApple();
   }
 
   Future<void> _handleGoogleLogin() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      FocusManager.instance.primaryFocus?.unfocus();
-      await ref.read(authViewModelProvider.notifier).loginWithGoogle();
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+    FocusManager.instance.primaryFocus?.unfocus();
+    await ref.read(authViewModelProvider.notifier).loginWithGoogle();
   }
 
   // 비밀번호 찾기 화면으로 이동
@@ -102,6 +65,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authViewModelProvider);
     // ViewModel 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
       // 로그인 성공 시 홈 화면으로 이동
@@ -204,7 +168,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: _isLoading ? null : _handleLogin,
+                    onPressed: authState.isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: context.appColors.primaryPink,
                       foregroundColor: context.appColors.textWhite,
@@ -214,7 +178,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: _isLoading
+                    child: authState.isLoading
                         ? SizedBox(
                             width: 24,
                             height: 24,
@@ -250,7 +214,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                     color: context.appColors.textPrimary,
                     size: 24,
                   ),
-                  onPressed: _isLoading ? null : () => _handleAppleLogin(),
+                  onPressed: authState.isLoading ? null : () => _handleAppleLogin(),
                 ),
 
                 SizedBox(height: 16),
@@ -270,7 +234,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                       );
                     },
                   ),
-                  onPressed: _isLoading ? null : () => _handleGoogleLogin(),
+                  onPressed: authState.isLoading ? null : () => _handleGoogleLogin(),
                 ),
 
                 SizedBox(height: 32),
