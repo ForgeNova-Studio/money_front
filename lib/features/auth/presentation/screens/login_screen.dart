@@ -70,6 +70,10 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     final authState = ref.watch(authViewModelProvider);
     // ViewModel 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
+      // 다른 화면으로 이동할 때는 리스너를 건너뜀
+      if (!(ModalRoute.of(context)?.isCurrent ?? true)) {
+        return;
+      }
       // 로그인 성공 시 홈 화면으로 이동
       if (next.isAuthenticated && next.user != null) {
         // 명시적으로 홈 화면으로 이동 (redirect 로직도 백업으로 유지됨)
@@ -77,7 +81,8 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
       }
 
       // 에러 발생 시
-      if (next.errorMessage != null) {
+      if (next.errorMessage != null &&
+          next.errorMessage != previous?.errorMessage) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(

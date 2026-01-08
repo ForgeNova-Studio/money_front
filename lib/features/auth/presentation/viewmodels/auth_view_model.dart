@@ -35,7 +35,7 @@ class AuthViewModel extends _$AuthViewModel {
     // 초기화 시 로딩 상태로 시작
     // Future.microtask를 사용하여 비동기 초기화 실행
     Future.microtask(_checkCurrentUser);
-    return AuthState.loading();
+    return const AuthState(isLoading: true);
   }
 
   /// 현재 사용자 정보 확인 (로컬 토큰 기반)
@@ -189,7 +189,10 @@ class AuthViewModel extends _$AuthViewModel {
 
       state = AuthState.unauthenticated();
     } catch (e) {
-      state = AuthState.error('로그아웃 중 오류가 발생했습니다: $e');
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: '로그아웃 중 오류가 발생했습니다: $e',
+      );
       rethrow;
     }
   }
@@ -284,21 +287,24 @@ class AuthViewModel extends _$AuthViewModel {
     String defaultErrorMessage = '오류가 발생했습니다',
   }) async {
     if (loading) {
-      state = AuthState.loading();
+      state = state.copyWith(isLoading: true, errorMessage: null);
     }
     try {
       return await request();
     } on ValidationException catch (e) {
-      state = AuthState.error(e.message);
+      state = state.copyWith(isLoading: false, errorMessage: e.message);
       if (rethrowError) rethrow;
     } on NetworkException catch (e) {
-      state = AuthState.error(e.message);
+      state = state.copyWith(isLoading: false, errorMessage: e.message);
       if (rethrowError) rethrow;
     } on ServerException catch (e) {
-      state = AuthState.error(e.message);
+      state = state.copyWith(isLoading: false, errorMessage: e.message);
       if (rethrowError) rethrow;
     } catch (e) {
-      state = AuthState.error(defaultErrorMessage);
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: defaultErrorMessage,
+      );
       if (kDebugMode) {
         debugPrint('$defaultErrorMessage: $e');
       }

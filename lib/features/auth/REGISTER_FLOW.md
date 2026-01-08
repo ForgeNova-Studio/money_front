@@ -632,7 +632,7 @@ UseCase에서 예외 전파
   ↓
 ViewModel에서 catch
   ↓
-state = AuthState.error(e.message)
+state = state.copyWith(isLoading: false, errorMessage: e.message)
   ↓
 UI에서 ref.listen으로 감지
   ↓

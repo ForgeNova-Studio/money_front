@@ -16,7 +16,7 @@ part 'auth_state.freezed.dart';
 sealed class AuthState with _$AuthState {
   /// 기본 생성자가 아닌 생성자로 AuthState 인스턴스 생성할 때,
   /// @Default 어노테이션을 사용하여 필드의 기본값을 설정
-  /// 예) AuthState.error(e.message) 생성자로 AuthState 인스턴스 생성할 때,
+  /// 예) AuthState(errorMessage: e.message)로 인스턴스 생성할 때,
   /// errorMessage 필드만 명시적으로 전달하고,
   /// isLoading, isAuthenticated, user 필드는 @Default 어노테이션으로 자동으로 설정됨
 
@@ -33,9 +33,6 @@ sealed class AuthState with _$AuthState {
   factory AuthState.initial() => const AuthState();
 
   /// 로딩 상태
-  factory AuthState.loading() => const AuthState(isLoading: true);
-
-  /// factory 생성자로 AuthState 인스턴스 생성
   /// 인증 성공 상태
   factory AuthState.authenticated(User user) => AuthState(
         isAuthenticated: true,
@@ -47,11 +44,6 @@ sealed class AuthState with _$AuthState {
         isAuthenticated: false,
         user: null,
         errorMessage: errorMessage,
-      );
-
-  /// 에러 상태
-  factory AuthState.error(String message) => AuthState(
-        errorMessage: message,
       );
 
   /// factory 생성자로 AuthState 인스턴스 생성
