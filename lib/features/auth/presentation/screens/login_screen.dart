@@ -43,11 +43,13 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
         );
   }
 
+  // ViewModel의 loginWithApple 메서드 호출
   Future<void> _handleAppleLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
     await ref.read(authViewModelProvider.notifier).loginWithApple();
   }
 
+  // ViewModel의 loginWithGoogle 메서드 호출
   Future<void> _handleGoogleLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
     await ref.read(authViewModelProvider.notifier).loginWithGoogle();
@@ -94,7 +96,8 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     });
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(), // 키보드 닫기
+      onTap: () =>
+          FocusScope.of(context).unfocus(), // 키보드 닫기!! (홈 화면에서 오버플로우 발생 방지)
       child: Scaffold(
         backgroundColor: context.appColors.backgroundWhite,
         body: SafeArea(
@@ -168,16 +171,21 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
+                    // 로딩 중이면 버튼 비활성화
                     onPressed: authState.isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: context.appColors.primaryPink,
                       foregroundColor: context.appColors.textWhite,
-                      disabledBackgroundColor: context.appColors.primaryPinkPale,
+                      disabledBackgroundColor:
+                          context.appColors.primaryPinkPale,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
+                    // 로딩 상태 여부에 따라 위젯 분기
+                    // 로딩 중: 로딩 인디케이터 표시
+                    // 로딩 완료: 로그인 버튼 표시
                     child: authState.isLoading
                         ? SizedBox(
                             width: 24,
@@ -214,7 +222,8 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                     color: context.appColors.textPrimary,
                     size: 24,
                   ),
-                  onPressed: authState.isLoading ? null : () => _handleAppleLogin(),
+                  onPressed:
+                      authState.isLoading ? null : () => _handleAppleLogin(),
                 ),
 
                 SizedBox(height: 16),
@@ -234,7 +243,8 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                       );
                     },
                   ),
-                  onPressed: authState.isLoading ? null : () => _handleGoogleLogin(),
+                  onPressed:
+                      authState.isLoading ? null : () => _handleGoogleLogin(),
                 ),
 
                 SizedBox(height: 32),
