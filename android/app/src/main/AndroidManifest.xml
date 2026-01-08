@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:label="frontend"
+        android:label="모아모아"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
