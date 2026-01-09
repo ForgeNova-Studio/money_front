@@ -62,14 +62,14 @@ class TransactionModalHeader extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(
-                      color: context.appColors.primaryPinkLight,
+                      color: context.appColors.primaryLight,
                       width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Icon(
                     Icons.camera_alt_outlined,
-                    color: context.appColors.primaryPinkLight,
+                    color: context.appColors.primaryLight,
                     size: 24,
                   ),
                 ),

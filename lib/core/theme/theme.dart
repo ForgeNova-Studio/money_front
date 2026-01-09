@@ -16,7 +16,7 @@ ThemeData buildLightTheme() {
 
     // AppBar Theme
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.primaryPink,
+      backgroundColor: AppColors.primary,
       foregroundColor: AppColors.textWhite,
       elevation: 0,
       centerTitle: false,
@@ -35,21 +35,21 @@ ThemeData buildLightTheme() {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      shadowColor: AppColors.shadowPink,
+      shadowColor: AppColors.shadowAccent,
       margin: EdgeInsets.zero,
     ),
 
     // Button Themes
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryPink,
+        backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textWhite,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        shadowColor: AppColors.shadowPink,
+        shadowColor: AppColors.shadowAccent,
         textStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
@@ -59,7 +59,7 @@ ThemeData buildLightTheme() {
 
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: AppColors.primaryPink,
+        foregroundColor: AppColors.primary,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         textStyle: const TextStyle(
           fontSize: 15,
@@ -70,8 +70,8 @@ ThemeData buildLightTheme() {
 
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.primaryPink,
-        side: const BorderSide(color: AppColors.primaryPink, width: 1.5),
+        foregroundColor: AppColors.primary,
+        side: const BorderSide(color: AppColors.primary, width: 1.5),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -85,7 +85,7 @@ ThemeData buildLightTheme() {
 
     // FAB Theme
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.primaryPink,
+      backgroundColor: AppColors.primary,
       foregroundColor: AppColors.textWhite,
       elevation: 4,
       shape: CircleBorder(),
@@ -94,7 +94,7 @@ ThemeData buildLightTheme() {
     // Bottom Navigation Bar Theme
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: AppColors.backgroundWhite,
-      selectedItemColor: AppColors.primaryPink,
+      selectedItemColor: AppColors.primary,
       unselectedItemColor: AppColors.textTertiary,
       selectedLabelStyle: TextStyle(
         fontWeight: FontWeight.w600,
@@ -111,13 +111,13 @@ ThemeData buildLightTheme() {
     // Navigation Bar Theme (Material 3)
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: AppColors.backgroundWhite,
-      indicatorColor: AppColors.primaryPinkPale,
+      indicatorColor: AppColors.primaryPale,
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
           return const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: AppColors.primaryPink,
+            color: AppColors.primary,
           );
         }
         return const TextStyle(
@@ -129,7 +129,7 @@ ThemeData buildLightTheme() {
       iconTheme: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
           return const IconThemeData(
-            color: AppColors.primaryPink,
+            color: AppColors.primary,
             size: 24,
           );
         }
@@ -159,7 +159,7 @@ ThemeData buildLightTheme() {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(
-          color: AppColors.primaryPink,
+          color: AppColors.primary,
           width: 2,
         ),
       ),
@@ -177,8 +177,8 @@ ThemeData buildLightTheme() {
           width: 2,
         ),
       ),
-      prefixIconColor: AppColors.primaryPink,
-      suffixIconColor: AppColors.primaryPink,
+      prefixIconColor: AppColors.primary,
+      suffixIconColor: AppColors.primary,
       hintStyle: const TextStyle(
         color: AppColors.textTertiary,
         fontSize: 15,
@@ -191,8 +191,8 @@ ThemeData buildLightTheme() {
 
     // Chip Theme
     chipTheme: ChipThemeData(
-      backgroundColor: AppColors.primaryPinkPale,
-      selectedColor: AppColors.primaryPink,
+      backgroundColor: AppColors.primaryPale,
+      selectedColor: AppColors.primary,
       disabledColor: AppColors.gray100,
       labelStyle: const TextStyle(
         color: AppColors.textPrimary,
@@ -229,9 +229,9 @@ ThemeData buildLightTheme() {
 
     // Progress Indicator Theme
     progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: AppColors.primaryPink,
-      linearTrackColor: AppColors.primaryPinkPale,
-      circularTrackColor: AppColors.primaryPinkPale,
+      color: AppColors.primary,
+      linearTrackColor: AppColors.primaryPale,
+      circularTrackColor: AppColors.primaryPale,
     ),
 
     // Divider Theme

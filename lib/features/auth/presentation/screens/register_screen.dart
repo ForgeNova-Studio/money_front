@@ -260,12 +260,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           height: 56,
                           decoration: BoxDecoration(
                             color: formState.selectedGender == Gender.male
-                                ? context.appColors.primaryPink.withValues(alpha: 0.1)
+                                ? context.appColors.primary.withValues(alpha: 0.1)
                                 : context.appColors.gray100,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: formState.selectedGender == Gender.male
-                                  ? context.appColors.primaryPink
+                                  ? context.appColors.primary
                                   : Colors.transparent,
                               width: 1.5,
                             ),
@@ -277,7 +277,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: formState.selectedGender == Gender.male
-                                  ? context.appColors.primaryPink
+                                  ? context.appColors.primary
                                   : context.appColors.textTertiary,
                             ),
                           ),
@@ -296,12 +296,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           height: 56,
                           decoration: BoxDecoration(
                             color: formState.selectedGender == Gender.female
-                                ? context.appColors.primaryPink.withValues(alpha: 0.1)
+                                ? context.appColors.primary.withValues(alpha: 0.1)
                                 : context.appColors.gray100,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: formState.selectedGender == Gender.female
-                                  ? context.appColors.primaryPink
+                                  ? context.appColors.primary
                                   : Colors.transparent,
                               width: 1.5,
                             ),
@@ -313,7 +313,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: formState.selectedGender == Gender.female
-                                  ? context.appColors.primaryPink
+                                  ? context.appColors.primary
                                   : context.appColors.textTertiary,
                             ),
                           ),
@@ -348,7 +348,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 _handleSendVerificationCode();
                               },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: context.appColors.primaryPink,
+                          backgroundColor: context.appColors.primary,
                           foregroundColor: context.appColors.textWhite,
                           disabledBackgroundColor: context.appColors.gray300,
                           elevation: 0,
@@ -469,7 +469,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               .read(registerViewModelProvider.notifier)
                               .toggleTermsAgreed();
                         },
-                        activeColor: context.appColors.primaryPink,
+                        activeColor: context.appColors.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4),
                         ),
@@ -555,9 +555,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   child: ElevatedButton(
                     onPressed: authState.isLoading ? null : _handleSignUp,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: context.appColors.primaryPink,
+                      backgroundColor: context.appColors.primary,
                       foregroundColor: context.appColors.textWhite,
-                      disabledBackgroundColor: context.appColors.primaryPinkPale,
+                      disabledBackgroundColor: context.appColors.primaryPale,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),

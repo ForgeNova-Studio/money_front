@@ -27,7 +27,7 @@ class OnboardingBottomIndicator extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
             color: currentPage == index
-                ? context.appColors.primaryPink
+                ? context.appColors.primary
                 : context.appColors.gray200,
           ),
         ),

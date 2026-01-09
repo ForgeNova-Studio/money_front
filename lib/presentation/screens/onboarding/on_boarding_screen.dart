@@ -69,7 +69,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         builder: (context) => LoginScreen()));
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: context.appColors.primaryPink,
+                    backgroundColor: context.appColors.primary,
                     foregroundColor: context.appColors.textWhite,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),

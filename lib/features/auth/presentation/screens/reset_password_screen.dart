@@ -194,9 +194,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     onPressed:
                         authState.isLoading ? null : _handleResetPassword,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: context.appColors.primaryPink,
+                      backgroundColor: context.appColors.primary,
                       foregroundColor: context.appColors.textWhite,
-                      disabledBackgroundColor: context.appColors.primaryPinkPale,
+                      disabledBackgroundColor: context.appColors.primaryPale,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),

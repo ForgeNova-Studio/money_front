@@ -179,10 +179,10 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                     // 로딩 중이면 버튼 비활성화
                     onPressed: authState.isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: context.appColors.primaryPink,
+                      backgroundColor: context.appColors.primary,
                       foregroundColor: context.appColors.textWhite,
                       disabledBackgroundColor:
-                          context.appColors.primaryPinkPale,
+                          context.appColors.primaryPale,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -277,7 +277,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                           '회원가입',
                           style: TextStyle(
                             fontSize: 15,
-                            color: context.appColors.primaryPink,
+                            color: context.appColors.primary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),

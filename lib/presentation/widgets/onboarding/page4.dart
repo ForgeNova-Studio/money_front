@@ -127,11 +127,11 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: context.appColors.primaryPink,
+                          color: context.appColors.primary,
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: context.appColors.primaryPink.withOpacity(0.4),
+                              color: context.appColors.primary.withOpacity(0.4),
                               blurRadius: 10,
                               spreadRadius: 2,
                             ),

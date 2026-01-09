@@ -65,10 +65,10 @@ class _Page2State extends State<Page2> with SingleTickerProviderStateMixin {
                       width: 150,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: context.appColors.primaryPinkLight,
+                        color: context.appColors.primaryLight,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: context.appColors.primaryPink,
+                          color: context.appColors.primary,
                           width: 4,
                         ),
                       ),
@@ -76,7 +76,7 @@ class _Page2State extends State<Page2> with SingleTickerProviderStateMixin {
                         child: Icon(
                           Icons.savings_rounded,
                           size: 60,
-                          color: context.appColors.primaryPink,
+                          color: context.appColors.primary,
                         ),
                       ),
                     ),

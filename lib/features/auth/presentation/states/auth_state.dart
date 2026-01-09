@@ -39,11 +39,13 @@ sealed class AuthState with _$AuthState {
         orElse: () => null,
       );
 
+  @override
   bool get isLoading => map(
         authenticated: (state) => state.isLoading,
         unauthenticated: (state) => state.isLoading,
       );
 
+  @override
   String? get errorMessage => map(
         authenticated: (state) => state.errorMessage,
         unauthenticated: (state) => state.errorMessage,

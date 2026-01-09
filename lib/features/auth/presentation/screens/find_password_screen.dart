@@ -200,7 +200,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                             ? null
                             : _handleSendVerificationCode,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: context.appColors.primaryPink,
+                          backgroundColor: context.appColors.primary,
                           foregroundColor: context.appColors.textWhite,
                           disabledBackgroundColor: context.appColors.gray300,
                           elevation: 0,
@@ -289,9 +289,9 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                         ? _handleContinue
                         : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: context.appColors.primaryPink,
+                      backgroundColor: context.appColors.primary,
                       foregroundColor: context.appColors.textWhite,
-                      disabledBackgroundColor: context.appColors.primaryPinkPale,
+                      disabledBackgroundColor: context.appColors.primaryPale,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),

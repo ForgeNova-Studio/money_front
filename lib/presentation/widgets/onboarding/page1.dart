@@ -83,8 +83,8 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              context.appColors.primaryPinkDark,
-                              context.appColors.primaryPink,
+                              context.appColors.primaryDark,
+                              context.appColors.primary,
                             ],
                           ),
                         ),
@@ -105,8 +105,8 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              context.appColors.primaryPink,
-                              context.appColors.primaryPinkLight,
+                              context.appColors.primary,
+                              context.appColors.primaryLight,
                             ],
                           ),
                         ),

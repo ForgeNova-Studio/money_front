@@ -8,64 +8,64 @@ class AppConstants {
 }
 
 /// MoneyFlow App Color Constants
-/// 핑크 단색 (진한 톤) - #e88a9d → #f8bac8
+/// 브랜드 단색 (진한 톤) - #e88a9d → #f8bac8
 class AppColors {
   AppColors._();
 
   // Primary Colors - Butter Glow (Monochrome)
-  static const Color primaryPink = Color(0xFFf2d35e); // 메인 버터
-  static const Color primaryPinkDark = Color(0xFFcfa52b); // 진한 버터
-  static const Color primaryPinkLight = Color(0xFFffe8a3); // 밝은 버터
-  static const Color primaryPinkPale = Color(0xFFfff5d1); // 매우 밝은 버터
+  static const Color primary = Color(0xFFf2d35e); // 메인 버터
+  static const Color primaryDark = Color(0xFFcfa52b); // 진한 버터
+  static const Color primaryLight = Color(0xFFffe8a3); // 밝은 버터
+  static const Color primaryPale = Color(0xFFfff5d1); // 매우 밝은 버터
 
   // Secondary Colors - 보조 색상 (버터 계열)
-  static const Color secondaryPink = Color(0xFFf7dd83);
-  static const Color secondaryPinkDark = Color(0xFFcfa52b);
+  static const Color secondary = Color(0xFFf7dd83);
+  static const Color secondaryDark = Color(0xFFcfa52b);
 
   // Gradient Colors
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [primaryPinkDark, primaryPinkLight],
+    colors: [primaryDark, primaryLight],
   );
 
   static const LinearGradient primaryGradientReverse = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [primaryPinkLight, primaryPinkDark],
+    colors: [primaryLight, primaryDark],
   );
 
   static const LinearGradient softGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [primaryPink, primaryPinkLight],
+    colors: [primary, primaryLight],
   );
 
   static const LinearGradient deepGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [primaryPinkDark, primaryPink],
+    colors: [primaryDark, primary],
   );
 
   // Background Colors
   static const Color backgroundWhite = Color(0xFFFFFFFF);
   static const Color backgroundGray = Color(0xFFF8F9FA);
   static const Color backgroundLight = Color(0xFFFAFAFA);
-  static const Color backgroundPinkTint = Color(0xFFFFF9E8); // 버터 배경
+  static const Color backgroundAccentTint = Color(0xFFFFF9E8); // 버터 배경
 
   // Text Colors
   static const Color textPrimary = Color(0xFF333333);
   static const Color textSecondary = Color(0xFF666666);
   static const Color textTertiary = Color(0xFF999999);
   static const Color textWhite = Color(0xFFFFFFFF);
-  static const Color textPink = primaryPinkDark; // 버터 텍스트
+  static const Color textAccent = primaryDark; // 버터 텍스트
 
   // UI Element Colors
   static const Color divider = Color(0xFFF0F0F0);
   static const Color border = Color(0xFFEEEEEE);
-  static const Color borderPink = Color(0xFFffe8a3); // 버터 보더
+  static const Color borderAccent = Color(0xFFffe8a3); // 버터 보더
   static const Color shadow = Color(0x1A000000); // 10% black
-  static const Color shadowPink = Color(0x1Acfa52b); // 버터 그림자
+  static const Color shadowAccent = Color(0x1Acfa52b); // 버터 그림자
 
   // Status Colors
   static const Color success = Color(0xFF10b981);
@@ -74,14 +74,14 @@ class AppColors {
   static const Color info = Color(0xFF3b82f6);
 
   // Calendar & Budget Colors
-  static const Color calendarToday = primaryPink;
+  static const Color calendarToday = primary;
   static const Color budgetPositive = success;
   static const Color budgetNegative = error;
 
   // Accent Colors (버터 톤 변형)
-  static const Color accentPink1 = Color(0xFFffe09a);
-  static const Color accentPink2 = Color(0xFFffedbf);
-  static const Color accentPink3 = Color(0xFFfff5dc);
+  static const Color accent1 = Color(0xFFffe09a);
+  static const Color accent2 = Color(0xFFffedbf);
+  static const Color accent3 = Color(0xFFfff5dc);
 
   // Black Scale
   static const Color black = Colors.black;
@@ -114,11 +114,7 @@ class AppColors {
   static const Color white12 = Colors.white12;
   static const Color white10 = Colors.white10;
 
-  // Backward Compatibility Aliases
-  static const Color primary = primaryPink;
-  static const Color primaryDark = primaryPinkDark;
-  static const Color primaryLight = primaryPinkLight;
-  static const Color secondary = success; // 보조 색상은 success 색상 사용
+  // Semantic aliases
   static const Color background = backgroundGray;
   static const Color surface = backgroundWhite;
   static const Color textHint = textTertiary;
@@ -129,12 +125,12 @@ class AppColors {
 
 class AppThemeColors extends ThemeExtension<AppThemeColors> {
   const AppThemeColors({
-    required this.primaryPink,
-    required this.primaryPinkDark,
-    required this.primaryPinkLight,
-    required this.primaryPinkPale,
-    required this.secondaryPink,
-    required this.secondaryPinkDark,
+    required this.primary,
+    required this.primaryDark,
+    required this.primaryLight,
+    required this.primaryPale,
+    required this.secondary,
+    required this.secondaryDark,
     required this.primaryGradient,
     required this.primaryGradientReverse,
     required this.softGradient,
@@ -142,17 +138,17 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     required this.backgroundWhite,
     required this.backgroundGray,
     required this.backgroundLight,
-    required this.backgroundPinkTint,
+    required this.backgroundAccentTint,
     required this.textPrimary,
     required this.textSecondary,
     required this.textTertiary,
     required this.textWhite,
-    required this.textPink,
+    required this.textAccent,
     required this.divider,
     required this.border,
-    required this.borderPink,
+    required this.borderAccent,
     required this.shadow,
-    required this.shadowPink,
+    required this.shadowAccent,
     required this.success,
     required this.error,
     required this.warning,
@@ -160,9 +156,9 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     required this.calendarToday,
     required this.budgetPositive,
     required this.budgetNegative,
-    required this.accentPink1,
-    required this.accentPink2,
-    required this.accentPink3,
+    required this.accent1,
+    required this.accent2,
+    required this.accent3,
     required this.black,
     required this.black87,
     required this.black54,
@@ -188,10 +184,6 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     required this.white24,
     required this.white12,
     required this.white10,
-    required this.primary,
-    required this.primaryDark,
-    required this.primaryLight,
-    required this.secondary,
     required this.background,
     required this.surface,
     required this.textHint,
@@ -200,12 +192,12 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     required this.expense,
   });
 
-  final Color primaryPink;
-  final Color primaryPinkDark;
-  final Color primaryPinkLight;
-  final Color primaryPinkPale;
-  final Color secondaryPink;
-  final Color secondaryPinkDark;
+  final Color primary;
+  final Color primaryDark;
+  final Color primaryLight;
+  final Color primaryPale;
+  final Color secondary;
+  final Color secondaryDark;
   final LinearGradient primaryGradient;
   final LinearGradient primaryGradientReverse;
   final LinearGradient softGradient;
@@ -213,17 +205,17 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
   final Color backgroundWhite;
   final Color backgroundGray;
   final Color backgroundLight;
-  final Color backgroundPinkTint;
+  final Color backgroundAccentTint;
   final Color textPrimary;
   final Color textSecondary;
   final Color textTertiary;
   final Color textWhite;
-  final Color textPink;
+  final Color textAccent;
   final Color divider;
   final Color border;
-  final Color borderPink;
+  final Color borderAccent;
   final Color shadow;
-  final Color shadowPink;
+  final Color shadowAccent;
   final Color success;
   final Color error;
   final Color warning;
@@ -231,9 +223,9 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
   final Color calendarToday;
   final Color budgetPositive;
   final Color budgetNegative;
-  final Color accentPink1;
-  final Color accentPink2;
-  final Color accentPink3;
+  final Color accent1;
+  final Color accent2;
+  final Color accent3;
   final Color black;
   final Color black87;
   final Color black54;
@@ -259,10 +251,6 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
   final Color white24;
   final Color white12;
   final Color white10;
-  final Color primary;
-  final Color primaryDark;
-  final Color primaryLight;
-  final Color secondary;
   final Color background;
   final Color surface;
   final Color textHint;
@@ -271,12 +259,12 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
   final Color expense;
 
   static const AppThemeColors light = AppThemeColors(
-    primaryPink: AppColors.primaryPink,
-    primaryPinkDark: AppColors.primaryPinkDark,
-    primaryPinkLight: AppColors.primaryPinkLight,
-    primaryPinkPale: AppColors.primaryPinkPale,
-    secondaryPink: AppColors.secondaryPink,
-    secondaryPinkDark: AppColors.secondaryPinkDark,
+    primary: AppColors.primary,
+    primaryDark: AppColors.primaryDark,
+    primaryLight: AppColors.primaryLight,
+    primaryPale: AppColors.primaryPale,
+    secondary: AppColors.secondary,
+    secondaryDark: AppColors.secondaryDark,
     primaryGradient: AppColors.primaryGradient,
     primaryGradientReverse: AppColors.primaryGradientReverse,
     softGradient: AppColors.softGradient,
@@ -284,17 +272,17 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     backgroundWhite: AppColors.backgroundWhite,
     backgroundGray: AppColors.backgroundGray,
     backgroundLight: AppColors.backgroundLight,
-    backgroundPinkTint: AppColors.backgroundPinkTint,
+    backgroundAccentTint: AppColors.backgroundAccentTint,
     textPrimary: AppColors.textPrimary,
     textSecondary: AppColors.textSecondary,
     textTertiary: AppColors.textTertiary,
     textWhite: AppColors.textWhite,
-    textPink: AppColors.textPink,
+    textAccent: AppColors.textAccent,
     divider: AppColors.divider,
     border: AppColors.border,
-    borderPink: AppColors.borderPink,
+    borderAccent: AppColors.borderAccent,
     shadow: AppColors.shadow,
-    shadowPink: AppColors.shadowPink,
+    shadowAccent: AppColors.shadowAccent,
     success: AppColors.success,
     error: AppColors.error,
     warning: AppColors.warning,
@@ -302,9 +290,9 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     calendarToday: AppColors.calendarToday,
     budgetPositive: AppColors.budgetPositive,
     budgetNegative: AppColors.budgetNegative,
-    accentPink1: AppColors.accentPink1,
-    accentPink2: AppColors.accentPink2,
-    accentPink3: AppColors.accentPink3,
+    accent1: AppColors.accent1,
+    accent2: AppColors.accent2,
+    accent3: AppColors.accent3,
     black: AppColors.black,
     black87: AppColors.black87,
     black54: AppColors.black54,
@@ -330,10 +318,6 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     white24: AppColors.white24,
     white12: AppColors.white12,
     white10: AppColors.white10,
-    primary: AppColors.primary,
-    primaryDark: AppColors.primaryDark,
-    primaryLight: AppColors.primaryLight,
-    secondary: AppColors.secondary,
     background: AppColors.background,
     surface: AppColors.surface,
     textHint: AppColors.textHint,
@@ -346,12 +330,12 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
 
   @override
   AppThemeColors copyWith({
-    Color? primaryPink,
-    Color? primaryPinkDark,
-    Color? primaryPinkLight,
-    Color? primaryPinkPale,
-    Color? secondaryPink,
-    Color? secondaryPinkDark,
+    Color? primary,
+    Color? primaryDark,
+    Color? primaryLight,
+    Color? primaryPale,
+    Color? secondary,
+    Color? secondaryDark,
     LinearGradient? primaryGradient,
     LinearGradient? primaryGradientReverse,
     LinearGradient? softGradient,
@@ -359,17 +343,17 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     Color? backgroundWhite,
     Color? backgroundGray,
     Color? backgroundLight,
-    Color? backgroundPinkTint,
+    Color? backgroundAccentTint,
     Color? textPrimary,
     Color? textSecondary,
     Color? textTertiary,
     Color? textWhite,
-    Color? textPink,
+    Color? textAccent,
     Color? divider,
     Color? border,
-    Color? borderPink,
+    Color? borderAccent,
     Color? shadow,
-    Color? shadowPink,
+    Color? shadowAccent,
     Color? success,
     Color? error,
     Color? warning,
@@ -377,9 +361,9 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     Color? calendarToday,
     Color? budgetPositive,
     Color? budgetNegative,
-    Color? accentPink1,
-    Color? accentPink2,
-    Color? accentPink3,
+    Color? accent1,
+    Color? accent2,
+    Color? accent3,
     Color? black,
     Color? black87,
     Color? black54,
@@ -405,10 +389,6 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     Color? white24,
     Color? white12,
     Color? white10,
-    Color? primary,
-    Color? primaryDark,
-    Color? primaryLight,
-    Color? secondary,
     Color? background,
     Color? surface,
     Color? textHint,
@@ -417,12 +397,12 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     Color? expense,
   }) {
     return AppThemeColors(
-      primaryPink: primaryPink ?? this.primaryPink,
-      primaryPinkDark: primaryPinkDark ?? this.primaryPinkDark,
-      primaryPinkLight: primaryPinkLight ?? this.primaryPinkLight,
-      primaryPinkPale: primaryPinkPale ?? this.primaryPinkPale,
-      secondaryPink: secondaryPink ?? this.secondaryPink,
-      secondaryPinkDark: secondaryPinkDark ?? this.secondaryPinkDark,
+      primary: primary ?? this.primary,
+      primaryDark: primaryDark ?? this.primaryDark,
+      primaryLight: primaryLight ?? this.primaryLight,
+      primaryPale: primaryPale ?? this.primaryPale,
+      secondary: secondary ?? this.secondary,
+      secondaryDark: secondaryDark ?? this.secondaryDark,
       primaryGradient: primaryGradient ?? this.primaryGradient,
       primaryGradientReverse:
           primaryGradientReverse ?? this.primaryGradientReverse,
@@ -431,17 +411,17 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       backgroundWhite: backgroundWhite ?? this.backgroundWhite,
       backgroundGray: backgroundGray ?? this.backgroundGray,
       backgroundLight: backgroundLight ?? this.backgroundLight,
-      backgroundPinkTint: backgroundPinkTint ?? this.backgroundPinkTint,
+      backgroundAccentTint: backgroundAccentTint ?? this.backgroundAccentTint,
       textPrimary: textPrimary ?? this.textPrimary,
       textSecondary: textSecondary ?? this.textSecondary,
       textTertiary: textTertiary ?? this.textTertiary,
       textWhite: textWhite ?? this.textWhite,
-      textPink: textPink ?? this.textPink,
+      textAccent: textAccent ?? this.textAccent,
       divider: divider ?? this.divider,
       border: border ?? this.border,
-      borderPink: borderPink ?? this.borderPink,
+      borderAccent: borderAccent ?? this.borderAccent,
       shadow: shadow ?? this.shadow,
-      shadowPink: shadowPink ?? this.shadowPink,
+      shadowAccent: shadowAccent ?? this.shadowAccent,
       success: success ?? this.success,
       error: error ?? this.error,
       warning: warning ?? this.warning,
@@ -449,9 +429,9 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       calendarToday: calendarToday ?? this.calendarToday,
       budgetPositive: budgetPositive ?? this.budgetPositive,
       budgetNegative: budgetNegative ?? this.budgetNegative,
-      accentPink1: accentPink1 ?? this.accentPink1,
-      accentPink2: accentPink2 ?? this.accentPink2,
-      accentPink3: accentPink3 ?? this.accentPink3,
+      accent1: accent1 ?? this.accent1,
+      accent2: accent2 ?? this.accent2,
+      accent3: accent3 ?? this.accent3,
       black: black ?? this.black,
       black87: black87 ?? this.black87,
       black54: black54 ?? this.black54,
@@ -477,10 +457,6 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       white24: white24 ?? this.white24,
       white12: white12 ?? this.white12,
       white10: white10 ?? this.white10,
-      primary: primary ?? this.primary,
-      primaryDark: primaryDark ?? this.primaryDark,
-      primaryLight: primaryLight ?? this.primaryLight,
-      secondary: secondary ?? this.secondary,
       background: background ?? this.background,
       surface: surface ?? this.surface,
       textHint: textHint ?? this.textHint,
@@ -496,14 +472,14 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       return this;
     }
     return AppThemeColors(
-      primaryPink: Color.lerp(primaryPink, other.primaryPink, t)!,
-      primaryPinkDark: Color.lerp(primaryPinkDark, other.primaryPinkDark, t)!,
-      primaryPinkLight:
-          Color.lerp(primaryPinkLight, other.primaryPinkLight, t)!,
-      primaryPinkPale: Color.lerp(primaryPinkPale, other.primaryPinkPale, t)!,
-      secondaryPink: Color.lerp(secondaryPink, other.secondaryPink, t)!,
-      secondaryPinkDark:
-          Color.lerp(secondaryPinkDark, other.secondaryPinkDark, t)!,
+      primary: Color.lerp(primary, other.primary, t)!,
+      primaryDark: Color.lerp(primaryDark, other.primaryDark, t)!,
+      primaryLight:
+          Color.lerp(primaryLight, other.primaryLight, t)!,
+      primaryPale: Color.lerp(primaryPale, other.primaryPale, t)!,
+      secondary: Color.lerp(secondary, other.secondary, t)!,
+      secondaryDark:
+          Color.lerp(secondaryDark, other.secondaryDark, t)!,
       primaryGradient:
           LinearGradient.lerp(primaryGradient, other.primaryGradient, t)!,
       primaryGradientReverse: LinearGradient.lerp(
@@ -516,18 +492,18 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       backgroundWhite: Color.lerp(backgroundWhite, other.backgroundWhite, t)!,
       backgroundGray: Color.lerp(backgroundGray, other.backgroundGray, t)!,
       backgroundLight: Color.lerp(backgroundLight, other.backgroundLight, t)!,
-      backgroundPinkTint:
-          Color.lerp(backgroundPinkTint, other.backgroundPinkTint, t)!,
+      backgroundAccentTint:
+          Color.lerp(backgroundAccentTint, other.backgroundAccentTint, t)!,
       textPrimary: Color.lerp(textPrimary, other.textPrimary, t)!,
       textSecondary: Color.lerp(textSecondary, other.textSecondary, t)!,
       textTertiary: Color.lerp(textTertiary, other.textTertiary, t)!,
       textWhite: Color.lerp(textWhite, other.textWhite, t)!,
-      textPink: Color.lerp(textPink, other.textPink, t)!,
+      textAccent: Color.lerp(textAccent, other.textAccent, t)!,
       divider: Color.lerp(divider, other.divider, t)!,
       border: Color.lerp(border, other.border, t)!,
-      borderPink: Color.lerp(borderPink, other.borderPink, t)!,
+      borderAccent: Color.lerp(borderAccent, other.borderAccent, t)!,
       shadow: Color.lerp(shadow, other.shadow, t)!,
-      shadowPink: Color.lerp(shadowPink, other.shadowPink, t)!,
+      shadowAccent: Color.lerp(shadowAccent, other.shadowAccent, t)!,
       success: Color.lerp(success, other.success, t)!,
       error: Color.lerp(error, other.error, t)!,
       warning: Color.lerp(warning, other.warning, t)!,
@@ -535,9 +511,9 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       calendarToday: Color.lerp(calendarToday, other.calendarToday, t)!,
       budgetPositive: Color.lerp(budgetPositive, other.budgetPositive, t)!,
       budgetNegative: Color.lerp(budgetNegative, other.budgetNegative, t)!,
-      accentPink1: Color.lerp(accentPink1, other.accentPink1, t)!,
-      accentPink2: Color.lerp(accentPink2, other.accentPink2, t)!,
-      accentPink3: Color.lerp(accentPink3, other.accentPink3, t)!,
+      accent1: Color.lerp(accent1, other.accent1, t)!,
+      accent2: Color.lerp(accent2, other.accent2, t)!,
+      accent3: Color.lerp(accent3, other.accent3, t)!,
       black: Color.lerp(black, other.black, t)!,
       black87: Color.lerp(black87, other.black87, t)!,
       black54: Color.lerp(black54, other.black54, t)!,
@@ -563,10 +539,6 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       white24: Color.lerp(white24, other.white24, t)!,
       white12: Color.lerp(white12, other.white12, t)!,
       white10: Color.lerp(white10, other.white10, t)!,
-      primary: Color.lerp(primary, other.primary, t)!,
-      primaryDark: Color.lerp(primaryDark, other.primaryDark, t)!,
-      primaryLight: Color.lerp(primaryLight, other.primaryLight, t)!,
-      secondary: Color.lerp(secondary, other.secondary, t)!,
       background: Color.lerp(background, other.background, t)!,
       surface: Color.lerp(surface, other.surface, t)!,
       textHint: Color.lerp(textHint, other.textHint, t)!,
