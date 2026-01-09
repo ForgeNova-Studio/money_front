@@ -189,17 +189,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   // Calendar Format 변경(월간/주간)
   void _handleFormatChanged(CalendarFormat format) {
+    _collapseFabIfNeeded();
     ref.read(homeViewModelProvider.notifier).setCalendarFormat(format);
   }
 
   // Calendar 날짜 선택
   void _handleDateSelected(DateTime selected, DateTime focused) {
+    _collapseFabIfNeeded();
     ref.read(homeViewModelProvider.notifier).selectDate(selected);
   }
 
   // Calendar 페이지 변경(월/주 변경)
   void _handlePageChanged(DateTime focused) {
+    _collapseFabIfNeeded();
     ref.read(homeViewModelProvider.notifier).changeMonth(focused);
+  }
+
+  void _collapseFabIfNeeded() {
+    if (_isFabExpanded) {
+      setState(() => _isFabExpanded = false);
+    }
   }
 
   Widget _buildTransactionSheet(HomeState homeState) {
