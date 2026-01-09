@@ -12,15 +12,15 @@ class AppConstants {
 class AppColors {
   AppColors._();
 
-  // Primary Colors - Pink Tones (Monochrome)
-  static const Color primaryPink = Color(0xFFf5a4b3); // 메인 핑크
-  static const Color primaryPinkDark = Color(0xFFe88a9d); // 진한 핑크
-  static const Color primaryPinkLight = Color(0xFFf8bac8); // 밝은 핑크
-  static const Color primaryPinkPale = Color(0xFFfcd2da); // 매우 밝은 핑크
+  // Primary Colors - Butter Glow (Monochrome)
+  static const Color primaryPink = Color(0xFFf2d35e); // 메인 버터
+  static const Color primaryPinkDark = Color(0xFFcfa52b); // 진한 버터
+  static const Color primaryPinkLight = Color(0xFFffe8a3); // 밝은 버터
+  static const Color primaryPinkPale = Color(0xFFfff5d1); // 매우 밝은 버터
 
-  // Secondary Colors - 보조 색상 (핑크 계열)
-  static const Color secondaryPink = Color(0xFFf5a4b3);
-  static const Color secondaryPinkDark = Color(0xFFe88a9d);
+  // Secondary Colors - 보조 색상 (버터 계열)
+  static const Color secondaryPink = Color(0xFFf7dd83);
+  static const Color secondaryPinkDark = Color(0xFFcfa52b);
 
   // Gradient Colors
   static const LinearGradient primaryGradient = LinearGradient(
@@ -51,21 +51,21 @@ class AppColors {
   static const Color backgroundWhite = Color(0xFFFFFFFF);
   static const Color backgroundGray = Color(0xFFF8F9FA);
   static const Color backgroundLight = Color(0xFFFAFAFA);
-  static const Color backgroundPinkTint = Color(0xFFFFF5F7); // 핑크 배경
+  static const Color backgroundPinkTint = Color(0xFFFFF9E8); // 버터 배경
 
   // Text Colors
   static const Color textPrimary = Color(0xFF333333);
   static const Color textSecondary = Color(0xFF666666);
   static const Color textTertiary = Color(0xFF999999);
   static const Color textWhite = Color(0xFFFFFFFF);
-  static const Color textPink = primaryPinkDark; // 핑크 텍스트
+  static const Color textPink = primaryPinkDark; // 버터 텍스트
 
   // UI Element Colors
   static const Color divider = Color(0xFFF0F0F0);
   static const Color border = Color(0xFFEEEEEE);
-  static const Color borderPink = Color(0xFFf8bac8); // 핑크 보더
+  static const Color borderPink = Color(0xFFffe8a3); // 버터 보더
   static const Color shadow = Color(0x1A000000); // 10% black
-  static const Color shadowPink = Color(0x1Ae88a9d); // 핑크 그림자
+  static const Color shadowPink = Color(0x1Acfa52b); // 버터 그림자
 
   // Status Colors
   static const Color success = Color(0xFF10b981);
@@ -78,10 +78,10 @@ class AppColors {
   static const Color budgetPositive = success;
   static const Color budgetNegative = error;
 
-  // Accent Colors (핑크 톤 변형)
-  static const Color accentPink1 = Color(0xFFffb3c1);
-  static const Color accentPink2 = Color(0xFFffc9d6);
-  static const Color accentPink3 = Color(0xFFffe0e9);
+  // Accent Colors (버터 톤 변형)
+  static const Color accentPink1 = Color(0xFFffe09a);
+  static const Color accentPink2 = Color(0xFFffedbf);
+  static const Color accentPink3 = Color(0xFFfff5dc);
 
   // Black Scale
   static const Color black = Colors.black;
@@ -500,8 +500,7 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       primaryPinkDark: Color.lerp(primaryPinkDark, other.primaryPinkDark, t)!,
       primaryPinkLight:
           Color.lerp(primaryPinkLight, other.primaryPinkLight, t)!,
-      primaryPinkPale:
-          Color.lerp(primaryPinkPale, other.primaryPinkPale, t)!,
+      primaryPinkPale: Color.lerp(primaryPinkPale, other.primaryPinkPale, t)!,
       secondaryPink: Color.lerp(secondaryPink, other.secondaryPink, t)!,
       secondaryPinkDark:
           Color.lerp(secondaryPinkDark, other.secondaryPinkDark, t)!,
