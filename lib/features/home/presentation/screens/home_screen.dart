@@ -355,34 +355,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       children: [
         // 확장된 메뉴
         if (_isFabExpanded) ...[
-          _buildFabMenuItem(
-            icon: Icons.arrow_downward,
-            label: '수입',
-            color: Colors.blue,
-            onTap: () {
-              setState(() => _isFabExpanded = false);
-              context.push(RouteNames.addIncome, extra: selectedDate);
-            },
-          ),
-          const SizedBox(height: 12),
-          _buildFabMenuItem(
-            icon: Icons.arrow_upward,
-            label: '지출',
-            color: Colors.orange,
-            onTap: () {
-              setState(() => _isFabExpanded = false);
-              context.push(RouteNames.addExpense, extra: selectedDate);
-            },
-          ),
-          const SizedBox(height: 12),
-          _buildFabMenuItem(
-            icon: Icons.document_scanner,
-            label: 'OCR',
-            color: Colors.green,
-            onTap: () {
-              setState(() => _isFabExpanded = false);
-              context.push(RouteNames.ocrTest);
-            },
+          SizedBox(
+            width: 120,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Material(
+                color: context.appColors.gray800,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildFabMenuItem(
+                      icon: Icons.arrow_downward,
+                      label: '수입',
+                      color: Colors.blue,
+                      onTap: () {
+                        setState(() => _isFabExpanded = false);
+                        context.push(RouteNames.addIncome, extra: selectedDate);
+                      },
+                    ),
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: context.appColors.gray700,
+                    ),
+                    _buildFabMenuItem(
+                      icon: Icons.arrow_upward,
+                      label: '지출',
+                      color: Colors.orange,
+                      onTap: () {
+                        setState(() => _isFabExpanded = false);
+                        context.push(RouteNames.addExpense,
+                            extra: selectedDate);
+                      },
+                    ),
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: context.appColors.gray700,
+                    ),
+                    _buildFabMenuItem(
+                      icon: Icons.document_scanner,
+                      label: 'OCR',
+                      color: Colors.green,
+                      onTap: () {
+                        setState(() => _isFabExpanded = false);
+                        context.push(RouteNames.ocrTest);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
           const SizedBox(height: 16),
         ],
@@ -421,33 +444,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     required Color color,
     required VoidCallback onTap,
   }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          width: 104,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: context.appColors.gray800,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: color, size: 22),
-              const SizedBox(width: 10),
-              Text(
-                label,
-                style: TextStyle(
-                  color: context.appColors.textWhite,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 22),
+            const SizedBox(width: 10),
+            Text(
+              label,
+              style: TextStyle(
+                color: context.appColors.textWhite,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
