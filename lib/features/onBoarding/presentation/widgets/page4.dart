@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
 
 // widgets
-import 'package:moneyflow/features/onBoarding/presentation/widgets/onboarding/onboarding_bottom_indicator.dart';
+import 'package:moneyflow/features/onBoarding/presentation/widgets/onboarding_bottom_indicator.dart';
 
 class Page4 extends StatefulWidget {
   const Page4({super.key, required this.currentPage});

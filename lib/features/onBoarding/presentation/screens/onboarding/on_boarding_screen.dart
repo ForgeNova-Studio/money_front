@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
 
 // widgets
-import 'package:moneyflow/features/onBoarding/presentation/widgets/onboarding/page1.dart';
-import 'package:moneyflow/features/onBoarding/presentation/widgets/onboarding/page2.dart';
-import 'package:moneyflow/features/onBoarding/presentation/widgets/onboarding/page3.dart';
-import 'package:moneyflow/features/onBoarding/presentation/widgets/onboarding/page4.dart';
-import 'package:moneyflow/features/onBoarding/presentation/widgets/onboarding/page5.dart';
+import 'package:moneyflow/features/onBoarding/presentation/widgets/page1.dart';
+import 'package:moneyflow/features/onBoarding/presentation/widgets/page2.dart';
+import 'package:moneyflow/features/onBoarding/presentation/widgets/page3.dart';
+import 'package:moneyflow/features/onBoarding/presentation/widgets/page4.dart';
+import 'package:moneyflow/features/onBoarding/presentation/widgets/page5.dart';
 
 // screens
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
