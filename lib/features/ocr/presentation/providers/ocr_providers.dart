@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:moneyflow/core/providers/core_providers.dart';
 import '../../data/datasources/memory/global_brand_source.dart';
 import '../../data/datasources/local/user_brand_source.dart';
+import '../../data/datasources/remote/ocr_api_service.dart';
 import '../../data/strategies/fallback_brand_strategy.dart';
 import '../../domain/strategies/brand_match_strategy.dart';
 import '../../domain/repositories/ocr_repository.dart';
@@ -62,6 +64,11 @@ final brandMatchStrategyProvider = Provider<BrandMatchStrategy>((ref) {
 // 3️⃣ 레포지토리 (Repository) - 전략을 주입받음
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+/// OcrApiService Provider
+final ocrApiServiceProvider = Provider<OcrApiService>((ref) {
+  return OcrApiService(dio: ref.read(dioProvider));
+});
+
 /// OcrRepository Provider
 ///
 /// OCR 처리 파이프라인:
@@ -73,5 +80,6 @@ final brandMatchStrategyProvider = Provider<BrandMatchStrategy>((ref) {
 final ocrRepositoryProvider = Provider<OcrRepository>((ref) {
   return OcrRepositoryImpl(
     brandStrategy: ref.watch(brandMatchStrategyProvider),
+    apiService: ref.watch(ocrApiServiceProvider),
   );
 });

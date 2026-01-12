@@ -39,11 +39,11 @@ class OcrRepositoryImpl implements OcrRepository {
     ImagePreprocessor? preprocessor,
     MlkitTextRecognizer? textRecognizer,
     required BrandMatchStrategy brandStrategy,
-    OcrApiService? apiService,
+    required OcrApiService apiService,
   })  : _preprocessor = preprocessor ?? ImagePreprocessor(),
         _textRecognizer = textRecognizer ?? MlkitTextRecognizer(),
         _brandStrategy = brandStrategy,
-        _apiService = apiService ?? OcrApiService();
+        _apiService = apiService;
 
   @override
   Future<List<ReceiptData>> extractReceiptData(File imageFile) async {
