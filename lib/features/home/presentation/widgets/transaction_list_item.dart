@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moneyflow/features/expense/presentation/utils/expense_category_utils.dart';
 import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
+import 'package:moneyflow/features/income/presentation/utils/income_category_utils.dart';
 
 class TransactionListItem extends StatelessWidget {
   const TransactionListItem({
@@ -23,6 +25,8 @@ class TransactionListItem extends StatelessWidget {
     final prefix = isExpense ? '-' : '+';
     final amountStr = NumberFormat('#,###').format(transaction.amount);
     final timeStr = DateFormat('HH:mm').format(transaction.date);
+    final categoryLabel = _resolveCategoryLabel(transaction, isExpense);
+    final categoryIcon = _resolveCategoryIcon(transaction, isExpense);
 
     return Slidable(
       key: ValueKey('${transaction.id}-${transaction.createdAt.toIso8601String()}'),
@@ -51,7 +55,7 @@ class TransactionListItem extends StatelessWidget {
                 radius: 20,
                 backgroundColor: context.appColors.gray50,
                 child: Icon(
-                  isExpense ? Icons.coffee : Icons.attach_money,
+                  categoryIcon,
                   color:
                       isExpense ? context.appColors.textSecondary : context.appColors.success,
                   size: 20,
@@ -69,7 +73,7 @@ class TransactionListItem extends StatelessWidget {
                     ),
                     SizedBox(height: 2),
                     Text(
-                      '$timeStr · ${transaction.category}',
+                      '$timeStr · $categoryLabel',
                       style: TextStyle(
                           color: context.appColors.textTertiary, fontSize: 12),
                     ),
@@ -89,5 +93,21 @@ class TransactionListItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _resolveCategoryLabel(TransactionEntity transaction, bool isExpense) {
+    if (isExpense) {
+      return resolveExpenseCategoryLabel(transaction.category);
+    }
+
+    return resolveIncomeCategoryLabel(transaction.category);
+  }
+
+  IconData _resolveCategoryIcon(TransactionEntity transaction, bool isExpense) {
+    if (isExpense) {
+      return resolveExpenseCategoryIcon(transaction.category);
+    }
+
+    return resolveIncomeCategoryIcon(transaction.category);
   }
 }
