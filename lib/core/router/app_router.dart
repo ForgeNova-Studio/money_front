@@ -23,13 +23,8 @@ import 'package:moneyflow/features/expense/presentation/screens/add_expense_scre
 import 'package:moneyflow/features/income/presentation/screens/add_income_screen.dart';
 
 // Statistics Screens
-import 'package:moneyflow/features/statistics/presentation/screens/statistics_screen.dart';
-import 'package:moneyflow/features/statistics/presentation/screens/weekly_statistics_screen.dart';
 
 // Budget & Couple Screens
-import 'package:moneyflow/features/budget/presentation/screens/budget_setting_screen.dart';
-import 'package:moneyflow/features/couple/presentation/screens/couple_invite_screen.dart';
-import 'package:moneyflow/features/couple/presentation/screens/couple_join_screen.dart';
 
 // OCR Screens
 import 'package:moneyflow/features/ocr/presentation/screens/ocr_test_screen.dart';
@@ -95,29 +90,29 @@ class AppRouter {
                 ),
               ],
             ),
-            StatefulShellBranch(
-              routes: [
-                GoRoute(
-                  path: RouteNames.statistics,
-                  name: 'statistics',
-                  builder: (context, state) => const StatisticsScreen(),
-                ),
-                GoRoute(
-                  path: RouteNames.weeklyStatistics,
-                  name: 'weeklyStatistics',
-                  builder: (context, state) => const WeeklyStatisticsScreen(),
-                ),
-              ],
-            ),
-            StatefulShellBranch(
-              routes: [
-                GoRoute(
-                  path: RouteNames.budget,
-                  name: 'budget',
-                  builder: (context, state) => const BudgetSettingScreen(),
-                ),
-              ],
-            ),
+            // StatefulShellBranch(
+            //   routes: [
+            //     GoRoute(
+            //       path: RouteNames.statistics,
+            //       name: 'statistics',
+            //       builder: (context, state) => const StatisticsScreen(),
+            //     ),
+            //     GoRoute(
+            //       path: RouteNames.weeklyStatistics,
+            //       name: 'weeklyStatistics',
+            //       builder: (context, state) => const WeeklyStatisticsScreen(),
+            //     ),
+            //   ],
+            // ),
+            // StatefulShellBranch(
+            //   routes: [
+            //     GoRoute(
+            //       path: RouteNames.budget,
+            //       name: 'budget',
+            //       builder: (context, state) => const BudgetSettingScreen(),
+            //     ),
+            //   ],
+            // ),
             StatefulShellBranch(
               routes: [
                 GoRoute(
@@ -188,16 +183,16 @@ class AppRouter {
         // ),
 
         // ==================== Couple Routes ====================
-        GoRoute(
-          path: RouteNames.coupleInvite,
-          name: 'coupleInvite',
-          builder: (context, state) => const CoupleInviteScreen(),
-        ),
-        GoRoute(
-          path: RouteNames.coupleJoin,
-          name: 'coupleJoin',
-          builder: (context, state) => const CoupleJoinScreen(),
-        ),
+        // GoRoute(
+        //   path: RouteNames.coupleInvite,
+        //   name: 'coupleInvite',
+        //   builder: (context, state) => const CoupleInviteScreen(),
+        // ),
+        // GoRoute(
+        //   path: RouteNames.coupleJoin,
+        //   name: 'coupleJoin',
+        //   builder: (context, state) => const CoupleJoinScreen(),
+        // ),
 
         // ==================== OCR Route ====================
         GoRoute(
