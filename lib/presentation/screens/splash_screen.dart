@@ -69,7 +69,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             Icon(
               Icons.account_balance_wallet_rounded,
               size: 96,
-              color: Colors.white,
+              color: Colors.black,
             ),
             SizedBox(height: 20),
             Text(
@@ -77,7 +77,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: Colors.black,
               ),
             ),
             SizedBox(height: 28),
@@ -85,7 +85,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               width: 32,
               height: 32,
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
                 strokeWidth: 2.5,
               ),
             ),
