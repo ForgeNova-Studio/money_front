@@ -137,6 +137,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        flexibleSpace: Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerDown: (_) => _collapseFabIfNeeded(),
+          child: const SizedBox.expand(),
+        ),
         backgroundColor: context.appColors.backgroundLight,
         elevation: 0,
         actions: [
@@ -149,29 +154,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
-      body: Column(
-        children: [
-          // 1. Budget Info Area
-          _buildBudgetInfo(),
+      body: Listener(
+        behavior: HitTestBehavior.translucent,
+        onPointerDown: (_) => _collapseFabIfNeeded(),
+        child: Column(
+          children: [
+            // 1. Budget Info Area
+            _buildBudgetInfo(),
 
-          // 2. Custom Calendar
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: CustomCalendar(
-              format: calendarFormat,
-              focusedDay: homeState.focusedMonth,
-              selectedDay: homeState.selectedDate,
-              monthlyData: homeState.monthlyData,
-              onFormatChanged: _handleFormatChanged,
-              onDateSelected: _handleDateSelected,
-              onPageChanged: _handlePageChanged,
+            // 2. Custom Calendar
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: CustomCalendar(
+                format: calendarFormat,
+                focusedDay: homeState.focusedMonth,
+                selectedDay: homeState.selectedDate,
+                monthlyData: homeState.monthlyData,
+                onFormatChanged: _handleFormatChanged,
+                onDateSelected: _handleDateSelected,
+                onPageChanged: _handlePageChanged,
+              ),
             ),
-          ),
 
-          // 3. Transactions Sheet (Fills remaining space)
-          Expanded(child: _buildTransactionSheet(homeState)),
-        ],
+            // 3. Transactions Sheet (Fills remaining space)
+            Expanded(child: _buildTransactionSheet(homeState)),
+          ],
+        ),
       ),
       floatingActionButton: _buildFloatingActionButton(homeState.selectedDate),
     );
