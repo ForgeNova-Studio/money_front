@@ -14,7 +14,7 @@ _ExpenseModel _$ExpenseModelFromJson(Map<String, dynamic> json) =>
       amount: (json['amount'] as num).toDouble(),
       date: DateTime.parse(json['date'] as String),
       category: json['category'] as String,
-      store: json['store'] as String?,
+      merchant: json['merchant'] as String?,
       memo: json['memo'] as String?,
       paymentMethod: json['paymentMethod'] as String,
       createdAt: json['createdAt'] == null
@@ -33,7 +33,7 @@ Map<String, dynamic> _$ExpenseModelToJson(_ExpenseModel instance) =>
       'amount': instance.amount,
       'date': instance.date.toIso8601String(),
       'category': instance.category,
-      'store': instance.store,
+      'merchant': instance.merchant,
       'memo': instance.memo,
       'paymentMethod': instance.paymentMethod,
       'createdAt': instance.createdAt?.toIso8601String(),

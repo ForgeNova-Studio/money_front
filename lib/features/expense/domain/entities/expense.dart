@@ -6,7 +6,7 @@ class Expense {
   final double amount;
   final DateTime date;
   final String category; // 식비, 교통, 쇼핑 등
-  final String? store; // 가맹점명
+  final String? merchant; // 가맹점명
   final String? memo;
   final String paymentMethod; // CARD, CASH, TRANSFER
   final DateTime? createdAt;
@@ -19,7 +19,7 @@ class Expense {
     required this.amount,
     required this.date,
     required this.category,
-    this.store,
+    this.merchant,
     this.memo,
     required this.paymentMethod,
     this.createdAt,
@@ -33,7 +33,7 @@ class Expense {
     double? amount,
     DateTime? date,
     String? category,
-    String? store,
+    String? merchant,
     String? memo,
     String? paymentMethod,
     DateTime? createdAt,
@@ -46,7 +46,7 @@ class Expense {
       amount: amount ?? this.amount,
       date: date ?? this.date,
       category: category ?? this.category,
-      store: store ?? this.store,
+      merchant: merchant ?? this.merchant,
       memo: memo ?? this.memo,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       createdAt: createdAt ?? this.createdAt,

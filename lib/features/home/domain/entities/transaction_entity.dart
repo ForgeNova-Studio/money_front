@@ -7,7 +7,7 @@ class TransactionEntity {
   final String id;
   final double amount;
   final DateTime date;
-  final String title; // store for expense, source for income
+  final String title; // merchant for expense, source for income
   final String category;
   final TransactionType type;
   final DateTime createdAt;
@@ -27,7 +27,7 @@ class TransactionEntity {
       id: expense.expenseId ?? '',
       amount: expense.amount, // Expense amount is usually positive in DB, handled as negative in UI
       date: expense.date,
-      title: expense.store ?? expense.category,
+      title: expense.merchant ?? expense.category,
       category: expense.category,
       type: TransactionType.expense,
       createdAt: expense.createdAt ?? DateTime.now(),

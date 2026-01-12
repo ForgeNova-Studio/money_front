@@ -20,7 +20,7 @@ mixin _$ExpenseModel {
   double get amount;
   DateTime get date;
   String get category;
-  String? get store;
+  String? get merchant;
   String? get memo;
   String get paymentMethod;
   DateTime? get createdAt;
@@ -51,7 +51,8 @@ mixin _$ExpenseModel {
             (identical(other.date, date) || other.date == date) &&
             (identical(other.category, category) ||
                 other.category == category) &&
-            (identical(other.store, store) || other.store == store) &&
+            (identical(other.merchant, merchant) ||
+                other.merchant == merchant) &&
             (identical(other.memo, memo) || other.memo == memo) &&
             (identical(other.paymentMethod, paymentMethod) ||
                 other.paymentMethod == paymentMethod) &&
@@ -63,12 +64,23 @@ mixin _$ExpenseModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, expenseId, userId, coupleId,
-      amount, date, category, store, memo, paymentMethod, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+      runtimeType,
+      expenseId,
+      userId,
+      coupleId,
+      amount,
+      date,
+      category,
+      merchant,
+      memo,
+      paymentMethod,
+      createdAt,
+      updatedAt);
 
   @override
   String toString() {
-    return 'ExpenseModel(expenseId: $expenseId, userId: $userId, coupleId: $coupleId, amount: $amount, date: $date, category: $category, store: $store, memo: $memo, paymentMethod: $paymentMethod, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'ExpenseModel(expenseId: $expenseId, userId: $userId, coupleId: $coupleId, amount: $amount, date: $date, category: $category, merchant: $merchant, memo: $memo, paymentMethod: $paymentMethod, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 }
 
@@ -85,7 +97,7 @@ abstract mixin class $ExpenseModelCopyWith<$Res> {
       double amount,
       DateTime date,
       String category,
-      String? store,
+      String? merchant,
       String? memo,
       String paymentMethod,
       DateTime? createdAt,
@@ -110,7 +122,7 @@ class _$ExpenseModelCopyWithImpl<$Res> implements $ExpenseModelCopyWith<$Res> {
     Object? amount = null,
     Object? date = null,
     Object? category = null,
-    Object? store = freezed,
+    Object? merchant = freezed,
     Object? memo = freezed,
     Object? paymentMethod = null,
     Object? createdAt = freezed,
@@ -141,9 +153,9 @@ class _$ExpenseModelCopyWithImpl<$Res> implements $ExpenseModelCopyWith<$Res> {
           ? _self.category
           : category // ignore: cast_nullable_to_non_nullable
               as String,
-      store: freezed == store
-          ? _self.store
-          : store // ignore: cast_nullable_to_non_nullable
+      merchant: freezed == merchant
+          ? _self.merchant
+          : merchant // ignore: cast_nullable_to_non_nullable
               as String?,
       memo: freezed == memo
           ? _self.memo
@@ -263,7 +275,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             double amount,
             DateTime date,
             String category,
-            String? store,
+            String? merchant,
             String? memo,
             String paymentMethod,
             DateTime? createdAt,
@@ -281,7 +293,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             _that.amount,
             _that.date,
             _that.category,
-            _that.store,
+            _that.merchant,
             _that.memo,
             _that.paymentMethod,
             _that.createdAt,
@@ -313,7 +325,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             double amount,
             DateTime date,
             String category,
-            String? store,
+            String? merchant,
             String? memo,
             String paymentMethod,
             DateTime? createdAt,
@@ -330,7 +342,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             _that.amount,
             _that.date,
             _that.category,
-            _that.store,
+            _that.merchant,
             _that.memo,
             _that.paymentMethod,
             _that.createdAt,
@@ -359,7 +371,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             double amount,
             DateTime date,
             String category,
-            String? store,
+            String? merchant,
             String? memo,
             String paymentMethod,
             DateTime? createdAt,
@@ -376,7 +388,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             _that.amount,
             _that.date,
             _that.category,
-            _that.store,
+            _that.merchant,
             _that.memo,
             _that.paymentMethod,
             _that.createdAt,
@@ -397,7 +409,7 @@ class _ExpenseModel extends ExpenseModel {
       required this.amount,
       required this.date,
       required this.category,
-      this.store,
+      this.merchant,
       this.memo,
       required this.paymentMethod,
       this.createdAt,
@@ -419,7 +431,7 @@ class _ExpenseModel extends ExpenseModel {
   @override
   final String category;
   @override
-  final String? store;
+  final String? merchant;
   @override
   final String? memo;
   @override
@@ -458,7 +470,8 @@ class _ExpenseModel extends ExpenseModel {
             (identical(other.date, date) || other.date == date) &&
             (identical(other.category, category) ||
                 other.category == category) &&
-            (identical(other.store, store) || other.store == store) &&
+            (identical(other.merchant, merchant) ||
+                other.merchant == merchant) &&
             (identical(other.memo, memo) || other.memo == memo) &&
             (identical(other.paymentMethod, paymentMethod) ||
                 other.paymentMethod == paymentMethod) &&
@@ -470,12 +483,23 @@ class _ExpenseModel extends ExpenseModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, expenseId, userId, coupleId,
-      amount, date, category, store, memo, paymentMethod, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+      runtimeType,
+      expenseId,
+      userId,
+      coupleId,
+      amount,
+      date,
+      category,
+      merchant,
+      memo,
+      paymentMethod,
+      createdAt,
+      updatedAt);
 
   @override
   String toString() {
-    return 'ExpenseModel(expenseId: $expenseId, userId: $userId, coupleId: $coupleId, amount: $amount, date: $date, category: $category, store: $store, memo: $memo, paymentMethod: $paymentMethod, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'ExpenseModel(expenseId: $expenseId, userId: $userId, coupleId: $coupleId, amount: $amount, date: $date, category: $category, merchant: $merchant, memo: $memo, paymentMethod: $paymentMethod, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 }
 
@@ -494,7 +518,7 @@ abstract mixin class _$ExpenseModelCopyWith<$Res>
       double amount,
       DateTime date,
       String category,
-      String? store,
+      String? merchant,
       String? memo,
       String paymentMethod,
       DateTime? createdAt,
@@ -520,7 +544,7 @@ class __$ExpenseModelCopyWithImpl<$Res>
     Object? amount = null,
     Object? date = null,
     Object? category = null,
-    Object? store = freezed,
+    Object? merchant = freezed,
     Object? memo = freezed,
     Object? paymentMethod = null,
     Object? createdAt = freezed,
@@ -551,9 +575,9 @@ class __$ExpenseModelCopyWithImpl<$Res>
           ? _self.category
           : category // ignore: cast_nullable_to_non_nullable
               as String,
-      store: freezed == store
-          ? _self.store
-          : store // ignore: cast_nullable_to_non_nullable
+      merchant: freezed == merchant
+          ? _self.merchant
+          : merchant // ignore: cast_nullable_to_non_nullable
               as String?,
       memo: freezed == memo
           ? _self.memo

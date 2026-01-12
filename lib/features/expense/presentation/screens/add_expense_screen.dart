@@ -164,7 +164,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       amount: amount,
       date: _selectedDate,
       category: _selectedCategory,
-      store: _merchantController.text.trim().isEmpty
+      merchant: _merchantController.text.trim().isEmpty
           ? null
           : _merchantController.text.trim(),
       memo: _memoController.text.trim().isEmpty
