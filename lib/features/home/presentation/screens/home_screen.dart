@@ -10,7 +10,7 @@ import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:moneyflow/core/router/route_names.dart';
 
 // features
-import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+
 import 'package:moneyflow/features/home/presentation/widgets/custom_calendar.dart';
 import 'package:moneyflow/features/home/presentation/widgets/transaction_list_section.dart';
 import 'package:moneyflow/features/home/presentation/states/home_state.dart';
@@ -33,42 +33,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(homeViewModelProvider.notifier).fetchMonthlyData(DateTime.now());
     });
-  }
-
-  Future<void> _handleLogout() async {
-    final shouldLogout = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('로그아웃'),
-        content: const Text('정말 로그아웃 하시겠습니까?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('취소'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('로그아웃'),
-          ),
-        ],
-      ),
-    );
-
-    if (shouldLogout == true && mounted) {
-      try {
-        await ref.read(authViewModelProvider.notifier).logout();
-        if (mounted) {
-          // GoRouter의 redirect 로직이 자동으로 로그인 화면으로 이동시킴
-          context.go(RouteNames.login);
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('로그아웃 실패: $e')),
-          );
-        }
-      }
-    }
   }
 
   // 수입/지출 삭제
@@ -131,7 +95,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       backgroundColor: context.appColors.backgroundLight,
       appBar: AppBar(
         title: Text(
-          'MoneyFlow',
+          '내 가계부',
           style: TextStyle(
             color: context.appColors.textPrimary,
             fontWeight: FontWeight.bold,
@@ -144,13 +108,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         backgroundColor: context.appColors.backgroundLight,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout, color: context.appColors.textSecondary),
-            onPressed: _handleLogout,
-            tooltip: '로그아웃',
-          ),
-        ],
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
