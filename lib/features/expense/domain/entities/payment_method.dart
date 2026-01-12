@@ -1,8 +1,7 @@
 /// 결제 수단 열거형
 enum PaymentMethod {
   card('CARD', '카드'),
-  cash('CASH', '현금'),
-  transfer('TRANSFER', '계좌이체');
+  cash('CASH', '현금');
 
   final String code;
   final String label;

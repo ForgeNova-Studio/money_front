@@ -8,7 +8,7 @@ class Expense {
   final String category; // 식비, 교통, 쇼핑 등
   final String? merchant; // 가맹점명
   final String? memo;
-  final String paymentMethod; // CARD, CASH, TRANSFER
+  final String paymentMethod; // CARD, CASH
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
