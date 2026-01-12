@@ -52,13 +52,16 @@ class IncomeSource {
   static const String sideIncome = '부수입';
   static const String allowance = '용돈';
   static const String bonus = '상여금';
+  static const String investment = '투자수익';
   static const String other = '기타';
+
 
   static const List<String> all = [
     salary,
     sideIncome,
     allowance,
     bonus,
+    investment,
     other,
   ];
 }

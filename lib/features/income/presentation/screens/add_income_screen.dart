@@ -31,6 +31,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _amountFocusNode = FocusNode();
 
   late DateTime _selectedDate;
   String _selectedSource = IncomeSource.salary;
@@ -42,29 +43,48 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   }
 
   final List<Map<String, dynamic>> _sources = [
-    {'code': IncomeSource.salary, 'name': '급여', 'icon': Icons.work},
+    {
+      'code': IncomeSource.salary,
+      'name': '급여',
+      'icon': Icons.work,
+      'color': AppColors.income,
+    },
     {
       'code': IncomeSource.sideIncome,
       'name': '부수입',
-      'icon': Icons.attach_money
+      'icon': Icons.attach_money,
+      'color': Color(0xFF2E7D32),
     },
-    {'code': IncomeSource.bonus, 'name': '상여금', 'icon': Icons.card_giftcard},
+    {
+      'code': IncomeSource.bonus,
+      'name': '상여금',
+      'icon': Icons.card_giftcard,
+      'color': Color(0xFFF57C00),
+    },
     {
       'code': IncomeSource.investment,
       'name': '투자수익',
-      'icon': Icons.trending_up
+      'icon': Icons.trending_up,
+      'color': Color(0xFF1565C0),
     },
-    {'code': IncomeSource.other, 'name': '기타', 'icon': Icons.more_horiz},
+    {
+      'code': IncomeSource.other,
+      'name': '기타',
+      'icon': Icons.more_horiz,
+      'color': Color(0xFF6D4C41),
+    },
   ];
 
   @override
   void dispose() {
     _amountController.dispose();
     _descriptionController.dispose();
+    _amountFocusNode.dispose();
     super.dispose();
   }
 
   Future<void> _selectDate(BuildContext context) async {
+    FocusManager.instance.primaryFocus?.unfocus();
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
@@ -144,7 +164,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     return PopScope(
         canPop: false,
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: context.appColors.backgroundLight,
           appBar: AppBar(
             title: Text(
               '수입 등록',
@@ -154,7 +174,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
               ),
             ),
             centerTitle: true,
-            backgroundColor: Colors.white,
+            backgroundColor: context.appColors.backgroundLight,
             elevation: 0,
             leading: IconButton(
               icon: Icon(Icons.close, color: context.appColors.textPrimary),
@@ -164,216 +184,353 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
           body: Column(
             children: [
               Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(height: 32),
-                        // 1. Large Amount Input
-                        Center(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IntrinsicWidth(
-                                child: TextFormField(
-                                  controller: _amountController,
-                                  validator: _validateAmount,
-                                  keyboardType: TextInputType.number,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 40,
-                                    fontWeight: FontWeight.bold,
-                                    color: context.appColors.income,
+                child: NotificationListener<ScrollStartNotification>(
+                  onNotification: (notification) {
+                    if (notification.dragDetails != null) {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                    }
+                    return false;
+                  },
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SizedBox(height: 20),
+                          // 1. Large Amount Input
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () => _amountFocusNode.requestFocus(),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 24),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        context.appColors.shadow.withOpacity(0.08),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 8),
                                   ),
-                                  decoration: InputDecoration(
-                                    filled: false,
-                                    hintText: '0',
-                                    hintStyle: TextStyle(
-                                      color: context.appColors.gray300,
-                                      fontSize: 40,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    border: InputBorder.none,
-                                    focusedBorder: InputBorder.none,
-                                    enabledBorder: InputBorder.none,
-                                    errorBorder: InputBorder.none,
-                                    disabledBorder: InputBorder.none,
-                                    contentPadding: EdgeInsets.zero,
-                                  ),
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    _ThousandsSeparatorInputFormatter(),
-                                  ],
-                                  autofocus: true,
-                                  showCursor: false,
-                                ),
+                                ],
                               ),
-                              SizedBox(width: 4),
-                              Text(
-                                '원',
-                                style: TextStyle(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.appColors.textPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 40),
-
-                        // 2. Date Selection
-                        GestureDetector(
-                          onTap: () => _selectDate(context),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 16),
-                            decoration: BoxDecoration(
-                              color: context.appColors.backgroundLight,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.calendar_today,
-                                    color: context.appColors.textSecondary, size: 20),
-                                SizedBox(width: 12),
-                                Text(
-                                  DateFormat('yyyy년 M월 d일 (E)', 'ko_KR')
-                                      .format(_selectedDate),
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: context.appColors.textPrimary,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 32),
-
-                        // 3. Source Selection (Similar to Category in Expense)
-                        Text(
-                          '수입 출처',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: context.appColors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          height: 90,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: _sources.length,
-                            separatorBuilder: (context, index) =>
-                                SizedBox(width: 20),
-                            itemBuilder: (context, index) {
-                              final source = _sources[index];
-                              final isSelected =
-                                  _selectedSource == source['code'];
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedSource = source['code'];
-                                  });
-                                },
-                                child: Column(
-                                  children: [
-                                    AnimatedContainer(
-                                      duration:
-                                          Duration(milliseconds: 200),
-                                      width: 56,
-                                      height: 56,
-                                      decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? context.appColors.income
-                                            : context.appColors.backgroundLight,
-                                        shape: BoxShape.circle,
-                                        boxShadow: isSelected
-                                            ? [
-                                                BoxShadow(
-                                                  color: context.appColors.income
-                                                      .withOpacity(0.3),
-                                                  blurRadius: 8,
-                                                  offset: Offset(0, 4),
-                                                )
-                                              ]
-                                            : [],
-                                      ),
-                                      child: Icon(
-                                        source['icon'],
-                                        color: isSelected
-                                            ? Colors.white
-                                            : context.appColors.textSecondary,
-                                        size: 24,
-                                      ),
+                              child: Column(
+                                children: [
+                                  Center(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.baseline,
+                                      textBaseline: TextBaseline.alphabetic,
+                                      children: [
+                                        IntrinsicWidth(
+                                          child: TextFormField(
+                                            controller: _amountController,
+                                            focusNode: _amountFocusNode,
+                                            validator: _validateAmount,
+                                            keyboardType: TextInputType.number,
+                                            textAlign: TextAlign.center,
+                                            onTap: () {
+                                              _amountFocusNode.requestFocus();
+                                            },
+                                            style: TextStyle(
+                                              fontSize: 40,
+                                              fontWeight: FontWeight.bold,
+                                              color: context.appColors.primary,
+                                            ),
+                                            decoration: InputDecoration(
+                                              filled: false,
+                                              hintText: '0',
+                                              hintStyle: TextStyle(
+                                                color: context.appColors.gray300,
+                                                fontSize: 40,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              border: InputBorder.none,
+                                              focusedBorder: InputBorder.none,
+                                              enabledBorder: InputBorder.none,
+                                              errorBorder: InputBorder.none,
+                                              focusedErrorBorder:
+                                                  InputBorder.none,
+                                              disabledBorder: InputBorder.none,
+                                              errorStyle: const TextStyle(
+                                                height: 0,
+                                                color: Colors.transparent,
+                                              ),
+                                              contentPadding: EdgeInsets.zero,
+                                            ),
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly,
+                                              _ThousandsSeparatorInputFormatter(),
+                                            ],
+                                            autofocus: false,
+                                            showCursor: false,
+                                            cursorColor: Colors.transparent,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '원',
+                                          style: TextStyle(
+                                            fontSize: 40,
+                                            fontWeight: FontWeight.w600,
+                                            color:
+                                                context.appColors.textPrimary,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      source['name'],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          // 2. Date Selection
+                          GestureDetector(
+                            onTap: () => _selectDate(context),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 14, horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                    color: context.appColors.gray200),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 36,
+                                    height: 36,
+                                    decoration: BoxDecoration(
+                                      color: context.appColors.primary
+                                          .withOpacity(0.1),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.calendar_today,
+                                      color: context.appColors.primary,
+                                      size: 18,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      DateFormat('yyyy년 M월 d일 (E)', 'ko_KR')
+                                          .format(_selectedDate),
                                       style: TextStyle(
-                                        fontSize: 12,
-                                        color: isSelected
-                                            ? context.appColors.income
-                                            : context.appColors.textSecondary,
-                                        fontWeight: isSelected
-                                            ? FontWeight.w600
-                                            : FontWeight.normal,
+                                        fontSize: 16,
+                                        color: context.appColors.textPrimary,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  Icon(
+                                    Icons.chevron_right,
+                                    color: context.appColors.gray400,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 28),
+
+                          // 3. Source Selection
+                          Text(
+                            '수입 출처',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: context.appColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final itemWidth = (constraints.maxWidth - 24) / 3;
+                              return Wrap(
+                                spacing: 12,
+                                runSpacing: 12,
+                                children: _sources.map((source) {
+                                  final isSelected =
+                                      _selectedSource == source['code'];
+                                  return SizedBox(
+                                    width: itemWidth,
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(16),
+                                        onTap: () {
+                                          FocusManager.instance.primaryFocus
+                                              ?.unfocus();
+                                          setState(() {
+                                            _selectedSource = source['code'];
+                                          });
+                                        },
+                                        child: AnimatedContainer(
+                                          duration:
+                                              const Duration(milliseconds: 200),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 12, vertical: 14),
+                                          decoration: BoxDecoration(
+                                            color: isSelected
+                                                ? (source['color'] as Color)
+                                                    .withOpacity(0.12)
+                                                : Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            border: Border.all(
+                                              color: isSelected
+                                                  ? source['color'] as Color
+                                                  : context.appColors.gray200,
+                                            ),
+                                            boxShadow: isSelected
+                                                ? [
+                                                    BoxShadow(
+                                                      color:
+                                                          (source['color'] as Color)
+                                                              .withOpacity(0.25),
+                                                      blurRadius: 12,
+                                                      offset:
+                                                          const Offset(0, 6),
+                                                    )
+                                                  ]
+                                                : [
+                                                    BoxShadow(
+                                                      color: context
+                                                          .appColors.shadow
+                                                          .withOpacity(0.04),
+                                                      blurRadius: 10,
+                                                      offset:
+                                                          const Offset(0, 6),
+                                                    )
+                                                  ],
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                width: 36,
+                                                height: 36,
+                                                decoration: BoxDecoration(
+                                                  color: isSelected
+                                                      ? source['color'] as Color
+                                                      : (source['color'] as Color)
+                                                          .withOpacity(0.12),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Icon(
+                                                  source['icon'],
+                                                  color: isSelected
+                                                      ? Colors.white
+                                                      : source['color'] as Color,
+                                                  size: 18,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                source['name'],
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: isSelected
+                                                      ? source['color'] as Color
+                                                      : context.appColors
+                                                          .textSecondary,
+                                                  fontWeight: isSelected
+                                                      ? FontWeight.w700
+                                                      : FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
                               );
                             },
                           ),
-                        ),
-                        const SizedBox(height: 32),
+                          const SizedBox(height: 28),
 
-                        // 4. Description Field
-                        _buildCleanTextField(
-                          controller: _descriptionController,
-                          label: '설명',
-                          hint: '어떤 수입인가요?',
-                          icon: Icons.edit_outlined,
-                        ),
-
-                        SizedBox(height: 48),
-                      ],
+                          // 4. Description Field
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                  color: context.appColors.gray200),
+                            ),
+                            child: _buildCleanTextField(
+                              controller: _descriptionController,
+                              label: '설명',
+                              hint: '어떤 수입인가요?',
+                              icon: Icons.edit_outlined,
+                              multiline: true,
+                            ),
+                          ),
+                          const SizedBox(height: 48),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
 
               // Bottom Button
-              Padding(
-                padding: EdgeInsets.fromLTRB(24, 0, 24, 40),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _handleSubmit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: context.appColors.income,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                transitionBuilder: (child, animation) {
+                  final slide = Tween<Offset>(
+                    begin: const Offset(0, 0.2),
+                    end: Offset.zero,
+                  ).animate(animation);
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(position: slide, child: child),
+                  );
+                },
+                child: MediaQuery.of(context).viewInsets.bottom == 0
+                    ? Padding(
+                        key: const ValueKey('submit-button'),
+                        padding: EdgeInsets.fromLTRB(24, 0, 24, 40),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: _handleSubmit,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: context.appColors.primary,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: const Text(
+                              '등록하기',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : const SizedBox(
+                        key: ValueKey('submit-placeholder'),
                       ),
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      '등록하기',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
               ),
             ],
           ),
@@ -385,36 +542,31 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     required String label,
     required String hint,
     required IconData icon,
+    bool multiline = false,
+    int? minLines,
   }) {
+    final resolvedMinLines = multiline ? (minLines ?? 3) : 1;
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: EdgeInsets.only(top: 12.0),
-          child: Icon(icon, color: context.appColors.textSecondary, size: 24),
-        ),
+        Icon(icon, color: context.appColors.textSecondary, size: 24),
         SizedBox(width: 16),
         Expanded(
-          child: SizedBox(
-            height: 120,
-            child: TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: TextStyle(color: context.appColors.gray400),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.all(16),
-              ),
-              style: TextStyle(
-                color: context.appColors.textPrimary,
-                fontSize: 16,
-                height: 1.5,
-              ),
-              maxLines: null,
-              expands: true,
-              keyboardType: TextInputType.multiline,
-              textAlignVertical: TextAlignVertical.top,
+          child: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(color: context.appColors.gray400),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(vertical: 16),
             ),
+            style:
+                TextStyle(color: context.appColors.textPrimary, fontSize: 16),
+            keyboardType:
+                multiline ? TextInputType.multiline : TextInputType.text,
+            textInputAction:
+                multiline ? TextInputAction.newline : TextInputAction.done,
+            minLines: resolvedMinLines,
+            maxLines: multiline ? null : 1,
           ),
         ),
       ],
