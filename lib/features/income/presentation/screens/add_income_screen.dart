@@ -87,6 +87,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     FocusManager.instance.primaryFocus?.unfocus();
     final DateTime? picked = await showDatePicker(
       context: context,
+      locale: const Locale('ko', 'KR'),
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime(DateTime.now().year + 5),

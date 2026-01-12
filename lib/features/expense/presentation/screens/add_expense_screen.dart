@@ -38,7 +38,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
   late DateTime _selectedDate;
   String _selectedCategory = 'FOOD';
-  PaymentMethod _selectedPaymentMethod = PaymentMethod.card;
+  PaymentMethod _selectedPaymentMethod = PaymentMethod.cash;
 
   @override
   void initState() {
@@ -58,6 +58,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
+      locale: const Locale('ko', 'KR'),
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime(DateTime.now().year + 5),
