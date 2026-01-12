@@ -4,7 +4,7 @@ class Income {
   final String? coupleId;
   final double amount;
   final DateTime date;
-  final String source; // 급여, 부수입, 상여금, 투자수익, 기타
+  final String source; // 급여, 부수입, 용돈, 상여금, 기타
   final String? description;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -50,15 +50,15 @@ class Income {
 class IncomeSource {
   static const String salary = '급여';
   static const String sideIncome = '부수입';
+  static const String allowance = '용돈';
   static const String bonus = '상여금';
-  static const String investment = '투자수익';
   static const String other = '기타';
 
   static const List<String> all = [
     salary,
     sideIncome,
+    allowance,
     bonus,
-    investment,
     other,
   ];
 }
