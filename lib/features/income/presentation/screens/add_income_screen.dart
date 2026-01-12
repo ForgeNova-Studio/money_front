@@ -98,6 +98,23 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     }
   }
 
+  BoxDecoration _buildCardDecoration({
+    Color? backgroundColor,
+    double borderRadius = 20,
+  }) {
+    return BoxDecoration(
+      color: backgroundColor ?? Colors.white,
+      borderRadius: BorderRadius.circular(borderRadius),
+      boxShadow: [
+        BoxShadow(
+          color: context.appColors.shadow.withOpacity(0.08),
+          blurRadius: 20,
+          offset: const Offset(0, 8),
+        ),
+      ],
+    );
+  }
+
   String? _validateAmount(String? value) {
     if (value == null || value.isEmpty) {
       ScaffoldMessenger.of(context)
@@ -206,18 +223,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 24),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color:
-                                        context.appColors.shadow.withOpacity(0.08),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
-                              ),
+                              decoration: _buildCardDecoration(),
                               child: Column(
                                 children: [
                                   Center(
@@ -298,12 +304,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 14, horizontal: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                    color: context.appColors.gray200),
-                              ),
+                              decoration: _buildCardDecoration(),
                               child: Row(
                                 children: [
                                   Container(
@@ -366,7 +367,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                     child: Material(
                                       color: Colors.transparent,
                                       child: InkWell(
-                                        borderRadius: BorderRadius.circular(16),
+                                        borderRadius: BorderRadius.circular(20),
                                         onTap: () {
                                           FocusManager.instance.primaryFocus
                                               ?.unfocus();
@@ -379,39 +380,11 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                               const Duration(milliseconds: 200),
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 12, vertical: 14),
-                                          decoration: BoxDecoration(
-                                            color: isSelected
+                                          decoration: _buildCardDecoration(
+                                            backgroundColor: isSelected
                                                 ? (source['color'] as Color)
                                                     .withOpacity(0.12)
                                                 : Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            border: Border.all(
-                                              color: isSelected
-                                                  ? source['color'] as Color
-                                                  : context.appColors.gray200,
-                                            ),
-                                            boxShadow: isSelected
-                                                ? [
-                                                    BoxShadow(
-                                                      color:
-                                                          (source['color'] as Color)
-                                                              .withOpacity(0.25),
-                                                      blurRadius: 12,
-                                                      offset:
-                                                          const Offset(0, 6),
-                                                    )
-                                                  ]
-                                                : [
-                                                    BoxShadow(
-                                                      color: context
-                                                          .appColors.shadow
-                                                          .withOpacity(0.04),
-                                                      blurRadius: 10,
-                                                      offset:
-                                                          const Offset(0, 6),
-                                                    )
-                                                  ],
                                           ),
                                           child: Column(
                                             children: [
@@ -464,12 +437,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                  color: context.appColors.gray200),
-                            ),
+                            decoration: _buildCardDecoration(),
                             child: _buildCleanTextField(
                               controller: _descriptionController,
                               label: '설명',
