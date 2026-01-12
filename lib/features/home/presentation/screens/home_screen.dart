@@ -72,15 +72,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  // 수입/지출 추가 모달 열기
-  void _showAddTransactionModal(BuildContext context, DateTime selectedDate) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => TransactionModal(selectedDate: selectedDate),
-    );
-  }
-
   // 수입/지출 삭제
   Future<void> _handleDeleteTransaction(TransactionEntity transaction) async {
     if (transaction.id.isEmpty) {
