@@ -321,7 +321,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         // 확장된 메뉴
         if (_isFabExpanded) ...[
           SizedBox(
-            width: 120,
+            width: 140,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Material(
@@ -360,7 +360,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     _buildFabMenuItem(
                       icon: Icons.document_scanner,
-                      label: 'OCR',
+                      label: '영수증 스캔',
                       color: Colors.green,
                       onTap: () {
                         setState(() => _isFabExpanded = false);
@@ -417,16 +417,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.max,
             children: [
               Icon(icon, color: color, size: 22),
               const SizedBox(width: 10),
-              Text(
-                label,
-                style: TextStyle(
-                  color: context.appColors.textWhite,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+              Expanded(
+                child: Text(
+                  label,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: context.appColors.textWhite,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
