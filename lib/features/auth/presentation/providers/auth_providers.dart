@@ -23,7 +23,7 @@ import 'package:moneyflow/features/auth/domain/usecases/verify_signup_code_useca
 
 // providers/states
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:moneyflow/core/providers/core_providers.dart';
+import 'package:moneyflow/features/common/providers/core_providers.dart';
 
 part 'auth_providers.g.dart';
 

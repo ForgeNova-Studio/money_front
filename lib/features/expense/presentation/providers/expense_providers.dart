@@ -17,7 +17,7 @@ import 'package:moneyflow/features/expense/domain/usecases/update_expense_usecas
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // providers
-import 'package:moneyflow/core/providers/core_providers.dart';
+import 'package:moneyflow/features/common/providers/core_providers.dart';
 
 part 'expense_providers.g.dart';
 

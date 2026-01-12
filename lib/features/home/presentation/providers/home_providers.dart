@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as flutter_riverpod;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // core
-import 'package:moneyflow/core/providers/core_providers.dart';
+import 'package:moneyflow/features/common/providers/core_providers.dart';
 
 // dataSource
 import 'package:moneyflow/features/home/data/datasources/home_local_data_source.dart';

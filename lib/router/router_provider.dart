@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:moneyflow/core/router/app_router.dart';
-import 'package:moneyflow/core/router/route_names.dart';
+import 'package:moneyflow/router/app_router.dart';
+import 'package:moneyflow/router/route_names.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/states/auth_state.dart';
 

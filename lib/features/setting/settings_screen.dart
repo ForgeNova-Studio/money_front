@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/core/router/route_names.dart';
+import 'package:moneyflow/router/route_names.dart';
 
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 

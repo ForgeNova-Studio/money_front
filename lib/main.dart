@@ -8,9 +8,9 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 // core
-import 'package:moneyflow/core/providers/core_providers.dart';
+import 'package:moneyflow/features/common/providers/core_providers.dart';
 import 'package:moneyflow/core/theme/theme.dart';
-import 'package:moneyflow/core/router/router_provider.dart';
+import 'package:moneyflow/router/router_provider.dart';
 
 // features
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';

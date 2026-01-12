@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:moneyflow/core/providers/core_providers.dart';
+import 'package:moneyflow/features/common/providers/core_providers.dart';
 import '../../data/datasources/memory/global_brand_source.dart';
 import '../../data/datasources/local/user_brand_source.dart';
 import '../../data/datasources/remote/ocr_api_service.dart';

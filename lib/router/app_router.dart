@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:moneyflow/core/router/route_names.dart';
-import 'package:moneyflow/core/widgets/app_shell.dart';
+import 'package:moneyflow/router/route_names.dart';
+import 'package:moneyflow/features/common/widgets/app_shell.dart';
 
 // Splash Screen
-import 'package:moneyflow/presentation/screens/splash_screen.dart';
-import 'package:moneyflow/presentation/screens/settings_screen.dart';
+import 'package:moneyflow/features/common/screens/splash_screen.dart';
+import 'package:moneyflow/features/setting/settings_screen.dart';
 
 // Auth Screens
 import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';

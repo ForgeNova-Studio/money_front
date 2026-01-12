@@ -7,7 +7,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 // core
 import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/core/router/route_names.dart';
+import 'package:moneyflow/router/route_names.dart';
 
 // features
 
