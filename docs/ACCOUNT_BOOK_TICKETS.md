@@ -1,6 +1,6 @@
 # Account Book Implementation Tickets (Frontend)
 
-## T1. API 모델/레포지토리/유스케이스 추가
+## T1. API 모델/레포지토리/유스케이스 추가 ✅
 - Scope
   - features/account_book/data: remote data source, model, repository impl
   - features/account_book/domain: entity, repository, usecases
@@ -13,7 +13,7 @@
   - AccountBook API 호출 경로가 ApiConstants 사용
   - API 응답 모델 파싱 정상
 
-## T2. 전역 선택 가계부 상태 및 저장
+## T2. 전역 선택 가계부 상태 및 저장 ✅
 - Scope
   - selectedAccountBookProvider 추가
   - 로컬 저장(SharedPreferences/Hive) 연동
@@ -24,7 +24,7 @@
   - 앱 재시작 후 선택 가계부 유지
   - 선택 가계부가 비활성일 경우 자동 대체
 
-## T3. 홈 AppBar 가계부 전환 모달
+## T3. 홈 AppBar 가계부 전환 모달 ✅
 - Scope
   - HomeScreen AppBar UI 수정
   - AccountBookSwitcherSheet 추가
@@ -75,4 +75,3 @@
   - 비활성화/권한 없음 에러 핸들링
 - Acceptance
   - 주요 실패 케이스에서 사용자 피드백 제공
-
