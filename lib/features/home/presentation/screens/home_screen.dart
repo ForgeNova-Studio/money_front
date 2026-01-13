@@ -288,60 +288,87 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       curve: Curves.easeInOut,
       child: !_isAccountBookMenuOpen
           ? const SizedBox.shrink()
-          : Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12.withOpacity(0.08),
-                    blurRadius: 10,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: accountBooksState.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-                error: (error, _) => Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text('가계부를 불러오지 못했습니다: $error'),
-                ),
-                data: (books) {
-                  final selectedId = selectedAccountBookState.asData?.value;
-                  final activeBooks =
-                      books.where((book) => book.isActive != false).toList();
-
-                  if (activeBooks.isEmpty) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Text('등록된 가계부가 없습니다.'),
-                        ),
-                        const Divider(height: 1),
-                        _buildCreateAccountBookButton(),
-                      ],
-                    );
-                  }
-
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ...activeBooks.map((book) => _buildAccountBookMenuItem(
-                            book: book,
-                            isSelected: book.accountBookId == selectedId,
-                          )),
-                      const Divider(height: 1),
-                      _buildCreateAccountBookButton(),
+          : Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 320),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Colors.black12.withOpacity(0.08)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12.withOpacity(0.12),
+                        blurRadius: 18,
+                        offset: const Offset(0, 10),
+                      ),
                     ],
-                  );
-                },
+                  ),
+                  child: accountBooksState.when(
+                    loading: () => const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                    error: (error, _) => Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text('가계부를 불러오지 못했습니다: $error'),
+                    ),
+                    data: (books) {
+                      final selectedId = selectedAccountBookState.asData?.value;
+                      final activeBooks =
+                          books.where((book) => book.isActive != false).toList();
+
+                      if (activeBooks.isEmpty) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Text('등록된 가계부가 없습니다.'),
+                            ),
+                            const Divider(height: 1),
+                            _buildCreateAccountBookButton(),
+                          ],
+                        );
+                      }
+
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  '가계부 선택',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Divider(height: 1),
+                          ...activeBooks.map((book) => _buildAccountBookMenuItem(
+                                book: book,
+                                isSelected: book.accountBookId == selectedId,
+                              )),
+                          const Divider(height: 1),
+                          _buildCreateAccountBookButton(),
+                        ],
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
     );

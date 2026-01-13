@@ -202,6 +202,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
               icon: Icon(Icons.close, color: colorScheme.onSurface),
               onPressed: () => Navigator.of(context).pop(),
             ),
+            surfaceTintColor: context.appColors.transparent,
           ),
           body: Column(
             children: [
@@ -257,7 +258,8 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                               filled: false,
                                               hintText: '0',
                                               hintStyle: TextStyle(
-                                                color: context.appColors.gray300,
+                                                color:
+                                                    context.appColors.gray300,
                                                 fontSize: 40,
                                                 fontWeight: FontWeight.bold,
                                               ),
@@ -399,7 +401,8 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                                 decoration: BoxDecoration(
                                                   color: isSelected
                                                       ? source['color'] as Color
-                                                      : (source['color'] as Color)
+                                                      : (source['color']
+                                                              as Color)
                                                           .withOpacity(0.12),
                                                   shape: BoxShape.circle,
                                                 ),
@@ -407,7 +410,8 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                                   source['icon'],
                                                   color: isSelected
                                                       ? Colors.white
-                                                      : source['color'] as Color,
+                                                      : source['color']
+                                                          as Color,
                                                   size: 18,
                                                 ),
                                               ),
