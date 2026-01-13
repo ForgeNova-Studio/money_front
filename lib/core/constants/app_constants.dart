@@ -8,6 +8,8 @@ class AppConstants {
 }
 
 /// MoneyFlow App Color Constants
+/// Palette only: avoid direct UI usage. Prefer Theme.of(context).colorScheme
+/// or AppThemeColors (context.appColors) for screen widgets.
 /// 브랜드 단색 (진한 톤) - #e88a9d → #f8bac8
 class AppColors {
   AppColors._();

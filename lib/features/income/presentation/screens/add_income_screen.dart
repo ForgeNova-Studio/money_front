@@ -42,38 +42,40 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     _selectedDate = widget.initialDate ?? DateTime.now();
   }
 
-  final List<Map<String, dynamic>> _sources = [
-    {
-      'code': IncomeSource.salary,
-      'name': '급여',
-      'icon': Icons.work,
-      'color': AppColors.income,
-    },
-    {
-      'code': IncomeSource.sideIncome,
-      'name': '부수입',
-      'icon': Icons.attach_money,
-      'color': Color(0xFF2E7D32),
-    },
-    {
-      'code': IncomeSource.bonus,
-      'name': '상여금',
-      'icon': Icons.card_giftcard,
-      'color': Color(0xFFF57C00),
-    },
-    {
-      'code': IncomeSource.investment,
-      'name': '투자수익',
-      'icon': Icons.trending_up,
-      'color': Color(0xFF1565C0),
-    },
-    {
-      'code': IncomeSource.other,
-      'name': '기타',
-      'icon': Icons.more_horiz,
-      'color': Color(0xFF6D4C41),
-    },
-  ];
+  List<Map<String, dynamic>> _buildSources(BuildContext context) {
+    return [
+      {
+        'code': IncomeSource.salary,
+        'name': '급여',
+        'icon': Icons.work,
+        'color': context.appColors.income,
+      },
+      {
+        'code': IncomeSource.sideIncome,
+        'name': '부수입',
+        'icon': Icons.attach_money,
+        'color': Color(0xFF2E7D32),
+      },
+      {
+        'code': IncomeSource.bonus,
+        'name': '상여금',
+        'icon': Icons.card_giftcard,
+        'color': Color(0xFFF57C00),
+      },
+      {
+        'code': IncomeSource.investment,
+        'name': '투자수익',
+        'icon': Icons.trending_up,
+        'color': Color(0xFF1565C0),
+      },
+      {
+        'code': IncomeSource.other,
+        'name': '기타',
+        'icon': Icons.more_horiz,
+        'color': Color(0xFF6D4C41),
+      },
+    ];
+  }
 
   @override
   void dispose() {
@@ -178,6 +180,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   Widget build(BuildContext context) {
     // Provider를 watch하여 화면이 살아있는 동안 Provider가 dispose되지 않도록 함
     ref.watch(incomeViewModelProvider);
+    final sources = _buildSources(context);
 
     return PopScope(
         canPop: false,
@@ -360,7 +363,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                               return Wrap(
                                 spacing: 12,
                                 runSpacing: 12,
-                                children: _sources.map((source) {
+                                children: sources.map((source) {
                                   final isSelected =
                                       _selectedSource == source['code'];
                                   return SizedBox(

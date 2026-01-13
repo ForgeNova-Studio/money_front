@@ -230,7 +230,7 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            gradient: AppColors.primaryGradientReverse,
+            gradient: context.appColors.primaryGradientReverse,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(

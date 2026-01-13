@@ -216,9 +216,8 @@ class _CustomCalendarState extends State<CustomCalendar> {
               children: [
                 Text(
                   '${day.day}',
-                  style: const TextStyle(
-                      color: AppColors
-                          .textPrimary, // Changed from White to Primary
+                  style: TextStyle(
+                      color: context.appColors.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 13.0),
                 ),
