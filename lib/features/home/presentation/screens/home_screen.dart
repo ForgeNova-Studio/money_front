@@ -16,6 +16,9 @@ import 'package:moneyflow/features/home/presentation/widgets/transaction_list_se
 import 'package:moneyflow/features/home/presentation/states/home_state.dart';
 import 'package:moneyflow/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
+import 'package:moneyflow/features/account_book/domain/entities/account_book.dart';
+import 'package:moneyflow/features/account_book/presentation/providers/account_book_providers.dart';
+import 'package:moneyflow/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -26,6 +29,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _isFabExpanded = false;
+  bool _isAccountBookMenuOpen = false;
+  ProviderSubscription<AsyncValue<List<AccountBook>>>? _accountBooksSub;
 
   @override
   void initState() {
@@ -33,6 +38,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(homeViewModelProvider.notifier).fetchMonthlyData(DateTime.now());
     });
+    _accountBooksSub = ref.listenManual<AsyncValue<List<AccountBook>>>(
+      accountBooksProvider,
+      (previous, next) {
+        next.whenData((books) {
+          final availableIds = books
+              .where((book) => book.isActive != false)
+              .map((book) => book.accountBookId)
+              .whereType<String>()
+              .toList();
+          ref
+              .read(selectedAccountBookViewModelProvider.notifier)
+              .ensureSelectedAccountBookId(availableIds);
+        });
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _accountBooksSub?.close();
+    super.dispose();
   }
 
   // 수입/지출 삭제
@@ -91,20 +117,46 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final homeState = ref.watch(homeViewModelProvider);
     final calendarFormat = homeState.calendarFormat;
+    final accountBooksState = ref.watch(accountBooksProvider);
+    final selectedAccountBookState =
+        ref.watch(selectedAccountBookViewModelProvider);
+    final selectedAccountBookName = _resolveSelectedAccountBookName(
+      accountBooksState,
+      selectedAccountBookState,
+    );
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        title: Text(
-          '내 가계부',
-          style: TextStyle(
-            color: colorScheme.onSurface,
-            fontWeight: FontWeight.bold,
+        title: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: _toggleAccountBookMenu,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Text(
+                  selectedAccountBookName,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Icon(
+                _isAccountBookMenuOpen
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down,
+                color: colorScheme.onSurface,
+              ),
+            ],
           ),
         ),
         flexibleSpace: Listener(
           behavior: HitTestBehavior.translucent,
-          onPointerDown: (_) => _collapseFabIfNeeded(),
+          onPointerDown: (_) => _collapseOverlaysIfNeeded(),
           child: const SizedBox.expand(),
         ),
         backgroundColor: colorScheme.surface,
@@ -112,33 +164,58 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
-      body: Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerDown: (_) => _collapseFabIfNeeded(),
-        child: Column(
-          children: [
-            // 1. Budget Info Area
-            _buildBudgetInfo(),
+      body: Stack(
+        children: [
+          Listener(
+            behavior: HitTestBehavior.translucent,
+            onPointerDown: (_) => _collapseOverlaysIfNeeded(),
+            child: Column(
+              children: [
+                // 1. Budget Info Area
+                _buildBudgetInfo(),
 
-            // 2. Custom Calendar
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: CustomCalendar(
-                format: calendarFormat,
-                focusedDay: homeState.focusedMonth,
-                selectedDay: homeState.selectedDate,
-                monthlyData: homeState.monthlyData,
-                onFormatChanged: _handleFormatChanged,
-                onDateSelected: _handleDateSelected,
-                onPageChanged: _handlePageChanged,
+                // 2. Custom Calendar
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                  child: CustomCalendar(
+                    format: calendarFormat,
+                    focusedDay: homeState.focusedMonth,
+                    selectedDay: homeState.selectedDate,
+                    monthlyData: homeState.monthlyData,
+                    onFormatChanged: _handleFormatChanged,
+                    onDateSelected: _handleDateSelected,
+                    onPageChanged: _handlePageChanged,
+                  ),
+                ),
+
+                // 3. Transactions Sheet (Fills remaining space)
+                Expanded(child: _buildTransactionSheet(homeState)),
+              ],
+            ),
+          ),
+          if (_isAccountBookMenuOpen)
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: _collapseOverlaysIfNeeded,
+                child: const SizedBox.expand(),
               ),
             ),
-
-            // 3. Transactions Sheet (Fills remaining space)
-            Expanded(child: _buildTransactionSheet(homeState)),
-          ],
-        ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: _buildAccountBookDropdown(
+                accountBooksState: accountBooksState,
+                selectedAccountBookState: selectedAccountBookState,
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: _buildFloatingActionButton(homeState.selectedDate),
     );
@@ -146,26 +223,212 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   // Calendar Format 변경(월간/주간)
   void _handleFormatChanged(CalendarFormat format) {
-    _collapseFabIfNeeded();
+    _collapseOverlaysIfNeeded();
     ref.read(homeViewModelProvider.notifier).setCalendarFormat(format);
   }
 
   // Calendar 날짜 선택
   void _handleDateSelected(DateTime selected, DateTime focused) {
-    _collapseFabIfNeeded();
+    _collapseOverlaysIfNeeded();
     ref.read(homeViewModelProvider.notifier).selectDate(selected);
   }
 
   // Calendar 페이지 변경(월/주 변경)
   void _handlePageChanged(DateTime focused) {
-    _collapseFabIfNeeded();
+    _collapseOverlaysIfNeeded();
     ref.read(homeViewModelProvider.notifier).changeMonth(focused);
   }
 
-  void _collapseFabIfNeeded() {
-    if (_isFabExpanded) {
-      setState(() => _isFabExpanded = false);
+  void _collapseOverlaysIfNeeded() {
+    if (_isFabExpanded || _isAccountBookMenuOpen) {
+      setState(() {
+        _isFabExpanded = false;
+        _isAccountBookMenuOpen = false;
+      });
     }
+  }
+
+  void _toggleAccountBookMenu() {
+    setState(() {
+      _isFabExpanded = false;
+      _isAccountBookMenuOpen = !_isAccountBookMenuOpen;
+    });
+  }
+
+  String _resolveSelectedAccountBookName(
+    AsyncValue<List<AccountBook>> accountBooksState,
+    AsyncValue<String?> selectedAccountBookState,
+  ) {
+    final selectedId = selectedAccountBookState.asData?.value;
+    return accountBooksState.when(
+      data: (books) {
+        if (books.isEmpty) {
+          return '가계부 선택';
+        }
+        if (selectedId == null) {
+          return books.first.name;
+        }
+        final selectedBook = books.firstWhere(
+          (book) => book.accountBookId == selectedId,
+          orElse: () => books.first,
+        );
+        return selectedBook.name;
+      },
+      error: (_, __) => '가계부 선택',
+      loading: () => '가계부 불러오는 중',
+    );
+  }
+
+  Widget _buildAccountBookDropdown({
+    required AsyncValue<List<AccountBook>> accountBooksState,
+    required AsyncValue<String?> selectedAccountBookState,
+  }) {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+      child: !_isAccountBookMenuOpen
+          ? const SizedBox.shrink()
+          : Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12.withOpacity(0.08),
+                    blurRadius: 10,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: accountBooksState.when(
+                loading: () => const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+                error: (error, _) => Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text('가계부를 불러오지 못했습니다: $error'),
+                ),
+                data: (books) {
+                  final selectedId = selectedAccountBookState.asData?.value;
+                  final activeBooks =
+                      books.where((book) => book.isActive != false).toList();
+
+                  if (activeBooks.isEmpty) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text('등록된 가계부가 없습니다.'),
+                        ),
+                        const Divider(height: 1),
+                        _buildCreateAccountBookButton(),
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ...activeBooks.map((book) => _buildAccountBookMenuItem(
+                            book: book,
+                            isSelected: book.accountBookId == selectedId,
+                          )),
+                      const Divider(height: 1),
+                      _buildCreateAccountBookButton(),
+                    ],
+                  );
+                },
+              ),
+            ),
+    );
+  }
+
+  Widget _buildAccountBookMenuItem({
+    required AccountBook book,
+    required bool isSelected,
+  }) {
+    final bookId = book.accountBookId;
+    return InkWell(
+      onTap: bookId == null
+          ? null
+          : () async {
+              await ref
+                  .read(selectedAccountBookViewModelProvider.notifier)
+                  .setSelectedAccountBookId(bookId);
+              if (!mounted) return;
+              setState(() => _isAccountBookMenuOpen = false);
+            },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    book.name,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    book.bookType.label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              Icon(
+                Icons.check,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCreateAccountBookButton() {
+    return InkWell(
+      onTap: () {
+        setState(() => _isAccountBookMenuOpen = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('새 가계부 만들기 기능은 준비 중입니다.')),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Icon(
+              Icons.add_circle_outline,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '새로운 가계부 열기',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildTransactionSheet(HomeState homeState) {

@@ -6,6 +6,9 @@ import 'package:moneyflow/features/account_book/data/datasources/account_book_re
 import 'package:moneyflow/features/account_book/data/repositories/account_book_repository_impl.dart';
 import 'package:moneyflow/features/account_book/domain/repositories/account_book_repository.dart';
 
+// entities
+import 'package:moneyflow/features/account_book/domain/entities/account_book.dart';
+
 // usecases
 import 'package:moneyflow/features/account_book/domain/usecases/add_account_book_member_usecase.dart';
 import 'package:moneyflow/features/account_book/domain/usecases/create_account_book_usecase.dart';
@@ -69,4 +72,9 @@ AddAccountBookMemberUseCase addAccountBookMemberUseCase(Ref ref) {
 @riverpod
 DeactivateAccountBookUseCase deactivateAccountBookUseCase(Ref ref) {
   return DeactivateAccountBookUseCase(ref.read(accountBookRepositoryProvider));
+}
+
+@riverpod
+Future<List<AccountBook>> accountBooks(Ref ref) async {
+  return ref.read(getAccountBooksUseCaseProvider).call();
 }

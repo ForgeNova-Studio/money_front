@@ -365,3 +365,41 @@ final class DeactivateAccountBookUseCaseProvider extends $FunctionalProvider<
 
 String _$deactivateAccountBookUseCaseHash() =>
     r'8305479907c8f4c06504a4140e99dac0cfeecc42';
+
+@ProviderFor(accountBooks)
+const accountBooksProvider = AccountBooksProvider._();
+
+final class AccountBooksProvider extends $FunctionalProvider<
+        AsyncValue<List<AccountBook>>,
+        List<AccountBook>,
+        FutureOr<List<AccountBook>>>
+    with
+        $FutureModifier<List<AccountBook>>,
+        $FutureProvider<List<AccountBook>> {
+  const AccountBooksProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'accountBooksProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$accountBooksHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<AccountBook>> $createElement(
+          $ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<AccountBook>> create(Ref ref) {
+    return accountBooks(ref);
+  }
+}
+
+String _$accountBooksHash() => r'cdd041e5b51a851b77f751c88a7c24cd9d396529';
