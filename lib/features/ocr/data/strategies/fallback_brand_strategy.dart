@@ -2,19 +2,23 @@ import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import '../../domain/strategies/brand_match_strategy.dart';
 import '../../domain/entities/brand_info.dart';
+import '../../domain/entities/category.dart' as ocr;
 import '../datasources/local/user_brand_source.dart';
 import '../datasources/memory/global_brand_source.dart';
+import '../utils/keyword_classifier.dart';
 
 /// 하이브리드 브랜드 매칭 전략
 ///
 /// 책임:
 /// - 사용자 학습 데이터 우선 검색
 /// - 글로벌 브랜드 데이터 2차 검색
-/// - 2단계 Fallback 전략
+/// - 키워드 기반 카테고리 추론 3차 검색
+/// - 3단계 Fallback 전략
 ///
 /// 우선순위:
 /// 1. UserBrandSource (사용자 학습 데이터) - 개인화
 /// 2. GlobalBrandSource (앱 내장 데이터) - 기본
+/// 3. KeywordClassifier (키워드 분석) - 폴백
 ///
 /// 특징:
 /// - 오프라인 동작
@@ -49,9 +53,24 @@ class FallbackBrandStrategy implements BrandMatchStrategy {
       return globalInfo;
     }
 
-    // ❌ 매칭 실패
-    _logger.d('❌ 브랜드 매칭 실패: "$rawText"');
-    return null;
+    // 🚀 3순위: 키워드 기반 카테고리 추론 (Fallback)
+    final keywordCategory = KeywordClassifier.classify(rawText);
+    if (keywordCategory != null) {
+      _logger.i('✅ [키워드 분류] $rawText → ${keywordCategory.displayName}');
+      return BrandInfo(
+        name: rawText,  // 원본 상호명 그대로 사용
+        category: keywordCategory,
+        confidence: 0.7,  // 키워드 매칭은 낮은 신뢰도
+      );
+    }
+
+    // ❌ 매칭 실패 - 미분류로 반환
+    _logger.d('❌ 브랜드 매칭 실패: "$rawText" → 미분류');
+    return BrandInfo(
+      name: rawText,
+      category: ocr.Category.uncategorized,
+      confidence: 0.0,
+    );
   }
 
   /// 사용자 학습 데이터 저장 (Proxy 메서드)

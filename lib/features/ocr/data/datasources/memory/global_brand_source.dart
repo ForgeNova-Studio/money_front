@@ -43,7 +43,7 @@ class GlobalBrandSource {
         // JSON이 "CAFE"든 "Cafe"든 상관없이 Category.cafe로 매핑
         final category = Category.values.firstWhere(
               (e) => e.name.toUpperCase() == categoryCode.toString().toUpperCase(),
-          orElse: () => Category.etc, // 매칭 실패 시 '기타'로 처리 (Category Enum에 맞춰 수정 필요)
+          orElse: () => Category.uncategorized, // 매칭 실패 시 '미분류'로 처리
         );
 
         final data = _BrandData(name: name, category: category);
