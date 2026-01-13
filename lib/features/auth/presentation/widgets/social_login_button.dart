@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:moneyflow/core/constants/app_constants.dart';
-
 /// 소셜 로그인 버튼 위젯
 class SocialLoginButton extends StatelessWidget {
   final String label;
@@ -16,15 +14,16 @@ class SocialLoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
       width: double.infinity,
       height: 56,
       child: OutlinedButton.icon(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
-          foregroundColor: context.appColors.textPrimary,
+          foregroundColor: colorScheme.onSurface,
           side: BorderSide(
-            color: context.appColors.gray300,
+            color: colorScheme.outline,
             width: 1.5,
           ),
           shape: RoundedRectangleBorder(

@@ -180,6 +180,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     // ViewModel 상태 구독
     final authState = ref.watch(authViewModelProvider);
     final formState = ref.watch(registerViewModelProvider);
@@ -214,13 +215,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: context.appColors.backgroundWhite,
+        backgroundColor: colorScheme.surface,
         appBar: AppBar(
-          backgroundColor: context.appColors.backgroundWhite,
+          backgroundColor: colorScheme.surface,
           elevation: 0,
           leading: IconButton(
-            icon:
-                Icon(Icons.arrow_back_ios, color: context.appColors.textPrimary),
+            icon: Icon(Icons.arrow_back_ios, color: colorScheme.onSurface),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
@@ -348,9 +348,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 _handleSendVerificationCode();
                               },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: context.appColors.primary,
-                          foregroundColor: context.appColors.textWhite,
-                          disabledBackgroundColor: context.appColors.gray300,
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
+                          disabledBackgroundColor: colorScheme.surfaceVariant,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -390,8 +390,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         child: ElevatedButton(
                           onPressed: _handleVerifyCode,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: context.appColors.textPrimary,
-                            foregroundColor: context.appColors.textWhite,
+                            backgroundColor: colorScheme.inverseSurface,
+                            foregroundColor: colorScheme.onInverseSurface,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -469,12 +469,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               .read(registerViewModelProvider.notifier)
                               .toggleTermsAgreed();
                         },
-                        activeColor: context.appColors.primary,
+                        activeColor: colorScheme.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4),
                         ),
                         side: BorderSide(
-                          color: context.appColors.gray300,
+                          color: colorScheme.outline,
                           width: 1.5,
                         ),
                       ),
@@ -555,9 +555,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   child: ElevatedButton(
                     onPressed: authState.isLoading ? null : _handleSignUp,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: context.appColors.primary,
-                      foregroundColor: context.appColors.textWhite,
-                      disabledBackgroundColor: context.appColors.primaryPale,
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      disabledBackgroundColor: colorScheme.primaryContainer,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -570,7 +570,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             child: CircularProgressIndicator(
                               strokeWidth: 2.5,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                context.appColors.textWhite,
+                                colorScheme.onPrimary,
                               ),
                             ),
                           )

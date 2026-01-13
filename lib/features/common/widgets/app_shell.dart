@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:moneyflow/core/constants/app_constants.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.navigationShell});
@@ -16,15 +15,16 @@ class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: navigationShell.currentIndex,
         onTap: _onTap,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: context.appColors.primary,
-        unselectedItemColor: context.appColors.gray400,
-        backgroundColor: Colors.white,
+        selectedItemColor: colorScheme.primary,
+        unselectedItemColor: colorScheme.onSurfaceVariant,
+        backgroundColor: colorScheme.surface,
         showUnselectedLabels: true,
         items: const [
           BottomNavigationBarItem(

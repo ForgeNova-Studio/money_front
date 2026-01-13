@@ -132,6 +132,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     // ViewModel 상태 구독
     final authState = ref.watch(authViewModelProvider);
     final formState = ref.watch(findPasswordViewModelProvider);
@@ -160,12 +161,12 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: context.appColors.backgroundWhite,
+        backgroundColor: colorScheme.surface,
         appBar: AppBar(
-          backgroundColor: context.appColors.backgroundWhite,
+          backgroundColor: colorScheme.surface,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: context.appColors.textPrimary),
+            icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
@@ -200,9 +201,9 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                             ? null
                             : _handleSendVerificationCode,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: context.appColors.primary,
-                          foregroundColor: context.appColors.textWhite,
-                          disabledBackgroundColor: context.appColors.gray300,
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
+                          disabledBackgroundColor: colorScheme.surfaceVariant,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -245,9 +246,9 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                               ? null
                               : _handleVerifyCode,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: context.appColors.textPrimary,
-                            foregroundColor: context.appColors.textWhite,
-                            disabledBackgroundColor: context.appColors.gray300,
+                            backgroundColor: colorScheme.inverseSurface,
+                            foregroundColor: colorScheme.onInverseSurface,
+                            disabledBackgroundColor: colorScheme.surfaceVariant,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -289,9 +290,9 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                         ? _handleContinue
                         : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: context.appColors.primary,
-                      foregroundColor: context.appColors.textWhite,
-                      disabledBackgroundColor: context.appColors.primaryPale,
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      disabledBackgroundColor: colorScheme.primaryContainer,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),

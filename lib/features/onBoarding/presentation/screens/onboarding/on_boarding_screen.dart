@@ -1,9 +1,6 @@
 // packages
 import 'package:flutter/material.dart';
 
-// core
-import 'package:moneyflow/core/constants/app_constants.dart';
-
 // widgets
 import 'package:moneyflow/features/onBoarding/presentation/widgets/page1.dart';
 import 'package:moneyflow/features/onBoarding/presentation/widgets/page2.dart';
@@ -33,8 +30,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: context.appColors.backgroundWhite,
+      backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: Column(
           children: [
@@ -69,8 +67,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         builder: (context) => LoginScreen()));
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: context.appColors.primary,
-                    foregroundColor: context.appColors.textWhite,
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),

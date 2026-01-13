@@ -102,6 +102,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     // ViewModel 상태 구독
     final authState = ref.watch(authViewModelProvider);
 
@@ -131,9 +132,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
-          backgroundColor: context.appColors.backgroundWhite,
+          backgroundColor: colorScheme.surface,
           appBar: AppBar(
-            backgroundColor: context.appColors.backgroundWhite,
+            backgroundColor: colorScheme.surface,
             elevation: 0,
             automaticallyImplyLeading: false,
           ),
@@ -194,9 +195,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     onPressed:
                         authState.isLoading ? null : _handleResetPassword,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: context.appColors.primary,
-                      foregroundColor: context.appColors.textWhite,
-                      disabledBackgroundColor: context.appColors.primaryPale,
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      disabledBackgroundColor: colorScheme.primaryContainer,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -209,7 +210,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                             child: CircularProgressIndicator(
                               strokeWidth: 2.5,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                context.appColors.textWhite,
+                                colorScheme.onPrimary,
                               ),
                             ),
                           )

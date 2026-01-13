@@ -178,6 +178,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     // Provider를 watch하여 화면이 살아있는 동안 Provider가 dispose되지 않도록 함
     ref.watch(incomeViewModelProvider);
     final sources = _buildSources(context);
@@ -185,20 +186,20 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     return PopScope(
         canPop: false,
         child: Scaffold(
-          backgroundColor: context.appColors.backgroundLight,
+          backgroundColor: colorScheme.surface,
           appBar: AppBar(
             title: Text(
               '수입 등록',
               style: TextStyle(
-                color: context.appColors.textPrimary,
+                color: colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),
             centerTitle: true,
-            backgroundColor: context.appColors.backgroundLight,
+            backgroundColor: colorScheme.surface,
             elevation: 0,
             leading: IconButton(
-              icon: Icon(Icons.close, color: context.appColors.textPrimary),
+              icon: Icon(Icons.close, color: colorScheme.onSurface),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
@@ -483,8 +484,8 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                           child: ElevatedButton(
                             onPressed: _handleSubmit,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: context.appColors.primary,
-                              foregroundColor: Colors.white,
+                              backgroundColor: colorScheme.primary,
+                              foregroundColor: colorScheme.onPrimary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),

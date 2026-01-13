@@ -67,6 +67,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final authState = ref.watch(authViewModelProvider);
     // ViewModel 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
@@ -104,7 +105,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
       onTap: () =>
           FocusScope.of(context).unfocus(), // 키보드 닫기!! (홈 화면에서 오버플로우 발생 방지)
       child: Scaffold(
-        backgroundColor: context.appColors.backgroundWhite,
+        backgroundColor: colorScheme.surface,
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -179,10 +180,10 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                     // 로딩 중이면 버튼 비활성화
                     onPressed: authState.isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: context.appColors.primary,
-                      foregroundColor: context.appColors.textWhite,
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
                       disabledBackgroundColor:
-                          context.appColors.primaryPale,
+                          colorScheme.primaryContainer,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -198,7 +199,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                             child: CircularProgressIndicator(
                               strokeWidth: 2.5,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                context.appColors.textWhite,
+                                colorScheme.onPrimary,
                               ),
                             ),
                           )
@@ -224,7 +225,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                   label: 'Apple로 로그인',
                   icon: Icon(
                     Icons.apple,
-                    color: context.appColors.textPrimary,
+                    color: colorScheme.onSurface,
                     size: 24,
                   ),
                   onPressed:
@@ -243,7 +244,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                     errorBuilder: (context, error, stackTrace) {
                       return Icon(
                         Icons.g_mobiledata,
-                        color: context.appColors.textPrimary,
+                        color: colorScheme.onSurface,
                         size: 24,
                       );
                     },
@@ -277,7 +278,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                           '회원가입',
                           style: TextStyle(
                             fontSize: 15,
-                            color: context.appColors.primary,
+                            color: colorScheme.primary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -328,11 +329,12 @@ Widget _buildLoginTitle(BuildContext context) {
 
 // 가로 구분선 위젯
 Widget _buildRowDivider(BuildContext context) {
+  final colorScheme = Theme.of(context).colorScheme;
   return Row(
     children: [
       Expanded(
         child: Divider(
-          color: context.appColors.gray200,
+          color: colorScheme.outlineVariant,
           thickness: 1,
         ),
       ),
@@ -349,7 +351,7 @@ Widget _buildRowDivider(BuildContext context) {
       ),
       Expanded(
         child: Divider(
-          color: context.appColors.gray200,
+          color: colorScheme.outlineVariant,
           thickness: 1,
         ),
       ),

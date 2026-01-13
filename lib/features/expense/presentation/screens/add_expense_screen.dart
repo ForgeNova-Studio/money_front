@@ -159,25 +159,26 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     ref.watch(expenseViewModelProvider);
 
     return PopScope(
         canPop: false,
         child: Scaffold(
-          backgroundColor: context.appColors.backgroundLight,
+          backgroundColor: colorScheme.surface,
           appBar: AppBar(
             title: Text(
               '지출 등록',
               style: TextStyle(
-                color: context.appColors.textPrimary,
+                color: colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),
             centerTitle: true,
-            backgroundColor: context.appColors.backgroundLight,
+            backgroundColor: colorScheme.surface,
             elevation: 0,
             leading: IconButton(
-              icon: Icon(Icons.close, color: context.appColors.textPrimary),
+              icon: Icon(Icons.close, color: colorScheme.onSurface),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
@@ -466,21 +467,19 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                     });
                                   }
                                 },
-                                backgroundColor:
-                                    context.appColors.backgroundLight,
-                                selectedColor:
-                                    context.appColors.primary.withOpacity(0.1),
+                                backgroundColor: colorScheme.surface,
+                                selectedColor: colorScheme.primaryContainer,
                                 labelStyle: TextStyle(
                                   color: isSelected
-                                      ? context.appColors.primary
-                                      : context.appColors.textSecondary,
+                                      ? colorScheme.primary
+                                      : colorScheme.onSurfaceVariant,
                                   fontWeight: isSelected
                                       ? FontWeight.w600
                                       : FontWeight.normal,
                                 ),
                                 side: BorderSide(
                                   color: isSelected
-                                      ? context.appColors.primary
+                                      ? colorScheme.primary
                                       : Colors.transparent,
                                 ),
                                 shape: RoundedRectangleBorder(
@@ -524,8 +523,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                           child: ElevatedButton(
                             onPressed: _handleSubmit,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: context.appColors.primary,
-                              foregroundColor: Colors.white,
+                              backgroundColor: colorScheme.primary,
+                              foregroundColor: colorScheme.onPrimary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),

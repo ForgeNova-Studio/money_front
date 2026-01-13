@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:moneyflow/core/constants/app_constants.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -25,6 +24,7 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return TextField(
       controller: controller,
       enabled: enabled,
@@ -40,19 +40,19 @@ class CustomTextField extends StatelessWidget {
                   isPasswordVisible
                       ? Icons.visibility_outlined
                       : Icons.visibility_off_outlined,
-                  color: context.appColors.textTertiary,
+                  color: colorScheme.onSurfaceVariant,
                   size: 20,
                 ),
               )
             : (icon != null
                 ? Icon(
                     icon,
-                    color: context.appColors.textTertiary,
+                    color: colorScheme.onSurfaceVariant,
                     size: 20,
                   )
                 : null),
         filled: true,
-        fillColor: context.appColors.gray100,
+        fillColor: colorScheme.surfaceContainerHighest,
         contentPadding: EdgeInsets.symmetric(
           horizontal: 20,
           vertical: 18,
@@ -68,7 +68,7 @@ class CustomTextField extends StatelessWidget {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: context.appColors.primary,
+            color: colorScheme.primary,
             width: 2,
           ),
         ),

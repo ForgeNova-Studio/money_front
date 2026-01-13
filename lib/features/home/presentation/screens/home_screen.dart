@@ -88,16 +88,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final homeState = ref.watch(homeViewModelProvider);
     final calendarFormat = homeState.calendarFormat;
 
     return Scaffold(
-      backgroundColor: context.appColors.backgroundLight,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: Text(
           '내 가계부',
           style: TextStyle(
-            color: context.appColors.textPrimary,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -106,7 +107,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onPointerDown: (_) => _collapseFabIfNeeded(),
           child: const SizedBox.expand(),
         ),
-        backgroundColor: context.appColors.backgroundLight,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
@@ -314,6 +315,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildFloatingActionButton(DateTime selectedDate) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -325,7 +327,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Material(
-                color: context.appColors.gray800,
+                color: colorScheme.inverseSurface,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -341,7 +343,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Divider(
                       height: 1,
                       thickness: 1,
-                      color: context.appColors.gray700,
+                      color: colorScheme.outlineVariant,
                     ),
                     _buildFabMenuItem(
                       icon: Icons.arrow_upward,
@@ -356,7 +358,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Divider(
                       height: 1,
                       thickness: 1,
-                      color: context.appColors.gray700,
+                      color: colorScheme.outlineVariant,
                     ),
                     _buildFabMenuItem(
                       icon: Icons.document_scanner,
@@ -380,10 +382,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           height: 35,
           child: FloatingActionButton(
             onPressed: () => setState(() => _isFabExpanded = !_isFabExpanded),
-            backgroundColor: _isFabExpanded
-                ? context.appColors.gray600
-                : context.appColors.primary,
-            foregroundColor: context.appColors.textWhite,
+            backgroundColor:
+                _isFabExpanded ? colorScheme.inverseSurface : colorScheme.primary,
+            foregroundColor: _isFabExpanded
+                ? colorScheme.onInverseSurface
+                : colorScheme.onPrimary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
@@ -409,6 +412,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     required Color color,
     required VoidCallback onTap,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -426,7 +430,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   label,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: context.appColors.textWhite,
+                    color: colorScheme.onInverseSurface,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
