@@ -39,11 +39,11 @@ class GlobalBrandSource {
         final name = brandData['name'];
         final categoryCode = brandData['category'];
 
-        // 🛡️ 카테고리 매핑 강화 (대소문자 무시)
-        // JSON이 "CAFE"든 "Cafe"든 상관없이 Category.cafe로 매핑
+        // 🛡️ 카테고리 매핑 강화 (code 기반 매칭)
+        // JSON의 "CAFE_SNACK" → Category.cafeSnack (code: "CAFE_SNACK")
         final category = Category.values.firstWhere(
-              (e) => e.name.toUpperCase() == categoryCode.toString().toUpperCase(),
-          orElse: () => Category.etc, // 매칭 실패 시 '기타'로 처리 (Category Enum에 맞춰 수정 필요)
+              (e) => e.code.toUpperCase() == categoryCode.toString().toUpperCase(),
+          orElse: () => Category.uncategorized, // 매칭 실패 시 '미분류'로 처리
         );
 
         final data = _BrandData(name: name, category: category);

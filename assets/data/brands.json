@@ -6,7 +6,7 @@
         "starbucks"
       ],
       "name": "스타벅스",
-      "category": "CAFE"
+      "category": "CAFE_SNACK"
     },
     {
       "keywords": [
@@ -14,7 +14,7 @@
         "ediya"
       ],
       "name": "이디야커피",
-      "category": "CAFE"
+      "category": "CAFE_SNACK"
     },
     {
       "keywords": [
@@ -23,7 +23,7 @@
         "twosome"
       ],
       "name": "투썸플레이스",
-      "category": "CAFE"
+      "category": "CAFE_SNACK"
     },
     {
       "keywords": [
@@ -31,7 +31,7 @@
         "mega"
       ],
       "name": "메가커피",
-      "category": "CAFE"
+      "category": "CAFE_SNACK"
     },
     {
       "keywords": [
@@ -39,7 +39,7 @@
         "compose"
       ],
       "name": "컴포즈커피",
-      "category": "CAFE"
+      "category": "CAFE_SNACK"
     },
     {
       "keywords": [
@@ -69,9 +69,26 @@
     {
       "keywords": [
         "배민",
+        "배달의민족",
         "baemin"
       ],
       "name": "배달의민족",
+      "category": "FOOD"
+    },
+    {
+      "keywords": [
+        "쿠팡이츠",
+        "coupangeats"
+      ],
+      "name": "쿠팡이츠",
+      "category": "FOOD"
+    },
+    {
+      "keywords": [
+        "요기요",
+        "yogiyo"
+      ],
+      "name": "요기요",
       "category": "FOOD"
     },
     {
@@ -81,7 +98,7 @@
         "parisbaguette"
       ],
       "name": "파리바게뜨",
-      "category": "FOOD"
+      "category": "CAFE_SNACK"
     },
     {
       "keywords": [
@@ -89,7 +106,7 @@
         "touslesjours"
       ],
       "name": "뚜레쥬르",
-      "category": "FOOD"
+      "category": "CAFE_SNACK"
     },
     {
       "keywords": [
@@ -110,19 +127,10 @@
     },
     {
       "keywords": [
-        "네이버페이",
-        "naverpay",
-        "네이버파이낸셜"
-      ],
-      "name": "네이버페이",
-      "category": "SHOPPING"
-    },
-    {
-      "keywords": [
         "gs25"
       ],
       "name": "GS25",
-      "category": "FOOD"
+      "category": "LIVING"
     },
     {
       "keywords": [
@@ -130,7 +138,7 @@
         "씨유"
       ],
       "name": "CU",
-      "category": "FOOD"
+      "category": "LIVING"
     },
     {
       "keywords": [
@@ -139,7 +147,15 @@
         "711"
       ],
       "name": "세븐일레븐",
-      "category": "FOOD"
+      "category": "LIVING"
+    },
+    {
+      "keywords": [
+        "이마트24",
+        "emart24"
+      ],
+      "name": "이마트24",
+      "category": "LIVING"
     },
     {
       "keywords": [
@@ -147,7 +163,7 @@
         "emart"
       ],
       "name": "이마트",
-      "category": "SHOPPING"
+      "category": "LIVING"
     },
     {
       "keywords": [
@@ -155,7 +171,7 @@
         "homeplus"
       ],
       "name": "홈플러스",
-      "category": "SHOPPING"
+      "category": "LIVING"
     },
     {
       "keywords": [
@@ -163,7 +179,7 @@
         "lottemart"
       ],
       "name": "롯데마트",
-      "category": "SHOPPING"
+      "category": "LIVING"
     },
     {
       "keywords": [
@@ -171,15 +187,7 @@
         "daiso"
       ],
       "name": "다이소",
-      "category": "SHOPPING"
-    },
-    {
-      "keywords": [
-        "네이버페이",
-        "naverpay"
-      ],
-      "name": "네이버페이",
-      "category": "SHOPPING"
+      "category": "LIVING"
     },
     {
       "keywords": [
@@ -235,7 +243,48 @@
         "netflix"
       ],
       "name": "넷플릭스",
-      "category": "CULTURE"
+      "category": "SUBSCRIPTION"
+    },
+    {
+      "keywords": [
+        "유튜브프리미엄",
+        "youtube"
+      ],
+      "name": "유튜브 프리미엄",
+      "category": "SUBSCRIPTION"
+    },
+    {
+      "keywords": [
+        "멜론",
+        "melon"
+      ],
+      "name": "멜론",
+      "category": "SUBSCRIPTION"
+    },
+    {
+      "keywords": [
+        "네이버페이",
+        "naverpay",
+        "네이버파이낸셜"
+      ],
+      "name": "네이버페이",
+      "category": "SHOPPING"
+    },
+    {
+      "keywords": [
+        "쿠팡",
+        "coupang"
+      ],
+      "name": "쿠팡",
+      "category": "SHOPPING"
+    },
+    {
+      "keywords": [
+        "무신사",
+        "musinsa"
+      ],
+      "name": "무신사",
+      "category": "SHOPPING"
     },
     {
       "keywords": [
@@ -243,7 +292,7 @@
         "mobilians"
       ],
       "name": "모빌리언스",
-      "category": "ETC"
+      "category": "SUBSCRIPTION"
     },
     {
       "keywords": [
@@ -256,28 +305,28 @@
     },
     {
       "keywords": [
-        "현대카드",
-        "hyundaicard"
+        "KT",
+        "케이티"
       ],
-      "name": "현대카드",
-      "category": "ETC"
+      "name": "KT",
+      "category": "COMMUNICATION"
     },
     {
       "keywords": [
-        "신한카드",
-        "shinhancard"
+        "SKT",
+        "SK텔레콤"
       ],
-      "name": "신한카드",
-      "category": "ETC"
+      "name": "SK텔레콤",
+      "category": "COMMUNICATION"
     },
     {
       "keywords": [
-        "국민카드",
-        "kbcard",
-        "KB카드"
+        "LG유플러스",
+        "유플러스",
+        "LGU+"
       ],
-      "name": "국민카드",
-      "category": "ETC"
+      "name": "LG유플러스",
+      "category": "COMMUNICATION"
     }
   ]
 }

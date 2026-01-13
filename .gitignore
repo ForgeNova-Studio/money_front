@@ -44,6 +44,15 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# iOS build artifacts
+ios/build/
+ios/.symlinks/
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+
 # Desktop platform build artifacts
 /linux/
 /macos/

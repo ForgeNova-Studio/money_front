@@ -40,8 +40,14 @@ class CommonPattern implements ReceiptPattern {
   );
 
   static const List<String> _dropKeywords = [
-    '합계', '총액', '결제금액', '청구금액', '출금예정', '이번달', '명세서', '결제예정', '잔액', '포인트'
+    '합계', '총액', '결제금액', '청구금액', '출금예정', '이번달', '명세서', '결제예정', '잔액', '포인트',
+    '최신순', // UI 요소 필터링
   ];
+
+  // 요약 라인 감지 정규식: "총 N건", "N건" 등
+  static final RegExp _summaryLineRegex = RegExp(
+    r'총\s*\d+\s*건|^\d+\s*건\s+[\d,]+\s*원?$',
+  );
 
   @override
   bool canParse(RecognizedText text) => true;
@@ -99,16 +105,26 @@ class CommonPattern implements ReceiptPattern {
       );
 
       List<TextLine> rawTexts = [];
+      bool hasSummaryLineNearby = false;  // 요약 라인 근처 여부
 
       for (var line in allLines) {
         if (line == moneyLine) continue;
 
         if (_isOverlapping(line.boundingBox, smartZone)) {
+          // "총 N건" 요약 라인이 근처에 있으면 이 금액 라인 자체를 건너뛰기
+          if (_summaryLineRegex.hasMatch(line.text)) {
+            hasSummaryLineNearby = true;
+            _logger.d('  📊 요약 라인 근처 감지: "${line.text}" → 금액 라인 건너뛰기');
+            break;
+          }
           if (!_hasDropKeyword(line.text)) {
             rawTexts.add(line);
           }
         }
       }
+
+      // 요약 라인이 근처에 있으면 이 금액 라인은 합계이므로 건너뛰기
+      if (hasSummaryLineNearby) continue;
 
       rawTexts.sort((a, b) {
         double dy = (a.boundingBox.top - b.boundingBox.top).abs();
@@ -220,6 +236,13 @@ class CommonPattern implements ReceiptPattern {
 
   bool _hasDropKeyword(String text) {
     String clean = text.replaceAll(RegExp(r'\s'), '');
+    
+    // "총 N건" 패턴 감지 (요약 라인)
+    if (_summaryLineRegex.hasMatch(text)) {
+      _logger.d('  📊 요약 라인 감지, 필터링: "$text"');
+      return true;
+    }
+    
     return _dropKeywords.any((k) => clean.contains(k));
   }
 

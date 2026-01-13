@@ -113,24 +113,17 @@ class OcrRepositoryImpl implements OcrRepository {
 
         _logger.d('   [${i + 1}] 원본 분석 중: "$rawMerchant" (날짜: ${rawData.date})');
 
-        // 전략 패턴 실행 (브랜드 찾기)
+        // 전략 패턴 실행 (브랜드 찾기 - 항상 결과 반환)
         final brandInfo = await _brandStrategy.findBrand(rawMerchant);
 
-        String finalDisplayName = rawMerchant;
+        // brandInfo는 항상 반환됨 (없으면 uncategorized로)
+        final finalDisplayName = brandInfo?.name ?? rawMerchant;
+        final finalCategory = brandInfo?.category ?? Category.uncategorized;
         String finalBranchName = ''; // 지점명 (예: 강남점)
-        Category finalCategory = Category.etc;
 
-        if (brandInfo != null) {
-          finalDisplayName = brandInfo.name; // 정규화된 이름 (예: 스타벅스)
-          finalCategory = brandInfo.category; // 자동 분류된 카테고리
-
-          // ✂️ 지점명 추출 로직
-          if (rawMerchant.contains(brandInfo.name)) {
-            finalBranchName = rawMerchant.replaceAll(brandInfo.name, '').trim();
-          }
-        } else {
-          // 브랜드를 못 찾은 경우 -> 원본 유지
-          finalDisplayName = rawMerchant;
+        // ✂️ 지점명 추출 로직
+        if (brandInfo != null && rawMerchant.contains(brandInfo.name)) {
+          finalBranchName = rawMerchant.replaceAll(brandInfo.name, '').trim();
         }
 
         // 데이터 정제 및 병합
