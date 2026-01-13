@@ -1,8 +1,8 @@
 class ApiConstants {
   // Base URL
   // 로컬 개발: 맥의 IP 주소 사용 (아이폰에서 접근 가능)
-  // static const String baseUrl = 'http://localhost:8080';
-  static const String baseUrl = 'http://172.20.10.3:8080';
+  static const String baseUrl = 'http://localhost:8080';
+  // static const String baseUrl = 'http://172.20.10.3:8080';
 
   // ========== Auth endpoints ==========
   static const String register = '/api/auth/register';
@@ -22,10 +22,13 @@ class ApiConstants {
   // 개발용
   static const String devGetUserByEmail = '/api/auth/dev/users';
   static const String devDeleteUser = '/api/auth/dev/users';
+  static const String devGetAllUsers = '/api/auth/dev/users/all';
   static const String logout = '/api/auth/logout';
 
+  // ========== User endpoints ==========
+  static const String usersMe = '/api/users/me';
+
   // ========== Home endpoints ==========
-  static const String homeMonthly = '/api/home/monthly';
   static const String homeMonthlyData = '/api/home/monthly-data';
 
   // ========== Expense endpoints ==========
@@ -37,6 +40,7 @@ class ApiConstants {
 
   // ========== Income endpoints ==========
   static const String incomes = '/api/incomes';
+  static const String incomesRecent = '/api/incomes/recent';
   // 동적 경로: /api/incomes/{incomeId}
   static String incomeById(String incomeId) => '/api/incomes/$incomeId';
 
@@ -70,4 +74,13 @@ class ApiConstants {
   // 동적 경로: /api/recurring-expenses/{recurringExpenseId}
   static String recurringExpenseById(String recurringExpenseId) =>
       '/api/recurring-expenses/$recurringExpenseId';
+
+  // ========== AccountBook endpoints ==========
+  static const String accountBooks = '/api/account-books';
+  // 동적 경로: /api/account-books/{accountBookId}
+  static String accountBookById(String accountBookId) =>
+      '/api/account-books/$accountBookId';
+  // 동적 경로: /api/account-books/{accountBookId}/members
+  static String accountBookMembers(String accountBookId) =>
+      '/api/account-books/$accountBookId/members';
 }
