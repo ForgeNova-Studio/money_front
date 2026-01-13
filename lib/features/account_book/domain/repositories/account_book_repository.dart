@@ -1,0 +1,19 @@
+import 'package:moneyflow/features/account_book/domain/entities/account_book.dart';
+import 'package:moneyflow/features/account_book/domain/entities/member_info.dart';
+
+abstract class AccountBookRepository {
+  Future<List<AccountBook>> getAccountBooks();
+
+  Future<AccountBook> getAccountBook({required String accountBookId});
+
+  Future<AccountBook> createAccountBook({required AccountBook accountBook});
+
+  Future<List<MemberInfo>> getMembers({required String accountBookId});
+
+  Future<void> addMember({
+    required String accountBookId,
+    required String newMemberId,
+  });
+
+  Future<void> deactivateAccountBook({required String accountBookId});
+}
