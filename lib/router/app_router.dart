@@ -16,6 +16,9 @@ import 'package:moneyflow/features/auth/presentation/screens/reset_password_scre
 // Main Screens
 import 'package:moneyflow/features/home/presentation/screens/home_screen.dart';
 
+// AccountBook Screens
+import 'package:moneyflow/features/account_book/presentation/screens/account_book_create_screen.dart';
+
 // Expense Screens
 import 'package:moneyflow/features/expense/presentation/screens/add_expense_screen.dart';
 
@@ -199,6 +202,13 @@ class AppRouter {
           path: RouteNames.ocrTest,
           name: 'ocrTest',
           builder: (context, state) => const OcrTestScreen(),
+        ),
+
+        // ==================== AccountBook Routes ====================
+        GoRoute(
+          path: RouteNames.accountBookCreate,
+          name: 'accountBookCreate',
+          builder: (context, state) => const AccountBookCreateScreen(),
         ),
       ];
 

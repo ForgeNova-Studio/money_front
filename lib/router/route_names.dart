@@ -71,6 +71,10 @@ class RouteNames {
   /// 설정 화면
   static const String settings = '/settings';
 
+  // ==================== AccountBook Routes ====================
+  /// 가계부 생성 화면
+  static const String accountBookCreate = '/account-books/create';
+
   // ==================== OCR Route ====================
   /// OCR 테스트 화면
   static const String ocrTest = '/ocr-test';

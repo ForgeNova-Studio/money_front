@@ -36,7 +36,7 @@
   - 가계부 전환 시 홈 화면 컨텍스트 변경
   - 빈 목록일 경우 생성 유도 UI 표시
 
-## T4. 가계부 생성 화면
+## T4. 가계부 생성 화면 ✅
 - Scope
   - AccountBookCreateScreen 및 폼 UI
 - Tasks
@@ -46,7 +46,7 @@
   - 폼 유효성 검사 통과 시 생성 성공
   - 생성 후 홈에서 새 가계부 표시
 
-## T5. 가계부 상세/멤버 관리 화면
+## T5. 가계부 상세/멤버 관리 화면 ✅
 - Scope
   - AccountBookDetailScreen
 - Tasks

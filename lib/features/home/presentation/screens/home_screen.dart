@@ -491,9 +491,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return InkWell(
       onTap: () {
         setState(() => _isAccountBookMenuOpen = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('새 가계부 만들기 기능은 준비 중입니다.')),
-        );
+        context.push(RouteNames.accountBookCreate);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
