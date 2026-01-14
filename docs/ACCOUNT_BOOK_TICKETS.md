@@ -46,7 +46,7 @@
   - 폼 유효성 검사 통과 시 생성 성공
   - 생성 후 홈에서 새 가계부 표시
 
-## T5. 가계부 상세/멤버 관리 화면 ✅
+## T5. 가계부 상세/멤버 관리 화면
 - Scope
   - AccountBookDetailScreen
 - Tasks
