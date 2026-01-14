@@ -9,6 +9,7 @@
 - 홈 AppBar에서 현재 가계부 표시 및 전환 모달 제공.
 - 가계부 생성/목록/상세/멤버 조회/멤버 추가/비활성화 API 연동.
 - 선택된 가계부 컨텍스트를 홈에 적용할 수 있는 구조 마련.
+- 최초 가입/로그인 시 기본 가계부 1개 자동 생성.
 
 ## 비목표
 - 멤버 초대 링크/이메일 기반 초대 UX (API 미제공).
@@ -39,7 +40,7 @@
 - AccountBook
   - accountBookId: String
   - name: String
-  - bookType: enum { COUPLE_LIVING, TRIP, PROJECT }
+  - bookType: enum { DEFAULT, COUPLE_LIVING, TRIP, PROJECT }
   - coupleId?: String
   - memberCount?: int
   - description?: String
@@ -56,24 +57,32 @@
   - joinedAt: DateTime
 
 ## UX 플로우
-1) 홈 진입
+1) 최초 가입/로그인
+- 기본 가계부 자동 생성
+  - name: "내 가계부"
+  - bookType: DEFAULT
+  - coupleId: null
+  - memberCount: 1
+  - 나머지 필드는 null 허용 시 null
+
+2) 홈 진입
 - AppBar 타이틀에 현재 선택된 가계부명 표시
 - 초기 선택: 로컬 저장된 가계부 -> 없으면 첫 활성 가계부
 
-2) 가계부 전환 모달
+3) 가계부 전환 모달
 - AppBar 타이틀 탭 -> BottomSheet/Modal
 - 가계부 리스트, 유형 라벨, 멤버 수
 - 액션: "새 가계부 만들기", "가계부 설정" 진입
 
-3) 가계부 생성
+4) 가계부 생성
 - 입력: 이름, 유형, 설명, 기간(선택), 인원수(선택), 커플ID(선택)
 - 생성 성공 시 자동 선택 및 홈 리프레시
 
-4) 멤버 관리
+5) 멤버 관리
 - 멤버 목록 화면에서 role 표시
 - 멤버 추가는 newMemberId 입력 UX로 임시 제공
 
-5) 가계부 비활성화
+6) 가계부 비활성화
 - OWNER만 가능
 - 삭제 후 목록 리프레시, 선택 가계부 자동 전환
 
@@ -95,4 +104,3 @@
 - 홈에서 가계부 전환 성공률
 - 가계부 생성 완료율
 - 멤버 추가 성공률
-

@@ -1,5 +1,22 @@
 # Account Book Implementation Tickets (Frontend)
 
+## T0. 최초 로그인 시 기본 가계부 생성
+- Scope
+  - 로그인 성공 후 기본 가계부 생성 플로우
+  - bookType DEFAULT 대응
+- Tasks
+  - 최초 가입/로그인 시 기본 가계부 생성 API 호출
+  - 요청 payload 기본값 적용
+    - name: "내 가계부"
+    - bookType: DEFAULT
+    - coupleId: null
+    - memberCount: 1
+    - 나머지 필드는 null 허용 시 null
+  - 생성 후 선택 가계부 상태 및 홈 컨텍스트 갱신
+- Acceptance
+  - 최초 로그인 직후 최소 1개 가계부가 존재
+  - 생성된 기본 가계부가 선택 상태로 설정됨
+
 ## T1. API 모델/레포지토리/유스케이스 추가 ✅
 - Scope
   - features/account_book/data: remote data source, model, repository impl
