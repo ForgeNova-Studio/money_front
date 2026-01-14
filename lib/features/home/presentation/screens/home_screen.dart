@@ -125,48 +125,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       selectedAccountBookState,
     );
 
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        title: InkWell(
-          borderRadius: BorderRadius.circular(8),
-          onTap: _toggleAccountBookMenu,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Text(
-                  selectedAccountBookName,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.bold,
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: colorScheme.surface,
+          appBar: AppBar(
+            title: InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: _toggleAccountBookMenu,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(
+                      selectedAccountBookName,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 6),
+                  Icon(
+                    _isAccountBookMenuOpen
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    color: colorScheme.onSurface,
+                  ),
+                ],
               ),
-              const SizedBox(width: 6),
-              Icon(
-                _isAccountBookMenuOpen
-                    ? Icons.keyboard_arrow_up
-                    : Icons.keyboard_arrow_down,
-                color: colorScheme.onSurface,
-              ),
-            ],
+            ),
+            flexibleSpace: Listener(
+              behavior: HitTestBehavior.translucent,
+              onPointerDown: (_) => _collapseOverlaysIfNeeded(),
+              child: const SizedBox.expand(),
+            ),
+            backgroundColor: colorScheme.surface,
+            elevation: 0,
+            centerTitle: false,
+            automaticallyImplyLeading: false,
+            titleSpacing: 30,
           ),
-        ),
-        flexibleSpace: Listener(
-          behavior: HitTestBehavior.translucent,
-          onPointerDown: (_) => _collapseOverlaysIfNeeded(),
-          child: const SizedBox.expand(),
-        ),
-        backgroundColor: colorScheme.surface,
-        elevation: 0,
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      ),
-      body: Stack(
-        children: [
-          Listener(
+          body: Listener(
             behavior: HitTestBehavior.translucent,
             onPointerDown: (_) => _collapseOverlaysIfNeeded(),
             child: Column(
@@ -196,28 +197,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ],
             ),
           ),
-          if (_isAccountBookMenuOpen)
-            Positioned.fill(
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: _collapseOverlaysIfNeeded,
-                child: const SizedBox.expand(),
-              ),
-            ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              child: _buildAccountBookDropdown(
-                accountBooksState: accountBooksState,
-                selectedAccountBookState: selectedAccountBookState,
+          floatingActionButton:
+              _buildFloatingActionButton(homeState.selectedDate),
+        ),
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.only(top: kToolbarHeight),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween<double>(
+                  begin: 0,
+                  end: _isAccountBookMenuOpen ? 1 : 0,
+                ),
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, child) {
+                  return IgnorePointer(
+                    ignoring: value == 0,
+                    child: ClipRect(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        heightFactor: value,
+                        child: Opacity(
+                          opacity: value,
+                          child: child,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                child: _buildAccountBookDropdown(
+                  accountBooksState: accountBooksState,
+                  selectedAccountBookState: selectedAccountBookState,
+                ),
               ),
             ),
           ),
-        ],
-      ),
-      floatingActionButton: _buildFloatingActionButton(homeState.selectedDate),
+        ),
+      ],
     );
   }
 
@@ -280,97 +300,106 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildAccountBookDropdown({
+    Key? key,
     required AsyncValue<List<AccountBook>> accountBooksState,
     required AsyncValue<String?> selectedAccountBookState,
   }) {
-    return AnimatedSize(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
-      child: !_isAccountBookMenuOpen
-          ? const SizedBox.shrink()
-          : Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 320),
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.black12.withOpacity(0.08)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12.withOpacity(0.12),
-                        blurRadius: 18,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: accountBooksState.when(
-                    loading: () => const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
-                    error: (error, _) => Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text('가계부를 불러오지 못했습니다: $error'),
-                    ),
-                    data: (books) {
-                      final selectedId = selectedAccountBookState.asData?.value;
-                      final activeBooks =
-                          books.where((book) => book.isActive != false).toList();
-
-                      if (activeBooks.isEmpty) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(16),
-                              child: Text('등록된 가계부가 없습니다.'),
-                            ),
-                            const Divider(height: 1),
-                            _buildCreateAccountBookButton(),
-                          ],
-                        );
-                      }
-
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            child: Row(
-                              children: [
-                                Text(
-                                  '가계부 선택',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Divider(height: 1),
-                          ...activeBooks.map((book) => _buildAccountBookMenuItem(
-                                book: book,
-                                isSelected: book.accountBookId == selectedId,
-                              )),
-                          const Divider(height: 1),
-                          _buildCreateAccountBookButton(),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              ),
+    return Align(
+      key: key,
+      alignment: Alignment.topLeft,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 300),
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color:
+                  Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4),
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.12),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          child: accountBooksState.when(
+            loading: () => const Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (error, _) => Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text('가계부를 불러오지 못했습니다: $error'),
+            ),
+            data: (books) {
+              final selectedId = selectedAccountBookState.asData?.value;
+              final activeBooks =
+                  books.where((book) => book.isActive != false).toList();
+
+              if (activeBooks.isEmpty) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(
+                        child: Text('등록된 가계부가 없습니다.'),
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    _buildCreateAccountBookButton(),
+                  ],
+                );
+              }
+
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.outlineVariant,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '가계부 선택',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  ...activeBooks.map((book) => _buildAccountBookMenuItem(
+                        book: book,
+                        isSelected: book.accountBookId == selectedId,
+                      )),
+                  const Divider(height: 1),
+                  _buildCreateAccountBookButton(),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 
@@ -390,39 +419,69 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               setState(() => _isAccountBookMenuOpen = false);
             },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    book.name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: isSelected
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    book.bookType.label,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary.withOpacity(0.08)
+                : Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isSelected
+                  ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+                  : Theme.of(context)
+                      .colorScheme
+                      .outlineVariant
+                      .withOpacity(0.4),
             ),
-            if (isSelected)
-              Icon(
-                Icons.check,
-                color: Theme.of(context).colorScheme.primary,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                book.name,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurface,
+                ),
               ),
-          ],
+              const SizedBox(height: 6),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surfaceVariant
+                      .withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  book.bookType.label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+              if (isSelected) ...[
+                const SizedBox(height: 8),
+                Icon(
+                  Icons.check_circle,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 18,
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );
@@ -439,6 +498,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.add_circle_outline,
@@ -672,8 +732,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           height: 35,
           child: FloatingActionButton(
             onPressed: () => setState(() => _isFabExpanded = !_isFabExpanded),
-            backgroundColor:
-                _isFabExpanded ? colorScheme.inverseSurface : colorScheme.primary,
+            backgroundColor: _isFabExpanded
+                ? colorScheme.inverseSurface
+                : colorScheme.primary,
             foregroundColor: _isFabExpanded
                 ? colorScheme.onInverseSurface
                 : colorScheme.onPrimary,
