@@ -324,6 +324,9 @@ class AuthViewModel extends _$AuthViewModel {
     } on ValidationException catch (e) {
       state = _setErrorMessage(e.message);
       if (rethrowError) rethrow;
+    } on UnauthorizedException catch (e) {
+      state = _setErrorMessage(e.message);
+      if (rethrowError) rethrow;
     } on NetworkException catch (e) {
       state = _setErrorMessage(e.message);
       if (rethrowError) rethrow;
