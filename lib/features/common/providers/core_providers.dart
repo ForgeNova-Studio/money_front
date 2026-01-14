@@ -120,8 +120,33 @@ class _AuthInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     final localDataSource = ref.read(authLocalDataSourceProvider);
+    final statusCode = err.response?.statusCode;
 
-    if (err.response?.statusCode != 401) {
+    if (statusCode == 404 && _isUserNotFound(err.response?.data)) {
+      await localDataSource.clearAll();
+      ref.read(authViewModelProvider.notifier).forceUnauthenticated(
+            errorMessage: '사용자를 찾을 수 없습니다. 다시 로그인해주세요.',
+          );
+      if (kDebugMode) {
+        debugPrint('[AuthInterceptor] 사용자 없음 → 자동 로그아웃 처리');
+      }
+      return handler.next(err);
+    }
+
+    if (err.requestOptions.path == ApiConstants.refreshToken &&
+        statusCode == 400 &&
+        _isInvalidRefreshToken(err.response?.data)) {
+      await localDataSource.clearAll();
+      ref
+          .read(authViewModelProvider.notifier)
+          .forceUnauthenticated(errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.');
+      if (kDebugMode) {
+        debugPrint('[AuthInterceptor] Refresh Token 400 → 자동 로그아웃 처리');
+      }
+      return handler.next(err);
+    }
+
+    if (statusCode != 401) {
       return handler.next(err);
     }
 
@@ -253,5 +278,25 @@ class _AuthInterceptor extends Interceptor {
     newHeaders['Authorization'] = 'Bearer $accessToken';
 
     return options.copyWith(headers: newHeaders);
+  }
+
+  bool _isUserNotFound(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      final message = data['message'];
+      if (message is String) {
+        return message.contains('사용자를 찾을 수 없습니다');
+      }
+    }
+    return false;
+  }
+
+  bool _isInvalidRefreshToken(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      final message = data['message'];
+      if (message is String) {
+        return message.contains('유효하지 않은 Refresh Token');
+      }
+    }
+    return false;
   }
 }
