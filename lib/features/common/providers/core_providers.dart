@@ -75,6 +75,23 @@ class _AuthInterceptor extends Interceptor {
 
   _AuthInterceptor(this.ref);
 
+  // 401 세션 만료를 건너 뛰는 엔드포인트
+  // 예) 로그인 실패를 세션 만료로 처리하지 않도록 추가
+  static final Set<String> _skip401Paths = {
+    ApiConstants.login,
+    ApiConstants.register,
+    ApiConstants.socialLogin,
+    ApiConstants.mockSocialLogin,
+    ApiConstants.sendSignupCode,
+    ApiConstants.verifySignupCode,
+    ApiConstants.sendPasswordResetCode,
+    ApiConstants.verifyResetPasswordCode,
+    ApiConstants.resetPassword,
+    ApiConstants.authHealth,
+    ApiConstants.devGetUserByEmail,
+    ApiConstants.devGetAllUsers,
+  };
+
   Dio _createBasicDio() {
     return Dio(BaseOptions(
       baseUrl: ApiConstants.baseUrl,
@@ -105,6 +122,10 @@ class _AuthInterceptor extends Interceptor {
     final localDataSource = ref.read(authLocalDataSourceProvider);
 
     if (err.response?.statusCode != 401) {
+      return handler.next(err);
+    }
+
+    if (_skip401Paths.contains(err.requestOptions.path)) {
       return handler.next(err);
     }
 
