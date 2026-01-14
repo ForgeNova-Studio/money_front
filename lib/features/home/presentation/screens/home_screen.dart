@@ -19,6 +19,7 @@ import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart'
 import 'package:moneyflow/features/account_book/domain/entities/account_book.dart';
 import 'package:moneyflow/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moneyflow/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -166,6 +167,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             centerTitle: false,
             automaticallyImplyLeading: false,
             titleSpacing: 30,
+            actions: [
+              IconButton(
+                tooltip: '로그아웃',
+                icon: Icon(Icons.logout, color: colorScheme.onSurface),
+                onPressed: () async {
+                  await ref.read(authViewModelProvider.notifier).logout();
+                },
+              ),
+            ],
           ),
           body: Listener(
             behavior: HitTestBehavior.translucent,
