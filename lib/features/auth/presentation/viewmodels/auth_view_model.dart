@@ -121,7 +121,7 @@ class AuthViewModel extends _$AuthViewModel {
       state = AuthState.initial(); // 성공 시 초기 상태로 복귀
     },
         loading: true,
-        rethrowError: true,
+        rethrowError: false,
         defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다');
   }
 
@@ -137,7 +137,7 @@ class AuthViewModel extends _$AuthViewModel {
       return result;
     },
         loading: true,
-        rethrowError: true,
+        rethrowError: false,
         defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다');
   }
 
@@ -153,7 +153,7 @@ class AuthViewModel extends _$AuthViewModel {
       return result;
     },
         loading: true,
-        rethrowError: true,
+        rethrowError: false,
         defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다');
   }
 
@@ -177,7 +177,7 @@ class AuthViewModel extends _$AuthViewModel {
       state = AuthState.authenticated(user: result.user);
     },
         loading: true,
-        rethrowError: true,
+        rethrowError: false,
         defaultErrorMessage: '회원가입 중 오류가 발생했습니다');
   }
 
@@ -202,7 +202,7 @@ class AuthViewModel extends _$AuthViewModel {
       state = AuthState.authenticated(user: result.user);
     },
         loading: true,
-        rethrowError: true,
+        rethrowError: false,
         defaultErrorMessage: 'Google 로그인 중 오류가 발생했습니다');
   }
 
@@ -214,7 +214,7 @@ class AuthViewModel extends _$AuthViewModel {
       state = AuthState.authenticated(user: result.user);
     },
         loading: true,
-        rethrowError: true,
+        rethrowError: false,
         defaultErrorMessage: 'Apple 로그인 중 오류가 발생했습니다');
   }
 
@@ -253,7 +253,7 @@ class AuthViewModel extends _$AuthViewModel {
       state = AuthState.initial(); // 성공 시 초기 상태로 복귀
     },
         loading: true,
-        rethrowError: true,
+        rethrowError: false,
         defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다');
   }
 
@@ -272,7 +272,7 @@ class AuthViewModel extends _$AuthViewModel {
       state = AuthState.initial(); // 성공 시 초기 상태로 복귀
     },
         loading: true,
-        rethrowError: true,
+        rethrowError: false,
         defaultErrorMessage: '비밀번호 재설정 중 오류가 발생했습니다');
   }
 
