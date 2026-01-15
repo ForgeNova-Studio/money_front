@@ -87,12 +87,10 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
       if (next.errorMessage != null &&
           next.errorMessage != previous?.errorMessage) {
         // 동일 메시지가 스낵바에 떠 있는 동안 다시 뜨지 않도록 가드
-        if (_isSnackBarVisible &&
-            _lastSnackBarMessage == next.errorMessage) {
+        if (_isSnackBarVisible && _lastSnackBarMessage == next.errorMessage) {
           return;
         }
-        final controller = ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar();
+        final controller = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
         final snackBarController = controller.showSnackBar(
           SnackBar(
             content: Text(next.errorMessage!),
@@ -196,8 +194,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.primary,
                       foregroundColor: colorScheme.onPrimary,
-                      disabledBackgroundColor:
-                          colorScheme.primaryContainer,
+                      disabledBackgroundColor: colorScheme.primaryContainer,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -313,31 +310,35 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
 // LoginScreen 타이틀 위젯
 Widget _buildLoginTitle(BuildContext context) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'MoneyFlow',
-        style: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          color: context.appColors.textPrimary,
-          height: 1.2,
+  return Center(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          '모아모아',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            color: context.appColors.textPrimary,
+            height: 1.2,
+          ),
         ),
-      ),
 
-      SizedBox(height: 6),
+        SizedBox(height: 6),
 
-      // 서브타이틀
-      Text(
-        '계정을 선택해주세요.',
-        style: TextStyle(
-          fontSize: 16,
-          color: context.appColors.textSecondary,
-          height: 1.5,
-        ),
-      )
-    ],
+        // 서브타이틀
+        Text(
+          '돈을 모아, 희망을 모아',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 16,
+            color: context.appColors.textSecondary,
+            height: 1.5,
+          ),
+        )
+      ],
+    ),
   );
 }
 
