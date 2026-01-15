@@ -30,7 +30,7 @@ class TransactionListSection extends StatelessWidget {
     return monthlyData.when(
       loading: () => const Padding(
         padding: EdgeInsets.all(32.0),
-        child: Center(child: CircularProgressIndicator()),
+        child: _CenteredLoadingIndicator(),
       ),
       error: (error, stack) => const Padding(
         padding: EdgeInsets.all(32.0),
@@ -133,6 +133,19 @@ class TransactionListSection extends StatelessWidget {
               : () => onDelete!(tx),
         );
       },
+    );
+  }
+}
+
+class _CenteredLoadingIndicator extends StatelessWidget {
+  const _CenteredLoadingIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height * 0.3;
+    return SizedBox(
+      height: height,
+      child: const Center(child: CircularProgressIndicator()),
     );
   }
 }
