@@ -1,22 +1,35 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:moneyflow/features/common/providers/core_providers.dart';
+import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 
 part 'selected_account_book_view_model.g.dart';
 
 @riverpod
 class SelectedAccountBookViewModel extends _$SelectedAccountBookViewModel {
-  static const String _storageKey = 'selected_account_book_id';
+  static const String _storageKeyPrefix = 'selected_account_book_id';
 
   @override
   AsyncValue<String?> build() {
-    Future.microtask(_loadFromStorage);
+    final userId = ref.watch(authViewModelProvider).user?.userId;
+    Future.microtask(() => _loadFromStorage(userId));
     return const AsyncValue.loading();
   }
 
-  Future<void> _loadFromStorage() async {
+  String _storageKeyForUser(String? userId) {
+    return '${_storageKeyPrefix}_$userId';
+  }
+
+  Future<void> _loadFromStorage(String? userId) async {
+    if (userId == null) {
+      if (!ref.mounted) return;
+      state = const AsyncValue.data(null);
+      return;
+    }
+
     final preferences = ref.read(sharedPreferencesProvider);
-    final storedId = preferences.getString(_storageKey);
+    final storageKey = _storageKeyForUser(userId);
+    final storedId = preferences.getString(storageKey);
 
     if (!ref.mounted) return;
     state = AsyncValue.data(storedId);
@@ -26,10 +39,15 @@ class SelectedAccountBookViewModel extends _$SelectedAccountBookViewModel {
     state = AsyncValue.data(accountBookId);
 
     final preferences = ref.read(sharedPreferencesProvider);
+    final userId = ref.read(authViewModelProvider).user?.userId;
+    if (userId == null) {
+      return;
+    }
+    final storageKey = _storageKeyForUser(userId);
     if (accountBookId == null) {
-      await preferences.remove(_storageKey);
+      await preferences.remove(storageKey);
     } else {
-      await preferences.setString(_storageKey, accountBookId);
+      await preferences.setString(storageKey, accountBookId);
     }
   }
 
