@@ -1,12 +1,16 @@
 // packages
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 // core
-import '../../../../core/constants/app_constants.dart';
+import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moneyflow/features/common/widgets/transaction_form/amount_input_card.dart';
+import 'package:moneyflow/features/common/widgets/transaction_form/date_picker_card.dart';
+import 'package:moneyflow/features/common/widgets/transaction_form/form_submit_button.dart';
+import 'package:moneyflow/features/common/widgets/transaction_form/transaction_form_card.dart';
+import 'package:moneyflow/features/common/widgets/transaction_form/transaction_form_styles.dart';
+import 'package:moneyflow/features/common/widgets/transaction_form/transaction_text_field.dart';
 
 // features
 import 'package:moneyflow/features/income/presentation/viewmodels/income_view_model.dart';
@@ -39,6 +43,8 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   @override
   void initState() {
     super.initState();
+
+    // 홈에서 선택된 날짜가 있다면 선택됨
     _selectedDate = widget.initialDate ?? DateTime.now();
   }
 
@@ -85,6 +91,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     super.dispose();
   }
 
+  // 날짜 선택 모달 열기
   Future<void> _selectDate(BuildContext context) async {
     FocusManager.instance.primaryFocus?.unfocus();
     final DateTime? picked = await showDatePicker(
@@ -101,23 +108,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     }
   }
 
-  BoxDecoration _buildCardDecoration({
-    Color? backgroundColor,
-    double borderRadius = 20,
-  }) {
-    return BoxDecoration(
-      color: backgroundColor ?? Colors.white,
-      borderRadius: BorderRadius.circular(borderRadius),
-      boxShadow: [
-        BoxShadow(
-          color: context.appColors.shadow.withOpacity(0.08),
-          blurRadius: 20,
-          offset: const Offset(0, 8),
-        ),
-      ],
-    );
-  }
-
+  // 금액 유효성 검사
   String? _validateAmount(String? value) {
     if (value == null || value.isEmpty) {
       ScaffoldMessenger.of(context)
@@ -137,6 +128,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     return null;
   }
 
+  // 등록
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -144,6 +136,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
 
     final amount = double.parse(_amountController.text.replaceAll(',', ''));
 
+    // Income 엔티티 작성
     final income = Income(
       amount: amount,
       date: _selectedDate,
@@ -207,6 +200,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
           body: Column(
             children: [
               Expanded(
+                // 스크롤 시작시 키보드를 자동으로 내리기 위한 처리
                 child: NotificationListener<ScrollStartNotification>(
                   onNotification: (notification) {
                     if (notification.dragDetails != null) {
@@ -222,131 +216,20 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           SizedBox(height: 20),
-                          // 1. Large Amount Input
-                          GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () => _amountFocusNode.requestFocus(),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 24),
-                              decoration: _buildCardDecoration(),
-                              child: Column(
-                                children: [
-                                  Center(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.baseline,
-                                      textBaseline: TextBaseline.alphabetic,
-                                      children: [
-                                        IntrinsicWidth(
-                                          child: TextFormField(
-                                            controller: _amountController,
-                                            focusNode: _amountFocusNode,
-                                            validator: _validateAmount,
-                                            keyboardType: TextInputType.number,
-                                            textAlign: TextAlign.center,
-                                            onTap: () {
-                                              _amountFocusNode.requestFocus();
-                                            },
-                                            style: TextStyle(
-                                              fontSize: 40,
-                                              fontWeight: FontWeight.bold,
-                                              color: context.appColors.primary,
-                                            ),
-                                            decoration: InputDecoration(
-                                              filled: false,
-                                              hintText: '0',
-                                              hintStyle: TextStyle(
-                                                color:
-                                                    context.appColors.gray300,
-                                                fontSize: 40,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              border: InputBorder.none,
-                                              focusedBorder: InputBorder.none,
-                                              enabledBorder: InputBorder.none,
-                                              errorBorder: InputBorder.none,
-                                              focusedErrorBorder:
-                                                  InputBorder.none,
-                                              disabledBorder: InputBorder.none,
-                                              errorStyle: const TextStyle(
-                                                height: 0,
-                                                color: Colors.transparent,
-                                              ),
-                                              contentPadding: EdgeInsets.zero,
-                                            ),
-                                            inputFormatters: [
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly,
-                                              _ThousandsSeparatorInputFormatter(),
-                                            ],
-                                            autofocus: false,
-                                            showCursor: false,
-                                            cursorColor: Colors.transparent,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '원',
-                                          style: TextStyle(
-                                            fontSize: 40,
-                                            fontWeight: FontWeight.w600,
-                                            color:
-                                                context.appColors.textPrimary,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          // 1. 금액 입력 필드
+                          AmountInputCard(
+                            controller: _amountController,
+                            focusNode: _amountFocusNode,
+                            validator: _validateAmount,
+                            amountColor: context.appColors.primary,
+                            unitColor: context.appColors.textPrimary,
                           ),
                           const SizedBox(height: 24),
 
-                          // 2. Date Selection
-                          GestureDetector(
+                          // 2. 날짜 선택 필드
+                          DatePickerCard(
+                            selectedDate: _selectedDate,
                             onTap: () => _selectDate(context),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 14, horizontal: 16),
-                              decoration: _buildCardDecoration(),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 36,
-                                    height: 36,
-                                    decoration: BoxDecoration(
-                                      color: context.appColors.primary
-                                          .withOpacity(0.1),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      Icons.calendar_today,
-                                      color: context.appColors.primary,
-                                      size: 18,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      DateFormat('yyyy년 M월 d일 (E)', 'ko_KR')
-                                          .format(_selectedDate),
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: context.appColors.textPrimary,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.chevron_right,
-                                    color: context.appColors.gray400,
-                                  ),
-                                ],
-                              ),
-                            ),
                           ),
                           const SizedBox(height: 28),
 
@@ -360,6 +243,8 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                             ),
                           ),
                           const SizedBox(height: 12),
+
+                          // 수입 출처 GridView
                           LayoutBuilder(
                             builder: (context, constraints) {
                               final itemWidth = (constraints.maxWidth - 24) / 3;
@@ -387,7 +272,9 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                               const Duration(milliseconds: 200),
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 12, vertical: 14),
-                                          decoration: _buildCardDecoration(
+                                          decoration:
+                                              transactionFormCardDecoration(
+                                            context,
                                             backgroundColor: isSelected
                                                 ? (source['color'] as Color)
                                                     .withOpacity(0.12)
@@ -442,14 +329,12 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                           ),
                           const SizedBox(height: 28),
 
-                          // 4. Description Field
-                          Container(
+                          // 4. 메모 필드
+                          TransactionFormCard(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 6),
-                            decoration: _buildCardDecoration(),
-                            child: _buildCleanTextField(
+                                horizontal: 16, vertical: 10),
+                            child: TransactionTextField(
                               controller: _descriptionController,
-                              label: '설명',
                               hint: '어떤 수입인가요?',
                               icon: Icons.edit_outlined,
                               multiline: true,
@@ -463,116 +348,14 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                 ),
               ),
 
-              // Bottom Button
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                switchInCurve: Curves.easeOut,
-                switchOutCurve: Curves.easeIn,
-                transitionBuilder: (child, animation) {
-                  final slide = Tween<Offset>(
-                    begin: const Offset(0, 0.2),
-                    end: Offset.zero,
-                  ).animate(animation);
-                  return FadeTransition(
-                    opacity: animation,
-                    child: SlideTransition(position: slide, child: child),
-                  );
-                },
-                child: MediaQuery.of(context).viewInsets.bottom == 0
-                    ? Padding(
-                        key: const ValueKey('submit-button'),
-                        padding: EdgeInsets.fromLTRB(24, 0, 24, 40),
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: ElevatedButton(
-                            onPressed: _handleSubmit,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: colorScheme.primary,
-                              foregroundColor: colorScheme.onPrimary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: const Text(
-                              '등록하기',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    : const SizedBox(
-                        key: ValueKey('submit-placeholder'),
-                      ),
+              // 등록하기 버튼
+              FormSubmitButton(
+                isVisible: MediaQuery.of(context).viewInsets.bottom == 0,
+                label: '등록하기',
+                onPressed: _handleSubmit,
               ),
             ],
           ),
         ));
-  }
-
-  Widget _buildCleanTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required IconData icon,
-    bool multiline = false,
-    int? minLines,
-  }) {
-    final resolvedMinLines = multiline ? (minLines ?? 3) : 1;
-    return Row(
-      children: [
-        Icon(icon, color: context.appColors.textSecondary, size: 24),
-        SizedBox(width: 16),
-        Expanded(
-          child: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: TextStyle(color: context.appColors.gray400),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(vertical: 16),
-            ),
-            style:
-                TextStyle(color: context.appColors.textPrimary, fontSize: 16),
-            keyboardType:
-                multiline ? TextInputType.multiline : TextInputType.text,
-            textInputAction:
-                multiline ? TextInputAction.newline : TextInputAction.done,
-            minLines: resolvedMinLines,
-            maxLines: multiline ? null : 1,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// 천 단위 구분 기호 입력 포맷터
-class _ThousandsSeparatorInputFormatter extends TextInputFormatter {
-  final NumberFormat _formatter = NumberFormat('#,###');
-
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    if (newValue.text.isEmpty) {
-      return newValue;
-    }
-
-    final number = int.tryParse(newValue.text.replaceAll(',', ''));
-    if (number == null) {
-      return oldValue;
-    }
-
-    final formatted = _formatter.format(number);
-    return TextEditingValue(
-      text: formatted,
-      selection: TextSelection.collapsed(offset: formatted.length),
-    );
   }
 }
