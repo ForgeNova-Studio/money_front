@@ -4,6 +4,7 @@ import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.
 import 'package:moneyflow/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moneyflow/features/expense/presentation/providers/expense_providers.dart';
 import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
+import 'package:moneyflow/features/home/domain/entities/monthly_home_cache.dart';
 import 'package:moneyflow/features/home/presentation/providers/home_providers.dart';
 import 'package:moneyflow/features/home/presentation/states/home_state.dart';
 import 'package:moneyflow/features/income/presentation/providers/income_providers.dart';
@@ -41,6 +42,7 @@ class HomeViewModel extends _$HomeViewModel {
   Future<void> fetchMonthlyData(
     DateTime month, {
     bool forceRefresh = false,
+    bool useCache = true,
   }) async {
     final userId = _resolveUserId();
     final accountBookId = _resolveAccountBookId();
@@ -57,25 +59,27 @@ class HomeViewModel extends _$HomeViewModel {
     final repository = ref.read(homeRepositoryProvider);
 
     var hasCache = false;
+    MonthlyHomeCache? cached;
 
-    if (!forceRefresh) {
-      final cached = await repository.getCachedMonthlyHomeData(
+    // 홈 진입 시 캐시를 먼저 읽어 바로 표시
+    if (useCache) {
+      cached = await repository.getCachedMonthlyHomeData(
         yearMonth: month,
         userId: userId,
         accountBookId: accountBookId,
       );
+    }
 
-      if (cached != null) {
-        hasCache = true;
-        state = state.copyWith(
-          monthlyData: AsyncValue.data(cached.data),
-          focusedMonth: month,
-        );
+    if (cached != null) {
+      hasCache = true;
+      state = state.copyWith(
+        monthlyData: AsyncValue.data(cached.data),
+        focusedMonth: month,
+      );
 
-        if (!cached.isExpired(_cacheTtl)) {
-          _prefetchAdjacentMonths(month, userId, accountBookId);
-          return;
-        }
+      if (!forceRefresh && !cached.isExpired(_cacheTtl)) {
+        _prefetchAdjacentMonths(month, userId, accountBookId);
+        return;
       }
     }
 
