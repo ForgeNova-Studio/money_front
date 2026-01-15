@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moneyflow/features/expense/presentation/providers/expense_providers.dart';
+import 'package:moneyflow/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
 import 'package:moneyflow/features/home/domain/entities/monthly_home_cache.dart';
 import 'package:moneyflow/features/home/presentation/providers/home_providers.dart';
@@ -46,7 +47,10 @@ class HomeViewModel extends _$HomeViewModel {
   }) async {
     final userId = _resolveUserId();
     final accountBookId = _resolveAccountBookId();
+    final refreshIndicator =
+        ref.read(homeRefreshIndicatorProvider.notifier);
     if (accountBookId == null) {
+      refreshIndicator.set(false);
       state = state.copyWith(
         monthlyData: AsyncValue.error(
           StateError('Account book is not selected'),
@@ -78,6 +82,7 @@ class HomeViewModel extends _$HomeViewModel {
       );
 
       if (!forceRefresh && !cached.isExpired(_cacheTtl)) {
+        refreshIndicator.set(false);
         _prefetchAdjacentMonths(month, userId, accountBookId);
         return;
       }
@@ -92,14 +97,26 @@ class HomeViewModel extends _$HomeViewModel {
       state = state.copyWith(focusedMonth: month);
     }
 
-    final useCase = ref.read(getHomeMonthlyDataUseCaseProvider);
-    final result = await AsyncValue.guard(
-      () => useCase(
-        yearMonth: month,
-        userId: userId,
-        accountBookId: accountBookId,
-      ),
-    );
+    final shouldShowRefreshIndicator = hasCache;
+    if (shouldShowRefreshIndicator) {
+      refreshIndicator.set(true);
+    }
+
+    AsyncValue<Map<String, DailyTransactionSummary>> result;
+    try {
+      final useCase = ref.read(getHomeMonthlyDataUseCaseProvider);
+      result = await AsyncValue.guard(
+        () => useCase(
+          yearMonth: month,
+          userId: userId,
+          accountBookId: accountBookId,
+        ),
+      );
+    } finally {
+      if (shouldShowRefreshIndicator) {
+        refreshIndicator.set(false);
+      }
+    }
 
     if (!ref.mounted) return;
 

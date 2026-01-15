@@ -31,6 +31,20 @@ final homeLocalDataSourceProvider =
   return HomeLocalDataSourceImpl();
 });
 
+class HomeRefreshIndicator extends flutter_riverpod.Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void set(bool value) {
+    state = value;
+  }
+}
+
+final homeRefreshIndicatorProvider =
+    flutter_riverpod.NotifierProvider<HomeRefreshIndicator, bool>(
+  HomeRefreshIndicator.new,
+);
+
 // ============================================================================
 // Repository Provider
 // ============================================================================

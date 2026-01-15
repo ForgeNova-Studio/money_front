@@ -13,6 +13,7 @@ import 'package:moneyflow/router/route_names.dart';
 
 import 'package:moneyflow/features/home/presentation/widgets/custom_calendar.dart';
 import 'package:moneyflow/features/home/presentation/widgets/transaction_list_section.dart';
+import 'package:moneyflow/features/home/presentation/providers/home_providers.dart';
 import 'package:moneyflow/features/home/presentation/states/home_state.dart';
 import 'package:moneyflow/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
@@ -118,6 +119,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final accountBooksState = ref.watch(accountBooksProvider);
     final selectedAccountBookState =
         ref.watch(selectedAccountBookViewModelProvider);
+    final isRefreshing = ref.watch(homeRefreshIndicatorProvider);
     final selectedAccountBookName = _resolveSelectedAccountBookName(
       accountBooksState,
       selectedAccountBookState,
@@ -165,6 +167,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             automaticallyImplyLeading: false,
             titleSpacing: 30,
             actions: [
+              if (isRefreshing)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ),
               IconButton(
                 tooltip: '로그아웃',
                 icon: Icon(Icons.logout, color: colorScheme.onSurface),
