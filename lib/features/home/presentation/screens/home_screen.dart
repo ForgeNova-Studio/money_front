@@ -145,6 +145,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           appBar: AppBar(
             title: InkWell(
               borderRadius: BorderRadius.circular(8),
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              overlayColor: MaterialStateProperty.all(Colors.transparent),
               onTap: _toggleAccountBookMenu,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
