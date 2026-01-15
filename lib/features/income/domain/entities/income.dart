@@ -2,6 +2,7 @@ class Income {
   final String? incomeId;
   final String? userId;
   final String? coupleId;
+  final String? accountBookId;
   final double amount;
   final DateTime date;
   final String source; // 급여, 부수입, 용돈, 상여금, 기타
@@ -13,6 +14,7 @@ class Income {
     this.incomeId,
     this.userId,
     this.coupleId,
+    this.accountBookId,
     required this.amount,
     required this.date,
     required this.source,
@@ -25,6 +27,7 @@ class Income {
     String? incomeId,
     String? userId,
     String? coupleId,
+    String? accountBookId,
     double? amount,
     DateTime? date,
     String? source,
@@ -36,6 +39,7 @@ class Income {
       incomeId: incomeId ?? this.incomeId,
       userId: userId ?? this.userId,
       coupleId: coupleId ?? this.coupleId,
+      accountBookId: accountBookId ?? this.accountBookId,
       amount: amount ?? this.amount,
       date: date ?? this.date,
       source: source ?? this.source,

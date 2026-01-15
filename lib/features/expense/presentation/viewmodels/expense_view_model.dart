@@ -1,6 +1,7 @@
 import 'package:moneyflow/features/expense/domain/entities/expense.dart';
 import 'package:moneyflow/features/expense/presentation/providers/expense_providers.dart';
 import 'package:moneyflow/features/expense/presentation/states/expense_state.dart';
+import 'package:moneyflow/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'expense_view_model.g.dart';
@@ -46,11 +47,18 @@ class ExpenseViewModel extends _$ExpenseViewModel {
 
   /// 지출 생성
   Future<void> createExpense(Expense expense) async {
+    // 선택된 가계부 ID 가져오기
+    final selectedAccountBookId =
+        ref.read(selectedAccountBookViewModelProvider).asData?.value;
+    if (selectedAccountBookId == null) {
+      throw StateError('Account book is not selected');
+    }
     final createUseCase = ref.read(createExpenseUseCaseProvider);
+    final request = expense.copyWith(accountBookId: selectedAccountBookId);
 
     // 낙관적 업데이트 또는 로딩 표시를 할 수 있지만,
     // 여기서는 심플하게 API 호출 후 목록을 다시 로드하는 방식을 사용
-    await createUseCase(expense);
+    await createUseCase(request);
     // await loadExpenses();
   }
 

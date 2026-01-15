@@ -3,6 +3,7 @@ class Expense {
   final String? expenseId;
   final String? userId;
   final String? coupleId;
+  final String? accountBookId;
   final double amount;
   final DateTime date;
   final String category; // 식비, 교통, 쇼핑 등
@@ -16,6 +17,7 @@ class Expense {
     this.expenseId,
     this.userId,
     this.coupleId,
+    this.accountBookId,
     required this.amount,
     required this.date,
     required this.category,
@@ -30,6 +32,7 @@ class Expense {
     String? expenseId,
     String? userId,
     String? coupleId,
+    String? accountBookId,
     double? amount,
     DateTime? date,
     String? category,
@@ -43,6 +46,7 @@ class Expense {
       expenseId: expenseId ?? this.expenseId,
       userId: userId ?? this.userId,
       coupleId: coupleId ?? this.coupleId,
+      accountBookId: accountBookId ?? this.accountBookId,
       amount: amount ?? this.amount,
       date: date ?? this.date,
       category: category ?? this.category,

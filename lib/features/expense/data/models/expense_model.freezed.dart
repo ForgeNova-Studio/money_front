@@ -17,6 +17,7 @@ mixin _$ExpenseModel {
   String? get expenseId;
   String? get userId;
   String? get coupleId;
+  String? get accountBookId;
   double get amount;
   DateTime get date;
   String get category;
@@ -47,6 +48,8 @@ mixin _$ExpenseModel {
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.coupleId, coupleId) ||
                 other.coupleId == coupleId) &&
+            (identical(other.accountBookId, accountBookId) ||
+                other.accountBookId == accountBookId) &&
             (identical(other.amount, amount) || other.amount == amount) &&
             (identical(other.date, date) || other.date == date) &&
             (identical(other.category, category) ||
@@ -69,6 +72,7 @@ mixin _$ExpenseModel {
       expenseId,
       userId,
       coupleId,
+      accountBookId,
       amount,
       date,
       category,
@@ -80,7 +84,7 @@ mixin _$ExpenseModel {
 
   @override
   String toString() {
-    return 'ExpenseModel(expenseId: $expenseId, userId: $userId, coupleId: $coupleId, amount: $amount, date: $date, category: $category, merchant: $merchant, memo: $memo, paymentMethod: $paymentMethod, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'ExpenseModel(expenseId: $expenseId, userId: $userId, coupleId: $coupleId, accountBookId: $accountBookId, amount: $amount, date: $date, category: $category, merchant: $merchant, memo: $memo, paymentMethod: $paymentMethod, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 }
 
@@ -94,6 +98,7 @@ abstract mixin class $ExpenseModelCopyWith<$Res> {
       {String? expenseId,
       String? userId,
       String? coupleId,
+      String? accountBookId,
       double amount,
       DateTime date,
       String category,
@@ -119,6 +124,7 @@ class _$ExpenseModelCopyWithImpl<$Res> implements $ExpenseModelCopyWith<$Res> {
     Object? expenseId = freezed,
     Object? userId = freezed,
     Object? coupleId = freezed,
+    Object? accountBookId = freezed,
     Object? amount = null,
     Object? date = null,
     Object? category = null,
@@ -140,6 +146,10 @@ class _$ExpenseModelCopyWithImpl<$Res> implements $ExpenseModelCopyWith<$Res> {
       coupleId: freezed == coupleId
           ? _self.coupleId
           : coupleId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      accountBookId: freezed == accountBookId
+          ? _self.accountBookId
+          : accountBookId // ignore: cast_nullable_to_non_nullable
               as String?,
       amount: null == amount
           ? _self.amount
@@ -272,6 +282,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             String? expenseId,
             String? userId,
             String? coupleId,
+            String? accountBookId,
             double amount,
             DateTime date,
             String category,
@@ -290,6 +301,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             _that.expenseId,
             _that.userId,
             _that.coupleId,
+            _that.accountBookId,
             _that.amount,
             _that.date,
             _that.category,
@@ -322,6 +334,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             String? expenseId,
             String? userId,
             String? coupleId,
+            String? accountBookId,
             double amount,
             DateTime date,
             String category,
@@ -339,6 +352,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             _that.expenseId,
             _that.userId,
             _that.coupleId,
+            _that.accountBookId,
             _that.amount,
             _that.date,
             _that.category,
@@ -368,6 +382,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             String? expenseId,
             String? userId,
             String? coupleId,
+            String? accountBookId,
             double amount,
             DateTime date,
             String category,
@@ -385,6 +400,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             _that.expenseId,
             _that.userId,
             _that.coupleId,
+            _that.accountBookId,
             _that.amount,
             _that.date,
             _that.category,
@@ -406,6 +422,7 @@ class _ExpenseModel extends ExpenseModel {
       {this.expenseId,
       this.userId,
       this.coupleId,
+      this.accountBookId,
       required this.amount,
       required this.date,
       required this.category,
@@ -424,6 +441,8 @@ class _ExpenseModel extends ExpenseModel {
   final String? userId;
   @override
   final String? coupleId;
+  @override
+  final String? accountBookId;
   @override
   final double amount;
   @override
@@ -466,6 +485,8 @@ class _ExpenseModel extends ExpenseModel {
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.coupleId, coupleId) ||
                 other.coupleId == coupleId) &&
+            (identical(other.accountBookId, accountBookId) ||
+                other.accountBookId == accountBookId) &&
             (identical(other.amount, amount) || other.amount == amount) &&
             (identical(other.date, date) || other.date == date) &&
             (identical(other.category, category) ||
@@ -488,6 +509,7 @@ class _ExpenseModel extends ExpenseModel {
       expenseId,
       userId,
       coupleId,
+      accountBookId,
       amount,
       date,
       category,
@@ -499,7 +521,7 @@ class _ExpenseModel extends ExpenseModel {
 
   @override
   String toString() {
-    return 'ExpenseModel(expenseId: $expenseId, userId: $userId, coupleId: $coupleId, amount: $amount, date: $date, category: $category, merchant: $merchant, memo: $memo, paymentMethod: $paymentMethod, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'ExpenseModel(expenseId: $expenseId, userId: $userId, coupleId: $coupleId, accountBookId: $accountBookId, amount: $amount, date: $date, category: $category, merchant: $merchant, memo: $memo, paymentMethod: $paymentMethod, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 }
 
@@ -515,6 +537,7 @@ abstract mixin class _$ExpenseModelCopyWith<$Res>
       {String? expenseId,
       String? userId,
       String? coupleId,
+      String? accountBookId,
       double amount,
       DateTime date,
       String category,
@@ -541,6 +564,7 @@ class __$ExpenseModelCopyWithImpl<$Res>
     Object? expenseId = freezed,
     Object? userId = freezed,
     Object? coupleId = freezed,
+    Object? accountBookId = freezed,
     Object? amount = null,
     Object? date = null,
     Object? category = null,
@@ -562,6 +586,10 @@ class __$ExpenseModelCopyWithImpl<$Res>
       coupleId: freezed == coupleId
           ? _self.coupleId
           : coupleId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      accountBookId: freezed == accountBookId
+          ? _self.accountBookId
+          : accountBookId // ignore: cast_nullable_to_non_nullable
               as String?,
       amount: null == amount
           ? _self.amount

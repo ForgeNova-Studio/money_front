@@ -1,6 +1,7 @@
 import 'package:moneyflow/features/income/domain/entities/income.dart';
 import 'package:moneyflow/features/income/presentation/providers/income_providers.dart';
 import 'package:moneyflow/features/income/presentation/states/income_state.dart';
+import 'package:moneyflow/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'income_view_model.g.dart';
@@ -46,11 +47,18 @@ class IncomeViewModel extends _$IncomeViewModel {
 
   /// 수입 생성
   Future<void> createIncome(Income income) async {
+    // 선택된 가계부 ID 가져오기
+    final selectedAccountBookId =
+        ref.read(selectedAccountBookViewModelProvider).asData?.value;
+    if (selectedAccountBookId == null) {
+      throw StateError('Account book is not selected');
+    }
     final createUseCase = ref.read(createIncomeUsecaseProvider);
+    final request = income.copyWith(accountBookId: selectedAccountBookId);
 
     // 낙관적 업데이트 또는 로딩 표시를 할 수 있지만,
     // 여기서는 심플하게 API 호출 후 목록을 다시 로드하는 방식을 사용
-    await createUseCase(income: income);
+    await createUseCase(income: request);
     // await loadIncome();
   }
 
