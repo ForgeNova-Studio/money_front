@@ -121,6 +121,9 @@ class HomeViewModel extends _$HomeViewModel {
     if (!ref.mounted) return;
 
     if (result.hasError && hasCache) {
+      ref
+          .read(homeRefreshErrorProvider.notifier)
+          .set('최신 데이터를 불러오지 못했습니다.');
       // Remote failure should not break cache usage.
     } else {
       state = state.copyWith(monthlyData: result);

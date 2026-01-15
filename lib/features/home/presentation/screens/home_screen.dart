@@ -33,6 +33,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _isFabExpanded = false;
   bool _isAccountBookMenuOpen = false;
   ProviderSubscription<AsyncValue<List<AccountBook>>>? _accountBooksSub;
+  ProviderSubscription<String?>? _refreshErrorSub;
 
   @override
   void initState() {
@@ -52,11 +53,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         });
       },
     );
+    _refreshErrorSub = ref.listenManual<String?>(
+      homeRefreshErrorProvider,
+      (previous, next) {
+        final message = next ?? '';
+        if (message.isEmpty || !mounted) {
+          return;
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+        ref.read(homeRefreshErrorProvider.notifier).clear();
+      },
+    );
   }
 
   @override
   void dispose() {
     _accountBooksSub?.close();
+    _refreshErrorSub?.close();
     super.dispose();
   }
 
