@@ -6,7 +6,7 @@ import 'package:moneyflow/features/home/data/models/home_monthly_response_model.
 
 abstract class HomeRemoteDataSource {
   Future<Map<String, DailyTransactionSummaryModel>> getMonthlyData(
-      {required String yearMonth});
+      {required String yearMonth, required String accountBookId});
 }
 
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
@@ -16,11 +16,14 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
 
   @override
   Future<Map<String, DailyTransactionSummaryModel>> getMonthlyData(
-      {required String yearMonth}) async {
+      {required String yearMonth, required String accountBookId}) async {
     try {
       final response = await dio.get(
         ApiConstants.homeMonthlyData,
-        queryParameters: {'yearMonth': yearMonth},
+        queryParameters: {
+          'yearMonth': yearMonth,
+          'accountBookId': accountBookId,
+        },
       );
 
       final Map<String, dynamic> data = response.data;

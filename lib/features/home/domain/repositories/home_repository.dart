@@ -7,17 +7,20 @@ abstract class HomeRepository {
   Future<Map<String, DailyTransactionSummary>> getMonthlyHomeData({
     required DateTime yearMonth,
     required String userId,
+    required String accountBookId,
   });
 
   /// 특정 월의 캐시된 데이터를 가져옵니다.
   Future<MonthlyHomeCache?> getCachedMonthlyHomeData({
     required DateTime yearMonth,
     required String userId,
+    required String accountBookId,
   });
 
   /// 특정 월의 캐시 데이터를 삭제합니다.
   Future<void> invalidateMonthlyHomeData({
     required DateTime yearMonth,
     required String userId,
+    required String accountBookId,
   });
 }

@@ -26,16 +26,19 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<Map<String, DailyTransactionSummary>> getMonthlyHomeData({
     required DateTime yearMonth,
     required String userId,
+    required String accountBookId,
   }) async {
     final yearMonthStr = DateFormat('yyyy-MM').format(yearMonth);
 
     // API 호출 (이미 날짜별로 정리된 데이터를 받아옴)
-    final responseMap =
-        await _homeRemoteDataSource.getMonthlyData(yearMonth: yearMonthStr);
+    final responseMap = await _homeRemoteDataSource.getMonthlyData(
+      yearMonth: yearMonthStr,
+      accountBookId: accountBookId,
+    );
 
     try {
       await _homeLocalDataSource.saveMonthlyData(
-        cacheKey: _buildCacheKey(userId, yearMonthStr),
+        cacheKey: _buildCacheKey(userId, accountBookId, yearMonthStr),
         data: responseMap,
       );
     } catch (_) {
@@ -50,12 +53,13 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<MonthlyHomeCache?> getCachedMonthlyHomeData({
     required DateTime yearMonth,
     required String userId,
+    required String accountBookId,
   }) async {
     final yearMonthStr = DateFormat('yyyy-MM').format(yearMonth);
     HomeMonthlyCacheEntry? entry;
     try {
       entry = await _homeLocalDataSource.getMonthlyData(
-        cacheKey: _buildCacheKey(userId, yearMonthStr),
+        cacheKey: _buildCacheKey(userId, accountBookId, yearMonthStr),
       );
     } catch (_) {
       return null;
@@ -73,18 +77,19 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<void> invalidateMonthlyHomeData({
     required DateTime yearMonth,
     required String userId,
+    required String accountBookId,
   }) async {
     final yearMonthStr = DateFormat('yyyy-MM').format(yearMonth);
     try {
       await _homeLocalDataSource.deleteMonthlyData(
-        cacheKey: _buildCacheKey(userId, yearMonthStr),
+        cacheKey: _buildCacheKey(userId, accountBookId, yearMonthStr),
       );
     } catch (_) {
       // Ignore cache invalidation errors.
     }
   }
 
-  String _buildCacheKey(String userId, String yearMonth) {
-    return 'home_monthly:$userId:$yearMonth';
+  String _buildCacheKey(String userId, String accountBookId, String yearMonth) {
+    return 'home_monthly:$userId:$accountBookId:$yearMonth';
   }
 }
