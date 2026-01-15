@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:moneyflow/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
+import 'package:moneyflow/features/home/presentation/widgets/animated_amount_text.dart';
 import 'package:moneyflow/features/home/presentation/widgets/transaction_empty_state.dart';
 import 'package:moneyflow/features/home/presentation/widgets/transaction_list_item.dart';
 import 'package:moneyflow/features/home/presentation/widgets/transaction_modal_header.dart';
@@ -87,13 +88,26 @@ class TransactionListSection extends StatelessWidget {
               color: context.appColors.gray100,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Text(
-              '전체 ${NumberFormat('#,###').format(totalAmount)}원',
-              style: TextStyle(
-                fontSize: 12,
-                color: context.appColors.textSecondary,
-                fontWeight: FontWeight.w600,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '전체 ',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.appColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                AnimatedAmountText(
+                  amount: totalAmount,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.appColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

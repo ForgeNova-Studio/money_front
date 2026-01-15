@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moneyflow/features/home/presentation/widgets/animated_amount_text.dart';
 
 class TransactionModalHeader extends StatelessWidget {
   const TransactionModalHeader({
@@ -44,8 +44,8 @@ class TransactionModalHeader extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 4),
-                  Text(
-                    '${totalAmount < 0 ? '-' : ''}${NumberFormat('#,###').format(totalAmount.abs())}원',
+                  AnimatedAmountText(
+                    amount: totalAmount,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
