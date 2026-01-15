@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moneyflow/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moneyflow/features/expense/presentation/providers/expense_providers.dart';
 import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
 import 'package:moneyflow/features/home/presentation/providers/home_providers.dart';
@@ -17,6 +18,18 @@ class HomeViewModel extends _$HomeViewModel {
 
   @override
   HomeState build() {
+    ref.listen<AsyncValue<String?>>(
+      selectedAccountBookViewModelProvider,
+      (previous, next) {
+        final previousId = previous?.asData?.value;
+        final nextId = next.asData?.value;
+        if (nextId == null || nextId == previousId) {
+          return;
+        }
+        unawaited(fetchMonthlyData(state.focusedMonth, forceRefresh: true));
+      },
+    );
+
     final now = DateTime.now();
     return HomeState(
       focusedMonth: now,
@@ -30,6 +43,17 @@ class HomeViewModel extends _$HomeViewModel {
     bool forceRefresh = false,
   }) async {
     final userId = _resolveUserId();
+    final accountBookId = _resolveAccountBookId();
+    if (accountBookId == null) {
+      state = state.copyWith(
+        monthlyData: AsyncValue.error(
+          StateError('Account book is not selected'),
+          StackTrace.current,
+        ),
+        focusedMonth: month,
+      );
+      return;
+    }
     final repository = ref.read(homeRepositoryProvider);
 
     var hasCache = false;
@@ -38,6 +62,7 @@ class HomeViewModel extends _$HomeViewModel {
       final cached = await repository.getCachedMonthlyHomeData(
         yearMonth: month,
         userId: userId,
+        accountBookId: accountBookId,
       );
 
       if (cached != null) {
@@ -48,7 +73,7 @@ class HomeViewModel extends _$HomeViewModel {
         );
 
         if (!cached.isExpired(_cacheTtl)) {
-          _prefetchAdjacentMonths(month, userId);
+          _prefetchAdjacentMonths(month, userId, accountBookId);
           return;
         }
       }
@@ -65,7 +90,11 @@ class HomeViewModel extends _$HomeViewModel {
 
     final useCase = ref.read(getHomeMonthlyDataUseCaseProvider);
     final result = await AsyncValue.guard(
-      () => useCase(yearMonth: month, userId: userId),
+      () => useCase(
+        yearMonth: month,
+        userId: userId,
+        accountBookId: accountBookId,
+      ),
     );
 
     if (!ref.mounted) return;
@@ -76,7 +105,7 @@ class HomeViewModel extends _$HomeViewModel {
       state = state.copyWith(monthlyData: result);
     }
 
-    _prefetchAdjacentMonths(month, userId);
+    _prefetchAdjacentMonths(month, userId, accountBookId);
   }
 
   /// 날짜가 선택되었을 때 호출
@@ -141,29 +170,43 @@ class HomeViewModel extends _$HomeViewModel {
     }
 
     final userId = _resolveUserId();
+    final accountBookId = _resolveAccountBookId();
+    if (accountBookId == null) {
+      return;
+    }
     final targetMonth =
         DateTime(transaction.date.year, transaction.date.month, 1);
     await ref.read(homeRepositoryProvider).invalidateMonthlyHomeData(
           yearMonth: targetMonth,
           userId: userId,
+          accountBookId: accountBookId,
         );
 
     await refresh();
   }
 
-  void _prefetchAdjacentMonths(DateTime month, String userId) {
+  void _prefetchAdjacentMonths(
+    DateTime month,
+    String userId,
+    String accountBookId,
+  ) {
     final previous = DateTime(month.year, month.month - 1, 1);
     final next = DateTime(month.year, month.month + 1, 1);
 
-    unawaited(_prefetchMonth(previous, userId));
-    unawaited(_prefetchMonth(next, userId));
+    unawaited(_prefetchMonth(previous, userId, accountBookId));
+    unawaited(_prefetchMonth(next, userId, accountBookId));
   }
 
-  Future<void> _prefetchMonth(DateTime month, String userId) async {
+  Future<void> _prefetchMonth(
+    DateTime month,
+    String userId,
+    String accountBookId,
+  ) async {
     final repository = ref.read(homeRepositoryProvider);
     final cached = await repository.getCachedMonthlyHomeData(
       yearMonth: month,
       userId: userId,
+      accountBookId: accountBookId,
     );
 
     if (cached != null && !cached.isExpired(_cacheTtl)) {
@@ -172,7 +215,11 @@ class HomeViewModel extends _$HomeViewModel {
 
     try {
       final useCase = ref.read(getHomeMonthlyDataUseCaseProvider);
-      await useCase(yearMonth: month, userId: userId);
+      await useCase(
+        yearMonth: month,
+        userId: userId,
+        accountBookId: accountBookId,
+      );
     } catch (e) {
       // Ignore prefetch failures.
     }
@@ -181,5 +228,11 @@ class HomeViewModel extends _$HomeViewModel {
   String _resolveUserId() {
     final authState = ref.read(authViewModelProvider);
     return authState.user?.userId ?? 'anonymous';
+  }
+
+  String? _resolveAccountBookId() {
+    final accountBookState =
+        ref.read(selectedAccountBookViewModelProvider);
+    return accountBookState.asData?.value;
   }
 }

@@ -36,9 +36,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(homeViewModelProvider.notifier).fetchMonthlyData(DateTime.now());
-    });
     _accountBooksSub = ref.listenManual<AsyncValue<List<AccountBook>>>(
       accountBooksProvider,
       (previous, next) {
