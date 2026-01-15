@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // core
 import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moneyflow/core/constants/income_sources.dart';
 import 'package:moneyflow/features/common/widgets/transaction_form/amount_input_card.dart';
 import 'package:moneyflow/features/common/widgets/transaction_form/date_picker_card.dart';
 import 'package:moneyflow/features/common/widgets/transaction_form/form_submit_button.dart';
@@ -46,41 +47,6 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
 
     // 홈에서 선택된 날짜가 있다면 선택됨
     _selectedDate = widget.initialDate ?? DateTime.now();
-  }
-
-  List<Map<String, dynamic>> _buildSources(BuildContext context) {
-    return [
-      {
-        'code': IncomeSource.salary,
-        'name': '급여',
-        'icon': Icons.work,
-        'color': context.appColors.income,
-      },
-      {
-        'code': IncomeSource.sideIncome,
-        'name': '부수입',
-        'icon': Icons.attach_money,
-        'color': Color(0xFF2E7D32),
-      },
-      {
-        'code': IncomeSource.bonus,
-        'name': '상여금',
-        'icon': Icons.card_giftcard,
-        'color': Color(0xFFF57C00),
-      },
-      {
-        'code': IncomeSource.investment,
-        'name': '투자수익',
-        'icon': Icons.trending_up,
-        'color': Color(0xFF1565C0),
-      },
-      {
-        'code': IncomeSource.other,
-        'name': '기타',
-        'icon': Icons.more_horiz,
-        'color': Color(0xFF6D4C41),
-      },
-    ];
   }
 
   @override
@@ -174,7 +140,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     // Provider를 watch하여 화면이 살아있는 동안 Provider가 dispose되지 않도록 함
     ref.watch(incomeViewModelProvider);
-    final sources = _buildSources(context);
+    final sources = buildIncomeSources(context);
 
     return PopScope(
         canPop: false,
@@ -253,7 +219,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                 runSpacing: 12,
                                 children: sources.map((source) {
                                   final isSelected =
-                                      _selectedSource == source['code'];
+                                      _selectedSource == source.code;
                                   return SizedBox(
                                     width: itemWidth,
                                     child: Material(
@@ -264,7 +230,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                           FocusManager.instance.primaryFocus
                                               ?.unfocus();
                                           setState(() {
-                                            _selectedSource = source['code'];
+                                            _selectedSource = source.code;
                                           });
                                         },
                                         child: AnimatedContainer(
@@ -276,8 +242,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                               transactionFormCardDecoration(
                                             context,
                                             backgroundColor: isSelected
-                                                ? (source['color'] as Color)
-                                                    .withOpacity(0.12)
+                                                ? source.color.withOpacity(0.12)
                                                 : Colors.white,
                                           ),
                                           child: Column(
@@ -287,29 +252,27 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                                 height: 36,
                                                 decoration: BoxDecoration(
                                                   color: isSelected
-                                                      ? source['color'] as Color
-                                                      : (source['color']
-                                                              as Color)
+                                                      ? source.color
+                                                      : source.color
                                                           .withOpacity(0.12),
                                                   shape: BoxShape.circle,
                                                 ),
                                                 child: Icon(
-                                                  source['icon'],
+                                                  source.icon,
                                                   color: isSelected
                                                       ? Colors.white
-                                                      : source['color']
-                                                          as Color,
+                                                      : source.color,
                                                   size: 18,
                                                 ),
                                               ),
                                               const SizedBox(height: 8),
                                               Text(
-                                                source['name'],
+                                                source.name,
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   color: isSelected
-                                                      ? source['color'] as Color
+                                                      ? source.color
                                                       : context.appColors
                                                           .textSecondary,
                                                   fontWeight: isSelected
