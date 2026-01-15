@@ -133,7 +133,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final accountBooksState = ref.watch(accountBooksProvider);
     final selectedAccountBookState =
         ref.watch(selectedAccountBookViewModelProvider);
-    final isRefreshing = ref.watch(homeRefreshIndicatorProvider);
     final selectedAccountBookName = _resolveSelectedAccountBookName(
       accountBooksState,
       selectedAccountBookState,
@@ -181,20 +180,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             automaticallyImplyLeading: false,
             titleSpacing: 30,
             actions: [
-              if (isRefreshing)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                ),
+              
               IconButton(
                 tooltip: '로그아웃',
                 icon: Icon(Icons.logout, color: colorScheme.onSurface),
