@@ -47,10 +47,12 @@ class HomeViewModel extends _$HomeViewModel {
   }) async {
     final userId = _resolveUserId();
     final accountBookId = _resolveAccountBookId();
-    final refreshIndicator =
-        ref.read(homeRefreshIndicatorProvider.notifier);
+    void setRefreshIndicator(bool value) {
+      if (!ref.mounted) return;
+      ref.read(homeRefreshIndicatorProvider.notifier).set(value);
+    }
     if (accountBookId == null) {
-      refreshIndicator.set(false);
+      setRefreshIndicator(false);
       state = state.copyWith(
         monthlyData: AsyncValue.error(
           StateError('Account book is not selected'),
@@ -82,7 +84,7 @@ class HomeViewModel extends _$HomeViewModel {
       );
 
       if (!forceRefresh && !cached.isExpired(_cacheTtl)) {
-        refreshIndicator.set(false);
+        setRefreshIndicator(false);
         _prefetchAdjacentMonths(month, userId, accountBookId);
         return;
       }
@@ -99,7 +101,7 @@ class HomeViewModel extends _$HomeViewModel {
 
     final shouldShowRefreshIndicator = hasCache;
     if (shouldShowRefreshIndicator) {
-      refreshIndicator.set(true);
+      setRefreshIndicator(true);
     }
 
     AsyncValue<Map<String, DailyTransactionSummary>> result;
@@ -114,7 +116,7 @@ class HomeViewModel extends _$HomeViewModel {
       );
     } finally {
       if (shouldShowRefreshIndicator) {
-        refreshIndicator.set(false);
+        setRefreshIndicator(false);
       }
     }
 
