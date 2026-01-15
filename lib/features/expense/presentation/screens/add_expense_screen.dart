@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // entities
 import 'package:moneyflow/features/expense/domain/entities/expense.dart';
-import 'package:moneyflow/features/expense/domain/entities/expense_category.dart';
 import 'package:moneyflow/features/expense/domain/entities/payment_method.dart';
 import 'package:moneyflow/features/expense/presentation/utils/expense_category_utils.dart';
 
@@ -15,6 +14,7 @@ import 'package:moneyflow/features/home/presentation/viewmodels/home_view_model.
 
 // constants
 import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moneyflow/core/constants/expense_categories.dart';
 import 'package:moneyflow/features/common/widgets/transaction_form/amount_input_card.dart';
 import 'package:moneyflow/features/common/widgets/transaction_form/date_picker_card.dart';
 import 'package:moneyflow/features/common/widgets/transaction_form/form_submit_button.dart';
@@ -221,7 +221,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                               return Wrap(
                                 spacing: 12,
                                 runSpacing: 12,
-                                children: DefaultCategories.all.map((category) {
+                              children: DefaultExpenseCategories.all
+                                  .map((category) {
                                   final isSelected =
                                       _selectedCategory == category.id;
                                   final color = _categoryColor(category.color);

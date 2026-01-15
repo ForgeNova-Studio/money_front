@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:moneyflow/features/expense/domain/entities/expense_category.dart';
+import 'package:moneyflow/core/constants/expense_categories.dart';
 
 String resolveExpenseCategoryLabel(String code) {
-  for (final category in DefaultCategories.all) {
+  for (final category in DefaultExpenseCategories.all) {
     if (category.id == code) {
       return category.name;
     }
@@ -11,7 +11,7 @@ String resolveExpenseCategoryLabel(String code) {
 }
 
 IconData resolveExpenseCategoryIcon(String code) {
-  for (final category in DefaultCategories.all) {
+  for (final category in DefaultExpenseCategories.all) {
     if (category.id == code) {
       return expenseIconFromName(category.icon);
     }

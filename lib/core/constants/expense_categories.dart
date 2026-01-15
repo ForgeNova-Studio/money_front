@@ -5,7 +5,7 @@ class ExpenseCategory {
   final String icon;
   final String color;
 
-  ExpenseCategory({
+  const ExpenseCategory({
     required this.id,
     required this.name,
     required this.icon,
@@ -14,7 +14,7 @@ class ExpenseCategory {
 }
 
 /// 기본 카테고리 상수
-class DefaultCategories {
+class DefaultExpenseCategories {
   static final List<ExpenseCategory> all = [
     ExpenseCategory(id: 'FOOD', name: '식비', icon: 'restaurant', color: 'EF6C00'),
     ExpenseCategory(id: 'CAFE_SNACK', name: '카페/간식', icon: 'local_cafe', color: '8D6E63'),
