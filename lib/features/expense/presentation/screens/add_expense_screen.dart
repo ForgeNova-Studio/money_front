@@ -2,11 +2,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 // entities
 import 'package:moneyflow/features/expense/domain/entities/expense.dart';
 import 'package:moneyflow/features/expense/domain/entities/payment_method.dart';
 import 'package:moneyflow/features/expense/presentation/utils/expense_category_utils.dart';
+import 'package:moneyflow/features/expense/presentation/providers/expense_providers.dart';
 
 // viewmodels
 import 'package:moneyflow/features/expense/presentation/viewmodels/expense_view_model.dart';
@@ -24,10 +26,12 @@ import 'package:moneyflow/features/common/widgets/transaction_form/transaction_t
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
   final DateTime? initialDate;
+  final String? expenseId;
 
   const AddExpenseScreen({
     super.key,
     this.initialDate,
+    this.expenseId,
   });
 
   @override
@@ -40,15 +44,22 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   final _merchantController = TextEditingController();
   final _memoController = TextEditingController();
   final _amountFocusNode = FocusNode();
+  final _amountFormatter = NumberFormat('#,###');
 
   late DateTime _selectedDate;
   String _selectedCategory = 'FOOD';
   PaymentMethod _selectedPaymentMethod = PaymentMethod.cash;
+  Expense? _originalExpense;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _selectedDate = widget.initialDate ?? DateTime.now();
+    if (widget.expenseId != null) {
+      _isLoading = true;
+      Future.microtask(_loadExpense);
+    }
   }
 
   @override
@@ -58,6 +69,34 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     _memoController.dispose();
     _amountFocusNode.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadExpense() async {
+    final expenseId = widget.expenseId;
+    if (expenseId == null) {
+      return;
+    }
+    try {
+      final expense =
+          await ref.read(getExpenseDetailUseCaseProvider).call(expenseId);
+      if (!mounted) return;
+      setState(() {
+        _originalExpense = expense;
+        _selectedDate = expense.date;
+        _selectedCategory = expense.category ?? _selectedCategory;
+        _selectedPaymentMethod = PaymentMethod.fromCode(
+          expense.paymentMethod ?? PaymentMethod.card.code,
+        );
+        _amountController.text =
+            _amountFormatter.format(expense.amount.round());
+        _merchantController.text = expense.merchant ?? '';
+        _memoController.text = expense.memo ?? '';
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+    }
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -100,27 +139,49 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   }
 
   Future<void> _handleSubmit() async {
+    FocusManager.instance.primaryFocus?.unfocus();
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
     final amount = double.parse(_amountController.text.replaceAll(',', ''));
 
-    final expense = Expense(
-      amount: amount,
-      date: _selectedDate,
-      category: _selectedCategory,
-      merchant: _merchantController.text.trim().isEmpty
-          ? null
-          : _merchantController.text.trim(),
-      memo: _memoController.text.trim().isEmpty
-          ? null
-          : _memoController.text.trim(),
-      paymentMethod: _selectedPaymentMethod.code,
-    );
-
     try {
-      await ref.read(expenseViewModelProvider.notifier).createExpense(expense);
+      if (widget.expenseId != null) {
+        final base = _originalExpense;
+        if (base == null) {
+          return;
+        }
+        final updated = base.copyWith(
+          amount: amount,
+          date: _selectedDate,
+          category: _selectedCategory,
+          merchant: _merchantController.text.trim().isEmpty
+              ? null
+              : _merchantController.text.trim(),
+          memo: _memoController.text.trim().isEmpty
+              ? null
+              : _memoController.text.trim(),
+          paymentMethod: _selectedPaymentMethod.code,
+        );
+        await ref
+            .read(updateExpenseUseCaseProvider)
+            .call(expenseId: base.expenseId ?? widget.expenseId!, expense: updated);
+      } else {
+        final expense = Expense(
+          amount: amount,
+          date: _selectedDate,
+          category: _selectedCategory,
+          merchant: _merchantController.text.trim().isEmpty
+              ? null
+              : _merchantController.text.trim(),
+          memo: _memoController.text.trim().isEmpty
+              ? null
+              : _memoController.text.trim(),
+          paymentMethod: _selectedPaymentMethod.code,
+        );
+        await ref.read(expenseViewModelProvider.notifier).createExpense(expense);
+      }
 
       if (mounted) {
         // 새로운 데이터 즉시 갱신 되도록 변경
@@ -129,7 +190,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
             .fetchMonthlyData(_selectedDate, forceRefresh: true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('지출이 등록되었습니다'),
+            content: Text(
+              widget.expenseId == null ? '지출이 등록되었습니다' : '지출이 수정되었습니다',
+            ),
             backgroundColor: context.appColors.success,
           ),
         );
@@ -148,6 +211,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     ref.watch(expenseViewModelProvider);
+    final isEditing = widget.expenseId != null;
 
     return PopScope(
         canPop: false,
@@ -155,7 +219,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           backgroundColor: colorScheme.surface,
           appBar: AppBar(
             title: Text(
-              '지출 등록',
+              isEditing ? '지출 수정' : '지출 등록',
               style: TextStyle(
                 color: colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
@@ -166,11 +230,13 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
             elevation: 0,
             leading: IconButton(
               icon: Icon(Icons.close, color: colorScheme.onSurface),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            surfaceTintColor: context.appColors.transparent,
+            onPressed: () => Navigator.of(context).pop(),
           ),
-          body: Column(
+          surfaceTintColor: context.appColors.transparent,
+        ),
+          body: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
             children: [
               Expanded(
                 child: NotificationListener<ScrollStartNotification>(
@@ -384,7 +450,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               // Bottom Button
               FormSubmitButton(
                 isVisible: MediaQuery.of(context).viewInsets.bottom == 0,
-                label: '등록하기',
+                label: isEditing ? '수정하기' : '등록하기',
                 onPressed: _handleSubmit,
               ),
             ],

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 // core
 import 'package:moneyflow/core/constants/app_constants.dart';
@@ -12,6 +13,7 @@ import 'package:moneyflow/features/common/widgets/transaction_form/form_submit_b
 import 'package:moneyflow/features/common/widgets/transaction_form/transaction_form_card.dart';
 import 'package:moneyflow/features/common/widgets/transaction_form/transaction_form_styles.dart';
 import 'package:moneyflow/features/common/widgets/transaction_form/transaction_text_field.dart';
+import 'package:moneyflow/features/income/presentation/providers/income_providers.dart';
 
 // features
 import 'package:moneyflow/features/income/presentation/viewmodels/income_view_model.dart';
@@ -22,10 +24,12 @@ import 'package:moneyflow/features/income/domain/entities/income.dart';
 
 class AddIncomeScreen extends ConsumerStatefulWidget {
   final DateTime? initialDate;
+  final String? incomeId;
 
   const AddIncomeScreen({
     super.key,
     this.initialDate,
+    this.incomeId,
   });
 
   @override
@@ -37,9 +41,12 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _amountFocusNode = FocusNode();
+  final _amountFormatter = NumberFormat('#,###');
 
   late DateTime _selectedDate;
   String _selectedSource = IncomeSource.salary;
+  Income? _originalIncome;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -47,6 +54,10 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
 
     // 홈에서 선택된 날짜가 있다면 선택됨
     _selectedDate = widget.initialDate ?? DateTime.now();
+    if (widget.incomeId != null) {
+      _isLoading = true;
+      Future.microtask(_loadIncome);
+    }
   }
 
   @override
@@ -55,6 +66,30 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     _descriptionController.dispose();
     _amountFocusNode.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadIncome() async {
+    final incomeId = widget.incomeId;
+    if (incomeId == null) {
+      return;
+    }
+    try {
+      final income =
+          await ref.read(getIncomeDetailUsecaseProvider).call(incomeId: incomeId);
+      if (!mounted) return;
+      setState(() {
+        _originalIncome = income;
+        _selectedDate = income.date;
+        _selectedSource = income.source;
+        _amountController.text =
+            _amountFormatter.format(income.amount.round());
+        _descriptionController.text = income.description ?? '';
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+    }
   }
 
   // 날짜 선택 모달 열기
@@ -96,24 +131,43 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
 
   // 등록
   Future<void> _handleSubmit() async {
+    FocusManager.instance.primaryFocus?.unfocus();
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
     final amount = double.parse(_amountController.text.replaceAll(',', ''));
 
-    // Income 엔티티 작성
-    final income = Income(
-      amount: amount,
-      date: _selectedDate,
-      source: _selectedSource,
-      description: _descriptionController.text.trim().isEmpty
-          ? null
-          : _descriptionController.text.trim(),
-    );
-
     try {
-      await ref.read(incomeViewModelProvider.notifier).createIncome(income);
+      if (widget.incomeId != null) {
+        final base = _originalIncome;
+        if (base == null) {
+          return;
+        }
+        final updated = base.copyWith(
+          amount: amount,
+          date: _selectedDate,
+          source: _selectedSource,
+          description: _descriptionController.text.trim().isEmpty
+              ? null
+              : _descriptionController.text.trim(),
+        );
+        await ref.read(updateIncomeUsecaseProvider).call(
+              incomeId: base.incomeId ?? widget.incomeId!,
+              income: updated,
+            );
+      } else {
+        // Income 엔티티 작성
+        final income = Income(
+          amount: amount,
+          date: _selectedDate,
+          source: _selectedSource,
+          description: _descriptionController.text.trim().isEmpty
+              ? null
+              : _descriptionController.text.trim(),
+        );
+        await ref.read(incomeViewModelProvider.notifier).createIncome(income);
+      }
 
       if (mounted) {
         // 새로운 데이터 즉시 갱신 되도록 변경
@@ -122,7 +176,9 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
             .fetchMonthlyData(_selectedDate, forceRefresh: true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('수입이 등록되었습니다'),
+            content: Text(
+              widget.incomeId == null ? '수입이 등록되었습니다' : '수입이 수정되었습니다',
+            ),
             backgroundColor: context.appColors.success,
           ),
         );
@@ -141,6 +197,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     // Provider를 watch하여 화면이 살아있는 동안 Provider가 dispose되지 않도록 함
     ref.watch(incomeViewModelProvider);
     final sources = buildIncomeSources(context);
+    final isEditing = widget.incomeId != null;
 
     return PopScope(
         canPop: false,
@@ -148,7 +205,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
           backgroundColor: colorScheme.surface,
           appBar: AppBar(
             title: Text(
-              '수입 등록',
+              isEditing ? '수입 수정' : '수입 등록',
               style: TextStyle(
                 color: colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
@@ -159,11 +216,13 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
             elevation: 0,
             leading: IconButton(
               icon: Icon(Icons.close, color: colorScheme.onSurface),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            surfaceTintColor: context.appColors.transparent,
+            onPressed: () => Navigator.of(context).pop(),
           ),
-          body: Column(
+          surfaceTintColor: context.appColors.transparent,
+        ),
+          body: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
             children: [
               Expanded(
                 // 스크롤 시작시 키보드를 자동으로 내리기 위한 처리
@@ -314,7 +373,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
               // 등록하기 버튼
               FormSubmitButton(
                 isVisible: MediaQuery.of(context).viewInsets.bottom == 0,
-                label: '등록하기',
+                label: isEditing ? '수정하기' : '등록하기',
                 onPressed: _handleSubmit,
               ),
             ],

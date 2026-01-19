@@ -138,6 +138,14 @@ class AppRouter {
             return AddExpenseScreen(initialDate: initialDate);
           },
         ),
+        GoRoute(
+          path: '/expenses/:id/edit',
+          name: 'editExpense',
+          builder: (context, state) {
+            final expenseId = state.pathParameters['id'];
+            return AddExpenseScreen(expenseId: expenseId);
+          },
+        ),
 
         // ==================== Income Routes ====================
         // GoRoute(
@@ -151,6 +159,14 @@ class AppRouter {
           builder: (context, state) {
             final initialDate = state.extra as DateTime?;
             return AddIncomeScreen(initialDate: initialDate);
+          },
+        ),
+        GoRoute(
+          path: '/incomes/:id/edit',
+          name: 'editIncome',
+          builder: (context, state) {
+            final incomeId = state.pathParameters['id'];
+            return AddIncomeScreen(incomeId: incomeId);
           },
         ),
         // GoRoute(
