@@ -280,7 +280,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         heightFactor: value,
                         child: Opacity(
                           opacity: value,
-                          child: child,
+                          child: Transform.translate(
+                            offset: Offset(0, 8 * (1 - value)),
+                            child: Transform.scale(
+                              scale: 0.98 + (0.02 * value),
+                              alignment: Alignment.topCenter,
+                              child: child,
+                            ),
+                          ),
                         ),
                       ),
                     ),
