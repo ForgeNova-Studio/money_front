@@ -17,6 +17,7 @@ part 'home_view_model.g.dart';
 @riverpod
 class HomeViewModel extends _$HomeViewModel {
   static const Duration _cacheTtl = Duration(minutes: 5);
+  int _latestRequestId = 0;
 
   @override
   HomeState build() {
@@ -64,6 +65,7 @@ class HomeViewModel extends _$HomeViewModel {
       return;
     }
     final repository = ref.read(homeRepositoryProvider);
+    final requestId = ++_latestRequestId;
 
     var hasCache = false;
     MonthlyHomeCache? cached;
@@ -121,7 +123,7 @@ class HomeViewModel extends _$HomeViewModel {
       }
     }
 
-    if (!ref.mounted) return;
+    if (!ref.mounted || requestId != _latestRequestId) return;
 
     if (result.hasError && hasCache) {
       ref
