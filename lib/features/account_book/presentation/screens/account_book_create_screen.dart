@@ -39,24 +39,25 @@ class _AccountBookCreateScreenState
 
   BoxDecoration _buildCardDecoration() {
     return BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(
-          color: context.appColors.shadow.withOpacity(0.08),
-          blurRadius: 20,
-          offset: const Offset(0, 8),
-        ),
-      ],
+      color: context.appColors.backgroundWhite,
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(
+        color: context.appColors.border.withOpacity(0.6),
+        width: 1,
+      ),
     );
   }
 
   InputDecoration _buildInputDecoration(String label) {
     return InputDecoration(
       labelText: label,
-      labelStyle: TextStyle(color: context.appColors.textSecondary),
+      labelStyle: TextStyle(
+        color: context.appColors.textSecondary,
+        fontWeight: FontWeight.w600,
+      ),
       filled: true,
-      fillColor: context.appColors.backgroundWhite,
+      fillColor: context.appColors.background,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: context.appColors.border),
@@ -68,6 +69,75 @@ class _AccountBookCreateScreenState
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: context.appColors.primary, width: 1.2),
+      ),
+    );
+  }
+
+  Future<void> _showBookTypeSheet() async {
+    final colorScheme = Theme.of(context).colorScheme;
+    final selected = await showModalBottomSheet<BookType>(
+      context: context,
+      backgroundColor: colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colorScheme.outlineVariant,
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  '가계부 유형',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ...BookType.values.map(
+                  (type) => _BottomSheetOption(
+                    label: type.label,
+                    isSelected: type == _selectedBookType,
+                    onTap: () => Navigator.of(context).pop(type),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (selected != null) {
+      setState(() => _selectedBookType = selected);
+    }
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 8),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+          color: context.appColors.textSecondary,
+        ),
       ),
     );
   }
@@ -211,6 +281,7 @@ class _AccountBookCreateScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              _buildSectionTitle('기본 정보'),
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: _buildCardDecoration(),
@@ -222,20 +293,10 @@ class _AccountBookCreateScreenState
                       validator: _validateName,
                     ),
                     const SizedBox(height: 16),
-                    DropdownButtonFormField<BookType>(
-                      value: _selectedBookType,
-                      decoration: _buildInputDecoration('가계부 유형'),
-                      items: BookType.values
-                          .map((type) => DropdownMenuItem(
-                                value: type,
-                                child: Text(type.label),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() => _selectedBookType = value);
-                        }
-                      },
+                    _SelectionField(
+                      label: '가계부 유형',
+                      value: _selectedBookType.label,
+                      onTap: _showBookTypeSheet,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -247,6 +308,7 @@ class _AccountBookCreateScreenState
                 ),
               ),
               const SizedBox(height: 16),
+              _buildSectionTitle('추가 정보'),
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: _buildCardDecoration(),
@@ -267,20 +329,13 @@ class _AccountBookCreateScreenState
                 ),
               ),
               const SizedBox(height: 16),
+              _buildSectionTitle('기간 설정'),
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: _buildCardDecoration(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      '기간 설정 (선택)',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: context.appColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
@@ -305,7 +360,7 @@ class _AccountBookCreateScreenState
               ),
               const SizedBox(height: 24),
               SizedBox(
-                height: 52,
+                height: 50,
                 child: ElevatedButton(
                   onPressed: _isSubmitting ? null : _handleSubmit,
                   style: ElevatedButton.styleFrom(
@@ -314,6 +369,7 @@ class _AccountBookCreateScreenState
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
+                    elevation: 0,
                   ),
                   child: _isSubmitting
                       ? const SizedBox(
@@ -364,7 +420,7 @@ class _DatePickerField extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-          color: context.appColors.backgroundWhite,
+          color: context.appColors.background,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: context.appColors.border),
         ),
@@ -385,6 +441,120 @@ class _DatePickerField extends StatelessWidget {
                   : '${date!.year}.${date!.month.toString().padLeft(2, '0')}.${date!.day.toString().padLeft(2, '0')}',
               style: textStyle,
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SelectionField extends StatelessWidget {
+  final String label;
+  final String value;
+  final VoidCallback onTap;
+
+  const _SelectionField({
+    required this.label,
+    required this.value,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          color: context.appColors.background,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: context.appColors.border),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: context.appColors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: context.appColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.keyboard_arrow_down,
+              color: context.appColors.textSecondary,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BottomSheetOption extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _BottomSheetOption({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        margin: const EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? colorScheme.primary.withOpacity(0.08)
+              : colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? colorScheme.primary.withOpacity(0.2)
+                : colorScheme.outlineVariant.withOpacity(0.6),
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+            ),
+            if (isSelected)
+              Icon(
+                Icons.check_circle,
+                color: colorScheme.primary,
+                size: 18,
+              ),
           ],
         ),
       ),
