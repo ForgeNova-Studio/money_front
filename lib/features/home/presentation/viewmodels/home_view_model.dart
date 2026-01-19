@@ -30,6 +30,7 @@ class HomeViewModel extends _$HomeViewModel {
         }
         unawaited(fetchMonthlyData(state.focusedMonth, forceRefresh: true));
       },
+      fireImmediately: true,
     );
 
     final now = DateTime.now();

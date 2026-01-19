@@ -31,27 +31,11 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _isFabExpanded = false;
   bool _isAccountBookMenuOpen = false;
-  ProviderSubscription<AsyncValue<List<AccountBook>>>? _accountBooksSub;
   ProviderSubscription<String?>? _refreshErrorSub;
 
   @override
   void initState() {
     super.initState();
-    _accountBooksSub = ref.listenManual<AsyncValue<List<AccountBook>>>(
-      accountBooksProvider,
-      (previous, next) {
-        next.whenData((books) {
-          final availableIds = books
-              .where((book) => book.isActive != false)
-              .map((book) => book.accountBookId)
-              .whereType<String>()
-              .toList();
-          ref
-              .read(selectedAccountBookViewModelProvider.notifier)
-              .ensureSelectedAccountBookId(availableIds);
-        });
-      },
-    );
     _refreshErrorSub = ref.listenManual<String?>(
       homeRefreshErrorProvider,
       (previous, next) {
@@ -69,7 +53,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
-    _accountBooksSub?.close();
     _refreshErrorSub?.close();
     super.dispose();
   }

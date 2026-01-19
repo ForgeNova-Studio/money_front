@@ -43,7 +43,7 @@ final class SelectedAccountBookViewModelProvider extends $NotifierProvider<
 }
 
 String _$selectedAccountBookViewModelHash() =>
-    r'3b63715c456a04a334055a9f48ea2ee6c7e6b585';
+    r'63c363814896175eb562a53bd54587859f968e30';
 
 abstract class _$SelectedAccountBookViewModel
     extends $Notifier<AsyncValue<String?>> {
