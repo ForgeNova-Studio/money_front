@@ -71,6 +71,8 @@ class MoneyFlowApp extends ConsumerWidget {
 class AppBootstrap extends ConsumerWidget {
   const AppBootstrap({super.key});
 
+  static bool _firstFrameLogged = false;
+
   String _resolveInitErrorMessage(Object error) {
     if (error is TimeoutException) {
       return '네트워크가 지연되고 있습니다. 다시 시도해주세요.';
@@ -118,7 +120,18 @@ class AppBootstrap extends ConsumerWidget {
           ),
         ),
       ),
-      data: (_) => const MoneyFlowApp(),
+      data: (_) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_firstFrameLogged) return;
+          _firstFrameLogged = true;
+          final elapsedMs =
+              DateTime.now().difference(appStartTime).inMilliseconds;
+          logStartupDebug('first_frame_ms=$elapsedMs');
+          logStartupProfile('first_frame_ms=$elapsedMs');
+          logStartupRelease('first_frame_ms=$elapsedMs');
+        });
+        return const MoneyFlowApp();
+      },
     );
   }
 }
