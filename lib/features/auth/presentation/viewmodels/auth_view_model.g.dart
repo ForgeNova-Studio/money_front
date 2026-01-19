@@ -41,7 +41,7 @@ final class AuthViewModelProvider
           argument: null,
           retry: null,
           name: r'authViewModelProvider',
-          isAutoDispose: true,
+          isAutoDispose: false,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
@@ -62,7 +62,7 @@ final class AuthViewModelProvider
   }
 }
 
-String _$authViewModelHash() => r'69af8fbe52c0e18c8887f17c76d31a16a207335c';
+String _$authViewModelHash() => r'2128e693aae1cf3c93bfd81b01ba2c45dfee68dd';
 
 /// Auth ViewModel
 ///

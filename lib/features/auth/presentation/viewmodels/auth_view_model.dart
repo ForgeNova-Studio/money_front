@@ -22,7 +22,7 @@ part 'auth_view_model.g.dart';
 /// - 회원가입
 /// - 로그아웃
 /// - 현재 사용자 정보 조회
-@riverpod
+@Riverpod(keepAlive: true)
 class AuthViewModel extends _$AuthViewModel {
   // 초기화 완료를 알리기 위한 Completer
   final _initCompleter = Completer<void>();

@@ -13,8 +13,8 @@ final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.read(authViewModelProvider);
 
   // authState 변화를 GoRouter에 알리기 위한 Notifier
-  // authState.isAuthenticated 값만 추출하여 Notifier 초기화
-  final authStateNotifier = ValueNotifier<bool>(authState.isAuthenticated);
+  // isLoading 변화도 반영되도록 전체 상태를 전달
+  final authStateNotifier = ValueNotifier<AuthState>(authState);
 
   if (kDebugMode) {
     debugPrint(
@@ -28,10 +28,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           'previous.isAuthenticated: ${previous?.isAuthenticated}, '
           'next.isAuthenticated: ${next.isAuthenticated}');
     }
-    authStateNotifier.value = next.isAuthenticated;
+    authStateNotifier.value = next;
     if (kDebugMode) {
       debugPrint(
-          '[RouterProvider] authStateNotifier 업데이트 완료: ${authStateNotifier.value}');
+          '[RouterProvider] authStateNotifier 업데이트 완료: ${authStateNotifier.value.isAuthenticated}');
     }
   });
 
