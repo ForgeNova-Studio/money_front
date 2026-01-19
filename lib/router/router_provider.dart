@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moneyflow/router/app_router.dart';
 import 'package:moneyflow/router/route_names.dart';
+import 'package:moneyflow/features/common/providers/app_init_provider.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/states/auth_state.dart';
 
@@ -15,6 +16,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   // authState 변화를 GoRouter에 알리기 위한 Notifier
   // isLoading 변화도 반영되도록 전체 상태를 전달
   final authStateNotifier = ValueNotifier<AuthState>(authState);
+  final appInitState = ref.watch(appInitializationProvider);
 
   if (kDebugMode) {
     debugPrint(
@@ -47,13 +49,21 @@ final routerProvider = Provider<GoRouter>((ref) {
 
     // ==================== Redirect 로직 ====================
     redirect: (context, state) {
+      final currentLocation = state.matchedLocation;
+
+      // AppInit 상태 확인
+      if (appInitState.isLoading || appInitState.hasError) {
+        if (currentLocation != RouteNames.splash) {
+          return RouteNames.splash;
+        }
+        return null;
+      }
+
       // 현재 authState 읽기 (ref.read 사용)
       final currentAuthState = ref.read(authViewModelProvider);
       final isLoading = currentAuthState.isLoading;
       final isAuthenticated = currentAuthState.isAuthenticated;
       final hasUser = currentAuthState.user != null;
-
-      final currentLocation = state.matchedLocation;
 
       // Public 화면 확인
       final isGoingToAuth = RouteNames.isAuthRoute(currentLocation);
