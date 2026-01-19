@@ -238,6 +238,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             },
           ),
         ),
+        Positioned.fill(
+          child: IgnorePointer(
+            ignoring: !_isAccountBookMenuOpen,
+            child: AnimatedOpacity(
+              opacity: _isAccountBookMenuOpen ? 1 : 0,
+              duration: const Duration(milliseconds: 160),
+              curve: Curves.easeOut,
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: _collapseOverlaysIfNeeded,
+                child: Container(
+                  color: colorScheme.scrim.withOpacity(0.06),
+                ),
+              ),
+            ),
+          ),
+        ),
         Positioned(
           top: 0,
           left: 0,

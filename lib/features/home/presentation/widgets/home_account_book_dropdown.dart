@@ -25,21 +25,15 @@ class HomeAccountBookDropdown extends StatelessWidget {
         constraints: const BoxConstraints(maxWidth: 300),
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(18),
+            color: Theme.of(context).colorScheme.surfaceVariant,
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color:
                   Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4),
+              width: 1.2,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.12),
-                blurRadius: 24,
-                offset: const Offset(0, 12),
-              ),
-            ],
           ),
           child: accountBooksState.when(
             loading: () => const Padding(
@@ -75,33 +69,6 @@ class HomeAccountBookDropdown extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.outlineVariant,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '가계부 선택',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 4),
                   ...activeBooks.map(
                     (book) => _AccountBookMenuItem(
                       book: book,
@@ -138,16 +105,16 @@ class _AccountBookMenuItem extends StatelessWidget {
     return InkWell(
       onTap: bookId == null ? null : () => onSelect(bookId),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           curve: Curves.easeOut,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
             color: isSelected
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.08)
+                ? Theme.of(context).colorScheme.primary.withOpacity(0.12)
                 : Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected
                   ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
@@ -157,48 +124,25 @@ class _AccountBookMenuItem extends StatelessWidget {
                       .withOpacity(0.4),
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: Row(
             children: [
-              Text(
-                book.name,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: isSelected
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .surfaceVariant
-                      .withOpacity(0.6),
-                  borderRadius: BorderRadius.circular(999),
-                ),
+              Expanded(
                 child: Text(
-                  book.bookType.label,
-                  textAlign: TextAlign.center,
+                  book.name,
                   style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
-              if (isSelected) ...[
-                const SizedBox(height: 8),
+              if (isSelected)
                 Icon(
                   Icons.check_circle,
                   color: Theme.of(context).colorScheme.primary,
                   size: 18,
                 ),
-              ],
             ],
           ),
         ),
