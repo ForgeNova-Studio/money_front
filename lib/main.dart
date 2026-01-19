@@ -60,9 +60,10 @@ void main() async {
 
   /// 앱 시작 전, 비동기 초기화 (예: 사용자 인증 상태 확인)
   /// - AuthViewModel이 처음으로 생성되고 초기화 로직이 실행
-  await container.read(authViewModelProvider.notifier).isInitialized;
+  // 초기화는 백그라운드에서 진행하고, Flutter 스플래시가 먼저 보이도록 함
+  container.read(authViewModelProvider.notifier).isInitialized;
 
-  // 초기화 완료 후 스플래시 스크린 제거
+  // Flutter 스플래시가 표시되도록 네이티브 스플래시 제거
   FlutterNativeSplash.remove();
 
   runApp(

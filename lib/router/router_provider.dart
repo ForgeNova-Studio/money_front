@@ -72,6 +72,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         if (kDebugMode) {
           debugPrint('[GoRouter Redirect] 로딩 중 - redirect 안 함');
         }
+        if (currentLocation != RouteNames.splash) {
+          return RouteNames.splash;
+        }
         return null;
       }
 
@@ -85,6 +88,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         } else {
           if (kDebugMode) {
             debugPrint('[GoRouter Redirect] Root - 미인증 사용자 → /login');
+          }
+          return RouteNames.login;
+        }
+      }
+
+      // Priority 2-1: Splash 경로 처리
+      if (currentLocation == RouteNames.splash) {
+        if (isAuthenticated && hasUser) {
+          if (kDebugMode) {
+            debugPrint('[GoRouter Redirect] Splash - 인증된 사용자 → /home');
+          }
+          return RouteNames.home;
+        } else {
+          if (kDebugMode) {
+            debugPrint('[GoRouter Redirect] Splash - 미인증 사용자 → /login');
           }
           return RouteNames.login;
         }
