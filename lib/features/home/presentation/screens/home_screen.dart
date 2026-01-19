@@ -20,6 +20,7 @@ import 'package:moneyflow/features/account_book/domain/entities/account_book.dar
 import 'package:moneyflow/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moneyflow/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moneyflow/features/common/providers/ui_overlay_providers.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -54,6 +55,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void dispose() {
     _refreshErrorSub?.close();
+    ref.read(appScrimActiveProvider.notifier).setActive(false);
     super.dispose();
   }
 
@@ -288,7 +290,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   accountBooksState: accountBooksState,
                   selectedAccountBookState: selectedAccountBookState,
                   onCreateAccountBook: () {
-                    setState(() => _isAccountBookMenuOpen = false);
+                    _setAccountBookMenuOpen(false);
                     context.push(RouteNames.accountBookCreate);
                   },
                   onSelectAccountBook: (bookId) async {
@@ -296,7 +298,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         .read(selectedAccountBookViewModelProvider.notifier)
                         .setSelectedAccountBookId(bookId);
                     if (!mounted) return;
-                    setState(() => _isAccountBookMenuOpen = false);
+                    _setAccountBookMenuOpen(false);
                   },
                 ),
               ),
@@ -331,14 +333,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         _isFabExpanded = false;
         _isAccountBookMenuOpen = false;
       });
+      ref.read(appScrimActiveProvider.notifier).setActive(false);
     }
   }
 
   void _toggleAccountBookMenu() {
+    final nextState = !_isAccountBookMenuOpen;
     setState(() {
       _isFabExpanded = false;
-      _isAccountBookMenuOpen = !_isAccountBookMenuOpen;
+      _isAccountBookMenuOpen = nextState;
     });
+    ref.read(appScrimActiveProvider.notifier).setActive(nextState);
+  }
+
+  void _setAccountBookMenuOpen(bool isOpen) {
+    setState(() {
+      _isFabExpanded = false;
+      _isAccountBookMenuOpen = isOpen;
+    });
+    ref.read(appScrimActiveProvider.notifier).setActive(isOpen);
   }
 
   String _resolveSelectedAccountBookName(
