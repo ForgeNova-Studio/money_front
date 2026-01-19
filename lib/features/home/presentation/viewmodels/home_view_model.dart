@@ -49,12 +49,7 @@ class HomeViewModel extends _$HomeViewModel {
   }) async {
     final userId = _resolveUserId();
     final accountBookId = _resolveAccountBookId();
-    void setRefreshIndicator(bool value) {
-      if (!ref.mounted) return;
-      ref.read(homeRefreshIndicatorProvider.notifier).set(value);
-    }
     if (accountBookId == null) {
-      setRefreshIndicator(false);
       state = state.copyWith(
         monthlyData: AsyncValue.error(
           StateError('Account book is not selected'),
@@ -69,12 +64,14 @@ class HomeViewModel extends _$HomeViewModel {
 
     var hasCache = false;
     MonthlyHomeCache? cached;
+    final cacheUserId = userId;
+    final canUseCache = useCache && cacheUserId != null;
 
     // 홈 진입 시 캐시를 먼저 읽어 바로 표시
-    if (useCache) {
+    if (canUseCache) {
       cached = await repository.getCachedMonthlyHomeData(
         yearMonth: month,
-        userId: userId,
+        userId: cacheUserId,
         accountBookId: accountBookId,
       );
     }
@@ -87,8 +84,9 @@ class HomeViewModel extends _$HomeViewModel {
       );
 
       if (!forceRefresh && !cached.isExpired(_cacheTtl)) {
-        setRefreshIndicator(false);
-        _prefetchAdjacentMonths(month, userId, accountBookId);
+        if (userId != null) {
+          _prefetchAdjacentMonths(month, userId, accountBookId);
+        }
         return;
       }
     }
@@ -102,26 +100,15 @@ class HomeViewModel extends _$HomeViewModel {
       state = state.copyWith(focusedMonth: month);
     }
 
-    final shouldShowRefreshIndicator = hasCache;
-    if (shouldShowRefreshIndicator) {
-      setRefreshIndicator(true);
-    }
-
     AsyncValue<Map<String, DailyTransactionSummary>> result;
-    try {
-      final useCase = ref.read(getHomeMonthlyDataUseCaseProvider);
-      result = await AsyncValue.guard(
-        () => useCase(
-          yearMonth: month,
-          userId: userId,
-          accountBookId: accountBookId,
-        ),
-      );
-    } finally {
-      if (shouldShowRefreshIndicator) {
-        setRefreshIndicator(false);
-      }
-    }
+    final useCase = ref.read(getHomeMonthlyDataUseCaseProvider);
+    result = await AsyncValue.guard(
+      () => useCase(
+        yearMonth: month,
+        userId: userId ?? '',
+        accountBookId: accountBookId,
+      ),
+    );
 
     if (!ref.mounted || requestId != _latestRequestId) return;
 
@@ -134,7 +121,9 @@ class HomeViewModel extends _$HomeViewModel {
       state = state.copyWith(monthlyData: result);
     }
 
-    _prefetchAdjacentMonths(month, userId, accountBookId);
+    if (userId != null) {
+      _prefetchAdjacentMonths(month, userId, accountBookId);
+    }
   }
 
   /// 날짜가 선택되었을 때 호출
@@ -200,7 +189,7 @@ class HomeViewModel extends _$HomeViewModel {
 
     final userId = _resolveUserId();
     final accountBookId = _resolveAccountBookId();
-    if (accountBookId == null) {
+    if (accountBookId == null || userId == null) {
       return;
     }
     final targetMonth =
@@ -254,9 +243,9 @@ class HomeViewModel extends _$HomeViewModel {
     }
   }
 
-  String _resolveUserId() {
+  String? _resolveUserId() {
     final authState = ref.read(authViewModelProvider);
-    return authState.user?.userId ?? 'anonymous';
+    return authState.user?.userId;
   }
 
   String? _resolveAccountBookId() {

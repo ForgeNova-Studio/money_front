@@ -32,16 +32,6 @@ final homeLocalDataSourceProvider =
 });
 
 @riverpod
-class HomeRefreshIndicator extends _$HomeRefreshIndicator {
-  @override
-  bool build() => false;
-
-  void set(bool value) {
-    state = value;
-  }
-}
-
-@riverpod
 class HomeRefreshError extends _$HomeRefreshError {
   @override
   String? build() => null;

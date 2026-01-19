@@ -53,54 +53,6 @@ final class HomeRemoteDataSourceProvider extends $FunctionalProvider<
 String _$homeRemoteDataSourceHash() =>
     r'ebbd6560e7de2f1a548ba80347ca1f247fa2092c';
 
-@ProviderFor(HomeRefreshIndicator)
-const homeRefreshIndicatorProvider = HomeRefreshIndicatorProvider._();
-
-final class HomeRefreshIndicatorProvider
-    extends $NotifierProvider<HomeRefreshIndicator, bool> {
-  const HomeRefreshIndicatorProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'homeRefreshIndicatorProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
-
-  @override
-  String debugGetCreateSourceHash() => _$homeRefreshIndicatorHash();
-
-  @$internal
-  @override
-  HomeRefreshIndicator create() => HomeRefreshIndicator();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(bool value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<bool>(value),
-    );
-  }
-}
-
-String _$homeRefreshIndicatorHash() =>
-    r'110d3b360f559fc4dec572d03fca8e3ae26f98a3';
-
-abstract class _$HomeRefreshIndicator extends $Notifier<bool> {
-  bool build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    final created = build();
-    final ref = this.ref as $Ref<bool, bool>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<bool, bool>, bool, Object?, Object?>;
-    element.handleValue(ref, created);
-  }
-}
-
 @ProviderFor(HomeRefreshError)
 const homeRefreshErrorProvider = HomeRefreshErrorProvider._();
 

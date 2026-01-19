@@ -36,13 +36,15 @@ class HomeRepositoryImpl implements HomeRepository {
       accountBookId: accountBookId,
     );
 
-    try {
-      await _homeLocalDataSource.saveMonthlyData(
-        cacheKey: _buildCacheKey(userId, accountBookId, yearMonthStr),
-        data: responseMap,
-      );
-    } catch (_) {
-      // Cache failures should not block remote data usage.
+    if (userId.isNotEmpty) {
+      try {
+        await _homeLocalDataSource.saveMonthlyData(
+          cacheKey: _buildCacheKey(userId, accountBookId, yearMonthStr),
+          data: responseMap,
+        );
+      } catch (_) {
+        // Cache failures should not block remote data usage.
+      }
     }
 
     // Model -> Entity 변환
@@ -55,6 +57,7 @@ class HomeRepositoryImpl implements HomeRepository {
     required String userId,
     required String accountBookId,
   }) async {
+    if (userId.isEmpty) return null;
     final yearMonthStr = DateFormat('yyyy-MM').format(yearMonth);
     HomeMonthlyCacheEntry? entry;
     try {
@@ -79,6 +82,7 @@ class HomeRepositoryImpl implements HomeRepository {
     required String userId,
     required String accountBookId,
   }) async {
+    if (userId.isEmpty) return;
     final yearMonthStr = DateFormat('yyyy-MM').format(yearMonth);
     try {
       await _homeLocalDataSource.deleteMonthlyData(
