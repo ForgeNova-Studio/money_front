@@ -1,5 +1,9 @@
 // packages
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -67,6 +71,19 @@ class MoneyFlowApp extends ConsumerWidget {
 class AppBootstrap extends ConsumerWidget {
   const AppBootstrap({super.key});
 
+  String _resolveInitErrorMessage(Object error) {
+    if (error is TimeoutException) {
+      return '네트워크가 지연되고 있습니다. 다시 시도해주세요.';
+    }
+    if (error is SocketException) {
+      return '네트워크 연결을 확인해주세요.';
+    }
+    if (kDebugMode) {
+      return error.toString();
+    }
+    return '잠시 후 다시 시도해주세요.';
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = buildLightTheme();
@@ -84,9 +101,19 @@ class AppBootstrap extends ConsumerWidget {
         home: Scaffold(
           backgroundColor: theme.colorScheme.background,
           body: Center(
-            child: Text(
-              '초기화에 실패했습니다.\n$error',
-              textAlign: TextAlign.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '초기화에 실패했습니다.\n${_resolveInitErrorMessage(error)}',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => ref.invalidate(appInitializationProvider),
+                  child: const Text('다시 시도'),
+                ),
+              ],
             ),
           ),
         ),
