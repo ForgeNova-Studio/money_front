@@ -16,8 +16,8 @@ T _$identity<T>(T value) => value;
 mixin _$IncomeModel {
   String? get incomeId;
   String? get userId;
-  String? get coupleId;
   String? get accountBookId;
+  String? get fundingSource;
   double get amount;
   DateTime get date;
   String get source;
@@ -43,10 +43,10 @@ mixin _$IncomeModel {
             (identical(other.incomeId, incomeId) ||
                 other.incomeId == incomeId) &&
             (identical(other.userId, userId) || other.userId == userId) &&
-            (identical(other.coupleId, coupleId) ||
-                other.coupleId == coupleId) &&
             (identical(other.accountBookId, accountBookId) ||
                 other.accountBookId == accountBookId) &&
+            (identical(other.fundingSource, fundingSource) ||
+                other.fundingSource == fundingSource) &&
             (identical(other.amount, amount) || other.amount == amount) &&
             (identical(other.date, date) || other.date == date) &&
             (identical(other.source, source) || other.source == source) &&
@@ -60,12 +60,12 @@ mixin _$IncomeModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, incomeId, userId, coupleId,
-      accountBookId, amount, date, source, description, createdAt, updatedAt);
+  int get hashCode => Object.hash(runtimeType, incomeId, userId, accountBookId,
+      fundingSource, amount, date, source, description, createdAt, updatedAt);
 
   @override
   String toString() {
-    return 'IncomeModel(incomeId: $incomeId, userId: $userId, coupleId: $coupleId, accountBookId: $accountBookId, amount: $amount, date: $date, source: $source, description: $description, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'IncomeModel(incomeId: $incomeId, userId: $userId, accountBookId: $accountBookId, fundingSource: $fundingSource, amount: $amount, date: $date, source: $source, description: $description, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 }
 
@@ -78,8 +78,8 @@ abstract mixin class $IncomeModelCopyWith<$Res> {
   $Res call(
       {String? incomeId,
       String? userId,
-      String? coupleId,
       String? accountBookId,
+      String? fundingSource,
       double amount,
       DateTime date,
       String source,
@@ -102,8 +102,8 @@ class _$IncomeModelCopyWithImpl<$Res> implements $IncomeModelCopyWith<$Res> {
   $Res call({
     Object? incomeId = freezed,
     Object? userId = freezed,
-    Object? coupleId = freezed,
     Object? accountBookId = freezed,
+    Object? fundingSource = freezed,
     Object? amount = null,
     Object? date = null,
     Object? source = null,
@@ -120,13 +120,13 @@ class _$IncomeModelCopyWithImpl<$Res> implements $IncomeModelCopyWith<$Res> {
           ? _self.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String?,
-      coupleId: freezed == coupleId
-          ? _self.coupleId
-          : coupleId // ignore: cast_nullable_to_non_nullable
-              as String?,
       accountBookId: freezed == accountBookId
           ? _self.accountBookId
           : accountBookId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      fundingSource: freezed == fundingSource
+          ? _self.fundingSource
+          : fundingSource // ignore: cast_nullable_to_non_nullable
               as String?,
       amount: null == amount
           ? _self.amount
@@ -250,8 +250,8 @@ extension IncomeModelPatterns on IncomeModel {
     TResult Function(
             String? incomeId,
             String? userId,
-            String? coupleId,
             String? accountBookId,
+            String? fundingSource,
             double amount,
             DateTime date,
             String source,
@@ -267,8 +267,8 @@ extension IncomeModelPatterns on IncomeModel {
         return $default(
             _that.incomeId,
             _that.userId,
-            _that.coupleId,
             _that.accountBookId,
+            _that.fundingSource,
             _that.amount,
             _that.date,
             _that.source,
@@ -298,8 +298,8 @@ extension IncomeModelPatterns on IncomeModel {
     TResult Function(
             String? incomeId,
             String? userId,
-            String? coupleId,
             String? accountBookId,
+            String? fundingSource,
             double amount,
             DateTime date,
             String source,
@@ -314,8 +314,8 @@ extension IncomeModelPatterns on IncomeModel {
         return $default(
             _that.incomeId,
             _that.userId,
-            _that.coupleId,
             _that.accountBookId,
+            _that.fundingSource,
             _that.amount,
             _that.date,
             _that.source,
@@ -342,8 +342,8 @@ extension IncomeModelPatterns on IncomeModel {
     TResult? Function(
             String? incomeId,
             String? userId,
-            String? coupleId,
             String? accountBookId,
+            String? fundingSource,
             double amount,
             DateTime date,
             String source,
@@ -358,8 +358,8 @@ extension IncomeModelPatterns on IncomeModel {
         return $default(
             _that.incomeId,
             _that.userId,
-            _that.coupleId,
             _that.accountBookId,
+            _that.fundingSource,
             _that.amount,
             _that.date,
             _that.source,
@@ -378,8 +378,8 @@ class _IncomeModel extends IncomeModel {
   const _IncomeModel(
       {this.incomeId,
       this.userId,
-      this.coupleId,
       this.accountBookId,
+      this.fundingSource,
       required this.amount,
       required this.date,
       required this.source,
@@ -395,9 +395,9 @@ class _IncomeModel extends IncomeModel {
   @override
   final String? userId;
   @override
-  final String? coupleId;
-  @override
   final String? accountBookId;
+  @override
+  final String? fundingSource;
   @override
   final double amount;
   @override
@@ -434,10 +434,10 @@ class _IncomeModel extends IncomeModel {
             (identical(other.incomeId, incomeId) ||
                 other.incomeId == incomeId) &&
             (identical(other.userId, userId) || other.userId == userId) &&
-            (identical(other.coupleId, coupleId) ||
-                other.coupleId == coupleId) &&
             (identical(other.accountBookId, accountBookId) ||
                 other.accountBookId == accountBookId) &&
+            (identical(other.fundingSource, fundingSource) ||
+                other.fundingSource == fundingSource) &&
             (identical(other.amount, amount) || other.amount == amount) &&
             (identical(other.date, date) || other.date == date) &&
             (identical(other.source, source) || other.source == source) &&
@@ -451,12 +451,12 @@ class _IncomeModel extends IncomeModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, incomeId, userId, coupleId,
-      accountBookId, amount, date, source, description, createdAt, updatedAt);
+  int get hashCode => Object.hash(runtimeType, incomeId, userId, accountBookId,
+      fundingSource, amount, date, source, description, createdAt, updatedAt);
 
   @override
   String toString() {
-    return 'IncomeModel(incomeId: $incomeId, userId: $userId, coupleId: $coupleId, accountBookId: $accountBookId, amount: $amount, date: $date, source: $source, description: $description, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'IncomeModel(incomeId: $incomeId, userId: $userId, accountBookId: $accountBookId, fundingSource: $fundingSource, amount: $amount, date: $date, source: $source, description: $description, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 }
 
@@ -471,8 +471,8 @@ abstract mixin class _$IncomeModelCopyWith<$Res>
   $Res call(
       {String? incomeId,
       String? userId,
-      String? coupleId,
       String? accountBookId,
+      String? fundingSource,
       double amount,
       DateTime date,
       String source,
@@ -495,8 +495,8 @@ class __$IncomeModelCopyWithImpl<$Res> implements _$IncomeModelCopyWith<$Res> {
   $Res call({
     Object? incomeId = freezed,
     Object? userId = freezed,
-    Object? coupleId = freezed,
     Object? accountBookId = freezed,
+    Object? fundingSource = freezed,
     Object? amount = null,
     Object? date = null,
     Object? source = null,
@@ -513,13 +513,13 @@ class __$IncomeModelCopyWithImpl<$Res> implements _$IncomeModelCopyWith<$Res> {
           ? _self.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String?,
-      coupleId: freezed == coupleId
-          ? _self.coupleId
-          : coupleId // ignore: cast_nullable_to_non_nullable
-              as String?,
       accountBookId: freezed == accountBookId
           ? _self.accountBookId
           : accountBookId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      fundingSource: freezed == fundingSource
+          ? _self.fundingSource
+          : fundingSource // ignore: cast_nullable_to_non_nullable
               as String?,
       amount: null == amount
           ? _self.amount

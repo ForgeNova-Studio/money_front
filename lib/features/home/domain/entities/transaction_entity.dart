@@ -23,12 +23,13 @@ class TransactionEntity {
   });
 
   factory TransactionEntity.fromExpense(Expense expense) {
+    final fallbackCategory = expense.category ?? '기타';
     return TransactionEntity(
       id: expense.expenseId ?? '',
       amount: expense.amount, // Expense amount is usually positive in DB, handled as negative in UI
       date: expense.date,
-      title: expense.merchant ?? expense.category,
-      category: expense.category,
+      title: expense.merchant ?? fallbackCategory,
+      category: fallbackCategory,
       type: TransactionType.expense,
       createdAt: expense.createdAt ?? DateTime.now(),
     );

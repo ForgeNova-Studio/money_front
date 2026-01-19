@@ -14,8 +14,8 @@ sealed class IncomeModel with _$IncomeModel {
   const factory IncomeModel({
     String? incomeId,
     String? userId,
-    String? coupleId,
     String? accountBookId,
+    String? fundingSource,
     required double amount,
     required DateTime date,
     required String source,
@@ -35,8 +35,8 @@ sealed class IncomeModel with _$IncomeModel {
     return Income(
       incomeId: incomeId,
       userId: userId,
-      coupleId: coupleId,
       accountBookId: accountBookId,
+      fundingSource: fundingSource,
       amount: amount,
       date: date,
       source: source,
@@ -51,8 +51,8 @@ sealed class IncomeModel with _$IncomeModel {
     return IncomeModel(
       incomeId: income.incomeId,
       userId: income.userId,
-      coupleId: income.coupleId,
       accountBookId: income.accountBookId,
+      fundingSource: income.fundingSource,
       amount: income.amount,
       date: income.date,
       source: income.source,
