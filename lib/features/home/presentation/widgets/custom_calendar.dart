@@ -176,78 +176,78 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
         // 오늘 날짜 셀 커스텀 (기본과 동일하게 처리)
         todayBuilder: (context, day, focusedDay) {
-          return Container(
-            margin: EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
-            padding: EdgeInsets.only(top: 6.0),
-            alignment: Alignment.topCenter,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  '${day.day}',
-                  style: TextStyle(
-                      color: context.appColors.textPrimary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13.0),
-                ),
-                Expanded(child: _buildDayBottom(day)),
-              ],
-            ),
+          return _buildDayCell(
+            day: day,
+            textColor: context.appColors.textPrimary,
+            showSummary: true,
           );
         },
 
         // 선택한 날짜 셀 커스텀 (테두리만 표시)
         selectedBuilder: (context, day, focusedDay) {
-          return Container(
-            margin: EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
-            padding: EdgeInsets.only(
-                top: 4.0), // Padding slightly reduced to account for border
-            alignment: Alignment.topCenter,
-            decoration: BoxDecoration(
-              color: Colors.transparent, // No background
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: context.appColors.primary,
-                width: 1.5,
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  '${day.day}',
-                  style: TextStyle(
-                      color: context.appColors.textPrimary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13.0),
-                ),
-                Expanded(child: _buildDayBottom(day)),
-              ],
-            ),
+          return _buildDayCell(
+            day: day,
+            textColor: context.appColors.textPrimary,
+            isSelected: true,
+            showSummary: true,
           );
         },
 
         // 기본 날짜 셀 커스텀
         defaultBuilder: (context, day, focusedDay) {
-          return Container(
-            margin: EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
-            padding: EdgeInsets.only(top: 6.0),
-            alignment: Alignment.topCenter,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  '${day.day}',
-                  style: TextStyle(
-                      color: context.appColors.textPrimary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13.0),
-                ),
-                Expanded(child: _buildDayBottom(day)),
-              ],
-            ),
+          return _buildDayCell(
+            day: day,
+            textColor: context.appColors.textPrimary,
+            showSummary: true,
           );
         },
+
+        outsideBuilder: (context, day, focusedDay) {
+          return _buildDayCell(
+            day: day,
+            textColor: context.appColors.textTertiary,
+            showSummary: false,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildDayCell({
+    required DateTime day,
+    required Color textColor,
+    bool isSelected = false,
+    bool showSummary = true,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
+      padding: const EdgeInsets.only(top: 6.0),
+      alignment: Alignment.topCenter,
+      decoration: isSelected
+          ? BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: context.appColors.primary,
+                width: 1.5,
+              ),
+            )
+          : null,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Text(
+            '${day.day}',
+            style: TextStyle(
+              color: textColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 13.0,
+            ),
+          ),
+          Expanded(
+            child: showSummary ? _buildDayBottom(day) : const SizedBox.shrink(),
+          ),
+        ],
       ),
     );
   }
