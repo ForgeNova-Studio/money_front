@@ -6,6 +6,7 @@ import 'package:moneyflow/features/account_book/domain/entities/account_book.dar
 import 'package:moneyflow/features/account_book/domain/entities/book_type.dart';
 import 'package:moneyflow/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moneyflow/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+import 'package:moneyflow/features/account_book/presentation/widgets/account_book_create_widgets.dart';
 
 class AccountBookCreateScreen extends ConsumerStatefulWidget {
   const AccountBookCreateScreen({super.key});
@@ -35,17 +36,6 @@ class _AccountBookCreateScreenState
     _memberCountController.dispose();
     _coupleIdController.dispose();
     super.dispose();
-  }
-
-  BoxDecoration _buildCardDecoration() {
-    return BoxDecoration(
-      color: context.appColors.backgroundWhite,
-      borderRadius: BorderRadius.circular(18),
-      border: Border.all(
-        color: context.appColors.border.withOpacity(0.6),
-        width: 1,
-      ),
-    );
   }
 
   InputDecoration _buildInputDecoration(String label) {
@@ -110,7 +100,7 @@ class _AccountBookCreateScreenState
                 ),
                 const SizedBox(height: 12),
                 ...BookType.values.map(
-                  (type) => _BottomSheetOption(
+                  (type) => AccountBookBottomSheetOption(
                     label: type.label,
                     isSelected: type == _selectedBookType,
                     onTap: () => Navigator.of(context).pop(type),
@@ -126,20 +116,6 @@ class _AccountBookCreateScreenState
     if (selected != null) {
       setState(() => _selectedBookType = selected);
     }
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
-          color: context.appColors.textSecondary,
-        ),
-      ),
-    );
   }
 
   Future<void> _selectDate({required bool isStart}) async {
@@ -281,81 +257,35 @@ class _AccountBookCreateScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildSectionTitle('기본 정보'),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: _buildCardDecoration(),
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: _buildInputDecoration('가계부 이름'),
-                      validator: _validateName,
-                    ),
-                    const SizedBox(height: 16),
-                    _SelectionField(
-                      label: '가계부 유형',
-                      value: _selectedBookType.label,
-                      onTap: _showBookTypeSheet,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _descriptionController,
-                      decoration: _buildInputDecoration('설명 (선택)'),
-                      maxLines: 3,
-                    ),
-                  ],
+              AccountBookSectionCard(
+                title: '기본 정보',
+                child: AccountBookBasicInfoSection(
+                  nameController: _nameController,
+                  descriptionController: _descriptionController,
+                  selectedBookTypeLabel: _selectedBookType.label,
+                  onSelectBookType: _showBookTypeSheet,
+                  inputDecoration: _buildInputDecoration,
+                  validateName: _validateName,
                 ),
               ),
               const SizedBox(height: 16),
-              _buildSectionTitle('추가 정보'),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: _buildCardDecoration(),
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _memberCountController,
-                      decoration: _buildInputDecoration('정산 인원 (선택)'),
-                      keyboardType: TextInputType.number,
-                      validator: _validateMemberCount,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _coupleIdController,
-                      decoration: _buildInputDecoration('커플 ID (선택)'),
-                    ),
-                  ],
+              AccountBookSectionCard(
+                title: '추가 정보',
+                child: AccountBookAdditionalInfoSection(
+                  memberCountController: _memberCountController,
+                  coupleIdController: _coupleIdController,
+                  inputDecoration: _buildInputDecoration,
+                  validateMemberCount: _validateMemberCount,
                 ),
               ),
               const SizedBox(height: 16),
-              _buildSectionTitle('기간 설정'),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: _buildCardDecoration(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _DatePickerField(
-                            label: '시작일',
-                            date: _startDate,
-                            onTap: () => _selectDate(isStart: true),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _DatePickerField(
-                            label: '종료일',
-                            date: _endDate,
-                            onTap: () => _selectDate(isStart: false),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+              AccountBookSectionCard(
+                title: '기간 설정',
+                child: AccountBookPeriodSection(
+                  startDate: _startDate,
+                  endDate: _endDate,
+                  onStartTap: () => _selectDate(isStart: true),
+                  onEndTap: () => _selectDate(isStart: false),
                 ),
               ),
               const SizedBox(height: 24),
@@ -388,174 +318,6 @@ class _AccountBookCreateScreenState
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DatePickerField extends StatelessWidget {
-  final String label;
-  final DateTime? date;
-  final VoidCallback onTap;
-
-  const _DatePickerField({
-    required this.label,
-    required this.date,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final textStyle = TextStyle(
-      color: date == null
-          ? context.appColors.textTertiary
-          : context.appColors.textPrimary,
-      fontWeight: FontWeight.w600,
-    );
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        decoration: BoxDecoration(
-          color: context.appColors.background,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: context.appColors.border),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color: context.appColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              date == null
-                  ? '선택'
-                  : '${date!.year}.${date!.month.toString().padLeft(2, '0')}.${date!.day.toString().padLeft(2, '0')}',
-              style: textStyle,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SelectionField extends StatelessWidget {
-  final String label;
-  final String value;
-  final VoidCallback onTap;
-
-  const _SelectionField({
-    required this.label,
-    required this.value,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        decoration: BoxDecoration(
-          color: context.appColors.background,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: context.appColors.border),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: context.appColors.textSecondary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    value,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: context.appColors.textPrimary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.keyboard_arrow_down,
-              color: context.appColors.textSecondary,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _BottomSheetOption extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _BottomSheetOption({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        margin: const EdgeInsets.only(bottom: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? colorScheme.primary.withOpacity(0.08)
-              : colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected
-                ? colorScheme.primary.withOpacity(0.2)
-                : colorScheme.outlineVariant.withOpacity(0.6),
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-            ),
-            if (isSelected)
-              Icon(
-                Icons.check_circle,
-                color: colorScheme.primary,
-                size: 18,
-              ),
-          ],
         ),
       ),
     );
