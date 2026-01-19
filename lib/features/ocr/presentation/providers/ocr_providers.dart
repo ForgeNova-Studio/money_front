@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moneyflow/features/common/providers/core_providers.dart';
+import 'package:moneyflow/features/common/providers/app_init_provider.dart';
 import '../../data/datasources/memory/global_brand_source.dart';
 import '../../data/datasources/local/user_brand_source.dart';
 import '../../data/datasources/remote/ocr_api_service.dart';
@@ -24,24 +25,25 @@ import '../../data/repositories/ocr_repository_impl.dart';
 
 /// GlobalBrandSource Provider
 ///
-/// ⚠️ main.dart에서 초기화 후 overrideWithValue로 주입 필요
-/// ```dart
-/// final globalSource = GlobalBrandSource();
-/// await globalSource.init();
-/// ProviderScope(overrides: [
-///   globalBrandSourceProvider.overrideWithValue(globalSource),
-/// ])
-/// ```
+/// appInitializationProvider에서 초기화된 인스턴스를 사용
 final globalBrandSourceProvider = Provider<GlobalBrandSource>((ref) {
-  throw UnimplementedError('main.dart에서 override 필요');
+  final initState = ref.watch(appInitializationProvider);
+  return initState.maybeWhen(
+    data: (data) => data.globalBrandSource,
+    orElse: () => throw StateError('App initialization not completed'),
+  );
 });
 
 /// UserBrandSource Provider
 ///
 /// Hive 기반 사용자 학습 데이터
-/// main.dart에서 초기화 후 주입
+/// appInitializationProvider에서 초기화된 인스턴스를 사용
 final userBrandSourceProvider = Provider<UserBrandSource>((ref) {
-  throw UnimplementedError('main.dart에서 override 필요');
+  final initState = ref.watch(appInitializationProvider);
+  return initState.maybeWhen(
+    data: (data) => data.userBrandSource,
+    orElse: () => throw StateError('App initialization not completed'),
+  );
 });
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

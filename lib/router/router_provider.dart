@@ -72,9 +72,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         if (kDebugMode) {
           debugPrint('[GoRouter Redirect] 로딩 중 - redirect 안 함');
         }
-        if (currentLocation != RouteNames.splash) {
-          return RouteNames.splash;
-        }
         return null;
       }
 

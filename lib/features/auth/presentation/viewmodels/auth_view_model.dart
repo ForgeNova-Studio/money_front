@@ -24,12 +24,6 @@ part 'auth_view_model.g.dart';
 /// - 현재 사용자 정보 조회
 @Riverpod(keepAlive: true)
 class AuthViewModel extends _$AuthViewModel {
-  // 초기화 완료를 알리기 위한 Completer
-  final _initCompleter = Completer<void>();
-
-  // 외부에서 초기화 완료를 기다릴 수 있도록 Future 제공
-  Future<void> get isInitialized => _initCompleter.future;
-
   @override
   AuthState build() {
     // 초기화 시 로딩 상태로 시작
@@ -93,11 +87,6 @@ class AuthViewModel extends _$AuthViewModel {
         debugPrint('[AuthViewModel] 에러 발생: $e');
       }
       state = AuthState.unauthenticated();
-    } finally {
-      // 어떤 경우에도 초기화가 완료되었음을 보장
-      if (!_initCompleter.isCompleted) {
-        _initCompleter.complete();
-      }
     }
   }
 

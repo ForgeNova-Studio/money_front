@@ -2,13 +2,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:moneyflow/features/common/providers/app_init_provider.dart';
+
 /// SharedPreferences Provider
 ///
 /// 주의: 보안이 필요한 데이터는 FlutterSecureStorage를 사용하세요
 /// - 사용 용도: 일반 앱 설정, 테마, 언어 등 민감하지 않은 데이터
 /// - 사용 금지: JWT 토큰, 비밀번호, 개인정보 등 민감한 데이터
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
-  throw UnimplementedError('sharedPreferencesProvider must be overridden');
+  final initState = ref.watch(appInitializationProvider);
+  return initState.maybeWhen(
+    data: (data) => data.sharedPreferences,
+    orElse: () => throw StateError('App initialization not completed'),
+  );
 });
 
 /// FlutterSecureStorage Provider

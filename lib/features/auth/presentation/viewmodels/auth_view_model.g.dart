@@ -62,7 +62,7 @@ final class AuthViewModelProvider
   }
 }
 
-String _$authViewModelHash() => r'2128e693aae1cf3c93bfd81b01ba2c45dfee68dd';
+String _$authViewModelHash() => r'db161c9b2effc7b2ecba6396aaec2506fca52dc1';
 
 /// Auth ViewModel
 ///

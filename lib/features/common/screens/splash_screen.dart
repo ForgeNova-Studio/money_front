@@ -28,7 +28,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             ),
             SizedBox(height: 20),
             Text(
-              'MoneyFlow',
+              '모아모아',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.w700,
