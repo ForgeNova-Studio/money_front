@@ -60,6 +60,10 @@ class RouteNames {
   /// 예산 설정 화면
   static const String budget = '/budget';
 
+  // ==================== Asset Route ====================
+  /// 자산 화면
+  static const String assets = '/assets';
+
   // ==================== Couple Routes ====================
   /// 커플 초대 화면
   static const String coupleInvite = '/couple/invite';

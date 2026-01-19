@@ -16,6 +16,12 @@ import 'package:moneyflow/features/auth/presentation/screens/reset_password_scre
 // Main Screens
 import 'package:moneyflow/features/home/presentation/screens/home_screen.dart';
 
+// Analysis Screens
+import 'package:moneyflow/features/statistics/presentation/screens/statistics_screen.dart';
+
+// Asset Screens
+import 'package:moneyflow/features/assets/presentation/screens/asset_screen.dart';
+
 // AccountBook Screens
 import 'package:moneyflow/features/account_book/presentation/screens/account_book_create_screen.dart';
 
@@ -93,29 +99,24 @@ class AppRouter {
                 ),
               ],
             ),
-            // StatefulShellBranch(
-            //   routes: [
-            //     GoRoute(
-            //       path: RouteNames.statistics,
-            //       name: 'statistics',
-            //       builder: (context, state) => const StatisticsScreen(),
-            //     ),
-            //     GoRoute(
-            //       path: RouteNames.weeklyStatistics,
-            //       name: 'weeklyStatistics',
-            //       builder: (context, state) => const WeeklyStatisticsScreen(),
-            //     ),
-            //   ],
-            // ),
-            // StatefulShellBranch(
-            //   routes: [
-            //     GoRoute(
-            //       path: RouteNames.budget,
-            //       name: 'budget',
-            //       builder: (context, state) => const BudgetSettingScreen(),
-            //     ),
-            //   ],
-            // ),
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: RouteNames.statistics,
+                  name: 'statistics',
+                  builder: (context, state) => const StatisticsScreen(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: RouteNames.assets,
+                  name: 'assets',
+                  builder: (context, state) => const AssetScreen(),
+                ),
+              ],
+            ),
             StatefulShellBranch(
               routes: [
                 GoRoute(
