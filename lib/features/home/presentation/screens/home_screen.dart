@@ -55,7 +55,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void dispose() {
     _refreshErrorSub?.close();
-    ref.read(appScrimActiveProvider.notifier).setActive(false);
     super.dispose();
   }
 
