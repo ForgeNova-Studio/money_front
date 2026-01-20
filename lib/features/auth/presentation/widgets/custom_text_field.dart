@@ -9,6 +9,7 @@ class CustomTextField extends StatelessWidget {
   final VoidCallback? onVisibilityToggle;
   final TextInputType keyboardType;
   final bool enabled;
+  final FocusNode? focusNode;
 
   const CustomTextField({
     super.key,
@@ -20,6 +21,7 @@ class CustomTextField extends StatelessWidget {
     this.onVisibilityToggle,
     this.keyboardType = TextInputType.text,
     this.enabled = true,
+    this.focusNode,
   });
 
   @override
@@ -27,6 +29,7 @@ class CustomTextField extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return TextField(
       controller: controller,
+      focusNode: focusNode,
       enabled: enabled,
       obscureText: isPassword && !isPasswordVisible,
       keyboardType: keyboardType,

@@ -31,6 +31,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _verificationCodeController = TextEditingController();
+  final _verificationCodeFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -50,6 +51,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _verificationCodeController.dispose();
+    _verificationCodeFocusNode.dispose();
     super.dispose();
   }
 
@@ -135,6 +137,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           ..showSnackBar(
             SnackBar(content: Text('인증번호가 전송되었습니다.')),
           );
+        // 인증번호 전송 후 포커싱 처리
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            FocusScope.of(context).requestFocus(_verificationCodeFocusNode);
+          }
+        });
       }
     } catch (e) {
       // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
@@ -379,6 +387,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       Expanded(
                         child: CustomTextField(
                           controller: _verificationCodeController,
+                          focusNode: _verificationCodeFocusNode,
                           hintText: '인증번호',
                           icon: Icons.lock_outline,
                           keyboardType: TextInputType.number,
