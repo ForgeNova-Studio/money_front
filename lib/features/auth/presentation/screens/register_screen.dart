@@ -192,6 +192,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     // ViewModel 상태 구독
     final authState = ref.watch(authViewModelProvider);
     final formState = ref.watch(registerViewModelProvider);
+    final isPasswordMismatch = formState.passwordError == '비밀번호가 일치하지 않습니다.';
+    final password = _passwordController.text;
+    final hasUpperCase = password.contains(RegExp(r'[A-Z]'));
+    final hasLowerCase = password.contains(RegExp(r'[a-z]'));
+    final hasDigit = password.contains(RegExp(r'[0-9]'));
+    final hasSpecialChar = password.contains(RegExp(r'[@$!%*?&]'));
 
     // ViewModel 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
@@ -231,6 +237,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             icon: Icon(Icons.arrow_back_ios, color: colorScheme.onSurface),
             onPressed: () => Navigator.of(context).pop(),
           ),
+          surfaceTintColor: context.appColors.transparent,
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -268,7 +275,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           height: 56,
                           decoration: BoxDecoration(
                             color: formState.selectedGender == Gender.male
-                                ? context.appColors.primary.withValues(alpha: 0.1)
+                                ? context.appColors.primary
+                                    .withValues(alpha: 0.1)
                                 : context.appColors.gray100,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
@@ -304,7 +312,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           height: 56,
                           decoration: BoxDecoration(
                             color: formState.selectedGender == Gender.female
-                                ? context.appColors.primary.withValues(alpha: 0.1)
+                                ? context.appColors.primary
+                                    .withValues(alpha: 0.1)
                                 : context.appColors.gray100,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
@@ -441,11 +450,24 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   hintText: '비밀번호',
                   isPassword: true,
                   isPasswordVisible: formState.isPasswordVisible,
+                  onChanged: (value) {
+                    ref
+                        .read(registerViewModelProvider.notifier)
+                        .updatePassword(value);
+                  },
                   onVisibilityToggle: () {
                     ref
                         .read(registerViewModelProvider.notifier)
                         .togglePasswordVisibility();
                   },
+                ),
+
+                const SizedBox(height: 8),
+                _PasswordRuleStatus(
+                  hasUpperCase: hasUpperCase,
+                  hasLowerCase: hasLowerCase,
+                  hasDigit: hasDigit,
+                  hasSpecialChar: hasSpecialChar,
                 ),
 
                 const SizedBox(height: 16),
@@ -456,6 +478,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   hintText: '비밀번호 확인',
                   isPassword: true,
                   isPasswordVisible: formState.isConfirmPasswordVisible,
+                  errorText:
+                      isPasswordMismatch ? formState.passwordError : null,
+                  onChanged: (value) {
+                    ref
+                        .read(registerViewModelProvider.notifier)
+                        .updateConfirmPassword(value);
+                  },
                   onVisibilityToggle: () {
                     ref
                         .read(registerViewModelProvider.notifier)
@@ -622,6 +651,83 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             height: 1.5,
           ),
         )
+      ],
+    );
+  }
+}
+
+class _PasswordRuleStatus extends StatelessWidget {
+  final bool hasUpperCase;
+  final bool hasLowerCase;
+  final bool hasDigit;
+  final bool hasSpecialChar;
+
+  const _PasswordRuleStatus({
+    required this.hasUpperCase,
+    required this.hasLowerCase,
+    required this.hasDigit,
+    required this.hasSpecialChar,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final textStyle = TextStyle(
+      fontSize: 12,
+      color: context.appColors.textSecondary,
+      height: 1.4,
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _PasswordRuleRow(
+          label: '대문자 1개 이상',
+          satisfied: hasUpperCase,
+          textStyle: textStyle,
+        ),
+        _PasswordRuleRow(
+          label: '소문자 1개 이상',
+          satisfied: hasLowerCase,
+          textStyle: textStyle,
+        ),
+        _PasswordRuleRow(
+          label: '숫자 1개 이상',
+          satisfied: hasDigit,
+          textStyle: textStyle,
+        ),
+        _PasswordRuleRow(
+          label: '특수문자(@\$!%*?&) 1개 이상',
+          satisfied: hasSpecialChar,
+          textStyle: textStyle,
+        ),
+      ],
+    );
+  }
+}
+
+class _PasswordRuleRow extends StatelessWidget {
+  final String label;
+  final bool satisfied;
+  final TextStyle textStyle;
+
+  const _PasswordRuleRow({
+    required this.label,
+    required this.satisfied,
+    required this.textStyle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color =
+        satisfied ? context.appColors.primary : context.appColors.textTertiary;
+    return Row(
+      children: [
+        Icon(
+          satisfied ? Icons.check_circle : Icons.radio_button_unchecked,
+          size: 14,
+          color: color,
+        ),
+        const SizedBox(width: 6),
+        Text(label, style: textStyle),
       ],
     );
   }

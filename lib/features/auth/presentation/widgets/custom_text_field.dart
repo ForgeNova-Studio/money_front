@@ -10,6 +10,8 @@ class CustomTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final bool enabled;
   final FocusNode? focusNode;
+  final ValueChanged<String>? onChanged;
+  final String? errorText;
 
   const CustomTextField({
     super.key,
@@ -22,6 +24,8 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.enabled = true,
     this.focusNode,
+    this.onChanged,
+    this.errorText,
   });
 
   @override
@@ -31,11 +35,13 @@ class CustomTextField extends StatelessWidget {
       controller: controller,
       focusNode: focusNode,
       enabled: enabled,
+      onChanged: onChanged,
       obscureText: isPassword && !isPasswordVisible,
       keyboardType: keyboardType,
       autocorrect: false,
       decoration: InputDecoration(
         hintText: hintText,
+        errorText: errorText,
         suffixIcon: isPassword
             ? IconButton(
                 onPressed: onVisibilityToggle,

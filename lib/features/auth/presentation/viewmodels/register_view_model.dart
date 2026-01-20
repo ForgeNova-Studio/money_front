@@ -17,6 +17,10 @@ part 'register_view_model.g.dart';
 /// 폼 상태 관리 및 이메일 인증 로직 처리
 @riverpod
 class RegisterViewModel extends _$RegisterViewModel {
+  static const String _passwordRuleMessage =
+      '비밀번호는 대문자, 소문자, 숫자, 특수문자(@\$!%*?&)를 각각 최소 1개 이상 포함해야 합니다.';
+  static const String _passwordMismatchMessage = '비밀번호가 일치하지 않습니다.';
+
   @override
   RegisterFormState build() {
     return RegisterFormState.initial();
@@ -41,6 +45,26 @@ class RegisterViewModel extends _$RegisterViewModel {
   void toggleConfirmPasswordVisibility() {
     state = state.copyWith(
       isConfirmPasswordVisible: !state.isConfirmPasswordVisible,
+    );
+  }
+
+  void updatePassword(String password) {
+    state = state.copyWith(
+      password: password,
+      passwordError: _passwordValidationError(
+        password: password,
+        confirmPassword: state.confirmPassword,
+      ),
+    );
+  }
+
+  void updateConfirmPassword(String confirmPassword) {
+    state = state.copyWith(
+      confirmPassword: confirmPassword,
+      passwordError: _passwordValidationError(
+        password: state.password,
+        confirmPassword: confirmPassword,
+      ),
     );
   }
 
@@ -98,11 +122,11 @@ class RegisterViewModel extends _$RegisterViewModel {
 
     // 비밀번호 패턴 검증 (백엔드와 동일한 규칙)
     if (!_isValidPassword(password)) {
-      return '비밀번호는 대문자, 소문자, 숫자, 특수문자(@\$!%*?&)를 각각 최소 1개 이상 포함해야 합니다.';
+      return _passwordRuleMessage;
     }
 
     if (password != confirmPassword) {
-      return '비밀번호가 일치하지 않습니다.';
+      return _passwordMismatchMessage;
     }
 
     if (!state.isTermsAgreed) {
@@ -125,6 +149,25 @@ class RegisterViewModel extends _$RegisterViewModel {
     final hasSpecialChar = password.contains(RegExp(r'[@$!%*?&]'));
 
     return hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar;
+  }
+
+  String? _passwordValidationError({
+    required String password,
+    required String confirmPassword,
+  }) {
+    if (password.isEmpty && confirmPassword.isEmpty) {
+      return null;
+    }
+
+    if (password.isNotEmpty && !_isValidPassword(password)) {
+      return _passwordRuleMessage;
+    }
+
+    if (confirmPassword.isNotEmpty && password != confirmPassword) {
+      return _passwordMismatchMessage;
+    }
+
+    return null;
   }
 
   /// 상태 초기화
