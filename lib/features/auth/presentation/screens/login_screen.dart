@@ -47,12 +47,6 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
         );
   }
 
-  // ViewModel의 loginWithApple 메서드 호출
-  Future<void> _handleAppleLogin() async {
-    FocusManager.instance.primaryFocus?.unfocus();
-    await ref.read(authViewModelProvider.notifier).loginWithApple();
-  }
-
   // ViewModel의 loginWithGoogle 메서드 호출
   Future<void> _handleGoogleLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
@@ -199,7 +193,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                       disabledBackgroundColor: colorScheme.primaryContainer,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     // 로딩 상태 여부에 따라 위젯 분기
@@ -277,7 +271,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'MoneyFlow가 처음이신가요? ',
+                        '모아모아가 처음이신가요? ',
                         style: TextStyle(
                           fontSize: 15,
                           color: context.appColors.textSecondary,
@@ -319,29 +313,34 @@ Widget _buildLoginTitle(BuildContext context) {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          '모아모아',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: context.appColors.textPrimary,
-            height: 1.2,
-          ),
+        Icon(
+          Icons.account_balance_wallet_rounded,
+          size: 80,
+          color: Colors.black,
         ),
+        // Text(
+        //   '모아모아',
+        //   textAlign: TextAlign.center,
+        //   style: TextStyle(
+        //     fontSize: 32,
+        //     fontWeight: FontWeight.bold,
+        //     color: context.appColors.textPrimary,
+        //     height: 1.2,
+        //   ),
+        // ),
 
-        SizedBox(height: 6),
+        // SizedBox(height: 6),
 
         // 서브타이틀
-        Text(
-          '돈을 모아, 희망을 모아',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 16,
-            color: context.appColors.textSecondary,
-            height: 1.5,
-          ),
-        )
+        // Text(
+        //   '돈을 모아, 희망을 모아',
+        //   textAlign: TextAlign.center,
+        //   style: TextStyle(
+        //     fontSize: 16,
+        //     color: context.appColors.textSecondary,
+        //     height: 1.5,
+        //   ),
+        // )
       ],
     ),
   );
