@@ -13,6 +13,9 @@ import 'package:moneyflow/features/auth/presentation/screens/register_screen.dar
 import 'package:moneyflow/features/auth/presentation/screens/find_password_screen.dart';
 import 'package:moneyflow/features/auth/presentation/screens/reset_password_screen.dart';
 
+// Onboarding Screens
+import 'package:moneyflow/features/onBoarding/presentation/screens/onboarding/on_boarding_screen.dart';
+
 // Main Screens
 import 'package:moneyflow/features/home/presentation/screens/home_screen.dart';
 
@@ -64,6 +67,11 @@ class AppRouter {
           path: RouteNames.login,
           name: 'login',
           builder: (context, state) => const LoginScreen(),
+        ),
+        GoRoute(
+          path: RouteNames.onboarding,
+          name: 'onboarding',
+          builder: (context, state) => const OnboardingScreen(),
         ),
         GoRoute(
           path: RouteNames.register,

@@ -18,6 +18,8 @@ class RouteNames {
 
   /// 비밀번호 재설정 화면
   static const String resetPassword = '/reset-password';
+  /// 온보딩 화면
+  static const String onboarding = '/onboarding';
 
   // ==================== Protected Routes ====================
   /// 메인 홈 화면
@@ -89,7 +91,8 @@ class RouteNames {
     return location == login ||
         location == register ||
         location == findPassword ||
-        location == resetPassword;
+        location == resetPassword ||
+        location == onboarding;
   }
 
   /// Public 화면 여부 확인 (인증 불필요)

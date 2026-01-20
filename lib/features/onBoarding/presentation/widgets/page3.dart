@@ -74,6 +74,8 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
                       painter: RingChartPainter(
                         progress: _chartAnimation.value,
                         backgroundColor: context.appColors.gray200,
+                        leftColor: context.appColors.primary,
+                        rightColor: context.appColors.secondary,
                       ),
                     ),
                     // 중앙 금액 텍스트
@@ -151,10 +153,14 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
 class RingChartPainter extends CustomPainter {
   final double progress;
   final Color backgroundColor;
+  final Color leftColor;
+  final Color rightColor;
 
   RingChartPainter({
     required this.progress,
     required this.backgroundColor,
+    required this.leftColor,
+    required this.rightColor,
   });
 
   @override
@@ -180,13 +186,13 @@ class RingChartPainter extends CustomPainter {
 
       // 1. 기본 아크 그리기 (파랑/오렌지)
       final leftPaint = Paint()
-        ..color = const Color(0xffF5A4B3) // Soft Blue
+        ..color = leftColor
         ..style = PaintingStyle.stroke
         ..strokeWidth = strokeWidth
         ..strokeCap = StrokeCap.butt;
 
       final rightPaint = Paint()
-        ..color = const Color(0xffB8A5D6) // Soft Orange
+        ..color = rightColor
         ..style = PaintingStyle.stroke
         ..strokeWidth = strokeWidth
         ..strokeCap = StrokeCap.butt;
@@ -219,8 +225,8 @@ class RingChartPainter extends CustomPainter {
           endAngle: 5 * math.pi / 2,
           tileMode: TileMode.clamp,
           colors: [
-            const Color(0xffB8A5D6).withOpacity(fadeOpacity), // Right Color
-            const Color(0xffF5A4B3).withOpacity(fadeOpacity), // Left Color
+            rightColor.withOpacity(fadeOpacity),
+            leftColor.withOpacity(fadeOpacity),
           ],
         );
 

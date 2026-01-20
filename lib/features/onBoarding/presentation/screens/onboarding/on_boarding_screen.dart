@@ -1,5 +1,7 @@
 // packages
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 // widgets
 import 'package:moneyflow/features/onBoarding/presentation/widgets/page1.dart';
@@ -8,17 +10,20 @@ import 'package:moneyflow/features/onBoarding/presentation/widgets/page3.dart';
 import 'package:moneyflow/features/onBoarding/presentation/widgets/page4.dart';
 import 'package:moneyflow/features/onBoarding/presentation/widgets/page5.dart';
 
-// screens
-import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
+// providers
+import 'package:moneyflow/features/common/providers/storage_providers.dart';
 
-class OnboardingScreen extends StatefulWidget {
+// routes
+import 'package:moneyflow/router/route_names.dart';
+
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
@@ -63,8 +68,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 height: 56,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => LoginScreen()));
+                    final sharedPreferences =
+                        ref.read(sharedPreferencesProvider);
+                    sharedPreferences.setBool('has_seen_onboarding', true);
+                    context.go(RouteNames.login);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
