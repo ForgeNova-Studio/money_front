@@ -5,18 +5,21 @@ import 'package:go_router/go_router.dart';
 
 // core
 import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/core/validators/input_validator.dart';
 import 'package:moneyflow/router/route_names.dart';
 
 // widgets
 import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:moneyflow/features/auth/presentation/widgets/email_verification_row.dart';
+import 'package:moneyflow/features/auth/presentation/widgets/gender_selector_row.dart';
+import 'package:moneyflow/features/auth/presentation/widgets/password_rule_checklist.dart';
+import 'package:moneyflow/features/auth/presentation/widgets/register_submit_button.dart';
+import 'package:moneyflow/features/auth/presentation/widgets/register_title.dart';
+import 'package:moneyflow/features/auth/presentation/widgets/terms_agreement_row.dart';
+import 'package:moneyflow/features/auth/presentation/widgets/verification_code_section.dart';
 
 // viewmodels
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/register_view_model.dart';
-
-// entities
-import 'package:moneyflow/features/auth/domain/entities/gender.dart';
 
 /// 회원가입 화면
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -193,14 +196,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     // ViewModel 상태 구독
     final authState = ref.watch(authViewModelProvider);
     final formState = ref.watch(registerViewModelProvider);
-    final isPasswordMismatch = formState.passwordError == '비밀번호가 일치하지 않습니다.';
-    final password = _passwordController.text;
-    final hasMinLength =
-        password.length >= InputValidator.passwordMinLength;
-    final hasUpperCase = InputValidator.uppercaseRegex.hasMatch(password);
-    final hasLowerCase = InputValidator.lowercaseRegex.hasMatch(password);
-    final hasDigit = InputValidator.digitRegex.hasMatch(password);
-    final hasSpecialChar = InputValidator.specialCharRegex.hasMatch(password);
+    final isPasswordMismatch =
+        formState.passwordError == '비밀번호가 일치하지 않습니다.';
 
     // ViewModel 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
@@ -251,7 +248,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 10),
 
                 // 타이틀
-                _buildRegisterTitle(),
+                const RegisterTitle(),
 
                 const SizedBox(height: 40),
 
@@ -265,183 +262,31 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 SizedBox(height: 16),
 
                 // 성별 선택
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          ref
-                              .read(registerViewModelProvider.notifier)
-                              .selectGender(Gender.male);
-                        },
-                        child: Container(
-                          height: 56,
-                          decoration: BoxDecoration(
-                            color: formState.selectedGender == Gender.male
-                                ? context.appColors.primary
-                                    .withValues(alpha: 0.1)
-                                : context.appColors.gray100,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: formState.selectedGender == Gender.male
-                                  ? context.appColors.primary
-                                  : Colors.transparent,
-                              width: 1.5,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            '남성',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: formState.selectedGender == Gender.male
-                                  ? context.appColors.primary
-                                  : context.appColors.textTertiary,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          ref
-                              .read(registerViewModelProvider.notifier)
-                              .selectGender(Gender.female);
-                        },
-                        child: Container(
-                          height: 56,
-                          decoration: BoxDecoration(
-                            color: formState.selectedGender == Gender.female
-                                ? context.appColors.primary
-                                    .withValues(alpha: 0.1)
-                                : context.appColors.gray100,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: formState.selectedGender == Gender.female
-                                  ? context.appColors.primary
-                                  : Colors.transparent,
-                              width: 1.5,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            '여성',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: formState.selectedGender == Gender.female
-                                  ? context.appColors.primary
-                                  : context.appColors.textTertiary,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                GenderSelectorRow(
+                  selectedGender: formState.selectedGender,
+                  onSelected: (gender) {
+                    ref
+                        .read(registerViewModelProvider.notifier)
+                        .selectGender(gender);
+                  },
                 ),
 
                 const SizedBox(height: 16),
 
                 // 이메일 입력 필드
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: CustomTextField(
-                        controller: _emailController,
-                        hintText: '이메일',
-                        icon: Icons.email_outlined,
-                        keyboardType: TextInputType.emailAddress,
-                        enabled: !formState.isEmailVerified,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    SizedBox(
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: formState.isEmailVerified
-                            ? null
-                            : () {
-                                _handleSendVerificationCode();
-                              },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: colorScheme.primary,
-                          foregroundColor: colorScheme.onPrimary,
-                          disabledBackgroundColor: colorScheme.surfaceVariant,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                        ),
-                        child: Text(
-                          formState.isEmailVerified ? '인증완료' : '인증요청',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                EmailVerificationRow(
+                  controller: _emailController,
+                  isEmailVerified: formState.isEmailVerified,
+                  onRequest: _handleSendVerificationCode,
                 ),
 
                 if (formState.isVerificationCodeSent &&
                     !formState.isEmailVerified) ...[
                   SizedBox(height: 12),
-                  // 인증번호 입력 필드
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: CustomTextField(
-                          controller: _verificationCodeController,
-                          focusNode: _verificationCodeFocusNode,
-                          hintText: '인증번호',
-                          icon: Icons.lock_outline,
-                          keyboardType: TextInputType.number,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      SizedBox(
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: _handleVerifyCode,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colorScheme.inverseSurface,
-                            foregroundColor: colorScheme.onInverseSurface,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                          ),
-                          child: Text(
-                            '인증확인',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  // 인증번호 유효 시간 안내
-                  Padding(
-                    padding: EdgeInsets.only(left: 4),
-                    child: Text(
-                      '※ 인증번호는 10분간 유효합니다.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: context.appColors.textSecondary,
-                        height: 1.4,
-                      ),
-                    ),
+                  VerificationCodeSection(
+                    controller: _verificationCodeController,
+                    focusNode: _verificationCodeFocusNode,
+                    onVerify: _handleVerifyCode,
                   ),
                 ],
 
@@ -466,12 +311,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
 
                 const SizedBox(height: 8),
-                _PasswordRuleStatus(
-                  hasMinLength: hasMinLength,
-                  hasUpperCase: hasUpperCase,
-                  hasLowerCase: hasLowerCase,
-                  hasDigit: hasDigit,
-                  hasSpecialChar: hasSpecialChar,
+                PasswordRuleChecklist(
+                  password: _passwordController.text,
                 ),
 
                 const SizedBox(height: 16),
@@ -499,131 +340,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 SizedBox(height: 24),
 
                 // 약관 동의 체크박스
-                Row(
-                  children: [
-                    SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: Checkbox(
-                        value: formState.isTermsAgreed,
-                        onChanged: (value) {
-                          ref
-                              .read(registerViewModelProvider.notifier)
-                              .toggleTermsAgreed();
-                        },
-                        activeColor: colorScheme.primary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        side: BorderSide(
-                          color: colorScheme.outline,
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 6),
-                    Expanded(
-                      child: Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: context.appColors.textSecondary,
-                                  width: 1.0,
-                                ),
-                              ),
-                            ),
-                            child: GestureDetector(
-                              onTap: _handleTermsClick,
-                              child: Text(
-                                '이용약관',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: context.appColors.textPrimary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Text(
-                            ' 및 ',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: context.appColors.textSecondary,
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: context.appColors.textSecondary,
-                                  width: 1.0,
-                                ),
-                              ),
-                            ),
-                            child: GestureDetector(
-                              onTap: _handlePrivacyClick,
-                              child: Text(
-                                '개인정보 이용동의',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: context.appColors.textPrimary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Text(
-                            '에 확인하고 동의합니다.',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: context.appColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                TermsAgreementRow(
+                  isTermsAgreed: formState.isTermsAgreed,
+                  onToggle: () {
+                    ref
+                        .read(registerViewModelProvider.notifier)
+                        .toggleTermsAgreed();
+                  },
+                  onTermsTap: _handleTermsClick,
+                  onPrivacyTap: _handlePrivacyClick,
                 ),
 
                 SizedBox(height: 24),
 
                 // 회원가입 버튼
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: authState.isLoading ? null : _handleSignUp,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
-                      disabledBackgroundColor: colorScheme.primaryContainer,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: authState.isLoading
-                        ? SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                colorScheme.onPrimary,
-                              ),
-                            ),
-                          )
-                        : const Text(
-                            '회원가입',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                  ),
+                RegisterSubmitButton(
+                  isLoading: authState.isLoading,
+                  onPressed: _handleSignUp,
                 ),
               ],
             ),
@@ -633,113 +366,4 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     );
   }
 
-  Widget _buildRegisterTitle() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '회원가입',
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: context.appColors.textPrimary,
-            height: 1.2,
-          ),
-        ),
-        SizedBox(height: 6),
-        Text(
-          '새로운 계정을 생성합니다.',
-          style: TextStyle(
-            fontSize: 16,
-            color: context.appColors.textSecondary,
-            height: 1.5,
-          ),
-        )
-      ],
-    );
-  }
-}
-
-class _PasswordRuleStatus extends StatelessWidget {
-  final bool hasMinLength;
-  final bool hasUpperCase;
-  final bool hasLowerCase;
-  final bool hasDigit;
-  final bool hasSpecialChar;
-
-  const _PasswordRuleStatus({
-    required this.hasMinLength,
-    required this.hasUpperCase,
-    required this.hasLowerCase,
-    required this.hasDigit,
-    required this.hasSpecialChar,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final textStyle = TextStyle(
-      fontSize: 12,
-      color: context.appColors.textSecondary,
-      height: 1.4,
-    );
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _PasswordRuleRow(
-          label: '최소 ${InputValidator.passwordMinLength}자 이상',
-          satisfied: hasMinLength,
-          textStyle: textStyle,
-        ),
-        _PasswordRuleRow(
-          label: '대문자 1개 이상',
-          satisfied: hasUpperCase,
-          textStyle: textStyle,
-        ),
-        _PasswordRuleRow(
-          label: '소문자 1개 이상',
-          satisfied: hasLowerCase,
-          textStyle: textStyle,
-        ),
-        _PasswordRuleRow(
-          label: '숫자 1개 이상',
-          satisfied: hasDigit,
-          textStyle: textStyle,
-        ),
-        _PasswordRuleRow(
-          label: '특수문자(@\$!%*?&) 1개 이상',
-          satisfied: hasSpecialChar,
-          textStyle: textStyle,
-        ),
-      ],
-    );
-  }
-}
-
-class _PasswordRuleRow extends StatelessWidget {
-  final String label;
-  final bool satisfied;
-  final TextStyle textStyle;
-
-  const _PasswordRuleRow({
-    required this.label,
-    required this.satisfied,
-    required this.textStyle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final color =
-        satisfied ? context.appColors.primary : context.appColors.textTertiary;
-    return Row(
-      children: [
-        Icon(
-          satisfied ? Icons.check_circle : Icons.radio_button_unchecked,
-          size: 14,
-          color: color,
-        ),
-        const SizedBox(width: 6),
-        Text(label, style: textStyle),
-      ],
-    );
-  }
 }
