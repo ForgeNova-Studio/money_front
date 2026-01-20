@@ -59,11 +59,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         return null;
       }
 
-      final hasSeenOnboarding =
-          appInitState.requireValue.sharedPreferences
-              .getBool('has_seen_onboarding') ??
-              false;
-
       // 현재 authState 읽기 (ref.read 사용)
       final currentAuthState = ref.read(authViewModelProvider);
       final isLoading = currentAuthState.isLoading;
@@ -90,6 +85,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         }
         return null;
       }
+
+      final hasSeenOnboarding =
+          appInitState.requireValue.sharedPreferences
+              .getBool('has_seen_onboarding') ??
+          false;
 
       // Priority 1-1: 온보딩 완료 전에는 온보딩 화면으로 이동
       if (!hasSeenOnboarding) {
