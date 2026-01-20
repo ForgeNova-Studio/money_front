@@ -19,7 +19,6 @@ import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart'
 import 'package:moneyflow/features/account_book/domain/entities/account_book.dart';
 import 'package:moneyflow/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moneyflow/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
-import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/common/providers/ui_overlay_providers.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -166,58 +165,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             centerTitle: false,
             automaticallyImplyLeading: false,
             titleSpacing: 30,
-            actions: [
-              
-              IconButton(
-                tooltip: '로그아웃',
-                icon: Icon(Icons.logout, color: colorScheme.onSurface),
-                onPressed: () async {
-                  await ref.read(authViewModelProvider.notifier).logout();
-                },
-              ),
-            ],
           ),
           body: Listener(
             behavior: HitTestBehavior.translucent,
             onPointerDown: (_) => _collapseOverlaysIfNeeded(),
-            child: Column(
-              children: [
-                // 1. Budget Info Area
-                const HomeBudgetInfoCard(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: [
+                  // 1. Budget Info Area
+                  const HomeBudgetInfoCard(),
 
-                // 2. Custom Calendar
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8.0,
+                  // 2. Custom Calendar
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: CustomCalendar(
+                      format: calendarFormat,
+                      focusedDay: homeState.focusedMonth,
+                      selectedDay: homeState.selectedDate,
+                      monthlyData: homeState.monthlyData,
+                      onFormatChanged: _handleFormatChanged,
+                      onDateSelected: _handleDateSelected,
+                      onPageChanged: _handlePageChanged,
+                    ),
                   ),
-                  child: CustomCalendar(
-                    format: calendarFormat,
-                    focusedDay: homeState.focusedMonth,
-                    selectedDay: homeState.selectedDate,
-                    monthlyData: homeState.monthlyData,
-                    onFormatChanged: _handleFormatChanged,
-                    onDateSelected: _handleDateSelected,
-                    onPageChanged: _handlePageChanged,
-                  ),
-                ),
 
-                // 3. Transactions Sheet (Fills remaining space)
-                Expanded(
-                  child: HomeTransactionSheet(
-                    homeState: homeState,
-                    onDelete: _handleDeleteTransaction,
-                    onCameraTap: () {
-                      // TODO: Navigate to OCR screen
-                    },
-                    onResetToMonthView: () {
-                      ref
-                          .read(homeViewModelProvider.notifier)
-                          .resetToMonthView();
-                    },
+                  // 3. Transactions Sheet (Fills remaining space)
+                  Expanded(
+                    child: HomeTransactionSheet(
+                      homeState: homeState,
+                      onDelete: _handleDeleteTransaction,
+                      onCameraTap: () {
+                        // TODO: Navigate to OCR screen
+                      },
+                      onResetToMonthView: () {
+                        ref
+                            .read(homeViewModelProvider.notifier)
+                            .resetToMonthView();
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           floatingActionButton: HomeFabMenu(
@@ -231,7 +220,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             },
             onAddExpense: () {
               setState(() => _isFabExpanded = false);
-              context.push(RouteNames.addExpense, extra: homeState.selectedDate);
+              context.push(RouteNames.addExpense,
+                  extra: homeState.selectedDate);
             },
             onScanReceipt: () {
               setState(() => _isFabExpanded = false);
@@ -383,5 +373,4 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       loading: () => '가계부 불러오는 중',
     );
   }
-
 }
