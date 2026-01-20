@@ -164,7 +164,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             elevation: 0,
             centerTitle: false,
             automaticallyImplyLeading: false,
-            titleSpacing: 30,
           ),
           body: Listener(
             behavior: HitTestBehavior.translucent,

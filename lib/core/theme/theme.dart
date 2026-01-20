@@ -20,6 +20,7 @@ ThemeData buildLightTheme() {
       foregroundColor: AppColors.textWhite,
       elevation: 0,
       centerTitle: false,
+      titleSpacing: 30, // 앱바 타이틀 좌측 패딩
       iconTheme: IconThemeData(color: AppColors.textWhite),
       titleTextStyle: TextStyle(
         color: AppColors.textWhite,
