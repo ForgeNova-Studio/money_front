@@ -232,7 +232,6 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               icon: Icon(Icons.close, color: colorScheme.onSurface),
             onPressed: () => Navigator.of(context).pop(),
           ),
-          surfaceTintColor: context.appColors.transparent,
         ),
           body: _isLoading
               ? const Center(child: CircularProgressIndicator())

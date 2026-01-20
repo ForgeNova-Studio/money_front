@@ -244,7 +244,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             icon: Icon(Icons.arrow_back_ios, color: colorScheme.onSurface),
             onPressed: () => Navigator.of(context).pop(),
           ),
-          surfaceTintColor: context.appColors.transparent,
         ),
         body: SafeArea(
           child: SingleChildScrollView(

@@ -62,7 +62,6 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
         title: const Text('영수증 스캔'),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
         foregroundColor: context.appColors.textPrimary,
         iconTheme: IconThemeData(color: context.appColors.textPrimary),
@@ -134,7 +133,8 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
                 // 3. 에러 메시지 (고정)
                 if (state.hasError)
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: context.appColors.error.withOpacity(0.08),
@@ -145,7 +145,8 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.error_outline, color: context.appColors.error),
+                        Icon(Icons.error_outline,
+                            color: context.appColors.error),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -187,7 +188,8 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
               color: Colors.black.withOpacity(0.4),
               child: Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
@@ -339,9 +341,8 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
         decoration: BoxDecoration(
           color: isPrimary ? context.appColors.primaryDark : Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: isPrimary
-              ? null
-              : Border.all(color: context.appColors.border),
+          border:
+              isPrimary ? null : Border.all(color: context.appColors.border),
           boxShadow: [
             BoxShadow(
               color: context.appColors.shadow.withOpacity(0.08),
@@ -356,18 +357,15 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
             Icon(
               icon,
               size: 18,
-              color: isPrimary
-                  ? Colors.white
-                  : context.appColors.textSecondary,
+              color: isPrimary ? Colors.white : context.appColors.textSecondary,
             ),
             const SizedBox(width: 8),
             Text(
               label,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: isPrimary
-                    ? Colors.white
-                    : context.appColors.textSecondary,
+                color:
+                    isPrimary ? Colors.white : context.appColors.textSecondary,
               ),
             ),
             if (isDisabled) ...[
@@ -500,7 +498,8 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: context.appColors.primaryPale,
                   borderRadius: BorderRadius.circular(16),
@@ -566,8 +565,8 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
 
   String _formatMoney(int amount) {
     return amount.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (Match m) => '${m[1]},',
-    );
+        );
   }
 }

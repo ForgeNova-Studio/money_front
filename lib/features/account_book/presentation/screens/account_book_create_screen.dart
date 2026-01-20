@@ -255,7 +255,6 @@ class _AccountBookCreateScreenState
               Navigator.of(context).pop();
             },
           ),
-          surfaceTintColor: context.appColors.transparent,
         ),
         body: GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),

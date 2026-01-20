@@ -28,7 +28,6 @@ class SettingsScreen extends ConsumerWidget {
         elevation: 0,
         centerTitle: false,
         automaticallyImplyLeading: false,
-        titleSpacing: 24,
         actions: [
           IconButton(
             icon: Icon(Icons.settings_outlined, color: colorScheme.onSurface),
@@ -248,7 +247,8 @@ class _ProfileCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.orange.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
