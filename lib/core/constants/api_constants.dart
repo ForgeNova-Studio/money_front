@@ -6,7 +6,7 @@ class ApiConstants {
   // 로컬: flutter run --dart-define=API_BASE_URL=http://localhost:8080
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://172.20.10.3:8080',
+    defaultValue: 'http://158.179.166.233:80',
   );
 
   // ========== Auth endpoints ==========

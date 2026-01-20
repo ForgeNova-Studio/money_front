@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:moneyflow/core/constants/app_constants.dart';
 import 'package:moneyflow/router/route_names.dart';
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moneyflow/features/auth/presentation/states/auth_state.dart';
@@ -28,15 +30,16 @@ class SettingsScreen extends ConsumerWidget {
         elevation: 0,
         centerTitle: false,
         automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings_outlined, color: colorScheme.onSurface),
-            onPressed: () {
-              // TODO: 앱 설정 화면으로 이동
-            },
-          ),
-          const SizedBox(width: 8),
-        ],
+        // 임시 주석
+        // actions: [
+        //   IconButton(
+        //     icon: Icon(Icons.settings_outlined, color: colorScheme.onSurface),
+        //     onPressed: () {
+        //       // TODO: 앱 설정 화면으로 이동
+        //     },
+        //   ),
+        //   const SizedBox(width: 8),
+        // ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -145,12 +148,21 @@ class SettingsScreen extends ConsumerWidget {
 
             // 5. App Info
             Center(
-              child: Text(
-                'MoneyFlow v1.0.0',
-                style: TextStyle(
-                  color: colorScheme.onSurface.withOpacity(0.4),
-                  fontSize: 12,
-                ),
+              child: FutureBuilder<PackageInfo>(
+                future: PackageInfo.fromPlatform(),
+                builder: (context, snapshot) {
+                  final info = snapshot.data;
+                  final label = info == null
+                      ? '${AppConstants.appName}'
+                      : '${info.appName} v${info.version}';
+                  return Text(
+                    label,
+                    style: TextStyle(
+                      color: colorScheme.onSurface.withOpacity(0.4),
+                      fontSize: 12,
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(height: 24),
