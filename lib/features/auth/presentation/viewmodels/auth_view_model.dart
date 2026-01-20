@@ -242,7 +242,7 @@ class AuthViewModel extends _$AuthViewModel {
       state = AuthState.initial(); // 성공 시 초기 상태로 복귀
     },
         loading: true,
-        rethrowError: false,
+        rethrowError: true,
         defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다');
   }
 
