@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 // core
 import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moneyflow/core/validators/input_validator.dart';
 import 'package:moneyflow/router/route_names.dart';
 
 // widgets
@@ -194,10 +195,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final formState = ref.watch(registerViewModelProvider);
     final isPasswordMismatch = formState.passwordError == '비밀번호가 일치하지 않습니다.';
     final password = _passwordController.text;
-    final hasUpperCase = password.contains(RegExp(r'[A-Z]'));
-    final hasLowerCase = password.contains(RegExp(r'[a-z]'));
-    final hasDigit = password.contains(RegExp(r'[0-9]'));
-    final hasSpecialChar = password.contains(RegExp(r'[@$!%*?&]'));
+    final hasMinLength =
+        password.length >= InputValidator.passwordMinLength;
+    final hasUpperCase = InputValidator.uppercaseRegex.hasMatch(password);
+    final hasLowerCase = InputValidator.lowercaseRegex.hasMatch(password);
+    final hasDigit = InputValidator.digitRegex.hasMatch(password);
+    final hasSpecialChar = InputValidator.specialCharRegex.hasMatch(password);
 
     // ViewModel 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
@@ -464,6 +467,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                 const SizedBox(height: 8),
                 _PasswordRuleStatus(
+                  hasMinLength: hasMinLength,
                   hasUpperCase: hasUpperCase,
                   hasLowerCase: hasLowerCase,
                   hasDigit: hasDigit,
@@ -657,12 +661,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 }
 
 class _PasswordRuleStatus extends StatelessWidget {
+  final bool hasMinLength;
   final bool hasUpperCase;
   final bool hasLowerCase;
   final bool hasDigit;
   final bool hasSpecialChar;
 
   const _PasswordRuleStatus({
+    required this.hasMinLength,
     required this.hasUpperCase,
     required this.hasLowerCase,
     required this.hasDigit,
@@ -679,6 +685,11 @@ class _PasswordRuleStatus extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _PasswordRuleRow(
+          label: '최소 ${InputValidator.passwordMinLength}자 이상',
+          satisfied: hasMinLength,
+          textStyle: textStyle,
+        ),
         _PasswordRuleRow(
           label: '대문자 1개 이상',
           satisfied: hasUpperCase,

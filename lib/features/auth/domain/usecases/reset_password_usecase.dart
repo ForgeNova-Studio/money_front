@@ -59,6 +59,7 @@ class ResetPasswordUseCase {
     final passwordError = InputValidator.getPasswordErrorMessage(
       newPassword,
       requireUppercase: true,
+      requireSpecialChar: true,
     );
     if (passwordError.isNotEmpty) {
       throw ValidationException(passwordError);

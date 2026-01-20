@@ -73,8 +73,11 @@ class RegisterUseCase {
     }
 
     // 비밀번호 검증 (대문자 필수)
-    final passwordError = InputValidator.getPasswordErrorMessage(password,
-        requireUppercase: true);
+    final passwordError = InputValidator.getPasswordErrorMessage(
+      password,
+      requireUppercase: true,
+      requireSpecialChar: true,
+    );
     if (passwordError.isNotEmpty) {
       throw ValidationException(passwordError);
     }

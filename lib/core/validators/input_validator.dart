@@ -14,6 +14,7 @@ class InputValidator {
   static final RegExp uppercaseRegex = RegExp(r'[A-Z]');
   static final RegExp lowercaseRegex = RegExp(r'[a-z]');
   static final RegExp digitRegex = RegExp(r'[0-9]');
+  static final RegExp specialCharRegex = RegExp(r'[@$!%*?&]');
 
   /// 이메일 형식 검증
   static bool isValidEmail(String email) {
@@ -33,11 +34,14 @@ class InputValidator {
   /// - 숫자 포함
   /// - (선택) 대문자 포함
   static bool isValidPassword(String password,
-      {bool requireUppercase = false}) {
+      {bool requireUppercase = false, bool requireSpecialChar = false}) {
     if (password.length < passwordMinLength) return false;
     if (!lowercaseRegex.hasMatch(password)) return false;
     if (!digitRegex.hasMatch(password)) return false;
     if (requireUppercase && !uppercaseRegex.hasMatch(password)) return false;
+    if (requireSpecialChar && !specialCharRegex.hasMatch(password)) {
+      return false;
+    }
     return true;
   }
 
@@ -56,7 +60,7 @@ class InputValidator {
 
   /// 비밀번호 오류 메시지
   static String getPasswordErrorMessage(String password,
-      {bool requireUppercase = false}) {
+      {bool requireUppercase = false, bool requireSpecialChar = false}) {
     if (password.isEmpty) return '비밀번호를 입력해주세요.';
     if (password.length < passwordMinLength) {
       return '비밀번호는 최소 $passwordMinLength자 이상이어야 합니다.';
@@ -69,6 +73,9 @@ class InputValidator {
     }
     if (requireUppercase && !uppercaseRegex.hasMatch(password)) {
       return '비밀번호에 대문자를 포함해주세요.';
+    }
+    if (requireSpecialChar && !specialCharRegex.hasMatch(password)) {
+      return '비밀번호에 특수문자(@\$!%*?&)를 포함해주세요.';
     }
     return '';
   }
