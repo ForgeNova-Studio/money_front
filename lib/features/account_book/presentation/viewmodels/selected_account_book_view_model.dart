@@ -97,6 +97,7 @@ class SelectedAccountBookViewModel extends _$SelectedAccountBookViewModel {
 
   Future<void> ensureSelectedAccountBookId(List<String> availableIds) async {
     if (availableIds.isEmpty) {
+      await setSelectedAccountBookId(null);
       return;
     }
 

@@ -26,7 +26,13 @@ class HomeViewModel extends _$HomeViewModel {
       (previous, next) {
         final previousId = previous?.asData?.value;
         final nextId = next.asData?.value;
-        if (nextId == null || nextId == previousId) {
+        if (nextId == previousId) {
+          return;
+        }
+        if (nextId == null) {
+          state = state.copyWith(
+            monthlyData: const AsyncValue.data({}),
+          );
           return;
         }
         unawaited(fetchMonthlyData(state.focusedMonth, forceRefresh: true));

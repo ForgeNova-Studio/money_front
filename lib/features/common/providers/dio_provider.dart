@@ -105,6 +105,18 @@ class _AuthInterceptor extends Interceptor {
       return handler.next(err);
     }
 
+    if (statusCode == 403 &&
+        _isAccountBookAccessForbidden(err.response?.data)) {
+      await localDataSource.clearAll();
+      ref.read(authViewModelProvider.notifier).forceUnauthenticated(
+            errorMessage: '계정이 유효하지 않습니다. 다시 로그인해주세요.',
+          );
+      if (kDebugMode) {
+        debugPrint('[AuthInterceptor] 계정 접근 불가(403 A003) → 자동 로그아웃 처리');
+      }
+      return handler.next(err);
+    }
+
     if (err.requestOptions.path == ApiConstants.refreshToken &&
         statusCode == 400 &&
         _isInvalidRefreshToken(err.response?.data)) {
@@ -267,6 +279,16 @@ class _AuthInterceptor extends Interceptor {
       final message = data['message'];
       if (message is String) {
         return message.contains('유효하지 않은 Refresh Token');
+      }
+    }
+    return false;
+  }
+
+  bool _isAccountBookAccessForbidden(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      final code = data['code'];
+      if (code is String) {
+        return code == 'A003';
       }
     }
     return false;
