@@ -5,11 +5,13 @@ import 'package:go_router/go_router.dart';
 
 // cores
 import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moneyflow/features/auth/presentation/widgets/google_login_button.dart';
+import 'package:moneyflow/features/auth/presentation/widgets/kakao_login_button.dart';
+import 'package:moneyflow/features/auth/presentation/widgets/naver_login_button.dart';
 import 'package:moneyflow/router/route_names.dart';
 
 // widgets
 import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
-import 'package:moneyflow/features/auth/presentation/widgets/social_login_button.dart';
 
 // viewmodels
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
@@ -231,37 +233,40 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
                 SizedBox(height: 24),
 
-                // Apple 로그인 버튼
-                SocialLoginButton(
-                  label: 'Apple로 로그인',
-                  icon: Icon(
-                    Icons.apple,
-                    color: colorScheme.onSurface,
-                    size: 24,
-                  ),
-                  onPressed:
-                      authState.isLoading ? null : () => _handleAppleLogin(),
+                // Google 로그인 버튼 (공식 브랜드 가이드라인 적용)
+                GoogleLoginButton(
+                  onPressed: () => _handleGoogleLogin(),
+                  isLoading: authState.isLoading,
                 ),
 
                 SizedBox(height: 16),
 
-                // Google 로그인 버튼
-                SocialLoginButton(
-                  label: 'Google로 로그인',
-                  icon: Image.network(
-                    'https://www.google.com/favicon.ico',
-                    width: 24,
-                    height: 24,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(
-                        Icons.g_mobiledata,
-                        color: colorScheme.onSurface,
-                        size: 24,
+                // 카카오 로그인 버튼 (공식 디자인 가이드라인 적용)
+                KakaoLoginButton(
+                  onPressed: () {
+                    // TODO: 카카오 로그인 구현
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        const SnackBar(content: Text('카카오 로그인 기능 준비 중입니다.')),
                       );
-                    },
-                  ),
-                  onPressed:
-                      authState.isLoading ? null : () => _handleGoogleLogin(),
+                  },
+                  isLoading: false,
+                ),
+
+                const SizedBox(height: 16),
+
+                // 네이버 로그인 버튼 (공식 디자인 가이드라인 적용)
+                NaverLoginButton(
+                  onPressed: () {
+                    // TODO: 네이버 로그인 구현
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        const SnackBar(content: Text('네이버 로그인 기능 준비 중입니다.')),
+                      );
+                  },
+                  isLoading: false,
                 ),
 
                 SizedBox(height: 32),
