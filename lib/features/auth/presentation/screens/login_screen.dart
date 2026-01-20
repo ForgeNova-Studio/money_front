@@ -229,8 +229,8 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
                 // Google 로그인 버튼 (공식 브랜드 가이드라인 적용)
                 GoogleLoginButton(
-                  onPressed: () => _handleGoogleLogin(),
-                  isLoading: authState.isLoading,
+                  onPressed: authState.isLoading ? null : _handleGoogleLogin,
+                  isLoading: false,
                 ),
 
                 SizedBox(height: 16),
