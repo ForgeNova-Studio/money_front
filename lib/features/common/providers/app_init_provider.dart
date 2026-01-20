@@ -10,6 +10,8 @@ import 'package:moneyflow/features/ocr/data/datasources/local/user_brand_source.
 import 'package:moneyflow/features/ocr/data/datasources/memory/global_brand_source.dart';
 
 const bool kForceAppInitFailure = false;
+// Keep splash visible for at least this duration to avoid flicker on fast init.
+const Duration kMinimumSplashDuration = Duration(milliseconds: 1500);
 final DateTime appStartTime = DateTime.now();
 
 void logStartupDebug(String message) {
@@ -81,6 +83,11 @@ final appInitializationProvider = FutureProvider<AppInitialization>((ref) async 
   logStartupDebug('init_user_brand_ms=${stepStopwatch.elapsedMilliseconds}');
 
   final totalMs = initStopwatch.elapsedMilliseconds;
+  if (totalMs < kMinimumSplashDuration.inMilliseconds) {
+    await Future.delayed(
+      kMinimumSplashDuration - Duration(milliseconds: totalMs),
+    );
+  }
   logStartupDebug('app_init_total_ms=$totalMs');
   logStartupProfile('app_init_total_ms=$totalMs');
   logStartupRelease('app_init_total_ms=$totalMs');
