@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 
 /// Flutter Splash Screen
 ///
@@ -20,7 +21,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             Icon(
               Icons.account_balance_wallet_rounded,
               size: 96,
@@ -37,11 +38,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             ),
             SizedBox(height: 28),
             SizedBox(
-              width: 32,
-              height: 32,
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-                strokeWidth: 2.5,
+              width: 72,
+              height: 72,
+              child: Lottie.asset(
+                'assets/animation/Trail_loading.json',
+                repeat: true,
+                fit: BoxFit.contain,
               ),
             ),
           ],
