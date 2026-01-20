@@ -1,12 +1,16 @@
 // packages
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 // core
 import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moneyflow/core/validators/input_validator.dart';
+import 'package:moneyflow/router/route_names.dart';
 
 // widgets
 import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:moneyflow/features/auth/presentation/widgets/password_rule_checklist.dart';
 
 // viewmodels
 import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
@@ -26,6 +30,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  String _password = '';
+  String _confirmPassword = '';
+  String? _confirmError;
 
   @override
   void initState() {
@@ -46,8 +53,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   }
 
   Future<void> _handleResetPassword() async {
-    if (_passwordController.text.isEmpty ||
-        _confirmPasswordController.text.isEmpty) {
+    final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
+
+    if (password.isEmpty || confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
@@ -59,7 +68,24 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       return;
     }
 
-    if (_passwordController.text != _confirmPasswordController.text) {
+    final passwordError = InputValidator.getPasswordErrorMessage(
+      password,
+      requireUppercase: true,
+      requireSpecialChar: true,
+    );
+    if (passwordError.isNotEmpty) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(passwordError),
+            backgroundColor: context.appColors.warning,
+          ),
+        );
+      return;
+    }
+
+    if (password != confirmPassword) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
@@ -91,13 +117,53 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             ),
           );
 
-        // 로그인 화면으로 이동 (모든 스택 제거하고 로그인 화면으로)
-        Navigator.of(context).popUntil((route) => route.isFirst);
+        // 로그인 화면으로 이동 (스택 초기화)
+        context.go(RouteNames.login);
       }
     } catch (e) {
       // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
       // try-catch는 UnhandledException 방지용
     }
+  }
+
+  void _updatePassword(String value) {
+    setState(() {
+      _password = value;
+      _confirmError = _resolveConfirmError(
+        password: value,
+        confirmPassword: _confirmPassword,
+      );
+    });
+  }
+
+  void _updateConfirmPassword(String value) {
+    setState(() {
+      _confirmPassword = value;
+      _confirmError = _resolveConfirmError(
+        password: _password,
+        confirmPassword: value,
+      );
+    });
+  }
+
+  String? _resolveConfirmError({
+    required String password,
+    required String confirmPassword,
+  }) {
+    if (password.isEmpty || confirmPassword.isEmpty) {
+      return null;
+    }
+
+    final isPasswordValid = InputValidator.isValidPassword(
+      password,
+      requireUppercase: true,
+      requireSpecialChar: true,
+    );
+    if (!isPasswordValid) {
+      return null;
+    }
+
+    return password == confirmPassword ? null : '비밀번호가 일치하지 않습니다.';
   }
 
   @override
@@ -139,12 +205,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             automaticallyImplyLeading: false,
           ),
         body: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 Text(
                   '비밀번호 재설정',
                   style: TextStyle(
@@ -154,7 +220,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     height: 1.3,
                   ),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
                   '새로운 비밀번호를 입력해주세요.',
                   style: TextStyle(
@@ -169,25 +235,32 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   hintText: '새 비밀번호',
                   isPassword: true,
                   isPasswordVisible: _isPasswordVisible,
+                  onChanged: _updatePassword,
                   onVisibilityToggle: () {
                     setState(() {
                       _isPasswordVisible = !_isPasswordVisible;
                     });
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 CustomTextField(
                   controller: _confirmPasswordController,
                   hintText: '새 비밀번호 확인',
                   isPassword: true,
                   isPasswordVisible: _isConfirmPasswordVisible,
+                  errorText: _confirmError,
+                  onChanged: _updateConfirmPassword,
                   onVisibilityToggle: () {
                     setState(() {
                       _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
                     });
                   },
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 8),
+                PasswordRuleChecklist(
+                  password: _password,
+                ),
+                const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
                   height: 56,

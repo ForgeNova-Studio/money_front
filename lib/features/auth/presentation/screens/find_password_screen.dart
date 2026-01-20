@@ -25,6 +25,7 @@ class FindPasswordScreen extends ConsumerStatefulWidget {
 class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
   final _emailController = TextEditingController();
   final _verificationCodeController = TextEditingController();
+  final _verificationCodeFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
   void dispose() {
     _emailController.dispose();
     _verificationCodeController.dispose();
+    _verificationCodeFocusNode.dispose();
     super.dispose();
   }
 
@@ -70,6 +72,11 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
           ..showSnackBar(
             SnackBar(content: Text('인증번호가 전송되었습니다.')),
           );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            FocusScope.of(context).requestFocus(_verificationCodeFocusNode);
+          }
+        });
       }
     } catch (e) {
       // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
@@ -231,6 +238,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                       Expanded(
                         child: CustomTextField(
                           controller: _verificationCodeController,
+                          focusNode: _verificationCodeFocusNode,
                           hintText: '인증번호',
                           icon: Icons.lock_outline,
                           keyboardType: TextInputType.number,

@@ -36,6 +36,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   final _verificationCodeController = TextEditingController();
   final _verificationCodeFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -56,6 +57,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _confirmPasswordController.dispose();
     _verificationCodeController.dispose();
     _verificationCodeFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
@@ -182,6 +184,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           ..showSnackBar(
             const SnackBar(content: Text('이메일 인증이 완료되었습니다.')),
           );
+        // 인증 완료 후 포커싱 처리
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            FocusScope.of(context).requestFocus(_passwordFocusNode);
+          }
+        });
       }
     } catch (e) {
       // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
@@ -196,8 +204,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     // ViewModel 상태 구독
     final authState = ref.watch(authViewModelProvider);
     final formState = ref.watch(registerViewModelProvider);
-    final isPasswordMismatch =
-        formState.passwordError == '비밀번호가 일치하지 않습니다.';
+    final isPasswordMismatch = formState.passwordError == '비밀번호가 일치하지 않습니다.';
 
     // ViewModel 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
@@ -295,6 +302,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 // 비밀번호 입력 필드
                 CustomTextField(
                   controller: _passwordController,
+                  focusNode: _passwordFocusNode,
                   hintText: '비밀번호',
                   isPassword: true,
                   isPasswordVisible: formState.isPasswordVisible,
@@ -365,5 +373,4 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ),
     );
   }
-
 }
