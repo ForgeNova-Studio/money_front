@@ -67,11 +67,26 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
           .sendVerificationCode(_emailController.text);
 
       if (mounted) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(content: Text('인증번호가 전송되었습니다.')),
-          );
+        // ScaffoldMessenger.of(context)
+        //   ..hideCurrentSnackBar()
+        //   ..showSnackBar(
+        //     SnackBar(content: Text('인증번호가 전송되었습니다.')),
+        //   );
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('인증번호 안내'),
+            content: const Text(
+              '이메일 발송 서비스 준비 중입니다.\n\n인증번호: 000000\n\n위 인증번호를 입력해주세요.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('확인'),
+              ),
+            ],
+          ),
+        );
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             FocusScope.of(context).requestFocus(_verificationCodeFocusNode);
@@ -249,10 +264,10 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                       SizedBox(
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: formState.isEmailVerified ||
-                                  authState.isLoading
-                              ? null
-                              : _handleVerifyCode,
+                          onPressed:
+                              formState.isEmailVerified || authState.isLoading
+                                  ? null
+                                  : _handleVerifyCode,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: colorScheme.inverseSurface,
                             foregroundColor: colorScheme.onInverseSurface,

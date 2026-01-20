@@ -138,11 +138,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           .sendVerificationCode(_emailController.text);
 
       if (mounted) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(content: Text('인증번호가 전송되었습니다.')),
-          );
+        // ScaffoldMessenger.of(context)
+        //   ..hideCurrentSnackBar()
+        //   ..showSnackBar(
+        //     SnackBar(content: Text('인증번호가 전송되었습니다.')),
+        //   );
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('인증번호 안내'),
+            content: const Text(
+              '이메일 발송 서비스 준비 중입니다.\n\n인증번호: 000000\n\n위 인증번호를 입력해주세요.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('확인'),
+              ),
+            ],
+          ),
+        );
         // 인증번호 전송 후 포커싱 처리
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
