@@ -39,14 +39,20 @@ class GoogleLoginUseCase {
 
     // 3. Google Sign In으로 사용자 인증
     GoogleSignInAccount? googleUser;
-
-    if (googleSignIn.supportsAuthenticate()) {
-      // authenticate() 메서드 지원하는 플랫폼
-      googleUser = await googleSignIn.authenticate();
+    try {
+      if (googleSignIn.supportsAuthenticate()) {
+        // authenticate() 메서드 지원하는 플랫폼
+        googleUser = await googleSignIn.authenticate();
+      }
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        throw UserCancelledException();
+      }
+      rethrow;
     }
 
     if (googleUser == null) {
-      throw UnauthorizedException('Google 로그인이 취소되었습니다');
+      throw UserCancelledException();
     }
 
     // 4. ID Token 가져오기

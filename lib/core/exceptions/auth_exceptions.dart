@@ -24,6 +24,18 @@ class UnauthorizedException implements Exception {
   String toString() => 'UnauthorizedException: $message';
 }
 
+/// 사용자 취소
+///
+/// 로그인/인증 플로우에서 사용자가 취소한 경우
+class UserCancelledException implements Exception {
+  final String message;
+
+  UserCancelledException([this.message = '사용자에 의해 취소되었습니다']);
+
+  @override
+  String toString() => 'UserCancelledException: $message';
+}
+
 /// 입력값 검증 오류
 ///
 /// 이메일 중복, 비밀번호 형식 오류 등 입력값 검증 실패
