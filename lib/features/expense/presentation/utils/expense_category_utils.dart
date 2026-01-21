@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moneyflow/core/constants/expense_categories.dart';
+import 'package:moamoa/core/constants/expense_categories.dart';
 
 String resolveExpenseCategoryLabel(String code) {
   for (final category in DefaultExpenseCategories.all) {

@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
-import 'package:moneyflow/features/ocr/domain/entities/receipt_data.dart';
+import 'package:moamoa/features/ocr/domain/entities/receipt_data.dart';
 
 /// OCR 날짜 인식 오류를 휴리스틱 기반으로 자동 보정하는 유틸리티
 ///
@@ -94,21 +94,22 @@ class DateCorrector {
     // 1. 가상 클러스터 생성 (OCR 오류 패턴 병합)
     // 10↔0, 11↔1, 12↔2 를 같은 그룹으로 취급
     final virtualClusters = <int, int>{};
-    
+
     for (final entry in clusters.entries) {
       final month = entry.key;
       final count = entry.value;
-      
+
       // 타겟 월 결정: 10,11,12를 기준으로 통합
       int targetMonth = month;
       if (month >= 0 && month <= 2) {
         // 0,1,2 → 10,11,12로 매핑
         targetMonth = month + 10;
       }
-      
-      virtualClusters[targetMonth] = (virtualClusters[targetMonth] ?? 0) + count;
+
+      virtualClusters[targetMonth] =
+          (virtualClusters[targetMonth] ?? 0) + count;
     }
-    
+
     _logger.d('    가상 클러스터 (OCR 오류 패턴 병합): $virtualClusters');
 
     final totalCount = virtualClusters.values.reduce((a, b) => a + b);
@@ -150,7 +151,8 @@ class DateCorrector {
     );
 
     if (confidence < _mediumConfidenceThreshold) {
-      _logger.d('   ⏭️ ${_formatDate(originalDate)}: 신뢰도 낮음 (${(confidence * 100).toStringAsFixed(0)}%) → 보정 안함');
+      _logger.d(
+          '   ⏭️ ${_formatDate(originalDate)}: 신뢰도 낮음 (${(confidence * 100).toStringAsFixed(0)}%) → 보정 안함');
       return receipt;
     }
 
@@ -168,12 +170,15 @@ class DateCorrector {
 
     // 보정된 날짜가 유효한지 검증
     if (!_isValidCorrectedDate(correctedDate, referenceDate)) {
-      _logger.d('    ${_formatDate(originalDate)}: 보정 결과가 유효하지 않음 → ${_formatDate(correctedDate)}');
+      _logger.d(
+          '    ${_formatDate(originalDate)}: 보정 결과가 유효하지 않음 → ${_formatDate(correctedDate)}');
       return receipt;
     }
 
-    final confidenceLevel = confidence >= _highConfidenceThreshold ? '높음' : '중간';
-    _logger.i('    날짜 보정: ${_formatDate(originalDate)} → ${_formatDate(correctedDate)} (신뢰도: $confidenceLevel)');
+    final confidenceLevel =
+        confidence >= _highConfidenceThreshold ? '높음' : '중간';
+    _logger.i(
+        '    날짜 보정: ${_formatDate(originalDate)} → ${_formatDate(correctedDate)} (신뢰도: $confidenceLevel)');
 
     return receipt.copyWith(date: correctedDate);
   }

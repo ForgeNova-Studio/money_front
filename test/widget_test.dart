@@ -2,7 +2,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:moneyflow/main.dart';
+import 'package:moamoa/main.dart';
 
 void main() {
   testWidgets('MoneyFlow app 초기화 테스트', (WidgetTester tester) async {

@@ -1,5 +1,5 @@
-import 'package:moneyflow/features/account_book/domain/entities/book_type.dart';
-import 'package:moneyflow/features/account_book/domain/entities/member_info.dart';
+import 'package:moamoa/features/account_book/domain/entities/book_type.dart';
+import 'package:moamoa/features/account_book/domain/entities/member_info.dart';
 
 class AccountBook {
   final String? accountBookId;

@@ -1,4 +1,4 @@
-import 'package:moneyflow/features/expense/domain/repositories/expense_repository.dart';
+import 'package:moamoa/features/expense/domain/repositories/expense_repository.dart';
 
 class DeleteExpenseUseCase {
   final ExpenseRepository _repository;

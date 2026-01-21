@@ -1,5 +1,5 @@
-import 'package:moneyflow/features/home/domain/entities/daily_transaction_summary.dart';
-import 'package:moneyflow/features/home/domain/repositories/home_repository.dart';
+import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
+import 'package:moamoa/features/home/domain/repositories/home_repository.dart';
 
 class GetHomeMonthlyDataUseCase {
   final HomeRepository _repository;

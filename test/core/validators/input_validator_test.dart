@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:moneyflow/core/validators/input_validator.dart';
+import 'package:moamoa/core/validators/input_validator.dart';
 
 void main() {
   group('InputValidator', () {
@@ -43,8 +43,12 @@ void main() {
       });
 
       test('유효한 비밀번호는 true를 반환해야 한다 (대문자 필요)', () {
-        expect(InputValidator.isValidPassword('Password1', requireUppercase: true), true);
-        expect(InputValidator.isValidPassword('Test1234', requireUppercase: true), true);
+        expect(
+            InputValidator.isValidPassword('Password1', requireUppercase: true),
+            true);
+        expect(
+            InputValidator.isValidPassword('Test1234', requireUppercase: true),
+            true);
       });
 
       test('8자 미만이면 false를 반환해야 한다', () {
@@ -83,7 +87,8 @@ void main() {
       });
 
       test('20자 초과하면 false를 반환해야 한다', () {
-        expect(InputValidator.isValidNickname('가나다라마바사아자차카타파하가나다라마바사'), false); // 21자
+        expect(InputValidator.isValidNickname('가나다라마바사아자차카타파하가나다라마바사'),
+            false); // 21자
       });
     });
 

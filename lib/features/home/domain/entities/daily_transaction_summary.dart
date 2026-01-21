@@ -1,4 +1,4 @@
-import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
+import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 
 class DailyTransactionSummary {
   final DateTime date;

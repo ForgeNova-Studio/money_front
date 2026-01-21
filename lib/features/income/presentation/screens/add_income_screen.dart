@@ -5,22 +5,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 // core
-import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/core/constants/income_sources.dart';
-import 'package:moneyflow/features/common/widgets/transaction_form/amount_input_card.dart';
-import 'package:moneyflow/features/common/widgets/transaction_form/date_picker_card.dart';
-import 'package:moneyflow/features/common/widgets/transaction_form/form_submit_button.dart';
-import 'package:moneyflow/features/common/widgets/transaction_form/transaction_form_card.dart';
-import 'package:moneyflow/features/common/widgets/transaction_form/transaction_form_styles.dart';
-import 'package:moneyflow/features/common/widgets/transaction_form/transaction_text_field.dart';
-import 'package:moneyflow/features/income/presentation/providers/income_providers.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/core/constants/income_sources.dart';
+import 'package:moamoa/features/common/widgets/transaction_form/amount_input_card.dart';
+import 'package:moamoa/features/common/widgets/transaction_form/date_picker_card.dart';
+import 'package:moamoa/features/common/widgets/transaction_form/form_submit_button.dart';
+import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_card.dart';
+import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_styles.dart';
+import 'package:moamoa/features/common/widgets/transaction_form/transaction_text_field.dart';
+import 'package:moamoa/features/income/presentation/providers/income_providers.dart';
 
 // features
-import 'package:moneyflow/features/income/presentation/viewmodels/income_view_model.dart';
-import 'package:moneyflow/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/features/income/presentation/viewmodels/income_view_model.dart';
+import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 
 // entities
-import 'package:moneyflow/features/income/domain/entities/income.dart';
+import 'package:moamoa/features/income/domain/entities/income.dart';
 
 class AddIncomeScreen extends ConsumerStatefulWidget {
   final DateTime? initialDate;
@@ -74,15 +74,15 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
       return;
     }
     try {
-      final income =
-          await ref.read(getIncomeDetailUsecaseProvider).call(incomeId: incomeId);
+      final income = await ref
+          .read(getIncomeDetailUsecaseProvider)
+          .call(incomeId: incomeId);
       if (!mounted) return;
       setState(() {
         _originalIncome = income;
         _selectedDate = income.date;
         _selectedSource = income.source;
-        _amountController.text =
-            _amountFormatter.format(income.amount.round());
+        _amountController.text = _amountFormatter.format(income.amount.round());
         _descriptionController.text = income.description ?? '';
         _isLoading = false;
       });
@@ -216,167 +216,175 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
             elevation: 0,
             leading: IconButton(
               icon: Icon(Icons.close, color: colorScheme.onSurface),
-            onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
           ),
-        ),
           body: _isLoading
               ? const Center(child: CircularProgressIndicator())
               : Column(
-            children: [
-              Expanded(
-                // 스크롤 시작시 키보드를 자동으로 내리기 위한 처리
-                child: NotificationListener<ScrollStartNotification>(
-                  onNotification: (notification) {
-                    if (notification.dragDetails != null) {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                    }
-                    return false;
-                  },
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          SizedBox(height: 20),
-                          // 1. 금액 입력 필드
-                          AmountInputCard(
-                            controller: _amountController,
-                            focusNode: _amountFocusNode,
-                            validator: _validateAmount,
-                            amountColor: context.appColors.primary,
-                            unitColor: context.appColors.textPrimary,
-                          ),
-                          const SizedBox(height: 24),
+                  children: [
+                    Expanded(
+                      // 스크롤 시작시 키보드를 자동으로 내리기 위한 처리
+                      child: NotificationListener<ScrollStartNotification>(
+                        onNotification: (notification) {
+                          if (notification.dragDetails != null) {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          }
+                          return false;
+                        },
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                SizedBox(height: 20),
+                                // 1. 금액 입력 필드
+                                AmountInputCard(
+                                  controller: _amountController,
+                                  focusNode: _amountFocusNode,
+                                  validator: _validateAmount,
+                                  amountColor: context.appColors.primary,
+                                  unitColor: context.appColors.textPrimary,
+                                ),
+                                const SizedBox(height: 24),
 
-                          // 2. 날짜 선택 필드
-                          DatePickerCard(
-                            selectedDate: _selectedDate,
-                            onTap: () => _selectDate(context),
-                          ),
-                          const SizedBox(height: 28),
+                                // 2. 날짜 선택 필드
+                                DatePickerCard(
+                                  selectedDate: _selectedDate,
+                                  onTap: () => _selectDate(context),
+                                ),
+                                const SizedBox(height: 28),
 
-                          // 3. Source Selection
-                          Text(
-                            '수입 출처',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: context.appColors.textSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
+                                // 3. Source Selection
+                                Text(
+                                  '수입 출처',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: context.appColors.textSecondary,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
 
-                          // 수입 출처 GridView
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              final itemWidth = (constraints.maxWidth - 24) / 3;
-                              return Wrap(
-                                spacing: 12,
-                                runSpacing: 12,
-                                children: sources.map((source) {
-                                  final isSelected =
-                                      _selectedSource == source.code;
-                                  return SizedBox(
-                                    width: itemWidth,
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        borderRadius: BorderRadius.circular(20),
-                                        onTap: () {
-                                          FocusManager.instance.primaryFocus
-                                              ?.unfocus();
-                                          setState(() {
-                                            _selectedSource = source.code;
-                                          });
-                                        },
-                                        child: AnimatedContainer(
-                                          duration:
-                                              const Duration(milliseconds: 200),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 12, vertical: 14),
-                                          decoration:
-                                              transactionFormCardDecoration(
-                                            context,
-                                            backgroundColor: isSelected
-                                                ? source.color.withOpacity(0.12)
-                                                : Colors.white,
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              Container(
-                                                width: 36,
-                                                height: 36,
-                                                decoration: BoxDecoration(
-                                                  color: isSelected
+                                // 수입 출처 GridView
+                                LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    final itemWidth =
+                                        (constraints.maxWidth - 24) / 3;
+                                    return Wrap(
+                                      spacing: 12,
+                                      runSpacing: 12,
+                                      children: sources.map((source) {
+                                        final isSelected =
+                                            _selectedSource == source.code;
+                                        return SizedBox(
+                                          width: itemWidth,
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: InkWell(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              onTap: () {
+                                                FocusManager
+                                                    .instance.primaryFocus
+                                                    ?.unfocus();
+                                                setState(() {
+                                                  _selectedSource = source.code;
+                                                });
+                                              },
+                                              child: AnimatedContainer(
+                                                duration: const Duration(
+                                                    milliseconds: 200),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 14),
+                                                decoration:
+                                                    transactionFormCardDecoration(
+                                                  context,
+                                                  backgroundColor: isSelected
                                                       ? source.color
-                                                      : source.color
-                                                          .withOpacity(0.12),
-                                                  shape: BoxShape.circle,
+                                                          .withOpacity(0.12)
+                                                      : Colors.white,
                                                 ),
-                                                child: Icon(
-                                                  source.icon,
-                                                  color: isSelected
-                                                      ? Colors.white
-                                                      : source.color,
-                                                  size: 18,
+                                                child: Column(
+                                                  children: [
+                                                    Container(
+                                                      width: 36,
+                                                      height: 36,
+                                                      decoration: BoxDecoration(
+                                                        color: isSelected
+                                                            ? source.color
+                                                            : source.color
+                                                                .withOpacity(
+                                                                    0.12),
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                      child: Icon(
+                                                        source.icon,
+                                                        color: isSelected
+                                                            ? Colors.white
+                                                            : source.color,
+                                                        size: 18,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    Text(
+                                                      source.name,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: isSelected
+                                                            ? source.color
+                                                            : context.appColors
+                                                                .textSecondary,
+                                                        fontWeight: isSelected
+                                                            ? FontWeight.w700
+                                                            : FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
-                                              const SizedBox(height: 8),
-                                              Text(
-                                                source.name,
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: isSelected
-                                                      ? source.color
-                                                      : context.appColors
-                                                          .textSecondary,
-                                                  fontWeight: isSelected
-                                                      ? FontWeight.w700
-                                                      : FontWeight.w600,
-                                                ),
-                                              ),
-                                            ],
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 28),
+                                        );
+                                      }).toList(),
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 28),
 
-                          // 4. 메모 필드
-                          TransactionFormCard(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
-                            child: TransactionTextField(
-                              controller: _descriptionController,
-                              hint: '어떤 수입인가요?',
-                              icon: Icons.edit_outlined,
-                              multiline: true,
+                                // 4. 메모 필드
+                                TransactionFormCard(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 10),
+                                  child: TransactionTextField(
+                                    controller: _descriptionController,
+                                    hint: '어떤 수입인가요?',
+                                    icon: Icons.edit_outlined,
+                                    multiline: true,
+                                  ),
+                                ),
+                                const SizedBox(height: 48),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 48),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ),
 
-              // 등록하기 버튼
-              FormSubmitButton(
-                isVisible: MediaQuery.of(context).viewInsets.bottom == 0,
-                label: isEditing ? '수정하기' : '등록하기',
-                onPressed: _handleSubmit,
-              ),
-            ],
-          ),
+                    // 등록하기 버튼
+                    FormSubmitButton(
+                      isVisible: MediaQuery.of(context).viewInsets.bottom == 0,
+                      label: isEditing ? '수정하기' : '등록하기',
+                      onPressed: _handleSubmit,
+                    ),
+                  ],
+                ),
         ));
   }
 }

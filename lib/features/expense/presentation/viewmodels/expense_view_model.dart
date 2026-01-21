@@ -1,7 +1,7 @@
-import 'package:moneyflow/features/expense/domain/entities/expense.dart';
-import 'package:moneyflow/features/expense/presentation/providers/expense_providers.dart';
-import 'package:moneyflow/features/expense/presentation/states/expense_state.dart';
-import 'package:moneyflow/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+import 'package:moamoa/features/expense/domain/entities/expense.dart';
+import 'package:moamoa/features/expense/presentation/providers/expense_providers.dart';
+import 'package:moamoa/features/expense/presentation/states/expense_state.dart';
+import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'expense_view_model.g.dart';

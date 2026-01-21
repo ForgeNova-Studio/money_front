@@ -1,23 +1,23 @@
 // datasources
-import 'package:moneyflow/features/expense/data/datasources/expense_remote_datasource.dart';
-import 'package:moneyflow/features/expense/data/datasources/expense_remote_datasource_impl.dart';
+import 'package:moamoa/features/expense/data/datasources/expense_remote_datasource.dart';
+import 'package:moamoa/features/expense/data/datasources/expense_remote_datasource_impl.dart';
 
 // repositories
-import 'package:moneyflow/features/expense/data/repositories/expense_repository_impl.dart';
-import 'package:moneyflow/features/expense/domain/repositories/expense_repository.dart';
+import 'package:moamoa/features/expense/data/repositories/expense_repository_impl.dart';
+import 'package:moamoa/features/expense/domain/repositories/expense_repository.dart';
 
 // usecases
-import 'package:moneyflow/features/expense/domain/usecases/create_expense_usecase.dart';
-import 'package:moneyflow/features/expense/domain/usecases/delete_expense_usecase.dart';
-import 'package:moneyflow/features/expense/domain/usecases/get_expense_detail_usecase.dart';
-import 'package:moneyflow/features/expense/domain/usecases/get_expense_list_usecase.dart';
-import 'package:moneyflow/features/expense/domain/usecases/update_expense_usecase.dart';
+import 'package:moamoa/features/expense/domain/usecases/create_expense_usecase.dart';
+import 'package:moamoa/features/expense/domain/usecases/delete_expense_usecase.dart';
+import 'package:moamoa/features/expense/domain/usecases/get_expense_detail_usecase.dart';
+import 'package:moamoa/features/expense/domain/usecases/get_expense_list_usecase.dart';
+import 'package:moamoa/features/expense/domain/usecases/update_expense_usecase.dart';
 
 // packages
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // providers
-import 'package:moneyflow/features/common/providers/core_providers.dart';
+import 'package:moamoa/features/common/providers/core_providers.dart';
 
 part 'expense_providers.g.dart';
 

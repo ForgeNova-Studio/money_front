@@ -1,5 +1,5 @@
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:moneyflow/features/ocr/domain/entities/receipt_data.dart';
+import 'package:moamoa/features/ocr/domain/entities/receipt_data.dart';
 
 /// 영수증 패턴 파서 인터페이스
 ///

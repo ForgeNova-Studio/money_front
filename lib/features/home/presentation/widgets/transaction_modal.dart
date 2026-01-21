@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:moneyflow/router/route_names.dart';
-import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moamoa/router/route_names.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
 
 class TransactionModal extends StatelessWidget {
   const TransactionModal({super.key, required this.selectedDate});

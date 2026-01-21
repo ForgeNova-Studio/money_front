@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 // core
-import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
 
 class OnboardingBottomIndicator extends StatelessWidget {
   const OnboardingBottomIndicator({

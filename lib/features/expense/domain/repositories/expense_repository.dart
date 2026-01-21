@@ -1,5 +1,5 @@
 // entities
-import 'package:moneyflow/features/expense/domain/entities/expense.dart';
+import 'package:moamoa/features/expense/domain/entities/expense.dart';
 
 /// Expense Repository 인터페이스
 ///

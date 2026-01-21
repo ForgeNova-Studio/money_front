@@ -1,5 +1,5 @@
 // models
-import 'package:moneyflow/features/auth/data/models/models.dart';
+import 'package:moamoa/features/auth/data/models/models.dart';
 
 /// Auth Local Data Source 인터페이스
 ///

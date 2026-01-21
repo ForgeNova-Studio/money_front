@@ -4,14 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // core
-import 'package:moneyflow/core/exceptions/exceptions.dart';
+import 'package:moamoa/core/exceptions/exceptions.dart';
 
 // providers/states
-import 'package:moneyflow/features/auth/presentation/providers/auth_providers.dart';
-import 'package:moneyflow/features/auth/presentation/states/auth_state.dart';
+import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
+import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
 
 // entities
-import 'package:moneyflow/features/auth/domain/entities/gender.dart';
+import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
 part 'auth_view_model.g.dart';
 

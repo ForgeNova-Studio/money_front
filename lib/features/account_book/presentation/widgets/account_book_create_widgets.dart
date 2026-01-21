@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
 
 // 섹션 제목과 카드 스타일을 묶는 래퍼.
 class AccountBookSectionCard extends StatelessWidget {

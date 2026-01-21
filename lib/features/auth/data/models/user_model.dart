@@ -2,8 +2,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 // entities
-import 'package:moneyflow/features/auth/domain/entities/user.dart';
-import 'package:moneyflow/features/auth/domain/entities/gender.dart';
+import 'package:moamoa/features/auth/domain/entities/user.dart';
+import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
 part 'user_model.freezed.dart';
 part 'user_model.g.dart';

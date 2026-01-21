@@ -1,27 +1,27 @@
 // datasources
-import 'package:moneyflow/features/account_book/data/datasources/account_book_remote_datasource.dart';
-import 'package:moneyflow/features/account_book/data/datasources/account_book_remote_datasource_impl.dart';
+import 'package:moamoa/features/account_book/data/datasources/account_book_remote_datasource.dart';
+import 'package:moamoa/features/account_book/data/datasources/account_book_remote_datasource_impl.dart';
 
 // repositories
-import 'package:moneyflow/features/account_book/data/repositories/account_book_repository_impl.dart';
-import 'package:moneyflow/features/account_book/domain/repositories/account_book_repository.dart';
+import 'package:moamoa/features/account_book/data/repositories/account_book_repository_impl.dart';
+import 'package:moamoa/features/account_book/domain/repositories/account_book_repository.dart';
 
 // entities
-import 'package:moneyflow/features/account_book/domain/entities/account_book.dart';
+import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
 
 // usecases
-import 'package:moneyflow/features/account_book/domain/usecases/add_account_book_member_usecase.dart';
-import 'package:moneyflow/features/account_book/domain/usecases/create_account_book_usecase.dart';
-import 'package:moneyflow/features/account_book/domain/usecases/deactivate_account_book_usecase.dart';
-import 'package:moneyflow/features/account_book/domain/usecases/get_account_book_detail_usecase.dart';
-import 'package:moneyflow/features/account_book/domain/usecases/get_account_book_members_usecase.dart';
-import 'package:moneyflow/features/account_book/domain/usecases/get_account_books_usecase.dart';
+import 'package:moamoa/features/account_book/domain/usecases/add_account_book_member_usecase.dart';
+import 'package:moamoa/features/account_book/domain/usecases/create_account_book_usecase.dart';
+import 'package:moamoa/features/account_book/domain/usecases/deactivate_account_book_usecase.dart';
+import 'package:moamoa/features/account_book/domain/usecases/get_account_book_detail_usecase.dart';
+import 'package:moamoa/features/account_book/domain/usecases/get_account_book_members_usecase.dart';
+import 'package:moamoa/features/account_book/domain/usecases/get_account_books_usecase.dart';
 
 // packages
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // providers
-import 'package:moneyflow/features/common/providers/core_providers.dart';
+import 'package:moamoa/features/common/providers/core_providers.dart';
 
 part 'account_book_providers.g.dart';
 
@@ -38,7 +38,8 @@ AccountBookRemoteDataSource accountBookRemoteDataSource(Ref ref) {
 // ============================================================================
 @riverpod
 AccountBookRepository accountBookRepository(Ref ref) {
-  return AccountBookRepositoryImpl(ref.read(accountBookRemoteDataSourceProvider));
+  return AccountBookRepositoryImpl(
+      ref.read(accountBookRemoteDataSourceProvider));
 }
 
 // ============================================================================

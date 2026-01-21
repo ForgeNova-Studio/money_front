@@ -1,5 +1,5 @@
 // core
-import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart';
+import 'package:moamoa/features/auth/domain/repositories/auth_repository.dart';
 
 /// 로그아웃 UseCase
 ///

@@ -1,8 +1,8 @@
 // entities
-import 'package:moneyflow/features/auth/domain/entities/user.dart';
+import 'package:moamoa/features/auth/domain/entities/user.dart';
 
 // repository
-import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart';
+import 'package:moamoa/features/auth/domain/repositories/auth_repository.dart';
 
 /// 현재 사용자 조회 UseCase
 ///

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
 import '../viewmodels/ocr_view_model.dart';
 import '../../domain/entities/receipt_data.dart';
 

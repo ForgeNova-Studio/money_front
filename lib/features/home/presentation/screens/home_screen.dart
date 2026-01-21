@@ -5,21 +5,21 @@ import 'package:go_router/go_router.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 // core
-import 'package:moneyflow/router/route_names.dart';
+import 'package:moamoa/router/route_names.dart';
 
 // features
-import 'package:moneyflow/features/home/presentation/widgets/custom_calendar.dart';
-import 'package:moneyflow/features/home/presentation/widgets/home_account_book_dropdown.dart';
-import 'package:moneyflow/features/home/presentation/widgets/home_budget_info_card.dart';
-import 'package:moneyflow/features/home/presentation/widgets/home_fab_menu.dart';
-import 'package:moneyflow/features/home/presentation/widgets/home_transaction_sheet.dart';
-import 'package:moneyflow/features/home/presentation/providers/home_providers.dart';
-import 'package:moneyflow/features/home/presentation/viewmodels/home_view_model.dart';
-import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
-import 'package:moneyflow/features/account_book/domain/entities/account_book.dart';
-import 'package:moneyflow/features/account_book/presentation/providers/account_book_providers.dart';
-import 'package:moneyflow/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
-import 'package:moneyflow/features/common/providers/ui_overlay_providers.dart';
+import 'package:moamoa/features/home/presentation/widgets/custom_calendar.dart';
+import 'package:moamoa/features/home/presentation/widgets/home_account_book_dropdown.dart';
+import 'package:moamoa/features/home/presentation/widgets/home_budget_info_card.dart';
+import 'package:moamoa/features/home/presentation/widgets/home_fab_menu.dart';
+import 'package:moamoa/features/home/presentation/widgets/home_transaction_sheet.dart';
+import 'package:moamoa/features/home/presentation/providers/home_providers.dart';
+import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
+import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
+import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
+import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+import 'package:moamoa/features/common/providers/ui_overlay_providers.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

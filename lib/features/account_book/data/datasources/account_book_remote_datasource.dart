@@ -1,5 +1,5 @@
-import 'package:moneyflow/features/account_book/data/models/account_book_member_info_model.dart';
-import 'package:moneyflow/features/account_book/data/models/account_book_model.dart';
+import 'package:moamoa/features/account_book/data/models/account_book_member_info_model.dart';
+import 'package:moamoa/features/account_book/data/models/account_book_model.dart';
 
 abstract class AccountBookRemoteDataSource {
   Future<List<AccountBookModel>> getAccountBooks();

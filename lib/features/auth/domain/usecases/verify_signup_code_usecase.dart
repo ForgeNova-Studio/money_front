@@ -1,9 +1,9 @@
 // core
-import 'package:moneyflow/core/exceptions/exceptions.dart';
-import 'package:moneyflow/core/validators/input_validator.dart';
+import 'package:moamoa/core/exceptions/exceptions.dart';
+import 'package:moamoa/core/validators/input_validator.dart';
 
 // repository
-import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart';
+import 'package:moamoa/features/auth/domain/repositories/auth_repository.dart';
 
 /// 회원가입 인증번호 검증 UseCase
 ///

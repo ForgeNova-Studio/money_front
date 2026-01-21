@@ -3,13 +3,13 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // core
-import 'package:moneyflow/core/exceptions/exceptions.dart';
+import 'package:moamoa/core/exceptions/exceptions.dart';
 
 // models
-import 'package:moneyflow/features/auth/data/models/models.dart';
+import 'package:moamoa/features/auth/data/models/models.dart';
 
 // dataSources
-import 'package:moneyflow/features/auth/data/datasources/local/auth_local_datasource.dart';
+import 'package:moamoa/features/auth/data/datasources/local/auth_local_datasource.dart';
 
 /// Auth Local Data Source 구현체
 ///

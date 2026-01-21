@@ -1,5 +1,5 @@
-import 'package:moneyflow/features/expense/data/models/expense_model.dart';
-import 'package:moneyflow/features/expense/data/models/expense_list_response_model.dart';
+import 'package:moamoa/features/expense/data/models/expense_model.dart';
+import 'package:moamoa/features/expense/data/models/expense_list_response_model.dart';
 
 abstract class ExpenseRemoteDataSource {
   Future<ExpenseListResponseModel> getExpenseList({

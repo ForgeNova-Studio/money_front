@@ -4,17 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 // widgets
-import 'package:moneyflow/features/onBoarding/presentation/widgets/page1.dart';
-import 'package:moneyflow/features/onBoarding/presentation/widgets/page2.dart';
-import 'package:moneyflow/features/onBoarding/presentation/widgets/page3.dart';
-import 'package:moneyflow/features/onBoarding/presentation/widgets/page4.dart';
-import 'package:moneyflow/features/onBoarding/presentation/widgets/page5.dart';
+import 'package:moamoa/features/onBoarding/presentation/widgets/page1.dart';
+import 'package:moamoa/features/onBoarding/presentation/widgets/page2.dart';
+import 'package:moamoa/features/onBoarding/presentation/widgets/page3.dart';
+import 'package:moamoa/features/onBoarding/presentation/widgets/page4.dart';
+import 'package:moamoa/features/onBoarding/presentation/widgets/page5.dart';
 
 // providers
-import 'package:moneyflow/features/common/providers/storage_providers.dart';
+import 'package:moamoa/features/common/providers/storage_providers.dart';
 
 // routes
-import 'package:moneyflow/router/route_names.dart';
+import 'package:moamoa/router/route_names.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});

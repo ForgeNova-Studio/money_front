@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/router/route_names.dart';
-import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
-import 'package:moneyflow/features/auth/presentation/states/auth_state.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/router/route_names.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});

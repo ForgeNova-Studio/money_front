@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/features/auth/domain/entities/gender.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
 class GenderSelectorRow extends StatelessWidget {
   final Gender? selectedGender;

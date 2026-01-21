@@ -1,4 +1,4 @@
-import 'package:moneyflow/features/income/domain/repositories/income_repository.dart';
+import 'package:moamoa/features/income/domain/repositories/income_repository.dart';
 
 class DeleteIncomeUsecase {
   final IncomeRepository _repository;

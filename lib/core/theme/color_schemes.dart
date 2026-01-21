@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
 
 /// MoneyFlow App Color Schemes
 /// ColorScheme만 정의 (ThemeData는 light_theme.dart에서)

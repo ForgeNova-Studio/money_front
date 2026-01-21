@@ -4,17 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 // cores
-import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/features/auth/presentation/widgets/google_login_button.dart';
-import 'package:moneyflow/features/auth/presentation/widgets/kakao_login_button.dart';
-import 'package:moneyflow/features/auth/presentation/widgets/naver_login_button.dart';
-import 'package:moneyflow/router/route_names.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/features/auth/presentation/widgets/google_login_button.dart';
+import 'package:moamoa/features/auth/presentation/widgets/kakao_login_button.dart';
+import 'package:moamoa/features/auth/presentation/widgets/naver_login_button.dart';
+import 'package:moamoa/router/route_names.dart';
 
 // widgets
-import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
 
 // viewmodels
-import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 
 /// 로그인 화면
 class LoginScreen extends ConsumerStatefulWidget {

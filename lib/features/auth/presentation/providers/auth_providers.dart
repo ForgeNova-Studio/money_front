@@ -1,29 +1,29 @@
 // dataSources
-import 'package:moneyflow/features/auth/data/datasources/local/auth_local_datasource.dart';
-import 'package:moneyflow/features/auth/data/datasources/local/auth_local_datasource_impl.dart';
-import 'package:moneyflow/features/auth/data/datasources/remote/auth_remote_datasource.dart';
-import 'package:moneyflow/features/auth/data/datasources/remote/auth_remote_datasource_impl.dart';
+import 'package:moamoa/features/auth/data/datasources/local/auth_local_datasource.dart';
+import 'package:moamoa/features/auth/data/datasources/local/auth_local_datasource_impl.dart';
+import 'package:moamoa/features/auth/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:moamoa/features/auth/data/datasources/remote/auth_remote_datasource_impl.dart';
 
 // repository
-import 'package:moneyflow/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart';
+import 'package:moamoa/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:moamoa/features/auth/domain/repositories/auth_repository.dart';
 
 // usecases
-import 'package:moneyflow/features/auth/domain/usecases/apple_login_usecase.dart';
-import 'package:moneyflow/features/auth/domain/usecases/get_current_user_usecase.dart';
-import 'package:moneyflow/features/auth/domain/usecases/google_login_usecase.dart';
-import 'package:moneyflow/features/auth/domain/usecases/login_usecase.dart';
-import 'package:moneyflow/features/auth/domain/usecases/logout_usecase.dart';
-import 'package:moneyflow/features/auth/domain/usecases/register_usecase.dart';
-import 'package:moneyflow/features/auth/domain/usecases/reset_password_usecase.dart';
-import 'package:moneyflow/features/auth/domain/usecases/send_password_reset_code_usecase.dart';
-import 'package:moneyflow/features/auth/domain/usecases/send_signup_code_usecase.dart';
-import 'package:moneyflow/features/auth/domain/usecases/verifiy_find_password_code_usecase.dart';
-import 'package:moneyflow/features/auth/domain/usecases/verify_signup_code_usecase.dart';
+import 'package:moamoa/features/auth/domain/usecases/apple_login_usecase.dart';
+import 'package:moamoa/features/auth/domain/usecases/get_current_user_usecase.dart';
+import 'package:moamoa/features/auth/domain/usecases/google_login_usecase.dart';
+import 'package:moamoa/features/auth/domain/usecases/login_usecase.dart';
+import 'package:moamoa/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:moamoa/features/auth/domain/usecases/register_usecase.dart';
+import 'package:moamoa/features/auth/domain/usecases/reset_password_usecase.dart';
+import 'package:moamoa/features/auth/domain/usecases/send_password_reset_code_usecase.dart';
+import 'package:moamoa/features/auth/domain/usecases/send_signup_code_usecase.dart';
+import 'package:moamoa/features/auth/domain/usecases/verifiy_find_password_code_usecase.dart';
+import 'package:moamoa/features/auth/domain/usecases/verify_signup_code_usecase.dart';
 
 // providers/states
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:moneyflow/features/common/providers/core_providers.dart';
+import 'package:moamoa/features/common/providers/core_providers.dart';
 
 part 'auth_providers.g.dart';
 

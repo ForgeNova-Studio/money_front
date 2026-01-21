@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/core/theme/color_schemes.dart';
-import 'package:moneyflow/core/theme/text_theme.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/core/theme/color_schemes.dart';
+import 'package:moamoa/core/theme/text_theme.dart';
 
 /// Light Theme 빌더
 ThemeData buildLightTheme() {

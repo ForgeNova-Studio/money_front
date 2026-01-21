@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:moneyflow/core/constants/api_constants.dart';
-import 'package:moneyflow/core/exceptions/exceptions.dart';
-import 'package:moneyflow/features/home/data/models/home_monthly_response_model.dart';
+import 'package:moamoa/core/constants/api_constants.dart';
+import 'package:moamoa/core/exceptions/exceptions.dart';
+import 'package:moamoa/features/home/data/models/home_monthly_response_model.dart';
 
 abstract class HomeRemoteDataSource {
   Future<Map<String, DailyTransactionSummaryModel>> getMonthlyData(

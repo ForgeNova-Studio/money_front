@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:moneyflow/features/common/providers/app_init_provider.dart';
+import 'package:moamoa/features/common/providers/app_init_provider.dart';
 
 /// SharedPreferences Provider
 ///

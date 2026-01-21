@@ -1,5 +1,5 @@
 // entities
-import 'package:moneyflow/features/auth/domain/entities/gender.dart';
+import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
 /// 순수 비즈니스 모델 (사용자)
 /// - 앱에서 인증된 사용자 정보를 표현

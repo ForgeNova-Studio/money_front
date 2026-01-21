@@ -1,5 +1,5 @@
-import 'package:moneyflow/features/income/data/models/income_list_response_model.dart';
-import 'package:moneyflow/features/income/data/models/income_model.dart';
+import 'package:moamoa/features/income/data/models/income_list_response_model.dart';
+import 'package:moamoa/features/income/data/models/income_model.dart';
 
 /// Income Remote Data Source
 ///

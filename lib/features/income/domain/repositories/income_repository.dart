@@ -1,5 +1,5 @@
 // entities
-import 'package:moneyflow/features/income/domain/entities/income.dart';
+import 'package:moamoa/features/income/domain/entities/income.dart';
 
 /// Income Repository 인터페이스
 ///

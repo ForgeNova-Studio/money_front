@@ -2,7 +2,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 // entities
-import 'package:moneyflow/features/expense/domain/entities/expense.dart';
+import 'package:moamoa/features/expense/domain/entities/expense.dart';
 
 part 'expense_model.freezed.dart';
 part 'expense_model.g.dart';

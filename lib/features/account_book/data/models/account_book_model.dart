@@ -1,8 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:moneyflow/features/account_book/data/models/account_book_member_info_model.dart';
-import 'package:moneyflow/features/account_book/domain/entities/account_book.dart';
-import 'package:moneyflow/features/account_book/domain/entities/book_type.dart';
-
+import 'package:moamoa/features/account_book/data/models/account_book_member_info_model.dart';
+import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
+import 'package:moamoa/features/account_book/domain/entities/book_type.dart';
 
 part 'account_book_model.g.dart';
 part 'account_book_model.freezed.dart';

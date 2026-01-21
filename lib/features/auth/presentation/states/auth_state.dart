@@ -2,7 +2,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 // entities
-import 'package:moneyflow/features/auth/domain/entities/user.dart';
+import 'package:moamoa/features/auth/domain/entities/user.dart';
 
 part 'auth_state.freezed.dart';
 

@@ -1,7 +1,7 @@
-import 'package:moneyflow/features/expense/data/datasources/expense_remote_datasource.dart';
-import 'package:moneyflow/features/expense/data/models/expense_model.dart';
-import 'package:moneyflow/features/expense/domain/entities/expense.dart';
-import 'package:moneyflow/features/expense/domain/repositories/expense_repository.dart';
+import 'package:moamoa/features/expense/data/datasources/expense_remote_datasource.dart';
+import 'package:moamoa/features/expense/data/models/expense_model.dart';
+import 'package:moamoa/features/expense/domain/entities/expense.dart';
+import 'package:moamoa/features/expense/domain/repositories/expense_repository.dart';
 
 class ExpenseRepositoryImpl implements ExpenseRepository {
   final ExpenseRemoteDataSource _remoteDataSource;
@@ -31,7 +31,8 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
 
   @override
   Future<Expense> getExpenseDetail({required String expenseId}) async {
-    final model = await _remoteDataSource.getExpenseDetail(expenseId: expenseId);
+    final model =
+        await _remoteDataSource.getExpenseDetail(expenseId: expenseId);
     return model.toEntity();
   }
 

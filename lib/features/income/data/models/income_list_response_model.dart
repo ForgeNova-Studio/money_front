@@ -2,7 +2,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 // models
-import 'package:moneyflow/features/income/data/models/income_model.dart';
+import 'package:moamoa/features/income/data/models/income_model.dart';
 
 part 'income_list_response_model.freezed.dart';
 part 'income_list_response_model.g.dart';

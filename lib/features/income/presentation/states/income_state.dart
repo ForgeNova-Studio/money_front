@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:moneyflow/features/income/domain/entities/income.dart';
+import 'package:moamoa/features/income/domain/entities/income.dart';
 
 part 'income_state.freezed.dart';
 

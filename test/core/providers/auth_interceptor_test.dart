@@ -3,11 +3,11 @@
 // import 'package:mockito/mockito.dart';
 // import 'package:dio/dio.dart';
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:moneyflow/core/providers/core_providers.dart';
-// import 'package:moneyflow/features/auth/data/datasources/local/auth_local_datasource.dart';
-// import 'package:moneyflow/features/auth/data/models/auth_token_model.dart';
-// import 'package:moneyflow/features/auth/presentation/providers/auth_providers.dart';
-// import 'package:moneyflow/core/constants/api_constants.dart';
+// import 'package:moamoa/core/providers/core_providers.dart';
+// import 'package:moamoa/features/auth/data/datasources/local/auth_local_datasource.dart';
+// import 'package:moamoa/features/auth/data/models/auth_token_model.dart';
+// import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
+// import 'package:moamoa/core/constants/api_constants.dart';
 
 // // Mock 클래스 생성을 위한 어노테이션
 // @GenerateNiceMocks([

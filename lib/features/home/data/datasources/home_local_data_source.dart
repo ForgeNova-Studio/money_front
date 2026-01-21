@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:moneyflow/features/home/data/models/home_monthly_response_model.dart';
+import 'package:moamoa/features/home/data/models/home_monthly_response_model.dart';
 
 class HomeMonthlyCacheEntry {
   final DateTime cachedAt;
@@ -33,7 +33,8 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
   }
 
   @override
-  Future<HomeMonthlyCacheEntry?> getMonthlyData({required String cacheKey}) async {
+  Future<HomeMonthlyCacheEntry?> getMonthlyData(
+      {required String cacheKey}) async {
     await _ensureInitialized();
 
     final box = _box;
@@ -96,8 +97,9 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
       'date': summary.date,
       'totalIncome': summary.totalIncome,
       'totalExpense': summary.totalExpense,
-      'transactions':
-          summary.transactions.map((transaction) => transaction.toJson()).toList(),
+      'transactions': summary.transactions
+          .map((transaction) => transaction.toJson())
+          .toList(),
     };
   }
 }

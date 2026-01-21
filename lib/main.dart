@@ -9,12 +9,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 // core
-import 'package:moneyflow/features/common/providers/app_init_provider.dart';
-import 'package:moneyflow/core/theme/theme.dart';
-import 'package:moneyflow/router/router_provider.dart';
+import 'package:moamoa/features/common/providers/app_init_provider.dart';
+import 'package:moamoa/core/theme/theme.dart';
+import 'package:moamoa/router/router_provider.dart';
 
 // features
-import 'package:moneyflow/features/common/screens/splash_screen.dart';
+import 'package:moamoa/features/common/screens/splash_screen.dart';
 
 void main() {
   /// Native Splash Screen 유지 (Flutter 엔진 초기화 중 표시)

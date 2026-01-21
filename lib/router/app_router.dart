@@ -1,45 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:moneyflow/router/route_names.dart';
-import 'package:moneyflow/features/common/widgets/app_shell.dart';
+import 'package:moamoa/router/route_names.dart';
+import 'package:moamoa/features/common/widgets/app_shell.dart';
 
 // Splash Screen
-import 'package:moneyflow/features/common/screens/splash_screen.dart';
-import 'package:moneyflow/features/setting/settings_screen.dart';
+import 'package:moamoa/features/common/screens/splash_screen.dart';
+import 'package:moamoa/features/setting/settings_screen.dart';
 
 // Auth Screens
-import 'package:moneyflow/features/auth/presentation/screens/login_screen.dart';
-import 'package:moneyflow/features/auth/presentation/screens/register_screen.dart';
-import 'package:moneyflow/features/auth/presentation/screens/find_password_screen.dart';
-import 'package:moneyflow/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:moamoa/features/auth/presentation/screens/login_screen.dart';
+import 'package:moamoa/features/auth/presentation/screens/register_screen.dart';
+import 'package:moamoa/features/auth/presentation/screens/find_password_screen.dart';
+import 'package:moamoa/features/auth/presentation/screens/reset_password_screen.dart';
 
 // Onboarding Screens
-import 'package:moneyflow/features/onBoarding/presentation/screens/onboarding/on_boarding_screen.dart';
+import 'package:moamoa/features/onBoarding/presentation/screens/onboarding/on_boarding_screen.dart';
 
 // Main Screens
-import 'package:moneyflow/features/home/presentation/screens/home_screen.dart';
+import 'package:moamoa/features/home/presentation/screens/home_screen.dart';
 
 // Analysis Screens
-import 'package:moneyflow/features/statistics/presentation/screens/statistics_screen.dart';
+import 'package:moamoa/features/statistics/presentation/screens/statistics_screen.dart';
 
 // Asset Screens
-import 'package:moneyflow/features/assets/presentation/screens/asset_screen.dart';
+import 'package:moamoa/features/assets/presentation/screens/asset_screen.dart';
 
 // AccountBook Screens
-import 'package:moneyflow/features/account_book/presentation/screens/account_book_create_screen.dart';
+import 'package:moamoa/features/account_book/presentation/screens/account_book_create_screen.dart';
 
 // Expense Screens
-import 'package:moneyflow/features/expense/presentation/screens/add_expense_screen.dart';
+import 'package:moamoa/features/expense/presentation/screens/add_expense_screen.dart';
 
 // Income Screens
-import 'package:moneyflow/features/income/presentation/screens/add_income_screen.dart';
+import 'package:moamoa/features/income/presentation/screens/add_income_screen.dart';
 
 // Statistics Screens
 
 // Budget & Couple Screens
 
 // OCR Screens
-import 'package:moneyflow/features/ocr/presentation/screens/ocr_test_screen.dart';
+import 'package:moamoa/features/ocr/presentation/screens/ocr_test_screen.dart';
 
 /// 앱 라우트 설정 클래스
 class AppRouter {

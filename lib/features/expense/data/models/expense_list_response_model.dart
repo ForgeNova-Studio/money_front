@@ -2,7 +2,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 // models
-import 'package:moneyflow/features/expense/data/models/expense_model.dart';
+import 'package:moamoa/features/expense/data/models/expense_model.dart';
 
 part 'expense_list_response_model.freezed.dart';
 part 'expense_list_response_model.g.dart';

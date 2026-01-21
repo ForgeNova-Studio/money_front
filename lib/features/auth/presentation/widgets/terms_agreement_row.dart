@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
 
 class TermsAgreementRow extends StatelessWidget {
   final bool isTermsAgreed;

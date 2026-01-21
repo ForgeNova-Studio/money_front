@@ -6,8 +6,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:moneyflow/features/ocr/data/datasources/local/user_brand_source.dart';
-import 'package:moneyflow/features/ocr/data/datasources/memory/global_brand_source.dart';
+import 'package:moamoa/features/ocr/data/datasources/local/user_brand_source.dart';
+import 'package:moamoa/features/ocr/data/datasources/memory/global_brand_source.dart';
 
 const bool kForceAppInitFailure = false;
 // Keep splash visible for at least this duration to avoid flicker on fast init.
@@ -45,7 +45,8 @@ class AppInitialization {
 }
 
 /// 앱 시작 시 필요한 비동기 초기화
-final appInitializationProvider = FutureProvider<AppInitialization>((ref) async {
+final appInitializationProvider =
+    FutureProvider<AppInitialization>((ref) async {
   if (kForceAppInitFailure) {
     throw StateError('Forced app initialization failure');
   }

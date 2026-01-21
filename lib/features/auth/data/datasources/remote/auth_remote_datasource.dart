@@ -1,6 +1,6 @@
 // models
-import 'package:moneyflow/features/auth/data/models/models.dart';
-import 'package:moneyflow/features/auth/domain/entities/gender.dart';
+import 'package:moamoa/features/auth/data/models/models.dart';
+import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
 /// Auth Remote Data Source 인터페이스
 ///

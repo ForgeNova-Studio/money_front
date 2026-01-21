@@ -1,4 +1,4 @@
-import 'package:moneyflow/features/account_book/domain/repositories/account_book_repository.dart';
+import 'package:moamoa/features/account_book/domain/repositories/account_book_repository.dart';
 
 class DeactivateAccountBookUseCase {
   final AccountBookRepository _repository;

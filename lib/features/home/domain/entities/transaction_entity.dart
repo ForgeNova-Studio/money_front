@@ -1,5 +1,5 @@
-import 'package:moneyflow/features/expense/domain/entities/expense.dart';
-import 'package:moneyflow/features/income/domain/entities/income.dart';
+import 'package:moamoa/features/expense/domain/entities/expense.dart';
+import 'package:moamoa/features/income/domain/entities/income.dart';
 
 enum TransactionType { income, expense }
 
@@ -26,7 +26,8 @@ class TransactionEntity {
     final fallbackCategory = expense.category ?? '기타';
     return TransactionEntity(
       id: expense.expenseId ?? '',
-      amount: expense.amount, // Expense amount is usually positive in DB, handled as negative in UI
+      amount: expense
+          .amount, // Expense amount is usually positive in DB, handled as negative in UI
       date: expense.date,
       title: expense.merchant ?? fallbackCategory,
       category: fallbackCategory,

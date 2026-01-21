@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:moneyflow/router/app_router.dart';
-import 'package:moneyflow/router/route_names.dart';
-import 'package:moneyflow/features/common/providers/app_init_provider.dart';
-import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
-import 'package:moneyflow/features/auth/presentation/states/auth_state.dart';
+import 'package:moamoa/router/app_router.dart';
+import 'package:moamoa/router/route_names.dart';
+import 'package:moamoa/features/common/providers/app_init_provider.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
 
 /// GoRouter Provider
 /// AuthViewModel의 상태를 watching하여 인증 상태 변화에 따라 자동 리다이렉션
@@ -86,8 +86,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         return null;
       }
 
-      final hasSeenOnboarding =
-          appInitState.requireValue.sharedPreferences
+      final hasSeenOnboarding = appInitState.requireValue.sharedPreferences
               .getBool('has_seen_onboarding') ??
           false;
 

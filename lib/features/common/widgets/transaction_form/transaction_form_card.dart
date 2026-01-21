@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:moneyflow/features/common/widgets/transaction_form/transaction_form_styles.dart';
+import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_styles.dart';
 
 class TransactionFormCard extends StatelessWidget {
   final Widget child;

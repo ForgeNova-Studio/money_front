@@ -2,16 +2,16 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // states
-import 'package:moneyflow/features/auth/presentation/states/register_form_state.dart';
+import 'package:moamoa/features/auth/presentation/states/register_form_state.dart';
 
 // entities
-import 'package:moneyflow/features/auth/domain/entities/gender.dart';
+import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
 // core
-import 'package:moneyflow/core/validators/input_validator.dart';
+import 'package:moamoa/core/validators/input_validator.dart';
 
 // viewmodels
-import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 
 part 'register_view_model.g.dart';
 

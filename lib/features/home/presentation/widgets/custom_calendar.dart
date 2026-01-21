@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/core/utils/format_utils.dart';
-import 'package:moneyflow/features/home/domain/entities/daily_transaction_summary.dart';
-import 'package:moneyflow/features/home/presentation/widgets/custom_month_picker.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/core/utils/format_utils.dart';
+import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
+import 'package:moamoa/features/home/presentation/widgets/custom_month_picker.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CustomCalendar extends StatefulWidget {

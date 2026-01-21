@@ -1,13 +1,13 @@
 // core
-import 'package:moneyflow/core/exceptions/exceptions.dart';
-import 'package:moneyflow/core/validators/input_validator.dart';
+import 'package:moamoa/core/exceptions/exceptions.dart';
+import 'package:moamoa/core/validators/input_validator.dart';
 
 // entities
-import 'package:moneyflow/features/auth/domain/entities/auth_result.dart';
-import 'package:moneyflow/features/auth/domain/entities/gender.dart';
+import 'package:moamoa/features/auth/domain/entities/auth_result.dart';
+import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
 // repository
-import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart';
+import 'package:moamoa/features/auth/domain/repositories/auth_repository.dart';
 
 /// 회원가입 UseCase
 ///

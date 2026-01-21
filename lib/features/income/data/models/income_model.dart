@@ -2,7 +2,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 // entities
-import 'package:moneyflow/features/income/domain/entities/income.dart';
+import 'package:moamoa/features/income/domain/entities/income.dart';
 
 part 'income_model.freezed.dart';
 part 'income_model.g.dart';

@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:moneyflow/core/constants/api_constants.dart';
-import 'package:moneyflow/core/exceptions/exceptions.dart';
-import 'package:moneyflow/features/expense/data/datasources/expense_remote_datasource.dart';
-import 'package:moneyflow/features/expense/data/models/expense_list_response_model.dart';
-import 'package:moneyflow/features/expense/data/models/expense_model.dart';
+import 'package:moamoa/core/constants/api_constants.dart';
+import 'package:moamoa/core/exceptions/exceptions.dart';
+import 'package:moamoa/features/expense/data/datasources/expense_remote_datasource.dart';
+import 'package:moamoa/features/expense/data/models/expense_list_response_model.dart';
+import 'package:moamoa/features/expense/data/models/expense_model.dart';
 
 class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
   final Dio dio;

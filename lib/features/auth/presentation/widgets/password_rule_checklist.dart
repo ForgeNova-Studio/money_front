@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/core/validators/input_validator.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/core/validators/input_validator.dart';
 
 class PasswordRuleChecklist extends StatelessWidget {
   final String password;

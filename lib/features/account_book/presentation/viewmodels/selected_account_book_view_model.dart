@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:moneyflow/features/account_book/domain/entities/account_book.dart';
-import 'package:moneyflow/features/account_book/presentation/providers/account_book_providers.dart';
-import 'package:moneyflow/features/common/providers/core_providers.dart';
-import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
+import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
+import 'package:moamoa/features/common/providers/core_providers.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 
 part 'selected_account_book_view_model.g.dart';
 

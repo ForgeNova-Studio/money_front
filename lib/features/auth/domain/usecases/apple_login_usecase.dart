@@ -2,13 +2,13 @@
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 // core
-import 'package:moneyflow/core/exceptions/exceptions.dart';
+import 'package:moamoa/core/exceptions/exceptions.dart';
 
 // entities
-import 'package:moneyflow/features/auth/domain/entities/auth_result.dart';
+import 'package:moamoa/features/auth/domain/entities/auth_result.dart';
 
 // repository
-import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart';
+import 'package:moamoa/features/auth/domain/repositories/auth_repository.dart';
 
 /// Apple 로그인 UseCase
 ///

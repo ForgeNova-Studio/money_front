@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:moneyflow/features/account_book/domain/entities/account_book.dart';
+import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
 
 class HomeAccountBookDropdown extends StatelessWidget {
   final AsyncValue<List<AccountBook>> accountBooksState;

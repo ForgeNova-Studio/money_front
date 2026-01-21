@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
 
 class EmailVerificationRow extends StatelessWidget {
   final TextEditingController controller;

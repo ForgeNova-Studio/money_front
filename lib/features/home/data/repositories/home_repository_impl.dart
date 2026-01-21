@@ -2,15 +2,15 @@
 import 'package:intl/intl.dart';
 
 // entities
-import 'package:moneyflow/features/home/domain/entities/daily_transaction_summary.dart';
-import 'package:moneyflow/features/home/domain/entities/monthly_home_cache.dart';
+import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
+import 'package:moamoa/features/home/domain/entities/monthly_home_cache.dart';
 
 // repository
-import 'package:moneyflow/features/home/domain/repositories/home_repository.dart';
+import 'package:moamoa/features/home/domain/repositories/home_repository.dart';
 
 // dataSource
-import 'package:moneyflow/features/home/data/datasources/home_local_data_source.dart';
-import 'package:moneyflow/features/home/data/datasources/home_remote_data_source.dart';
+import 'package:moamoa/features/home/data/datasources/home_local_data_source.dart';
+import 'package:moamoa/features/home/data/datasources/home_remote_data_source.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
   final HomeRemoteDataSource _homeRemoteDataSource;

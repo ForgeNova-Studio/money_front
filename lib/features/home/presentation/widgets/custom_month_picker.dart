@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
 
 class CustomMonthPicker extends StatefulWidget {
   final DateTime initialDate;
@@ -282,7 +282,9 @@ class _CustomMonthPickerState extends State<CustomMonthPicker> {
                     fontSize: 16.0,
                     fontWeight:
                         isSelected ? FontWeight.bold : FontWeight.normal,
-                    color: isSelected ? Colors.white : context.appColors.textPrimary,
+                    color: isSelected
+                        ? Colors.white
+                        : context.appColors.textPrimary,
                   ),
                 ),
               ),
@@ -339,7 +341,9 @@ class _CustomMonthPickerState extends State<CustomMonthPicker> {
                     fontSize: 14.0,
                     fontWeight:
                         isSelected ? FontWeight.bold : FontWeight.normal,
-                    color: isSelected ? Colors.white : context.appColors.textPrimary,
+                    color: isSelected
+                        ? Colors.white
+                        : context.appColors.textPrimary,
                   ),
                 ),
               ),

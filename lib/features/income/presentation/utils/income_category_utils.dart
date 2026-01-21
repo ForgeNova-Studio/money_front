@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moneyflow/features/income/domain/entities/income.dart';
+import 'package:moamoa/features/income/domain/entities/income.dart';
 
 String resolveIncomeCategoryLabel(String source) {
   switch (source) {

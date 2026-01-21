@@ -2,15 +2,15 @@
 import 'package:dio/dio.dart';
 
 // core
-import 'package:moneyflow/core/constants/api_constants.dart';
-import 'package:moneyflow/core/exceptions/exceptions.dart';
+import 'package:moamoa/core/constants/api_constants.dart';
+import 'package:moamoa/core/exceptions/exceptions.dart';
 
 // models
-import 'package:moneyflow/features/auth/data/models/models.dart';
-import 'package:moneyflow/features/auth/domain/entities/gender.dart';
+import 'package:moamoa/features/auth/data/models/models.dart';
+import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
 // dataSources
-import 'package:moneyflow/features/auth/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:moamoa/features/auth/data/datasources/remote/auth_remote_datasource.dart';
 
 /// Auth Remote Data Source 구현체
 ///

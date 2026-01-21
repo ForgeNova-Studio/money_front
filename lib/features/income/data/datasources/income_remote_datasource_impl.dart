@@ -2,15 +2,15 @@
 import 'package:dio/dio.dart';
 
 // core
-import 'package:moneyflow/core/constants/api_constants.dart';
-import 'package:moneyflow/core/exceptions/exceptions.dart';
+import 'package:moamoa/core/constants/api_constants.dart';
+import 'package:moamoa/core/exceptions/exceptions.dart';
 
-import 'package:moneyflow/features/income/data/models/income_list_response_model.dart';
+import 'package:moamoa/features/income/data/models/income_list_response_model.dart';
 // models
-import 'package:moneyflow/features/income/data/models/income_model.dart';
+import 'package:moamoa/features/income/data/models/income_model.dart';
 
 // datasources
-import 'package:moneyflow/features/income/data/datasources/income_remote_datasource.dart';
+import 'package:moamoa/features/income/data/datasources/income_remote_datasource.dart';
 
 /// Income Remote Data Source 구현체
 ///

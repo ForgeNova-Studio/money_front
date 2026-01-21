@@ -1,8 +1,8 @@
-import 'package:moneyflow/features/account_book/data/datasources/account_book_remote_datasource.dart';
-import 'package:moneyflow/features/account_book/data/models/account_book_model.dart';
-import 'package:moneyflow/features/account_book/domain/entities/account_book.dart';
-import 'package:moneyflow/features/account_book/domain/entities/member_info.dart';
-import 'package:moneyflow/features/account_book/domain/repositories/account_book_repository.dart';
+import 'package:moamoa/features/account_book/data/datasources/account_book_remote_datasource.dart';
+import 'package:moamoa/features/account_book/data/models/account_book_model.dart';
+import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
+import 'package:moamoa/features/account_book/domain/entities/member_info.dart';
+import 'package:moamoa/features/account_book/domain/repositories/account_book_repository.dart';
 
 class AccountBookRepositoryImpl implements AccountBookRepository {
   final AccountBookRemoteDataSource _remoteDataSource;

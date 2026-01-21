@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
 
 class VerificationCodeSection extends StatelessWidget {
   final TextEditingController controller;

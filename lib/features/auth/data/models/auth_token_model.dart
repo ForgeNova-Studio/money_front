@@ -2,7 +2,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 // entities
-import 'package:moneyflow/features/auth/domain/entities/auth_token.dart';
+import 'package:moamoa/features/auth/domain/entities/auth_token.dart';
 
 part 'auth_token_model.freezed.dart';
 part 'auth_token_model.g.dart';

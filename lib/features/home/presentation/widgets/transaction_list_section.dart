@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/features/home/domain/entities/daily_transaction_summary.dart';
-import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
-import 'package:moneyflow/features/home/presentation/widgets/animated_amount_text.dart';
-import 'package:moneyflow/features/home/presentation/widgets/transaction_empty_state.dart';
-import 'package:moneyflow/features/home/presentation/widgets/transaction_list_item.dart';
-import 'package:moneyflow/features/home/presentation/widgets/transaction_modal_header.dart';
-import 'package:moneyflow/router/route_names.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
+import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
+import 'package:moamoa/features/home/presentation/widgets/animated_amount_text.dart';
+import 'package:moamoa/features/home/presentation/widgets/transaction_empty_state.dart';
+import 'package:moamoa/features/home/presentation/widgets/transaction_list_item.dart';
+import 'package:moamoa/features/home/presentation/widgets/transaction_modal_header.dart';
+import 'package:moamoa/router/route_names.dart';
 
 class TransactionListSection extends StatelessWidget {
   const TransactionListSection({
@@ -136,9 +136,8 @@ class TransactionListSection extends StatelessWidget {
                     context.push(RouteNames.editIncome(tx.id));
                   }
                 },
-          onDelete: tx.id.isEmpty || onDelete == null
-              ? null
-              : () => onDelete!(tx),
+          onDelete:
+              tx.id.isEmpty || onDelete == null ? null : () => onDelete!(tx),
         );
       },
     );

@@ -1,15 +1,15 @@
 import 'dart:io';
 import 'package:logger/logger.dart';
-import 'package:moneyflow/features/ocr/domain/entities/receipt_data.dart';
-import 'package:moneyflow/features/ocr/domain/entities/category.dart';
-import 'package:moneyflow/features/ocr/domain/repositories/ocr_repository.dart';
-import 'package:moneyflow/features/ocr/domain/patterns/receipt_pattern.dart';
-import 'package:moneyflow/features/ocr/domain/strategies/brand_match_strategy.dart';
-import 'package:moneyflow/features/ocr/data/datasources/local/image_preprocessor.dart';
-import 'package:moneyflow/features/ocr/data/datasources/local/mlkit_text_recognizer.dart';
-import 'package:moneyflow/features/ocr/data/parser/common_pattern.dart';
-import 'package:moneyflow/features/ocr/data/utils/date_corrector.dart';
-import 'package:moneyflow/features/ocr/data/datasources/remote/ocr_api_service.dart';
+import 'package:moamoa/features/ocr/domain/entities/receipt_data.dart';
+import 'package:moamoa/features/ocr/domain/entities/category.dart';
+import 'package:moamoa/features/ocr/domain/repositories/ocr_repository.dart';
+import 'package:moamoa/features/ocr/domain/patterns/receipt_pattern.dart';
+import 'package:moamoa/features/ocr/domain/strategies/brand_match_strategy.dart';
+import 'package:moamoa/features/ocr/data/datasources/local/image_preprocessor.dart';
+import 'package:moamoa/features/ocr/data/datasources/local/mlkit_text_recognizer.dart';
+import 'package:moamoa/features/ocr/data/parser/common_pattern.dart';
+import 'package:moamoa/features/ocr/data/utils/date_corrector.dart';
+import 'package:moamoa/features/ocr/data/datasources/remote/ocr_api_service.dart';
 
 /// OCR Repository 구현체
 ///
@@ -57,7 +57,8 @@ class OcrRepositoryImpl implements OcrRepository {
       final preprocessedFile = await _preprocessor.preprocessForOcr(imageFile);
 
       // 2. ML Kit으로 텍스트 인식
-      final recognizedText = await _textRecognizer.recognizeText(preprocessedFile);
+      final recognizedText =
+          await _textRecognizer.recognizeText(preprocessedFile);
 
       // 전처리된 이미지 정리
       if (preprocessedFile.path != imageFile.path) {
@@ -88,7 +89,8 @@ class OcrRepositoryImpl implements OcrRepository {
       }
 
       // 4. 패턴으로 파싱 (없으면 CommonPattern 사용)
-      final parser = selectedPattern ?? _patterns.firstWhere((p) => p is CommonPattern);
+      final parser =
+          selectedPattern ?? _patterns.firstWhere((p) => p is CommonPattern);
 
       if (selectedPattern == null) {
         _logger.i('ℹ️ 기본 패턴 사용: ${parser.name}');
@@ -111,7 +113,8 @@ class OcrRepositoryImpl implements OcrRepository {
         final rawData = dateCorrectedResults[i];
         final rawMerchant = rawData.merchant ?? '';
 
-        _logger.d('   [${i + 1}] 원본 분석 중: "$rawMerchant" (날짜: ${rawData.date})');
+        _logger
+            .d('   [${i + 1}] 원본 분석 중: "$rawMerchant" (날짜: ${rawData.date})');
 
         // 전략 패턴 실행 (브랜드 찾기 - 항상 결과 반환)
         final brandInfo = await _brandStrategy.findBrand(rawMerchant);
@@ -146,23 +149,26 @@ class OcrRepositoryImpl implements OcrRepository {
         // 키 생성: "원본텍스트_금액_날짜" (정규화 없이 원본 그대로!!)
         final rawTextTrimmed = rawData.rawText.trim();
         final uniqueKey = "${rawTextTrimmed}_${enrichedData.amount}_$dateStr";
-        
+
         _logger.d('      🔑 키: "$uniqueKey"');
 
         if (!uniqueMap.containsKey(uniqueKey)) {
           uniqueMap[uniqueKey] = enrichedData;
 
           if (brandInfo != null) {
-            _logger.i('   ✨ 추출 성공: $finalDisplayName ($finalBranchName) - ${enrichedData.amount}원');
+            _logger.i(
+                '   ✨ 추출 성공: $finalDisplayName ($finalBranchName) - ${enrichedData.amount}원');
           } else {
             // 브랜드 미확인도 결과에 포함 (사용자가 수정 후 학습 가능)
-            _logger.i('   ⚠️ 추출 (브랜드 미확인): $finalDisplayName - ${enrichedData.amount}원');
+            _logger.i(
+                '   ⚠️ 추출 (브랜드 미확인): $finalDisplayName - ${enrichedData.amount}원');
           }
         } else {
           // 기존에 있던 건과 비교
           final existingData = uniqueMap[uniqueKey]!;
           _logger.w('   🗑️ OCR 중복 제거됨: ${enrichedData.amount}원');
-          _logger.d('      충돌 rawText: "$rawTextTrimmed" vs 기존: "${existingData.rawText}"');
+          _logger.d(
+              '      충돌 rawText: "$rawTextTrimmed" vs 기존: "${existingData.rawText}"');
         }
       }
 
@@ -170,7 +176,8 @@ class OcrRepositoryImpl implements OcrRepository {
       final finalResults = uniqueMap.values.toList();
 
       _logger.i('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      _logger.i('✅ 최종 완료: ${finalResults.length}건 (중복 ${rawResults.length - finalResults.length}건 제거)');
+      _logger.i(
+          '✅ 최종 완료: ${finalResults.length}건 (중복 ${rawResults.length - finalResults.length}건 제거)');
       _logger.i('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
       return finalResults;
@@ -181,7 +188,8 @@ class OcrRepositoryImpl implements OcrRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> submitReceiptData(ReceiptData receiptData) async {
+  Future<Map<String, dynamic>> submitReceiptData(
+      ReceiptData receiptData) async {
     try {
       _logger.i('서버로 영수증 데이터 전송 중...');
       final response = await _apiService.createExpenseFromReceipt(receiptData);

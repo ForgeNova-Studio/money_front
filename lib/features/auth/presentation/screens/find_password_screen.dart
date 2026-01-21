@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // core
-import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
 
 // widgets
-import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
 
 // viewmodels
-import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
-import 'package:moneyflow/features/auth/presentation/viewmodels/find_password_view_model.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/find_password_view_model.dart';
 
 // screens
-import 'package:moneyflow/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:moamoa/features/auth/presentation/screens/reset_password_screen.dart';
 
 class FindPasswordScreen extends ConsumerStatefulWidget {
   const FindPasswordScreen({super.key});

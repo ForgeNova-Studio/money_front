@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/features/income/domain/entities/income.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/features/income/domain/entities/income.dart';
 
 class IncomeSourceItem {
   final String code;

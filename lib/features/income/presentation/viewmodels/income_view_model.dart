@@ -1,7 +1,7 @@
-import 'package:moneyflow/features/income/domain/entities/income.dart';
-import 'package:moneyflow/features/income/presentation/providers/income_providers.dart';
-import 'package:moneyflow/features/income/presentation/states/income_state.dart';
-import 'package:moneyflow/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+import 'package:moamoa/features/income/domain/entities/income.dart';
+import 'package:moamoa/features/income/presentation/providers/income_providers.dart';
+import 'package:moamoa/features/income/presentation/states/income_state.dart';
+import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'income_view_model.g.dart';

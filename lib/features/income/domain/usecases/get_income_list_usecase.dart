@@ -1,5 +1,5 @@
-import 'package:moneyflow/features/income/domain/entities/income.dart';
-import 'package:moneyflow/features/income/domain/repositories/income_repository.dart';
+import 'package:moamoa/features/income/domain/entities/income.dart';
+import 'package:moamoa/features/income/domain/repositories/income_repository.dart';
 
 class GetIncomeListUsecase {
   final IncomeRepository _repository;

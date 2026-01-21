@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
-import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/features/expense/presentation/utils/expense_category_utils.dart';
-import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
-import 'package:moneyflow/features/income/presentation/utils/income_category_utils.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/features/expense/presentation/utils/expense_category_utils.dart';
+import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
+import 'package:moamoa/features/income/presentation/utils/income_category_utils.dart';
 
 class TransactionListItem extends StatelessWidget {
   const TransactionListItem({
@@ -21,7 +21,8 @@ class TransactionListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isExpense = transaction.type == TransactionType.expense;
-    final color = isExpense ? context.appColors.error : context.appColors.success;
+    final color =
+        isExpense ? context.appColors.error : context.appColors.success;
     final prefix = isExpense ? '-' : '+';
     final amountStr = NumberFormat('#,###').format(transaction.amount);
     final timeStr = DateFormat('HH:mm').format(transaction.date);
@@ -29,7 +30,8 @@ class TransactionListItem extends StatelessWidget {
     final categoryIcon = _resolveCategoryIcon(transaction, isExpense);
 
     return Slidable(
-      key: ValueKey('${transaction.id}-${transaction.createdAt.toIso8601String()}'),
+      key: ValueKey(
+          '${transaction.id}-${transaction.createdAt.toIso8601String()}'),
       endActionPane: onDelete == null
           ? null
           : ActionPane(
@@ -56,8 +58,9 @@ class TransactionListItem extends StatelessWidget {
                 backgroundColor: context.appColors.gray50,
                 child: Icon(
                   categoryIcon,
-                  color:
-                      isExpense ? context.appColors.textSecondary : context.appColors.success,
+                  color: isExpense
+                      ? context.appColors.textSecondary
+                      : context.appColors.success,
                   size: 20,
                 ),
               ),
@@ -68,8 +71,8 @@ class TransactionListItem extends StatelessWidget {
                   children: [
                     Text(
                       transaction.title,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     SizedBox(height: 2),
                     Text(

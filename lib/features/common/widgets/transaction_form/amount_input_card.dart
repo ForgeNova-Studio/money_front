@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/features/common/widgets/transaction_form/thousands_separator_input_formatter.dart';
-import 'package:moneyflow/features/common/widgets/transaction_form/transaction_form_card.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/features/common/widgets/transaction_form/thousands_separator_input_formatter.dart';
+import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_card.dart';
 
 class AmountInputCard extends StatelessWidget {
   final TextEditingController controller;

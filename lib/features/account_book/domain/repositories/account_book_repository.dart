@@ -1,5 +1,5 @@
-import 'package:moneyflow/features/account_book/domain/entities/account_book.dart';
-import 'package:moneyflow/features/account_book/domain/entities/member_info.dart';
+import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
+import 'package:moamoa/features/account_book/domain/entities/member_info.dart';
 
 abstract class AccountBookRepository {
   Future<List<AccountBook>> getAccountBooks();

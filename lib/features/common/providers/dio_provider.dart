@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:moneyflow/core/constants/api_constants.dart';
-import 'package:moneyflow/features/auth/data/models/auth_token_model.dart';
-import 'package:moneyflow/features/auth/presentation/providers/auth_providers.dart';
-import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moamoa/core/constants/api_constants.dart';
+import 'package:moamoa/features/auth/data/models/auth_token_model.dart';
+import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:synchronized/synchronized.dart';
 

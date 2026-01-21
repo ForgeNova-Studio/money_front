@@ -1,9 +1,9 @@
 // repository
-import 'package:moneyflow/features/auth/domain/repositories/auth_repository.dart';
+import 'package:moamoa/features/auth/domain/repositories/auth_repository.dart';
 
 // core
-import 'package:moneyflow/core/exceptions/auth_exceptions.dart';
-import 'package:moneyflow/core/validators/input_validator.dart';
+import 'package:moamoa/core/exceptions/auth_exceptions.dart';
+import 'package:moamoa/core/validators/input_validator.dart';
 
 /// 비밀번호 찾기 인증번호 검증 UseCase
 ///

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:moneyflow/core/constants/api_constants.dart';
-import 'package:moneyflow/core/exceptions/exceptions.dart';
-import 'package:moneyflow/features/ocr/domain/entities/receipt_data.dart';
+import 'package:moamoa/core/constants/api_constants.dart';
+import 'package:moamoa/core/exceptions/exceptions.dart';
+import 'package:moamoa/features/ocr/domain/entities/receipt_data.dart';
 
 /// OCR API 서비스
 ///

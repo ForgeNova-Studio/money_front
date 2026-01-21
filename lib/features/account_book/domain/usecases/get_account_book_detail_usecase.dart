@@ -1,5 +1,5 @@
-import 'package:moneyflow/features/account_book/domain/entities/account_book.dart';
-import 'package:moneyflow/features/account_book/domain/repositories/account_book_repository.dart';
+import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
+import 'package:moamoa/features/account_book/domain/repositories/account_book_repository.dart';
 
 class GetAccountBookDetailUseCase {
   final AccountBookRepository _repository;

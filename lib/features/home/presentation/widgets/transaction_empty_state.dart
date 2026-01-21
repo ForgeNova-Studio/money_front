@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
 
 class TransactionEmptyState extends StatelessWidget {
   const TransactionEmptyState({super.key, required this.selectedDate});

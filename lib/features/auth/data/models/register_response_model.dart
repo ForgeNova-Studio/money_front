@@ -2,12 +2,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 // models
-import 'package:moneyflow/features/auth/data/models/models.dart';
+import 'package:moamoa/features/auth/data/models/models.dart';
 
 // entities
-import 'package:moneyflow/features/auth/domain/entities/auth_result.dart';
-import 'package:moneyflow/features/auth/domain/entities/user.dart';
-import 'package:moneyflow/features/auth/domain/entities/gender.dart';
+import 'package:moamoa/features/auth/domain/entities/auth_result.dart';
+import 'package:moamoa/features/auth/domain/entities/user.dart';
+import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
 part 'register_response_model.freezed.dart';
 part 'register_response_model.g.dart';

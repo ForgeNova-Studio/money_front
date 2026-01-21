@@ -1,14 +1,14 @@
 // dataSources
-import 'package:moneyflow/features/income/data/datasources/income_remote_datasource.dart';
+import 'package:moamoa/features/income/data/datasources/income_remote_datasource.dart';
 
 // models
-import 'package:moneyflow/features/income/data/models/income_model.dart';
+import 'package:moamoa/features/income/data/models/income_model.dart';
 
 // entities
-import 'package:moneyflow/features/income/domain/entities/income.dart';
+import 'package:moamoa/features/income/domain/entities/income.dart';
 
 // repositories
-import 'package:moneyflow/features/income/domain/repositories/income_repository.dart';
+import 'package:moamoa/features/income/domain/repositories/income_repository.dart';
 
 /// Income Repository 구현체
 ///

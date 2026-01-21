@@ -2,10 +2,10 @@
 import 'package:flutter/material.dart';
 
 // core
-import 'package:moneyflow/core/constants/app_constants.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
 
 // widgets
-import 'package:moneyflow/features/onBoarding/presentation/widgets/onboarding_bottom_indicator.dart';
+import 'package:moamoa/features/onBoarding/presentation/widgets/onboarding_bottom_indicator.dart';
 
 class Page2 extends StatefulWidget {
   const Page2({super.key, required this.currentPage});

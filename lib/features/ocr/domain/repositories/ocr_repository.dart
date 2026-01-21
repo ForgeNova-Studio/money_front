@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:moneyflow/features/ocr/domain/entities/receipt_data.dart';
+import 'package:moamoa/features/ocr/domain/entities/receipt_data.dart';
 
 /// OCR Repository 인터페이스
 ///

@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:moneyflow/features/account_book/domain/entities/member_info.dart';
+import 'package:moamoa/features/account_book/domain/entities/member_info.dart';
 
 part 'account_book_member_info_model.g.dart';
 part 'account_book_member_info_model.freezed.dart';

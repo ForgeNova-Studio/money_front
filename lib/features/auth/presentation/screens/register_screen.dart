@@ -4,22 +4,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 // core
-import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/router/route_names.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/router/route_names.dart';
 
 // widgets
-import 'package:moneyflow/features/auth/presentation/widgets/custom_text_field.dart';
-import 'package:moneyflow/features/auth/presentation/widgets/email_verification_row.dart';
-import 'package:moneyflow/features/auth/presentation/widgets/gender_selector_row.dart';
-import 'package:moneyflow/features/auth/presentation/widgets/password_rule_checklist.dart';
-import 'package:moneyflow/features/auth/presentation/widgets/register_submit_button.dart';
-import 'package:moneyflow/features/auth/presentation/widgets/register_title.dart';
-import 'package:moneyflow/features/auth/presentation/widgets/terms_agreement_row.dart';
-import 'package:moneyflow/features/auth/presentation/widgets/verification_code_section.dart';
+import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:moamoa/features/auth/presentation/widgets/email_verification_row.dart';
+import 'package:moamoa/features/auth/presentation/widgets/gender_selector_row.dart';
+import 'package:moamoa/features/auth/presentation/widgets/password_rule_checklist.dart';
+import 'package:moamoa/features/auth/presentation/widgets/register_submit_button.dart';
+import 'package:moamoa/features/auth/presentation/widgets/register_title.dart';
+import 'package:moamoa/features/auth/presentation/widgets/terms_agreement_row.dart';
+import 'package:moamoa/features/auth/presentation/widgets/verification_code_section.dart';
 
 // viewmodels
-import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
-import 'package:moneyflow/features/auth/presentation/viewmodels/register_view_model.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/register_view_model.dart';
 
 /// 회원가입 화면
 class RegisterScreen extends ConsumerStatefulWidget {

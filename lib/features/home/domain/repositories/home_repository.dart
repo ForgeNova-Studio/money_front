@@ -1,5 +1,5 @@
-import 'package:moneyflow/features/home/domain/entities/daily_transaction_summary.dart';
-import 'package:moneyflow/features/home/domain/entities/monthly_home_cache.dart';
+import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
+import 'package:moamoa/features/home/domain/entities/monthly_home_cache.dart';
 
 abstract class HomeRepository {
   /// 특정 월의 날짜별 요약 및 내역 데이터를 가져옵니다.

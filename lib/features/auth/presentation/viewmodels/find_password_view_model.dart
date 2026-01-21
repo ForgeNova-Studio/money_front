@@ -2,10 +2,10 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // states
-import 'package:moneyflow/features/auth/presentation/states/find_password_form_state.dart';
+import 'package:moamoa/features/auth/presentation/states/find_password_form_state.dart';
 
 // viewmodels
-import 'package:moneyflow/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 
 part 'find_password_view_model.g.dart';
 

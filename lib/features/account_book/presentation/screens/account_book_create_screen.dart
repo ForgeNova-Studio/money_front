@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:moneyflow/core/constants/app_constants.dart';
-import 'package:moneyflow/features/account_book/domain/entities/account_book.dart';
-import 'package:moneyflow/features/account_book/domain/entities/book_type.dart';
-import 'package:moneyflow/features/account_book/presentation/providers/account_book_providers.dart';
-import 'package:moneyflow/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
-import 'package:moneyflow/features/account_book/presentation/widgets/account_book_create_widgets.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
+import 'package:moamoa/features/account_book/domain/entities/book_type.dart';
+import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
+import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+import 'package:moamoa/features/account_book/presentation/widgets/account_book_create_widgets.dart';
 
 class AccountBookCreateScreen extends ConsumerStatefulWidget {
   const AccountBookCreateScreen({super.key});
@@ -120,9 +120,8 @@ class _AccountBookCreateScreenState
 
   Future<void> _selectDate({required bool isStart}) async {
     final now = DateTime.now();
-    final initialDate = isStart
-        ? (_startDate ?? now)
-        : (_endDate ?? _startDate ?? now);
+    final initialDate =
+        isStart ? (_startDate ?? now) : (_endDate ?? _startDate ?? now);
     final picked = await showDatePicker(
       context: context,
       locale: const Locale('ko', 'KR'),

@@ -3,18 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as flutter_riverpod;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // core
-import 'package:moneyflow/features/common/providers/core_providers.dart';
+import 'package:moamoa/features/common/providers/core_providers.dart';
 
 // dataSource
-import 'package:moneyflow/features/home/data/datasources/home_local_data_source.dart';
-import 'package:moneyflow/features/home/data/datasources/home_remote_data_source.dart';
+import 'package:moamoa/features/home/data/datasources/home_local_data_source.dart';
+import 'package:moamoa/features/home/data/datasources/home_remote_data_source.dart';
 
 // repository
-import 'package:moneyflow/features/home/data/repositories/home_repository_impl.dart';
-import 'package:moneyflow/features/home/domain/repositories/home_repository.dart';
+import 'package:moamoa/features/home/data/repositories/home_repository_impl.dart';
+import 'package:moamoa/features/home/domain/repositories/home_repository.dart';
 
 // usecase
-import 'package:moneyflow/features/home/domain/usecases/get_home_monthly_data_usecase.dart';
+import 'package:moamoa/features/home/domain/usecases/get_home_monthly_data_usecase.dart';
 
 part 'home_providers.g.dart';
 

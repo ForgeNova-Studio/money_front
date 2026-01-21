@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:moneyflow/features/home/domain/entities/transaction_entity.dart';
-import 'package:moneyflow/features/home/domain/entities/daily_transaction_summary.dart';
+import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
+import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
 
 part 'home_monthly_response_model.freezed.dart';
 part 'home_monthly_response_model.g.dart';
@@ -10,7 +10,8 @@ sealed class HomeTransactionModel with _$HomeTransactionModel {
   const HomeTransactionModel._();
 
   const factory HomeTransactionModel({
-    required String id,   // UUID String (예: "123e4567-e89b-12d3-a456-426614174000")
+    required String
+        id, // UUID String (예: "123e4567-e89b-12d3-a456-426614174000")
     required String type, // "INCOME" or "EXPENSE"
     required int amount,
     required String title,
@@ -30,7 +31,8 @@ sealed class HomeTransactionModel with _$HomeTransactionModel {
     } else {
       final timeParts = time.split(':');
       final hour = int.tryParse(timeParts[0]) ?? 0;
-      final minute = timeParts.length > 1 ? (int.tryParse(timeParts[1]) ?? 0) : 0;
+      final minute =
+          timeParts.length > 1 ? (int.tryParse(timeParts[1]) ?? 0) : 0;
       dateTime = DateTime(date.year, date.month, date.day, hour, minute);
     }
 
