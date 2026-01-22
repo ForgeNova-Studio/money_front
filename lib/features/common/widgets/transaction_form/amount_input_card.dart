@@ -31,64 +31,67 @@ class AmountInputCard extends StatelessWidget {
       child: TransactionFormCard(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              IntrinsicWidth(
-                child: TextFormField(
-                  controller: controller,
-                  focusNode: focusNode,
-                  validator: validator,
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  onTap: () => focusNode.requestFocus(),
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: amountColor,
-                  ),
-                  decoration: InputDecoration(
-                    filled: false,
-                    hintText: '0',
-                    hintStyle: TextStyle(
-                      color: context.appColors.gray300,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                IntrinsicWidth(
+                  child: TextFormField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    validator: validator,
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    onTap: () => focusNode.requestFocus(),
+                    style: TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
+                      color: amountColor,
                     ),
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    errorBorder: InputBorder.none,
-                    focusedErrorBorder: InputBorder.none,
-                    disabledBorder: InputBorder.none,
-                    errorStyle: const TextStyle(
-                      height: 0,
-                      color: Colors.transparent,
+                    decoration: InputDecoration(
+                      filled: false,
+                      hintText: '0',
+                      hintStyle: TextStyle(
+                        color: context.appColors.gray300,
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      focusedErrorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      errorStyle: const TextStyle(
+                        height: 0,
+                        color: Colors.transparent,
+                      ),
+                      contentPadding: EdgeInsets.zero,
                     ),
-                    contentPadding: EdgeInsets.zero,
+                    inputFormatters: inputFormatters ??
+                        [
+                          FilteringTextInputFormatter.digitsOnly,
+                          ThousandsSeparatorInputFormatter(),
+                        ],
+                    autofocus: false,
+                    showCursor: false,
+                    cursorColor: Colors.transparent,
                   ),
-                  inputFormatters: inputFormatters ??
-                      [
-                        FilteringTextInputFormatter.digitsOnly,
-                        ThousandsSeparatorInputFormatter(),
-                      ],
-                  autofocus: false,
-                  showCursor: false,
-                  cursorColor: Colors.transparent,
                 ),
-              ),
-              const SizedBox(width: 4),
-              Text(
-                '원',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.w600,
-                  color: unitColor,
+                const SizedBox(width: 4),
+                Text(
+                  '원',
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.w600,
+                    color: unitColor,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

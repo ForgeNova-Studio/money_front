@@ -36,112 +36,131 @@ class TransactionModalHeader extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // 왼쪽: 날짜와 전체 합계
+              // 왼쪽: 날짜와 전체 합계 (Max 50%)
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${selectedDate.month}월 ${selectedDate.day}일 ${_weekdayLabel(selectedDate.weekday)}요일',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: context.appColors.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    AnimatedAmountText(
-                      amount: totalAmount,
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: context.appColors.textPrimary,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // 오른쪽: 수입/지출 상세
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  // 수입
-                  if (totalIncome > 0)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: context.appColors.success.withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.arrow_downward_rounded,
-                              size: 12,
-                              color: context.appColors.success,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '수입',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: context.appColors.textSecondary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          AnimatedAmountText(
-                            amount: totalIncome,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: context.appColors.success,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  // 지출
-                  if (totalExpense > 0)
-                    Row(
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: context.appColors.error.withOpacity(0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.arrow_upward_rounded,
-                            size: 12,
-                            color: context.appColors.error,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
                         Text(
-                          '지출',
+                          '${selectedDate.month}월 ${selectedDate.day}일 ${_weekdayLabel(selectedDate.weekday)}요일',
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 15,
                             color: context.appColors.textSecondary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(height: 4),
                         AnimatedAmountText(
-                          amount: totalExpense,
+                          amount: totalAmount,
                           style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: context.appColors.error,
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            color: context.appColors.textPrimary,
+                            letterSpacing: -0.5,
                           ),
                         ),
                       ],
                     ),
-                ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              // 오른쪽: 수입/지출 상세 (Max 50%)
+              Expanded(
+                child: Container(
+                  alignment: Alignment.centerRight,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerRight,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // 수입
+                        if (totalIncome > 0)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: context.appColors.success
+                                        .withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.arrow_downward_rounded,
+                                    size: 12,
+                                    color: context.appColors.success,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  '수입',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: context.appColors.textSecondary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                AnimatedAmountText(
+                                  amount: totalIncome,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: context.appColors.success,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        // 지출
+                        if (totalExpense > 0)
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color:
+                                      context.appColors.error.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.arrow_upward_rounded,
+                                  size: 12,
+                                  color: context.appColors.error,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '지출',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: context.appColors.textSecondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              AnimatedAmountText(
+                                amount: totalExpense,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: context.appColors.error,
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
