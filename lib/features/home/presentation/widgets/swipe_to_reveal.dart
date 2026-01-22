@@ -7,7 +7,7 @@ class SwipeToReveal extends StatefulWidget {
     required this.child,
     required this.actionButton,
     this.enabled = true,
-    this.revealDistance = 72,
+    this.revealDistance = 92,
   });
 
   final Widget child;
