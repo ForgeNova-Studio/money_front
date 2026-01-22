@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">모아모아</string>
+
+    <!-- Naver Login - Replace with your actual Client ID and Secret -->
+    <string name="naver_client_id">Q7D7lxUHQNJ3G9QXDvpT</string>
+    <string name="naver_client_secret">clKAFV9HpQ</string>
+</resources>
