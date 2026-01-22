@@ -168,44 +168,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           body: Listener(
             behavior: HitTestBehavior.translucent,
             onPointerDown: (_) => _collapseOverlaysIfNeeded(),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                children: [
-                  // 1. Budget Info Area
-                  const HomeBudgetInfoCard(),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    children: [
+                      // 1. Budget Info Area
+                      const HomeBudgetInfoCard(),
 
-                  // 2. Custom Calendar
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: CustomCalendar(
-                      format: calendarFormat,
-                      focusedDay: homeState.focusedMonth,
-                      selectedDay: homeState.selectedDate,
-                      monthlyData: homeState.monthlyData,
-                      onFormatChanged: _handleFormatChanged,
-                      onDateSelected: _handleDateSelected,
-                      onPageChanged: _handlePageChanged,
-                    ),
+                      // 2. Custom Calendar
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: CustomCalendar(
+                          format: calendarFormat,
+                          focusedDay: homeState.focusedMonth,
+                          selectedDay: homeState.selectedDate,
+                          monthlyData: homeState.monthlyData,
+                          onFormatChanged: _handleFormatChanged,
+                          onDateSelected: _handleDateSelected,
+                          onPageChanged: _handlePageChanged,
+                        ),
+                      ),
+                    ],
                   ),
+                ),
 
-                  // 3. Transactions Sheet (Fills remaining space)
-                  Expanded(
-                    child: HomeTransactionSheet(
-                      homeState: homeState,
-                      onDelete: _handleDeleteTransaction,
-                      onCameraTap: () {
-                        // TODO: Navigate to OCR screen
-                      },
-                      onResetToMonthView: () {
-                        ref
-                            .read(homeViewModelProvider.notifier)
-                            .resetToMonthView();
-                      },
-                    ),
+                // 3. Transactions Sheet (Fills remaining space - 패딩 바깥)
+                Expanded(
+                  child: HomeTransactionSheet(
+                    homeState: homeState,
+                    onDelete: _handleDeleteTransaction,
+                    onCameraTap: () {
+                      // TODO: Navigate to OCR screen
+                    },
+                    onResetToMonthView: () {
+                      ref
+                          .read(homeViewModelProvider.notifier)
+                          .resetToMonthView();
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           floatingActionButton: HomeFabMenu(
