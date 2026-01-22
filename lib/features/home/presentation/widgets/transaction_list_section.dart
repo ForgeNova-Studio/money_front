@@ -52,6 +52,8 @@ class TransactionListSection extends StatelessWidget {
               TransactionModalHeader(
                 selectedDate: selectedDate,
                 totalAmount: totalAmount,
+                totalIncome: summary?.totalIncome ?? 0,
+                totalExpense: summary?.totalExpense ?? 0,
                 onCameraTap: onCameraTap,
               )
             else
