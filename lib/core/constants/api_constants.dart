@@ -1,12 +1,9 @@
 class ApiConstants {
   // Base URL
   // 빌드 시 --dart-define=API_BASE_URL=... 로 주입
-  // 운영: flutter build ios --release --dart-define=API_BASE_URL=http://158.179.166.233:80
-  // 개발: flutter run --dart-define=API_BASE_URL=http://172.20.10.3:8080
-  // 로컬: flutter run --dart-define=API_BASE_URL=http://localhost:8080
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://158.179.166.233:80',
+    defaultValue: 'http://192.168.123.104:8080',
   );
 
   // ========== Auth endpoints ==========

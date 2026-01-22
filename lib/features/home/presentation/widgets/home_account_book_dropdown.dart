@@ -132,7 +132,7 @@ class _AccountBookMenuItem extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: isSelected
-                        ? Theme.of(context).colorScheme.primary
+                        ? Theme.of(context).colorScheme.onSurface
                         : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
