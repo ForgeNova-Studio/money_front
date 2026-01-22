@@ -52,13 +52,12 @@ class Income {
 
 /// 수입 출처 상수
 class IncomeSource {
-  static const String salary = '급여';
-  static const String sideIncome = '부수입';
-  static const String allowance = '용돈';
-  static const String bonus = '상여금';
-  static const String investment = '투자수익';
-  static const String other = '기타';
-
+  static const String salary = 'SALARY';
+  static const String sideIncome = 'SIDE_INCOME';
+  static const String allowance = 'ALLOWANCE';
+  static const String bonus = 'BONUS';
+  static const String investment = 'INVESTMENT';
+  static const String other = 'OTHER';
 
   static const List<String> all = [
     salary,
