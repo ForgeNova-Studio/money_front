@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
 // core
 import 'package:moamoa/features/common/providers/app_init_provider.dart';
@@ -23,6 +24,9 @@ void main() {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
+  // TODO: 카카오 네이티브 앱 키를 입력하세요
+  KakaoSdk.init(nativeAppKey: 'a770c13cac29a2b59c8320c87c28ee18');
+
   runApp(
     const ProviderScope(
       child: AppBootstrap(),
@@ -34,6 +38,7 @@ void main() {
     FlutterNativeSplash.remove();
   });
 }
+
 
 class MoneyFlowApp extends ConsumerWidget {
   const MoneyFlowApp({super.key});
