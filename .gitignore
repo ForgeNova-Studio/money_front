@@ -57,3 +57,12 @@ ios/Runner/GeneratedPluginRegistrant.*
 /linux/
 /macos/
 /windows/
+
+# OAuth credentials and secrets (DO NOT COMMIT!)
+ios/Runner/Info.plist
+android/app/src/main/res/values/strings.xml
+
+# Environment files
+.env
+.env.local
+.env.production
