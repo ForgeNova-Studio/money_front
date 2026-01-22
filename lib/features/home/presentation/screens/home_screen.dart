@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 // core
 import 'package:moamoa/router/route_names.dart';
@@ -13,6 +12,9 @@ import 'package:moamoa/features/home/presentation/widgets/home_account_book_drop
 import 'package:moamoa/features/home/presentation/widgets/home_budget_info_card.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_fab_menu.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_transaction_sheet.dart';
+import 'package:moamoa/features/home/presentation/widgets/delete_confirem_dialog.dart';
+import 'package:table_calendar/table_calendar.dart';
+
 import 'package:moamoa/features/home/presentation/providers/home_providers.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
@@ -70,19 +72,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final shouldDelete = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('삭제'),
-        content: const Text('이 내역을 삭제할까요?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('취소'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('삭제'),
-          ),
-        ],
+      barrierColor: Colors.black54,
+      builder: (context) => DeleteConfirmDialog(
+        title: transaction.title,
       ),
     );
 
