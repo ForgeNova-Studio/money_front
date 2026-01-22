@@ -3,7 +3,7 @@ class ApiConstants {
   // 빌드 시 --dart-define=API_BASE_URL=... 로 주입
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://192.168.123.104:8080',
+    defaultValue: 'http://158.179.166.233:80',
   );
 
   // ========== Auth endpoints ==========
