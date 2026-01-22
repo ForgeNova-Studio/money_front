@@ -23,6 +23,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   // Storage Key 상수
   static const String _keyToken = 'auth_token';
   static const String _keyUser = 'auth_user';
+  static const String _keyLastLoginProvider = 'last_login_provider';
 
   AuthLocalDataSourceImpl({required this.secureStorage});
 
@@ -100,6 +101,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       await Future.wait([
         secureStorage.delete(key: _keyToken),
         secureStorage.delete(key: _keyUser),
+        // 마지막 로그인 방법은 삭제하지 않음 (로그아웃 후에도 표시되어야 함)
       ]);
     } catch (e) {
       throw StorageException('데이터 삭제 실패: $e');
@@ -112,6 +114,24 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       return await secureStorage.containsKey(key: _keyToken);
     } catch (e) {
       throw StorageException('토큰 확인 실패: $e');
+    }
+  }
+
+  @override
+  Future<void> saveLastLoginProvider(String provider) async {
+    try {
+      await secureStorage.write(key: _keyLastLoginProvider, value: provider);
+    } catch (e) {
+      // 저장 실패해도 로그인에는 영향 없으므로 무시
+    }
+  }
+
+  @override
+  Future<String?> getLastLoginProvider() async {
+    try {
+      return await secureStorage.read(key: _keyLastLoginProvider);
+    } catch (e) {
+      return null;
     }
   }
 }

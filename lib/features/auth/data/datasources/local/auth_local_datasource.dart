@@ -62,4 +62,14 @@ abstract class AuthLocalDataSource {
   ///
   /// Returns: true (토큰 있음), false (토큰 없음)
   Future<bool> hasToken();
+
+  /// 마지막 로그인 방법 저장
+  ///
+  /// [provider] 로그인 방법 (GOOGLE, APPLE, NAVER, KAKAO, EMAIL)
+  Future<void> saveLastLoginProvider(String provider);
+
+  /// 마지막 로그인 방법 불러오기
+  ///
+  /// Returns: provider 문자열 또는 null
+  Future<String?> getLastLoginProvider();
 }

@@ -147,6 +147,40 @@ abstract class AuthRepository {
     String? nickname,
   });
 
+  /// Naver 로그인
+  /// [accessToken] Naver Access Token
+  /// [email] 사용자 이메일 (선택)
+  /// [nickname] 사용자 닉네임 (선택)
+  ///
+  /// Returns: [AuthResult] (User + AuthToken)
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [UnauthorizedException] Naver 인증 실패
+  /// - [ServerException] 서버 오류
+  Future<AuthResult> loginWithNaver({
+    required String accessToken,
+    String? email,
+    String? nickname,
+  });
+
+  /// Kakao 로그인
+  /// [accessToken] Kakao Access Token
+  /// [email] 사용자 이메일 (선택)
+  /// [nickname] 사용자 닉네임 (선택)
+  ///
+  /// Returns: [AuthResult] (User + AuthToken)
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [UnauthorizedException] Kakao 인증 실패
+  /// - [ServerException] 서버 오류
+  Future<AuthResult> loginWithKakao({
+    required String accessToken,
+    String? email,
+    String? nickname,
+  });
+
   /// 비밀번호 재설정 인증번호 전송
   /// [email] 사용자 이메일
   ///

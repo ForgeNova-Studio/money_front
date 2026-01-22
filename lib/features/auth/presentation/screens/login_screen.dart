@@ -13,8 +13,9 @@ import 'package:moamoa/router/route_names.dart';
 // widgets
 import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
 
-// viewmodels
+// viewmodels and providers
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
 
 /// 로그인 화면
 class LoginScreen extends ConsumerStatefulWidget {
@@ -51,6 +52,34 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
   Future<void> _handleGoogleLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
     await ref.read(authViewModelProvider.notifier).loginWithGoogle();
+  }
+
+  // ViewModel의 loginWithNaver 메서드 호출
+  Future<void> _handleNaverLogin() async {
+    print('[LoginScreen] 네이버 로그인 버튼 클릭됨');
+    FocusManager.instance.primaryFocus?.unfocus();
+    try {
+      print('[LoginScreen] loginWithNaver 호출 시작');
+      await ref.read(authViewModelProvider.notifier).loginWithNaver();
+      print('[LoginScreen] loginWithNaver 호출 완료');
+    } catch (e, stackTrace) {
+      print('[LoginScreen] 네이버 로그인 에러: $e');
+      print('[LoginScreen] StackTrace: $stackTrace');
+    }
+  }
+
+  // ViewModel의 loginWithKakao 메서드 호출
+  Future<void> _handleKakaoLogin() async {
+    print('[LoginScreen] 카카오 로그인 버튼 클릭됨');
+    FocusManager.instance.primaryFocus?.unfocus();
+    try {
+      print('[LoginScreen] loginWithKakao 호출 시작');
+      await ref.read(authViewModelProvider.notifier).loginWithKakao();
+      print('[LoginScreen] loginWithKakao 호출 완료');
+    } catch (e, stackTrace) {
+      print('[LoginScreen] 카카오 로그인 에러: $e');
+      print('[LoginScreen] StackTrace: $stackTrace');
+    }
   }
 
   // 비밀번호 찾기 화면으로 이동
@@ -227,6 +256,9 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
                 SizedBox(height: 24),
 
+                // 마지막 로그인 방법 힌트
+                _buildLastLoginHint(ref),
+
                 // Google 로그인 버튼 (공식 브랜드 가이드라인 적용)
                 GoogleLoginButton(
                   onPressed: authState.isLoading ? null : _handleGoogleLogin,
@@ -237,14 +269,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
                 // 카카오 로그인 버튼 (공식 디자인 가이드라인 적용)
                 KakaoLoginButton(
-                  onPressed: () {
-                    // TODO: 카카오 로그인 구현
-                    ScaffoldMessenger.of(context)
-                      ..hideCurrentSnackBar()
-                      ..showSnackBar(
-                        const SnackBar(content: Text('카카오 로그인 기능 준비 중입니다.')),
-                      );
-                  },
+                  onPressed: authState.isLoading ? null : _handleKakaoLogin,
                   isLoading: false,
                 ),
 
@@ -252,15 +277,8 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
                 // 네이버 로그인 버튼 (공식 디자인 가이드라인 적용)
                 NaverLoginButton(
-                  onPressed: () {
-                    // TODO: 네이버 로그인 구현
-                    ScaffoldMessenger.of(context)
-                      ..hideCurrentSnackBar()
-                      ..showSnackBar(
-                        const SnackBar(content: Text('네이버 로그인 기능 준비 중입니다.')),
-                      );
-                  },
-                  isLoading: false,
+                  onPressed: authState.isLoading ? null : () => _handleNaverLogin(),
+                  isLoading: authState.isLoading,
                 ),
 
                 SizedBox(height: 32),
@@ -376,4 +394,61 @@ Widget _buildRowDivider(BuildContext context) {
       ),
     ],
   );
+}
+
+// 마지막 로그인 방법 힌트 위젯
+Widget _buildLastLoginHint(WidgetRef ref) {
+  final lastLoginAsync = ref.watch(lastLoginProviderProvider);
+  
+  return lastLoginAsync.when(
+    data: (provider) {
+      if (provider == null) return const SizedBox.shrink();
+      
+      final providerName = _getProviderDisplayName(provider);
+      if (providerName == null) return const SizedBox.shrink();
+      
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.history,
+              size: 14,
+              color: Colors.grey[600],
+            ),
+            const SizedBox(width: 6),
+            Text(
+              '지난번에 $providerName로 로그인했어요',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+    loading: () => const SizedBox.shrink(),
+    error: (_, __) => const SizedBox.shrink(),
+  );
+}
+
+// 로그인 방법 표시 이름
+String? _getProviderDisplayName(String provider) {
+  switch (provider.toUpperCase()) {
+    case 'GOOGLE':
+      return 'Google';
+    case 'APPLE':
+      return 'Apple';
+    case 'NAVER':
+      return '네이버';
+    case 'KAKAO':
+      return '카카오';
+    case 'EMAIL':
+      return '이메일';
+    default:
+      return null;
+  }
 }

@@ -109,6 +109,47 @@ final class AuthLocalDataSourceProvider extends $FunctionalProvider<
 String _$authLocalDataSourceHash() =>
     r'6ca422911f9e481684aa431aab6b28a59b87a7a6';
 
+/// 마지막 로그인 방법 Provider
+/// 로그인 화면에서 "지난번에 00로 로그인했어요" 표시용
+
+@ProviderFor(lastLoginProvider)
+const lastLoginProviderProvider = LastLoginProviderProvider._();
+
+/// 마지막 로그인 방법 Provider
+/// 로그인 화면에서 "지난번에 00로 로그인했어요" 표시용
+
+final class LastLoginProviderProvider
+    extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
+    with $FutureModifier<String?>, $FutureProvider<String?> {
+  /// 마지막 로그인 방법 Provider
+  /// 로그인 화면에서 "지난번에 00로 로그인했어요" 표시용
+  const LastLoginProviderProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'lastLoginProviderProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$lastLoginProviderHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<String?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String?> create(Ref ref) {
+    return lastLoginProvider(ref);
+  }
+}
+
+String _$lastLoginProviderHash() => r'223566d19a891725624998b0d26d9c07fb809c1f';
+
 /// Auth Repository Provider
 
 @ProviderFor(authRepository)
@@ -437,6 +478,102 @@ final class AppleLoginUseCaseProvider extends $FunctionalProvider<
 }
 
 String _$appleLoginUseCaseHash() => r'931c3d354d781303dc43732114d9907121f37706';
+
+/// Naver Login UseCase Provider
+
+@ProviderFor(naverLoginUseCase)
+const naverLoginUseCaseProvider = NaverLoginUseCaseProvider._();
+
+/// Naver Login UseCase Provider
+
+final class NaverLoginUseCaseProvider extends $FunctionalProvider<
+    NaverLoginUseCase,
+    NaverLoginUseCase,
+    NaverLoginUseCase> with $Provider<NaverLoginUseCase> {
+  /// Naver Login UseCase Provider
+  const NaverLoginUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'naverLoginUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$naverLoginUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<NaverLoginUseCase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  NaverLoginUseCase create(Ref ref) {
+    return naverLoginUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(NaverLoginUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<NaverLoginUseCase>(value),
+    );
+  }
+}
+
+String _$naverLoginUseCaseHash() => r'86d3bb4f4290c188023d69e8ec1a19a3ee83425d';
+
+/// Kakao Login UseCase Provider
+
+@ProviderFor(kakaoLoginUseCase)
+const kakaoLoginUseCaseProvider = KakaoLoginUseCaseProvider._();
+
+/// Kakao Login UseCase Provider
+
+final class KakaoLoginUseCaseProvider extends $FunctionalProvider<
+    KakaoLoginUseCase,
+    KakaoLoginUseCase,
+    KakaoLoginUseCase> with $Provider<KakaoLoginUseCase> {
+  /// Kakao Login UseCase Provider
+  const KakaoLoginUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'kakaoLoginUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$kakaoLoginUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<KakaoLoginUseCase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  KakaoLoginUseCase create(Ref ref) {
+    return kakaoLoginUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(KakaoLoginUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<KakaoLoginUseCase>(value),
+    );
+  }
+}
+
+String _$kakaoLoginUseCaseHash() => r'c2fe0547cdb4172668b41c70ada0bc36f734f8af';
 
 /// Send Signup Code UseCase Provider
 

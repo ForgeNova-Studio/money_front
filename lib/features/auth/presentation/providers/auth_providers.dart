@@ -14,6 +14,8 @@ import 'package:moamoa/features/auth/domain/usecases/get_current_user_usecase.da
 import 'package:moamoa/features/auth/domain/usecases/google_login_usecase.dart';
 import 'package:moamoa/features/auth/domain/usecases/login_usecase.dart';
 import 'package:moamoa/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:moamoa/features/auth/domain/usecases/naver_login_usecase.dart';
+import 'package:moamoa/features/auth/domain/usecases/kakao_login_usecase.dart';
 import 'package:moamoa/features/auth/domain/usecases/register_usecase.dart';
 import 'package:moamoa/features/auth/domain/usecases/reset_password_usecase.dart';
 import 'package:moamoa/features/auth/domain/usecases/send_password_reset_code_usecase.dart';
@@ -44,6 +46,14 @@ AuthLocalDataSource authLocalDataSource(Ref ref) {
   return AuthLocalDataSourceImpl(
     secureStorage: ref.read(flutterSecureStorageProvider),
   );
+}
+
+/// 마지막 로그인 방법 Provider
+/// 로그인 화면에서 "지난번에 00로 로그인했어요" 표시용
+@riverpod
+Future<String?> lastLoginProvider(Ref ref) async {
+  final localDataSource = ref.read(authLocalDataSourceProvider);
+  return await localDataSource.getLastLoginProvider();
 }
 
 // ============================================================================
@@ -97,6 +107,18 @@ GoogleLoginUseCase googleLoginUseCase(Ref ref) {
 @riverpod
 AppleLoginUseCase appleLoginUseCase(Ref ref) {
   return AppleLoginUseCase(ref.read(authRepositoryProvider));
+}
+
+/// Naver Login UseCase Provider
+@riverpod
+NaverLoginUseCase naverLoginUseCase(Ref ref) {
+  return NaverLoginUseCase(ref.read(authRepositoryProvider));
+}
+
+/// Kakao Login UseCase Provider
+@riverpod
+KakaoLoginUseCase kakaoLoginUseCase(Ref ref) {
+  return KakaoLoginUseCase(ref.read(authRepositoryProvider));
 }
 
 /// Send Signup Code UseCase Provider

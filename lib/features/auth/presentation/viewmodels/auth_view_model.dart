@@ -207,6 +207,48 @@ class AuthViewModel extends _$AuthViewModel {
         defaultErrorMessage: 'Apple 로그인 중 오류가 발생했습니다');
   }
 
+  /// Naver 로그인
+  Future<void> loginWithNaver() async {
+    if (kDebugMode) {
+      debugPrint('[AuthViewModel] 네이버 로그인 시작');
+    }
+    await _handleAuthRequest(() async {
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] NaverLoginUseCase 호출');
+      }
+      final useCase = ref.read(naverLoginUseCaseProvider);
+      final result = await useCase();
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] 네이버 로그인 성공: ${result.user.email}');
+      }
+      state = AuthState.authenticated(user: result.user);
+    },
+        loading: true,
+        rethrowError: false,
+        defaultErrorMessage: 'Naver 로그인 중 오류가 발생했습니다');
+  }
+
+  /// Kakao 로그인
+  Future<void> loginWithKakao() async {
+    if (kDebugMode) {
+      debugPrint('[AuthViewModel] 카카오 로그인 시작');
+    }
+    await _handleAuthRequest(() async {
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] KakaoLoginUseCase 호출');
+      }
+      final useCase = ref.read(kakaoLoginUseCaseProvider);
+      final result = await useCase();
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] 카카오 로그인 성공: ${result.user.email}');
+      }
+      state = AuthState.authenticated(user: result.user);
+    },
+        loading: true,
+        rethrowError: false,
+        defaultErrorMessage: 'Kakao 로그인 중 오류가 발생했습니다');
+  }
+
   /// 에러 메시지 초기화
   void clearError() {
     state = _clearError();

@@ -58,6 +58,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
     await localDataSource.saveToken(tokenModel);
     await localDataSource.saveUser(userModel);
+    await localDataSource.saveLastLoginProvider('EMAIL');
 
     // 3. Entity 변환 및 반환
     return response.toEntity();
@@ -211,6 +212,32 @@ class AuthRepositoryImpl implements AuthRepository {
     );
   }
 
+  @override
+  Future<AuthResult> loginWithNaver({
+    required String accessToken,
+    String? email,
+    String? nickname,
+  }) async {
+    return await _socialLogin(
+      provider: 'NAVER',
+      idToken: accessToken, // Naver는 accessToken을 idToken으로 사용
+      nickname: nickname ?? 'Naver 사용자',
+    );
+  }
+
+  @override
+  Future<AuthResult> loginWithKakao({
+    required String accessToken,
+    String? email,
+    String? nickname,
+  }) async {
+    return await _socialLogin(
+      provider: 'KAKAO',
+      idToken: accessToken, // Kakao는 accessToken을 idToken으로 사용
+      nickname: nickname ?? 'Kakao 사용자',
+    );
+  }
+
   /// 소셜 로그인 공통 처리 (내부 헬퍼 메서드)
   Future<AuthResult> _socialLogin({
     required String provider,
@@ -239,8 +266,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
     await localDataSource.saveToken(tokenModel);
     await localDataSource.saveUser(userModel);
+    await localDataSource.saveLastLoginProvider(provider);
 
-    // 3. Entity 변환 및 반환
+    // 3. Entity 반환
     return response.toEntity();
   }
 
