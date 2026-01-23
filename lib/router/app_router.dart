@@ -41,6 +41,10 @@ import 'package:moamoa/features/income/presentation/screens/add_income_screen.da
 // OCR Screens
 import 'package:moamoa/features/ocr/presentation/screens/ocr_test_screen.dart';
 
+// Budget Screens
+import 'package:moamoa/features/budget/presentation/screens/budget_settings_screen.dart';
+import 'package:moamoa/features/budget/presentation/screens/initial_balance_settings_screen.dart';
+
 /// 앱 라우트 설정 클래스
 class AppRouter {
   AppRouter._();
@@ -234,6 +238,18 @@ class AppRouter {
           path: RouteNames.accountBookCreate,
           name: 'accountBookCreate',
           builder: (context, state) => const AccountBookCreateScreen(),
+        ),
+
+        // ==================== Budget Settings Routes ====================
+        GoRoute(
+          path: RouteNames.budgetSettings,
+          name: 'budgetSettings',
+          builder: (context, state) => const BudgetSettingsScreen(),
+        ),
+        GoRoute(
+          path: RouteNames.initialBalanceSettings,
+          name: 'initialBalanceSettings',
+          builder: (context, state) => const InitialBalanceSettingsScreen(),
         ),
       ];
 
