@@ -35,6 +35,7 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
     return SizedBox(
       height: 140,
       child: PageView(
+        clipBehavior: Clip.none,
         controller: _pageController,
         onPageChanged: (index) {
           setState(() {
@@ -68,7 +69,7 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16),
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -191,7 +192,9 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
             value: progress.clamp(0.0, 1.0),
             backgroundColor: context.appColors.gray100,
             valueColor: AlwaysStoppedAnimation<Color>(
-              isOverBudget ? context.appColors.error : context.appColors.primary,
+              isOverBudget
+                  ? context.appColors.error
+                  : context.appColors.primary,
             ),
             minHeight: 8,
           ),
