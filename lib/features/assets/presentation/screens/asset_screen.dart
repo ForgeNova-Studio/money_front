@@ -17,7 +17,13 @@ class AssetScreen extends StatelessWidget {
           ),
         ),
         backgroundColor: context.appColors.backgroundLight,
+        foregroundColor: context.appColors.textPrimary,
+        iconTheme: IconThemeData(color: context.appColors.textPrimary),
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
         centerTitle: false,
       ),
       body: Center(

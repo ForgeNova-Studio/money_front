@@ -215,6 +215,13 @@ class _AuthInterceptor extends Interceptor {
       // 원래 실패했던 요청을 새 토큰으로 재시도
       final newOptions =
           _applyNewToken(err.requestOptions, newToken.accessToken);
+      
+      if (kDebugMode) {
+        debugPrint('[AuthInterceptor] 재시도 토큰: ${newToken.accessToken.substring(0, 50)}...');
+        debugPrint('[AuthInterceptor] 원래 토큰: ${err.requestOptions.headers['Authorization']?.toString().substring(0, 57)}...');
+        debugPrint('[AuthInterceptor] 재시도 헤더 Authorization: ${newOptions.headers['Authorization']}');
+      }
+      
       final retryDio = _createBasicDio();
       final response = await retryDio.fetch(newOptions);
 
@@ -223,27 +230,20 @@ class _AuthInterceptor extends Interceptor {
       }
       return handler.resolve(response);
     } catch (e) {
-      // TODO(auth): Refresh Token 실패 원인별 로깅 분리
-      // 1️⃣ 네트워크 오류 (인터넷 끊김, 타임아웃)
-      //    - e is DioException && e.type == DioExceptionType.connectionTimeout
-      //
-      // 2️⃣ 서버 오류 (5xx)
-      //    - e is DioException && e.response?.statusCode >= 500
-      //
-      // 3️⃣ Refresh Token 만료 / 무효 (401)
-      //    - e is DioException && e.response?.statusCode == 401
-      //    - 서버에서 refreshToken expired / invalid 응답
-      //
-      // 4️⃣ 기타 예외 (파싱 오류, 예상 못한 에러)
-      //
-      // 👉 추후 Crashlytics / Sentry 연동 시
-      //    원인별 tag 또는 error code로 분리 수집 권장
+      // 재시도 실패 상세 로그
+      if (kDebugMode) {
+        debugPrint('[AuthInterceptor] ⚠️ Refresh 후 재시도 실패: $e');
+        if (e is DioException) {
+          debugPrint('[AuthInterceptor] 상태 코드: ${e.response?.statusCode}');
+          debugPrint('[AuthInterceptor] 응답 데이터: ${e.response?.data}');
+          debugPrint('[AuthInterceptor] 요청 경로: ${e.requestOptions.path}');
+        }
+      }
 
       // 1. 로컬 데이터 삭제 (토큰 + 사용자 정보)
       await localDataSource.clearAll();
 
       // 2. AuthViewModel 상태를 unauthenticated로 변경
-      // → GoRouter의 redirect가 자동으로 /login으로 이동
       ref
           .read(authViewModelProvider.notifier)
           .forceUnauthenticated(errorMessage: '세션이 만료되었습니다. 다시 로그인해주세요.');

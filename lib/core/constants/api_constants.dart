@@ -54,6 +54,7 @@ class ApiConstants {
   // ========== Statistics endpoints ==========
   static const String statisticsMonthly = '/api/statistics/monthly';
   static const String statisticsWeekly = '/api/statistics/weekly';
+  static const String statisticsAssets = '/api/statistics/assets';
 
   // ========== Couple endpoints ==========
   static const String couplesInvite = '/api/couples/invite';
