@@ -26,6 +26,12 @@ mixin _$HomeState {
   /// 달력 표시 형식
   CalendarFormat get calendarFormat;
 
+  /// 이번 달 예산 정보 (null이면 예산 미설정)
+  BudgetEntity? get budgetInfo;
+
+  /// 총 자산 정보
+  AssetEntity? get assetInfo;
+
   /// Create a copy of HomeState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,16 +51,20 @@ mixin _$HomeState {
             (identical(other.selectedDate, selectedDate) ||
                 other.selectedDate == selectedDate) &&
             (identical(other.calendarFormat, calendarFormat) ||
-                other.calendarFormat == calendarFormat));
+                other.calendarFormat == calendarFormat) &&
+            (identical(other.budgetInfo, budgetInfo) ||
+                other.budgetInfo == budgetInfo) &&
+            (identical(other.assetInfo, assetInfo) ||
+                other.assetInfo == assetInfo));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, monthlyData, focusedMonth, selectedDate, calendarFormat);
+  int get hashCode => Object.hash(runtimeType, monthlyData, focusedMonth,
+      selectedDate, calendarFormat, budgetInfo, assetInfo);
 
   @override
   String toString() {
-    return 'HomeState(monthlyData: $monthlyData, focusedMonth: $focusedMonth, selectedDate: $selectedDate, calendarFormat: $calendarFormat)';
+    return 'HomeState(monthlyData: $monthlyData, focusedMonth: $focusedMonth, selectedDate: $selectedDate, calendarFormat: $calendarFormat, budgetInfo: $budgetInfo, assetInfo: $assetInfo)';
   }
 }
 
@@ -67,7 +77,12 @@ abstract mixin class $HomeStateCopyWith<$Res> {
       {AsyncValue<Map<String, DailyTransactionSummary>> monthlyData,
       DateTime focusedMonth,
       DateTime selectedDate,
-      CalendarFormat calendarFormat});
+      CalendarFormat calendarFormat,
+      BudgetEntity? budgetInfo,
+      AssetEntity? assetInfo});
+
+  $BudgetEntityCopyWith<$Res>? get budgetInfo;
+  $AssetEntityCopyWith<$Res>? get assetInfo;
 }
 
 /// @nodoc
@@ -86,6 +101,8 @@ class _$HomeStateCopyWithImpl<$Res> implements $HomeStateCopyWith<$Res> {
     Object? focusedMonth = null,
     Object? selectedDate = null,
     Object? calendarFormat = null,
+    Object? budgetInfo = freezed,
+    Object? assetInfo = freezed,
   }) {
     return _then(_self.copyWith(
       monthlyData: null == monthlyData
@@ -104,7 +121,43 @@ class _$HomeStateCopyWithImpl<$Res> implements $HomeStateCopyWith<$Res> {
           ? _self.calendarFormat
           : calendarFormat // ignore: cast_nullable_to_non_nullable
               as CalendarFormat,
+      budgetInfo: freezed == budgetInfo
+          ? _self.budgetInfo
+          : budgetInfo // ignore: cast_nullable_to_non_nullable
+              as BudgetEntity?,
+      assetInfo: freezed == assetInfo
+          ? _self.assetInfo
+          : assetInfo // ignore: cast_nullable_to_non_nullable
+              as AssetEntity?,
     ));
+  }
+
+  /// Create a copy of HomeState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $BudgetEntityCopyWith<$Res>? get budgetInfo {
+    if (_self.budgetInfo == null) {
+      return null;
+    }
+
+    return $BudgetEntityCopyWith<$Res>(_self.budgetInfo!, (value) {
+      return _then(_self.copyWith(budgetInfo: value));
+    });
+  }
+
+  /// Create a copy of HomeState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $AssetEntityCopyWith<$Res>? get assetInfo {
+    if (_self.assetInfo == null) {
+      return null;
+    }
+
+    return $AssetEntityCopyWith<$Res>(_self.assetInfo!, (value) {
+      return _then(_self.copyWith(assetInfo: value));
+    });
   }
 }
 
@@ -203,15 +256,22 @@ extension HomeStatePatterns on HomeState {
             AsyncValue<Map<String, DailyTransactionSummary>> monthlyData,
             DateTime focusedMonth,
             DateTime selectedDate,
-            CalendarFormat calendarFormat)?
+            CalendarFormat calendarFormat,
+            BudgetEntity? budgetInfo,
+            AssetEntity? assetInfo)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _HomeState() when $default != null:
-        return $default(_that.monthlyData, _that.focusedMonth,
-            _that.selectedDate, _that.calendarFormat);
+        return $default(
+            _that.monthlyData,
+            _that.focusedMonth,
+            _that.selectedDate,
+            _that.calendarFormat,
+            _that.budgetInfo,
+            _that.assetInfo);
       case _:
         return orElse();
     }
@@ -236,14 +296,21 @@ extension HomeStatePatterns on HomeState {
             AsyncValue<Map<String, DailyTransactionSummary>> monthlyData,
             DateTime focusedMonth,
             DateTime selectedDate,
-            CalendarFormat calendarFormat)
+            CalendarFormat calendarFormat,
+            BudgetEntity? budgetInfo,
+            AssetEntity? assetInfo)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _HomeState():
-        return $default(_that.monthlyData, _that.focusedMonth,
-            _that.selectedDate, _that.calendarFormat);
+        return $default(
+            _that.monthlyData,
+            _that.focusedMonth,
+            _that.selectedDate,
+            _that.calendarFormat,
+            _that.budgetInfo,
+            _that.assetInfo);
     }
   }
 
@@ -265,14 +332,21 @@ extension HomeStatePatterns on HomeState {
             AsyncValue<Map<String, DailyTransactionSummary>> monthlyData,
             DateTime focusedMonth,
             DateTime selectedDate,
-            CalendarFormat calendarFormat)?
+            CalendarFormat calendarFormat,
+            BudgetEntity? budgetInfo,
+            AssetEntity? assetInfo)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _HomeState() when $default != null:
-        return $default(_that.monthlyData, _that.focusedMonth,
-            _that.selectedDate, _that.calendarFormat);
+        return $default(
+            _that.monthlyData,
+            _that.focusedMonth,
+            _that.selectedDate,
+            _that.calendarFormat,
+            _that.budgetInfo,
+            _that.assetInfo);
       case _:
         return null;
     }
@@ -286,7 +360,9 @@ class _HomeState implements HomeState {
       {this.monthlyData = const AsyncValue.loading(),
       required this.focusedMonth,
       required this.selectedDate,
-      this.calendarFormat = CalendarFormat.month});
+      this.calendarFormat = CalendarFormat.month,
+      this.budgetInfo,
+      this.assetInfo});
 
   /// 월별 데이터 (날짜 문자열 Key: "yyyy-MM-dd")
   @override
@@ -305,6 +381,14 @@ class _HomeState implements HomeState {
   @override
   @JsonKey()
   final CalendarFormat calendarFormat;
+
+  /// 이번 달 예산 정보 (null이면 예산 미설정)
+  @override
+  final BudgetEntity? budgetInfo;
+
+  /// 총 자산 정보
+  @override
+  final AssetEntity? assetInfo;
 
   /// Create a copy of HomeState
   /// with the given fields replaced by the non-null parameter values.
@@ -326,16 +410,20 @@ class _HomeState implements HomeState {
             (identical(other.selectedDate, selectedDate) ||
                 other.selectedDate == selectedDate) &&
             (identical(other.calendarFormat, calendarFormat) ||
-                other.calendarFormat == calendarFormat));
+                other.calendarFormat == calendarFormat) &&
+            (identical(other.budgetInfo, budgetInfo) ||
+                other.budgetInfo == budgetInfo) &&
+            (identical(other.assetInfo, assetInfo) ||
+                other.assetInfo == assetInfo));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, monthlyData, focusedMonth, selectedDate, calendarFormat);
+  int get hashCode => Object.hash(runtimeType, monthlyData, focusedMonth,
+      selectedDate, calendarFormat, budgetInfo, assetInfo);
 
   @override
   String toString() {
-    return 'HomeState(monthlyData: $monthlyData, focusedMonth: $focusedMonth, selectedDate: $selectedDate, calendarFormat: $calendarFormat)';
+    return 'HomeState(monthlyData: $monthlyData, focusedMonth: $focusedMonth, selectedDate: $selectedDate, calendarFormat: $calendarFormat, budgetInfo: $budgetInfo, assetInfo: $assetInfo)';
   }
 }
 
@@ -351,7 +439,14 @@ abstract mixin class _$HomeStateCopyWith<$Res>
       {AsyncValue<Map<String, DailyTransactionSummary>> monthlyData,
       DateTime focusedMonth,
       DateTime selectedDate,
-      CalendarFormat calendarFormat});
+      CalendarFormat calendarFormat,
+      BudgetEntity? budgetInfo,
+      AssetEntity? assetInfo});
+
+  @override
+  $BudgetEntityCopyWith<$Res>? get budgetInfo;
+  @override
+  $AssetEntityCopyWith<$Res>? get assetInfo;
 }
 
 /// @nodoc
@@ -370,6 +465,8 @@ class __$HomeStateCopyWithImpl<$Res> implements _$HomeStateCopyWith<$Res> {
     Object? focusedMonth = null,
     Object? selectedDate = null,
     Object? calendarFormat = null,
+    Object? budgetInfo = freezed,
+    Object? assetInfo = freezed,
   }) {
     return _then(_HomeState(
       monthlyData: null == monthlyData
@@ -388,7 +485,43 @@ class __$HomeStateCopyWithImpl<$Res> implements _$HomeStateCopyWith<$Res> {
           ? _self.calendarFormat
           : calendarFormat // ignore: cast_nullable_to_non_nullable
               as CalendarFormat,
+      budgetInfo: freezed == budgetInfo
+          ? _self.budgetInfo
+          : budgetInfo // ignore: cast_nullable_to_non_nullable
+              as BudgetEntity?,
+      assetInfo: freezed == assetInfo
+          ? _self.assetInfo
+          : assetInfo // ignore: cast_nullable_to_non_nullable
+              as AssetEntity?,
     ));
+  }
+
+  /// Create a copy of HomeState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $BudgetEntityCopyWith<$Res>? get budgetInfo {
+    if (_self.budgetInfo == null) {
+      return null;
+    }
+
+    return $BudgetEntityCopyWith<$Res>(_self.budgetInfo!, (value) {
+      return _then(_self.copyWith(budgetInfo: value));
+    });
+  }
+
+  /// Create a copy of HomeState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $AssetEntityCopyWith<$Res>? get assetInfo {
+    if (_self.assetInfo == null) {
+      return null;
+    }
+
+    return $AssetEntityCopyWith<$Res>(_self.assetInfo!, (value) {
+      return _then(_self.copyWith(assetInfo: value));
+    });
   }
 }
 

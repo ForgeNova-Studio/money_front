@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+import 'package:moamoa/features/budget/presentation/providers/budget_providers.dart';
 import 'package:moamoa/features/expense/presentation/providers/expense_providers.dart';
 import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
@@ -93,6 +95,8 @@ class HomeViewModel extends _$HomeViewModel {
         if (userId != null) {
           _prefetchAdjacentMonths(month, userId, accountBookId);
         }
+        // 캐시를 사용하더라도 예산/자산 정보는 갱신
+        unawaited(_fetchBudgetAndAssetInfo(month, accountBookId));
         return;
       }
     }
@@ -125,8 +129,46 @@ class HomeViewModel extends _$HomeViewModel {
       state = state.copyWith(monthlyData: result);
     }
 
+    // 예산/자산 정보 가져오기
+    await _fetchBudgetAndAssetInfo(month, accountBookId);
+
     if (userId != null) {
       _prefetchAdjacentMonths(month, userId, accountBookId);
+    }
+  }
+
+  /// 예산 및 자산 정보 가져오기
+  Future<void> _fetchBudgetAndAssetInfo(
+    DateTime month,
+    String accountBookId,
+  ) async {
+    try {
+      // 예산 정보 가져오기
+      final budgetUseCase = ref.read(getMonthlyBudgetUseCaseProvider);
+      final budgetInfo = await budgetUseCase(
+        year: month.year,
+        month: month.month,
+        accountBookId: accountBookId,
+      );
+
+      // 자산 정보 가져오기
+      final assetUseCase = ref.read(getTotalAssetsUseCaseProvider);
+      final assetInfo = await assetUseCase(
+        accountBookId: accountBookId,
+      );
+
+      if (!ref.mounted) return;
+
+      state = state.copyWith(
+        budgetInfo: budgetInfo,
+        assetInfo: assetInfo,
+      );
+    } catch (e, stackTrace) {
+      if (kDebugMode) {
+        debugPrint('[HomeViewModel] Failed to fetch budget/asset info: $e');
+        debugPrint('[HomeViewModel] Stack trace: $stackTrace');
+      }
+      // 예산/자산 정보 실패는 무시하고 기존 데이터 유지
     }
   }
 

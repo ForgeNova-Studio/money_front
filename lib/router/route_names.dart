@@ -62,9 +62,15 @@ class RouteNames {
   /// 예산 설정 화면
   static const String budget = '/budget';
 
+  /// 예산 설정 화면 (월별)
+  static const String budgetSettings = '/budget/settings';
+
   // ==================== Asset Route ====================
   /// 자산 화면
   static const String assets = '/assets';
+
+  /// 초기 잔액 설정 화면
+  static const String initialBalanceSettings = '/assets/initial-balance';
 
   // ==================== Couple Routes ====================
   /// 커플 초대 화면
