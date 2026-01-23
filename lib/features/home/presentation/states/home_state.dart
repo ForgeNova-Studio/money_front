@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -20,5 +21,11 @@ sealed class HomeState with _$HomeState {
 
     /// 달력 표시 형식
     @Default(CalendarFormat.month) CalendarFormat calendarFormat,
+
+    /// 이번 달 예산 정보 (null이면 예산 미설정)
+    BudgetEntity? budgetInfo,
+
+    /// 총 자산 정보
+    AssetEntity? assetInfo,
   }) = _HomeState;
 }
