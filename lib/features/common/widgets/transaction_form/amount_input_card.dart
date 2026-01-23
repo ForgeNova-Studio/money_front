@@ -12,6 +12,7 @@ class AmountInputCard extends StatelessWidget {
   final Color amountColor;
   final Color unitColor;
   final List<TextInputFormatter>? inputFormatters;
+  final int maxDigits;
 
   const AmountInputCard({
     super.key,
@@ -21,6 +22,7 @@ class AmountInputCard extends StatelessWidget {
     required this.unitColor,
     this.validator,
     this.inputFormatters,
+    this.maxDigits = 16,
   });
 
   @override
@@ -74,7 +76,8 @@ class AmountInputCard extends StatelessWidget {
                     inputFormatters: inputFormatters ??
                         [
                           FilteringTextInputFormatter.digitsOnly,
-                          ThousandsSeparatorInputFormatter(),
+                          ThousandsSeparatorInputFormatter(
+                              maxDigits: maxDigits),
                         ],
                     autofocus: false,
                     showCursor: false,
