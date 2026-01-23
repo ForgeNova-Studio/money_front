@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/features/home/presentation/widgets/animated_amount_text.dart';
 import 'package:moamoa/router/route_names.dart';
 
 class HomeBudgetInfoCard extends ConsumerStatefulWidget {
@@ -173,31 +174,54 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
           ],
         ),
         const SizedBox(height: 8),
-        Text(
-          isOverBudget
-              ? '${NumberFormat('#,###').format(remainingAmount.abs().toInt())}원 초과'
-              : '${NumberFormat('#,###').format(remainingAmount.toInt())}원 남음',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: isOverBudget
-                ? context.appColors.error
-                : context.appColors.textPrimary,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            AnimatedAmountText(
+              amount: remainingAmount.abs(),
+              showSign: false,
+              suffix: '',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: isOverBudget
+                    ? context.appColors.error
+                    : context.appColors.textPrimary,
+              ),
+            ),
+            Text(
+              isOverBudget ? '원 초과' : '원 남음',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: isOverBudget
+                    ? context.appColors.error
+                    : context.appColors.textPrimary,
+              ),
+            ),
+          ],
         ),
         const Spacer(),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: LinearProgressIndicator(
-            value: progress.clamp(0.0, 1.0),
-            backgroundColor: context.appColors.gray100,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              isOverBudget
-                  ? context.appColors.error
-                  : context.appColors.primary,
-            ),
-            minHeight: 8,
-          ),
+        TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0, end: progress.clamp(0.0, 1.0)),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOutCubic,
+          builder: (context, animatedProgress, child) {
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                value: animatedProgress,
+                backgroundColor: context.appColors.gray100,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  isOverBudget
+                      ? context.appColors.error
+                      : context.appColors.primary,
+                ),
+                minHeight: 8,
+              ),
+            );
+          },
         ),
         const SizedBox(height: 8),
         Row(
@@ -280,15 +304,42 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
           ],
         ),
         const SizedBox(height: 8),
-        Text(
-          '${isNegative ? '-' : ''}${NumberFormat('#,###').format(totalAssets.abs().toInt())}원',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: isNegative
-                ? context.appColors.error
-                : context.appColors.textPrimary,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            if (isNegative)
+              Text(
+                '-',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: context.appColors.error,
+                ),
+              ),
+            AnimatedAmountText(
+              amount: totalAssets.abs(),
+              showSign: false,
+              suffix: '',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: isNegative
+                    ? context.appColors.error
+                    : context.appColors.textPrimary,
+              ),
+            ),
+            Text(
+              '원',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: isNegative
+                    ? context.appColors.error
+                    : context.appColors.textPrimary,
+              ),
+            ),
+          ],
         ),
         const Spacer(),
         // 수입/지출 요약
