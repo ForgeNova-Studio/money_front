@@ -38,35 +38,32 @@ class TransactionModalHeader extends StatelessWidget {
             children: [
               // 왼쪽: 날짜와 전체 합계 (Max 50%)
               Expanded(
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${selectedDate.month}월 ${selectedDate.day}일 ${_weekdayLabel(selectedDate.weekday)}요일',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: context.appColors.textSecondary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        AnimatedAmountText(
-                          amount: totalAmount,
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            color: context.appColors.textPrimary,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                      ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${selectedDate.month}월 ${selectedDate.day}일 ${_weekdayLabel(selectedDate.weekday)}요일',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: context.appColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 4),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: AnimatedAmountText(
+                        amount: totalAmount,
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: context.appColors.textPrimary,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(width: 16),
