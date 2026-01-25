@@ -14,6 +14,7 @@ _HomeTransactionModel _$HomeTransactionModelFromJson(
       amount: (json['amount'] as num).toInt(),
       title: json['title'] as String,
       category: json['category'] as String,
+      memo: json['memo'] as String?,
       time: json['time'] as String,
     );
 
@@ -25,6 +26,7 @@ Map<String, dynamic> _$HomeTransactionModelToJson(
       'amount': instance.amount,
       'title': instance.title,
       'category': instance.category,
+      'memo': instance.memo,
       'time': instance.time,
     };
 

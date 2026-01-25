@@ -7,8 +7,9 @@ class TransactionEntity {
   final String id;
   final double amount;
   final DateTime date;
-  final String title; // merchant for expense, source for income
-  final String category;
+  final String title; // 사용자 입력 설명 (merchant or description), fallback: category label
+  final String category; // 카테고리 코드 (category or source)
+  final String? memo; // 추가 메모 (지출 memo, 수입은 null)
   final TransactionType type;
   final DateTime createdAt;
 
@@ -18,19 +19,23 @@ class TransactionEntity {
     required this.date,
     required this.title,
     required this.category,
+    this.memo,
     required this.type,
     required this.createdAt,
   });
+
+  /// title이 사용자 입력 설명인지, 카테고리 fallback인지 판별
+  bool get hasDescription => title != category;
 
   factory TransactionEntity.fromExpense(Expense expense) {
     final fallbackCategory = expense.category ?? '기타';
     return TransactionEntity(
       id: expense.expenseId ?? '',
-      amount: expense
-          .amount, // Expense amount is usually positive in DB, handled as negative in UI
+      amount: expense.amount,
       date: expense.date,
       title: expense.merchant ?? fallbackCategory,
       category: fallbackCategory,
+      memo: expense.memo,
       type: TransactionType.expense,
       createdAt: expense.createdAt ?? DateTime.now(),
     );
@@ -41,8 +46,9 @@ class TransactionEntity {
       id: income.incomeId ?? '',
       amount: income.amount,
       date: income.date,
-      title: income.source,
+      title: income.description ?? income.source,
       category: income.source,
+      memo: null,
       type: TransactionType.income,
       createdAt: income.createdAt ?? DateTime.now(),
     );
