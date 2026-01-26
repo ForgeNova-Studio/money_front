@@ -1,49 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:moamoa/features/couple/domain/entities/couple.dart';
 import 'package:moamoa/features/couple/presentation/providers/couple_providers.dart';
+import 'package:moamoa/features/couple/presentation/states/couple_state.dart';
+
+// CoupleState를 외부에서 접근할 수 있도록 re-export
+export 'package:moamoa/features/couple/presentation/states/couple_state.dart';
 
 part 'couple_view_model.g.dart';
-
-/// 커플 상태
-class CoupleState {
-  final Couple? couple;
-  final InviteInfo? inviteInfo;
-  final bool isLoading;
-  final String? errorMessage;
-
-  const CoupleState({
-    this.couple,
-    this.inviteInfo,
-    this.isLoading = false,
-    this.errorMessage,
-  });
-
-  CoupleState copyWith({
-    Couple? couple,
-    InviteInfo? inviteInfo,
-    bool? isLoading,
-    String? errorMessage,
-    bool clearCouple = false,
-    bool clearInviteInfo = false,
-    bool clearError = false,
-  }) {
-    return CoupleState(
-      couple: clearCouple ? null : (couple ?? this.couple),
-      inviteInfo: clearInviteInfo ? null : (inviteInfo ?? this.inviteInfo),
-      isLoading: isLoading ?? this.isLoading,
-      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
-    );
-  }
-
-  /// 커플 연동 여부
-  bool get isLinked => couple?.linked ?? false;
-
-  /// 초대 코드 유효 여부
-  bool get hasValidInviteCode {
-    if (inviteInfo == null) return false;
-    return inviteInfo!.expiresAt.isAfter(DateTime.now());
-  }
-}
 
 @riverpod
 class CoupleViewModel extends _$CoupleViewModel {
@@ -61,7 +23,7 @@ class CoupleViewModel extends _$CoupleViewModel {
       state = state.copyWith(
         couple: couple,
         isLoading: false,
-        clearError: true,
+        errorMessage: null,
       );
     } catch (e) {
       if (!ref.mounted) return;
@@ -74,13 +36,13 @@ class CoupleViewModel extends _$CoupleViewModel {
 
   /// 커플 정보 새로고침
   Future<void> refresh() async {
-    state = state.copyWith(isLoading: true, clearError: true);
+    state = state.copyWith(isLoading: true, errorMessage: null);
     await _loadCurrentCouple();
   }
 
   /// 초대 코드 생성
   Future<void> generateInviteCode() async {
-    state = state.copyWith(isLoading: true, clearError: true);
+    state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final inviteInfo =
           await ref.read(generateInviteCodeUseCaseProvider).call();
@@ -100,7 +62,7 @@ class CoupleViewModel extends _$CoupleViewModel {
 
   /// 초대 코드로 커플 가입
   Future<bool> joinCouple(String inviteCode) async {
-    state = state.copyWith(isLoading: true, clearError: true);
+    state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final couple = await ref
           .read(joinCoupleUseCaseProvider)
@@ -109,7 +71,7 @@ class CoupleViewModel extends _$CoupleViewModel {
       state = state.copyWith(
         couple: couple,
         isLoading: false,
-        clearInviteInfo: true,
+        inviteInfo: null,
       );
       return true;
     } catch (e) {
@@ -124,14 +86,14 @@ class CoupleViewModel extends _$CoupleViewModel {
 
   /// 커플 연동 해제
   Future<bool> unlinkCouple() async {
-    state = state.copyWith(isLoading: true, clearError: true);
+    state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       await ref.read(unlinkCoupleUseCaseProvider).call();
       if (!ref.mounted) return false;
       state = state.copyWith(
         isLoading: false,
-        clearCouple: true,
-        clearInviteInfo: true,
+        couple: null,
+        inviteInfo: null,
       );
       return true;
     } catch (e) {
@@ -146,7 +108,7 @@ class CoupleViewModel extends _$CoupleViewModel {
 
   /// 에러 메시지 초기화
   void clearError() {
-    state = state.copyWith(clearError: true);
+    state = state.copyWith(errorMessage: null);
   }
 
   /// 에러 메시지 파싱

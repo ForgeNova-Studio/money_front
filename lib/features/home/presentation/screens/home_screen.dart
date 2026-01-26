@@ -30,7 +30,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with WidgetsBindingObserver {
   bool _isFabExpanded = false;
   bool _isAccountBookMenuOpen = false;
   ProviderSubscription<String?>? _refreshErrorSub;
@@ -38,6 +39,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _refreshErrorSub = ref.listenManual<String?>(
       homeRefreshErrorProvider,
       (previous, next) {
@@ -55,8 +57,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _refreshErrorSub?.close();
     super.dispose();
+  }
+
+  /// Background → Foreground 전환 시 데이터 새로고침
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // 앱이 foreground로 돌아왔을 때 데이터 새로고침
+      ref.read(homeViewModelProvider.notifier).refresh();
+    }
+  }
+
+  /// Pull-to-refresh 핸들러
+  Future<void> _handleRefresh() async {
+    await ref.read(homeViewModelProvider.notifier).refresh();
   }
 
   // 수입/지출 삭제
@@ -166,8 +183,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     children: [
-                      // 1. Budget Info Area
-                      const HomeBudgetInfoCard(),
+                      // 1. Budget Info Area (탭하면 새로고침)
+                      GestureDetector(
+                        onDoubleTap: _handleRefresh,
+                        child: const HomeBudgetInfoCard(),
+                      ),
 
                       // 2. Custom Calendar
                       Padding(

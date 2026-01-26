@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/router/route_names.dart';
+import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moamoa/features/couple/presentation/viewmodels/couple_view_model.dart';
+import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 
 class CoupleScreen extends ConsumerWidget {
   const CoupleScreen({super.key});
@@ -209,6 +211,12 @@ class _LinkedCoupleView extends ConsumerWidget {
           await ref.read(coupleViewModelProvider.notifier).unlinkCouple();
       if (context.mounted) {
         if (success) {
+          // 가계부 목록 새로고침 (비활성화된 커플 가계부 제외)
+          ref.invalidate(accountBooksProvider);
+
+          // 홈 화면 데이터 새로고침
+          ref.read(homeViewModelProvider.notifier).refresh();
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('커플 연동이 해제되었습니다.')),
           );

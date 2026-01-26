@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moamoa/features/couple/presentation/viewmodels/couple_view_model.dart';
+import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 
 class CoupleJoinScreen extends ConsumerStatefulWidget {
   const CoupleJoinScreen({super.key});
@@ -251,10 +253,16 @@ class _CoupleJoinScreenState extends ConsumerState<CoupleJoinScreen> {
     setState(() => _isSubmitting = false);
 
     if (success && mounted) {
+      // 가계부 목록 새로고침 (새로 생성된 커플 가계부 반영)
+      ref.invalidate(accountBooksProvider);
+
+      // 홈 화면 데이터 새로고침
+      ref.read(homeViewModelProvider.notifier).refresh();
+
       // 성공 시 커플 화면으로 이동
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('커플 연동이 완료되었습니다!'),
+          content: Text('커플 연동이 완료되었습니다!\n"우리의 생활비" 가계부가 생성되었어요.'),
           backgroundColor: Colors.green,
         ),
       );
