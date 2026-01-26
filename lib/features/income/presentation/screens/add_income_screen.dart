@@ -1,4 +1,5 @@
 // packages
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -201,8 +202,15 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
         await ref.read(incomeViewModelProvider.notifier).createIncome(income);
       }
 
-      // 3. 예산/자산 정보 갱신 (백그라운드)
-      ref.read(homeViewModelProvider.notifier).refreshBudgetAndAsset();
+      // 3. 서버 데이터로 갱신 (실제 ID 포함)
+      final homeViewModel = ref.read(homeViewModelProvider.notifier);
+      unawaited(homeViewModel.fetchMonthlyData(
+        _selectedDate,
+        forceRefresh: true,
+      ));
+
+      // 4. 예산/자산 정보 갱신 (백그라운드)
+      homeViewModel.refreshBudgetAndAsset();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
