@@ -63,7 +63,7 @@ class TransactionListSection extends StatelessWidget {
             if (!hasData)
               TransactionEmptyState(selectedDate: selectedDate)
             else
-              _buildListView(transactions),
+              _buildListView(transactions, dateKey),
           ],
         );
       },
@@ -121,7 +121,7 @@ class TransactionListSection extends StatelessWidget {
     );
   }
 
-  Widget _buildListView(List<TransactionEntity> transactions) {
+  Widget _buildListView(List<TransactionEntity> transactions, String dateKey) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -130,6 +130,7 @@ class TransactionListSection extends StatelessWidget {
       itemBuilder: (context, index) {
         final tx = transactions[index];
         return TransactionListItem(
+          key: ValueKey(tx.id.isNotEmpty ? tx.id : 'tx_${dateKey}_$index'),
           transaction: tx,
           onTap: tx.id.isEmpty
               ? null

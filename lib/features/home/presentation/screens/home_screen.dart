@@ -104,6 +104,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       await ref
           .read(homeViewModelProvider.notifier)
           .deleteTransaction(transaction);
+      _resetFabDimmed();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('삭제되었습니다.')),
@@ -216,6 +217,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       // TODO: Navigate to OCR screen
                     },
                     onResetToMonthView: () {
+                      _resetFabDimmed();
                       ref
                           .read(homeViewModelProvider.notifier)
                           .resetToMonthView();
@@ -334,12 +336,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   // Calendar Format 변경(월간/주간)
   void _handleFormatChanged(CalendarFormat format) {
     _collapseOverlaysIfNeeded();
+    _resetFabDimmed();
     ref.read(homeViewModelProvider.notifier).setCalendarFormat(format);
   }
 
   // Calendar 날짜 선택
   void _handleDateSelected(DateTime selected, DateTime focused) {
     _collapseOverlaysIfNeeded();
+    _resetFabDimmed();
     ref.read(homeViewModelProvider.notifier).selectDate(selected);
   }
 
@@ -386,6 +390,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         _isFabExpanded = false;
       }
     });
+  }
+
+  void _resetFabDimmed() {
+    if (_isFabDimmed) {
+      setState(() => _isFabDimmed = false);
+    }
   }
 
   String _resolveSelectedAccountBookName(
