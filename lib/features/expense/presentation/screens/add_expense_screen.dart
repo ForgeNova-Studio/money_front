@@ -164,6 +164,20 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               : _memoController.text.trim(),
           paymentMethod: _selectedPaymentMethod.code,
         );
+
+        // 1. Optimistic Update
+        final oldTransaction = TransactionEntity.fromExpense(base);
+        final newTransaction = TransactionEntity.fromExpense(
+            updated.copyWith(expenseId: base.expenseId ?? widget.expenseId));
+
+        ref
+            .read(homeViewModelProvider.notifier)
+            .updateTransactionOptimistically(
+              oldTransaction: oldTransaction,
+              newTransaction: newTransaction,
+            );
+
+        // 2. 백그라운드 API 호출
         await ref.read(updateExpenseUseCaseProvider).call(
             expenseId: base.expenseId ?? widget.expenseId!, expense: updated);
       } else {

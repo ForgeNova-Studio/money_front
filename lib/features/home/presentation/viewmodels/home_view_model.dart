@@ -390,6 +390,76 @@ class HomeViewModel extends _$HomeViewModel {
     );
   }
 
+  /// 낙관적 트랜잭션 수정 (수정 화면에서 호출)
+  void updateTransactionOptimistically({
+    required TransactionEntity oldTransaction,
+    required TransactionEntity newTransaction,
+  }) {
+    final currentData = state.monthlyData.asData?.value;
+    if (currentData == null) return;
+
+    final updatedData = Map<String, DailyTransactionSummary>.from(currentData);
+
+    // 1. 기존 데이터 제거
+    final oldDateKey = DateFormat('yyyy-MM-dd').format(oldTransaction.date);
+    if (updatedData.containsKey(oldDateKey)) {
+      final daySummary = updatedData[oldDateKey]!;
+      final updatedTransactions = daySummary.transactions
+          .where((tx) => tx.id != oldTransaction.id)
+          .toList();
+
+      final updatedIncome = daySummary.totalIncome -
+          (oldTransaction.type == TransactionType.income
+              ? oldTransaction.amount
+              : 0);
+      final updatedExpense = daySummary.totalExpense -
+          (oldTransaction.type == TransactionType.expense
+              ? oldTransaction.amount
+              : 0);
+
+      updatedData[oldDateKey] = DailyTransactionSummary(
+        date: daySummary.date,
+        transactions: updatedTransactions,
+        totalIncome: updatedIncome,
+        totalExpense: updatedExpense,
+      );
+    }
+
+    // 2. 새로운 데이터 추가
+    final newDateKey = DateFormat('yyyy-MM-dd').format(newTransaction.date);
+    // 해당 날짜에 데이터가 없으면 새로 생성, 있으면 사용
+    final daySummary = updatedData[newDateKey] ??
+        DailyTransactionSummary(
+          date: newTransaction.date,
+          transactions: [],
+          totalIncome: 0,
+          totalExpense: 0,
+        );
+
+    final newTransactions = [...daySummary.transactions, newTransaction];
+    // (선택사항) 시간순 정렬이 필요하다면 여기서 sort 수행
+
+    final newIncome = daySummary.totalIncome +
+        (newTransaction.type == TransactionType.income
+            ? newTransaction.amount
+            : 0);
+    final newExpense = daySummary.totalExpense +
+        (newTransaction.type == TransactionType.expense
+            ? newTransaction.amount
+            : 0);
+
+    updatedData[newDateKey] = DailyTransactionSummary(
+      date: daySummary.date,
+      transactions: newTransactions,
+      totalIncome: newIncome,
+      totalExpense: newExpense,
+    );
+
+    state = state.copyWith(
+      monthlyData: AsyncValue.data(updatedData),
+    );
+  }
+
   void _prefetchAdjacentMonths(
     DateTime month,
     String userId,

@@ -153,6 +153,20 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
               ? null
               : _descriptionController.text.trim(),
         );
+
+        // 1. Optimistic Update
+        final oldTransaction = TransactionEntity.fromIncome(base);
+        final newTransaction = TransactionEntity.fromIncome(
+            updated.copyWith(incomeId: base.incomeId ?? widget.incomeId));
+
+        ref
+            .read(homeViewModelProvider.notifier)
+            .updateTransactionOptimistically(
+              oldTransaction: oldTransaction,
+              newTransaction: newTransaction,
+            );
+
+        // 2. 백그라운드 API 호출
         await ref.read(updateIncomeUsecaseProvider).call(
               incomeId: base.incomeId ?? widget.incomeId!,
               income: updated,
