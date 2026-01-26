@@ -25,9 +25,24 @@ class TransactionListItem extends StatelessWidget {
         isExpense ? context.appColors.error : context.appColors.success;
     final prefix = isExpense ? '-' : '+';
     final amountStr = NumberFormat('#,###').format(transaction.amount);
-    final timeStr = DateFormat('HH:mm').format(transaction.date);
     final categoryLabel = _resolveCategoryLabel(isExpense);
     final categoryIcon = _resolveCategoryIcon(isExpense);
+    final memo = transaction.memo;
+
+    // title: 설명이 있으면 사용자 입력, 없으면 카테고리 한글 라벨
+    final displayTitle = transaction.hasDescription
+        ? transaction.title
+        : categoryLabel;
+
+    // subtitle: 카테고리 + memo 조합 (시간 제거, 중복 방지)
+    String? subtitle;
+    if (transaction.hasDescription && memo != null && memo.isNotEmpty) {
+      subtitle = '$categoryLabel · $memo';
+    } else if (transaction.hasDescription) {
+      subtitle = categoryLabel;
+    } else if (memo != null && memo.isNotEmpty) {
+      subtitle = memo;
+    }
 
     return SwipeToReveal(
       enabled: onDelete != null,
@@ -38,8 +53,8 @@ class TransactionListItem extends StatelessWidget {
         onTap: onTap,
         categoryIcon: categoryIcon,
         isExpense: isExpense,
-        title: transaction.title,
-        subtitle: '$timeStr · $categoryLabel',
+        title: displayTitle,
+        subtitle: subtitle,
         amount: '$prefix$amountStr원',
         amountColor: color,
       ),
@@ -109,7 +124,7 @@ class _TransactionCard extends StatelessWidget {
   final IconData categoryIcon;
   final bool isExpense;
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final String amount;
   final Color amountColor;
 
@@ -153,15 +168,21 @@ class _TransactionCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 3),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        color: context.appColors.textTertiary,
-                        fontSize: 12,
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        subtitle!,
+                        style: TextStyle(
+                          color: context.appColors.textTertiary,
+                          fontSize: 12,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),

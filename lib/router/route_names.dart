@@ -73,6 +73,9 @@ class RouteNames {
   static const String initialBalanceSettings = '/assets/initial-balance';
 
   // ==================== Couple Routes ====================
+  /// 커플 메인 화면
+  static const String couple = '/couple';
+
   /// 커플 초대 화면
   static const String coupleInvite = '/couple/invite';
 

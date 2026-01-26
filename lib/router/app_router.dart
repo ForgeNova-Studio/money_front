@@ -36,6 +36,11 @@ import 'package:moamoa/features/income/presentation/screens/add_income_screen.da
 
 // Statistics Screens
 
+// Couple Screens
+import 'package:moamoa/features/couple/presentation/screens/couple_screen.dart';
+import 'package:moamoa/features/couple/presentation/screens/couple_invite_screen.dart';
+import 'package:moamoa/features/couple/presentation/screens/couple_join_screen.dart';
+
 // Budget & Couple Screens
 
 // OCR Screens
@@ -215,16 +220,21 @@ class AppRouter {
         // ),
 
         // ==================== Couple Routes ====================
-        // GoRoute(
-        //   path: RouteNames.coupleInvite,
-        //   name: 'coupleInvite',
-        //   builder: (context, state) => const CoupleInviteScreen(),
-        // ),
-        // GoRoute(
-        //   path: RouteNames.coupleJoin,
-        //   name: 'coupleJoin',
-        //   builder: (context, state) => const CoupleJoinScreen(),
-        // ),
+        GoRoute(
+          path: RouteNames.couple,
+          name: 'couple',
+          builder: (context, state) => const CoupleScreen(),
+        ),
+        GoRoute(
+          path: RouteNames.coupleInvite,
+          name: 'coupleInvite',
+          builder: (context, state) => const CoupleInviteScreen(),
+        ),
+        GoRoute(
+          path: RouteNames.coupleJoin,
+          name: 'coupleJoin',
+          builder: (context, state) => const CoupleJoinScreen(),
+        ),
 
         // ==================== OCR Route ====================
         GoRoute(

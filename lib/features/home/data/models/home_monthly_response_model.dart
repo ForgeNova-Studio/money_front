@@ -14,8 +14,9 @@ sealed class HomeTransactionModel with _$HomeTransactionModel {
         id, // UUID String (예: "123e4567-e89b-12d3-a456-426614174000")
     required String type, // "INCOME" or "EXPENSE"
     required int amount,
-    required String title,
-    required String category,
+    required String title, // 사용자 입력 설명 (지출: merchant ?? category, 수입: description ?? source)
+    required String category, // 카테고리 코드 (지출: category, 수입: source)
+    String? memo, // 추가 메모 (지출: memo, 수입: null)
     required String time, // "14:30"
   }) = _HomeTransactionModel;
 
@@ -37,11 +38,12 @@ sealed class HomeTransactionModel with _$HomeTransactionModel {
     }
 
     return TransactionEntity(
-      id: id, // 이미 String이므로 toString() 불필요
+      id: id,
       amount: amount.toDouble(),
       date: dateTime,
       title: title,
       category: category,
+      memo: memo,
       type: type == 'INCOME' ? TransactionType.income : TransactionType.expense,
       createdAt: dateTime,
     );

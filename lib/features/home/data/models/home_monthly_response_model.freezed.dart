@@ -17,8 +17,10 @@ mixin _$HomeTransactionModel {
   String get id; // UUID String (예: "123e4567-e89b-12d3-a456-426614174000")
   String get type; // "INCOME" or "EXPENSE"
   int get amount;
-  String get title;
-  String get category;
+  String
+      get title; // 사용자 입력 설명 (지출: merchant ?? category, 수입: description ?? source)
+  String get category; // 카테고리 코드 (지출: category, 수입: source)
+  String? get memo; // 추가 메모 (지출: memo, 수입: null)
   String get time;
 
   /// Create a copy of HomeTransactionModel
@@ -43,17 +45,18 @@ mixin _$HomeTransactionModel {
             (identical(other.title, title) || other.title == title) &&
             (identical(other.category, category) ||
                 other.category == category) &&
+            (identical(other.memo, memo) || other.memo == memo) &&
             (identical(other.time, time) || other.time == time));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, id, type, amount, title, category, time);
+      Object.hash(runtimeType, id, type, amount, title, category, memo, time);
 
   @override
   String toString() {
-    return 'HomeTransactionModel(id: $id, type: $type, amount: $amount, title: $title, category: $category, time: $time)';
+    return 'HomeTransactionModel(id: $id, type: $type, amount: $amount, title: $title, category: $category, memo: $memo, time: $time)';
   }
 }
 
@@ -69,6 +72,7 @@ abstract mixin class $HomeTransactionModelCopyWith<$Res> {
       int amount,
       String title,
       String category,
+      String? memo,
       String time});
 }
 
@@ -90,6 +94,7 @@ class _$HomeTransactionModelCopyWithImpl<$Res>
     Object? amount = null,
     Object? title = null,
     Object? category = null,
+    Object? memo = freezed,
     Object? time = null,
   }) {
     return _then(_self.copyWith(
@@ -113,6 +118,10 @@ class _$HomeTransactionModelCopyWithImpl<$Res>
           ? _self.category
           : category // ignore: cast_nullable_to_non_nullable
               as String,
+      memo: freezed == memo
+          ? _self.memo
+          : memo // ignore: cast_nullable_to_non_nullable
+              as String?,
       time: null == time
           ? _self.time
           : time // ignore: cast_nullable_to_non_nullable
@@ -213,7 +222,7 @@ extension HomeTransactionModelPatterns on HomeTransactionModel {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(String id, String type, int amount, String title,
-            String category, String time)?
+            String category, String? memo, String time)?
         $default, {
     required TResult orElse(),
   }) {
@@ -221,7 +230,7 @@ extension HomeTransactionModelPatterns on HomeTransactionModel {
     switch (_that) {
       case _HomeTransactionModel() when $default != null:
         return $default(_that.id, _that.type, _that.amount, _that.title,
-            _that.category, _that.time);
+            _that.category, _that.memo, _that.time);
       case _:
         return orElse();
     }
@@ -243,14 +252,14 @@ extension HomeTransactionModelPatterns on HomeTransactionModel {
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
     TResult Function(String id, String type, int amount, String title,
-            String category, String time)
+            String category, String? memo, String time)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _HomeTransactionModel():
         return $default(_that.id, _that.type, _that.amount, _that.title,
-            _that.category, _that.time);
+            _that.category, _that.memo, _that.time);
     }
   }
 
@@ -269,14 +278,14 @@ extension HomeTransactionModelPatterns on HomeTransactionModel {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(String id, String type, int amount, String title,
-            String category, String time)?
+            String category, String? memo, String time)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _HomeTransactionModel() when $default != null:
         return $default(_that.id, _that.type, _that.amount, _that.title,
-            _that.category, _that.time);
+            _that.category, _that.memo, _that.time);
       case _:
         return null;
     }
@@ -292,6 +301,7 @@ class _HomeTransactionModel extends HomeTransactionModel {
       required this.amount,
       required this.title,
       required this.category,
+      this.memo,
       required this.time})
       : super._();
   factory _HomeTransactionModel.fromJson(Map<String, dynamic> json) =>
@@ -307,8 +317,13 @@ class _HomeTransactionModel extends HomeTransactionModel {
   final int amount;
   @override
   final String title;
+// 사용자 입력 설명 (지출: merchant ?? category, 수입: description ?? source)
   @override
   final String category;
+// 카테고리 코드 (지출: category, 수입: source)
+  @override
+  final String? memo;
+// 추가 메모 (지출: memo, 수입: null)
   @override
   final String time;
 
@@ -339,17 +354,18 @@ class _HomeTransactionModel extends HomeTransactionModel {
             (identical(other.title, title) || other.title == title) &&
             (identical(other.category, category) ||
                 other.category == category) &&
+            (identical(other.memo, memo) || other.memo == memo) &&
             (identical(other.time, time) || other.time == time));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, id, type, amount, title, category, time);
+      Object.hash(runtimeType, id, type, amount, title, category, memo, time);
 
   @override
   String toString() {
-    return 'HomeTransactionModel(id: $id, type: $type, amount: $amount, title: $title, category: $category, time: $time)';
+    return 'HomeTransactionModel(id: $id, type: $type, amount: $amount, title: $title, category: $category, memo: $memo, time: $time)';
   }
 }
 
@@ -367,6 +383,7 @@ abstract mixin class _$HomeTransactionModelCopyWith<$Res>
       int amount,
       String title,
       String category,
+      String? memo,
       String time});
 }
 
@@ -388,6 +405,7 @@ class __$HomeTransactionModelCopyWithImpl<$Res>
     Object? amount = null,
     Object? title = null,
     Object? category = null,
+    Object? memo = freezed,
     Object? time = null,
   }) {
     return _then(_HomeTransactionModel(
@@ -411,6 +429,10 @@ class __$HomeTransactionModelCopyWithImpl<$Res>
           ? _self.category
           : category // ignore: cast_nullable_to_non_nullable
               as String,
+      memo: freezed == memo
+          ? _self.memo
+          : memo // ignore: cast_nullable_to_non_nullable
+              as String?,
       time: null == time
           ? _self.time
           : time // ignore: cast_nullable_to_non_nullable

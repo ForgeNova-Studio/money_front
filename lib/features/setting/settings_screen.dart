@@ -99,12 +99,7 @@ class SettingsScreen extends ConsumerWidget {
                   icon: Icons.favorite_outline,
                   iconColor: Colors.pink,
                   label: '커플 연동',
-                  onTap: () {
-                    // TODO: 커플 연동 화면으로 이동
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('커플 연동 기능 준비 중입니다.')),
-                    );
-                  },
+                  onTap: () => context.push(RouteNames.couple),
                 ),
                 _MenuItem(
                   icon: Icons.receipt_long_outlined,
