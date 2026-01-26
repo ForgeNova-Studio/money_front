@@ -189,10 +189,10 @@ class HomeViewModel extends _$HomeViewModel {
     }
 
     if (hasFreshBudgetCache) {
-      nextBudgetInfo = cachedBudgetEntry?.value;
+      nextBudgetInfo = cachedBudgetEntry.value;
     }
     if (hasFreshAssetCache) {
-      nextAssetInfo = cachedAssetEntry?.value;
+      nextAssetInfo = cachedAssetEntry.value;
     }
 
     if ((hasFreshBudgetCache || hasFreshAssetCache) && ref.mounted) {
@@ -227,12 +227,10 @@ class HomeViewModel extends _$HomeViewModel {
         nextAssetInfo = await assetUseCase(
           accountBookId: accountBookId,
         );
-        if (nextAssetInfo != null) {
-          _assetCache = _AssetCacheEntry(
-            value: nextAssetInfo,
-            cachedAt: now,
-          );
-        }
+        _assetCache = _AssetCacheEntry(
+          value: nextAssetInfo,
+          cachedAt: now,
+        );
       }
 
       if (!ref.mounted) return;
