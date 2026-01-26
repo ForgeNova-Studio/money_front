@@ -21,6 +21,7 @@ import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dar
 
 // entities
 import 'package:moamoa/features/income/domain/entities/income.dart';
+import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 
 class AddIncomeScreen extends ConsumerStatefulWidget {
   final DateTime? initialDate;
@@ -166,14 +167,27 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
               ? null
               : _descriptionController.text.trim(),
         );
+
+        // 1. Optimistic Update: 먼저 로컬 상태 업데이트
+        final optimisticTransaction = TransactionEntity(
+          id: '', // 임시 ID (API 응답 후 갱신됨)
+          amount: amount,
+          date: _selectedDate,
+          title: income.description ?? _selectedSource,
+          category: _selectedSource,
+          memo: null,
+          type: TransactionType.income,
+          createdAt: DateTime.now(),
+        );
+        ref
+            .read(homeViewModelProvider.notifier)
+            .addTransactionOptimistically(optimisticTransaction);
+
+        // 2. 백그라운드에서 실제 API 호출
         await ref.read(incomeViewModelProvider.notifier).createIncome(income);
       }
 
       if (mounted) {
-        // 새로운 데이터 즉시 갱신 되도록 변경
-        ref
-            .read(homeViewModelProvider.notifier)
-            .fetchMonthlyData(_selectedDate, forceRefresh: true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

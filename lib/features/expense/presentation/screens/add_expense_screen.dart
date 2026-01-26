@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 // entities
 import 'package:moamoa/features/expense/domain/entities/expense.dart';
+import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 import 'package:moamoa/features/expense/domain/entities/payment_method.dart';
 import 'package:moamoa/features/expense/presentation/utils/expense_category_utils.dart';
 import 'package:moamoa/features/expense/presentation/providers/expense_providers.dart';
@@ -87,8 +88,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         _selectedPaymentMethod = PaymentMethod.fromCode(
           expense.paymentMethod ?? PaymentMethod.card.code,
         );
-        _amountController.text =
-            _amountFormatter.format(expense.amount);
+        _amountController.text = _amountFormatter.format(expense.amount);
         _merchantController.text = expense.merchant ?? '';
         _memoController.text = expense.memo ?? '';
         _isLoading = false;
@@ -179,16 +179,29 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               : _memoController.text.trim(),
           paymentMethod: _selectedPaymentMethod.code,
         );
+
+        // 1. Optimistic Update: 먼저 로컬 상태 업데이트
+        final optimisticTransaction = TransactionEntity(
+          id: '', // 임시 ID (API 응답 후 갱신됨)
+          amount: amount,
+          date: _selectedDate,
+          title: expense.merchant ?? _selectedCategory,
+          category: _selectedCategory,
+          memo: expense.memo,
+          type: TransactionType.expense,
+          createdAt: DateTime.now(),
+        );
+        ref
+            .read(homeViewModelProvider.notifier)
+            .addTransactionOptimistically(optimisticTransaction);
+
+        // 2. 백그라운드에서 실제 API 호출
         await ref
             .read(expenseViewModelProvider.notifier)
             .createExpense(expense);
       }
 
       if (mounted) {
-        // 새로운 데이터 즉시 갱신 되도록 변경
-        ref
-            .read(homeViewModelProvider.notifier)
-            .fetchMonthlyData(_selectedDate, forceRefresh: true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

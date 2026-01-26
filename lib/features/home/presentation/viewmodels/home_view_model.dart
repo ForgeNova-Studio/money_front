@@ -358,6 +358,38 @@ class HomeViewModel extends _$HomeViewModel {
     }
   }
 
+  /// 낙관적 트랜잭션 추가 (등록 화면에서 호출)
+  void addTransactionOptimistically(TransactionEntity transaction) {
+    final dateKey = DateFormat('yyyy-MM-dd').format(transaction.date);
+    final currentData = state.monthlyData.asData?.value;
+    if (currentData == null) return;
+
+    final daySummary = currentData[dateKey];
+    final updatedTransactions = [
+      ...?daySummary?.transactions,
+      transaction,
+    ];
+
+    final updatedIncome = (daySummary?.totalIncome ?? 0) +
+        (transaction.type == TransactionType.income ? transaction.amount : 0);
+    final updatedExpense = (daySummary?.totalExpense ?? 0) +
+        (transaction.type == TransactionType.expense ? transaction.amount : 0);
+
+    final updatedSummary = DailyTransactionSummary(
+      date: transaction.date,
+      transactions: updatedTransactions,
+      totalIncome: updatedIncome,
+      totalExpense: updatedExpense,
+    );
+
+    final updatedData = Map<String, DailyTransactionSummary>.from(currentData);
+    updatedData[dateKey] = updatedSummary;
+
+    state = state.copyWith(
+      monthlyData: AsyncValue.data(updatedData),
+    );
+  }
+
   void _prefetchAdjacentMonths(
     DateTime month,
     String userId,
