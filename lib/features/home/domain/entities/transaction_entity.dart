@@ -5,7 +5,8 @@ enum TransactionType { income, expense }
 
 class TransactionEntity {
   final String id;
-  final double amount;
+  /// Amount in KRW (won). Keep this as int to avoid floating point rounding.
+  final int amount;
   final DateTime date;
   final String title; // 사용자 입력 설명 (merchant or description), fallback: category label
   final String category; // 카테고리 코드 (category or source)

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class AnimatedAmountText extends StatefulWidget {
-  final double amount;
+  final num amount;
   final TextStyle style;
   final Duration duration;
   final Curve curve;
@@ -24,7 +24,7 @@ class AnimatedAmountText extends StatefulWidget {
 }
 
 class _AnimatedAmountTextState extends State<AnimatedAmountText> {
-  late double _previousAmount;
+  late num _previousAmount;
 
   @override
   void initState() {
@@ -43,11 +43,15 @@ class _AnimatedAmountTextState extends State<AnimatedAmountText> {
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: _previousAmount, end: widget.amount),
+      tween: Tween<double>(
+        begin: _previousAmount.toDouble(),
+        end: widget.amount.toDouble(),
+      ),
       duration: widget.duration,
       curve: widget.curve,
       builder: (context, value, child) {
-        final formatted = NumberFormat('#,###').format(value.abs());
+        // Amounts are treated as KRW (won). Format as integers to avoid "0.0".
+        final formatted = NumberFormat('#,###').format(value.abs().round());
         final sign = widget.showSign && value < 0 ? '-' : '';
         return Text(
           '$sign$formatted${widget.suffix}',

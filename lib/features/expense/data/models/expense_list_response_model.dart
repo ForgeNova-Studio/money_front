@@ -11,7 +11,7 @@ part 'expense_list_response_model.g.dart';
 sealed class ExpenseListResponseModel with _$ExpenseListResponseModel {
   const factory ExpenseListResponseModel({
     required List<ExpenseModel> expenses,
-    required double totalAmount,
+    required int totalAmount,
     required int count,
   }) = _ExpenseListResponseModel;
 

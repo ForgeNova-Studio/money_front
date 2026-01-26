@@ -69,7 +69,7 @@ class IncomeViewModel extends _$IncomeViewModel {
   /// 수입 삭제
 
   /// 총 금액 계산
-  double _calculateTotalAmount(List<Income> incomes) {
+  int _calculateTotalAmount(List<Income> incomes) {
     return incomes.fold(0, (sum, item) => sum + item.amount);
   }
 }

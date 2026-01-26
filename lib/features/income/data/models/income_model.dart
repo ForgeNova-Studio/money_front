@@ -16,7 +16,7 @@ sealed class IncomeModel with _$IncomeModel {
     String? userId,
     String? accountBookId,
     String? fundingSource,
-    required double amount,
+    required int amount,
     required DateTime date,
     required String source,
     String? description,

@@ -4,7 +4,8 @@ class Expense {
   final String? userId;
   final String? accountBookId;
   final String? fundingSource;
-  final double amount;
+  /// Amount in KRW (won). Keep this as int to avoid floating point rounding.
+  final int amount;
   final DateTime date;
   final String? category; // 식비, 교통, 쇼핑 등
   final String? merchant; // 가맹점명
@@ -37,7 +38,7 @@ class Expense {
     String? userId,
     String? accountBookId,
     String? fundingSource,
-    double? amount,
+    int? amount,
     DateTime? date,
     String? category,
     String? merchant,

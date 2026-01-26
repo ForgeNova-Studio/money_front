@@ -73,7 +73,7 @@ class TransactionListSection extends StatelessWidget {
   Widget _buildHeader(
     BuildContext context,
     DateTime date,
-    double totalAmount,
+    int totalAmount,
   ) {
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 12, 20, 0),
