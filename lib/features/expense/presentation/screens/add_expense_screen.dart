@@ -1,4 +1,5 @@
 // packages
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +7,7 @@ import 'package:intl/intl.dart';
 
 // entities
 import 'package:moamoa/features/expense/domain/entities/expense.dart';
+import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 import 'package:moamoa/features/expense/domain/entities/payment_method.dart';
 import 'package:moamoa/features/expense/presentation/utils/expense_category_utils.dart';
 import 'package:moamoa/features/expense/presentation/providers/expense_providers.dart';
@@ -87,8 +89,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         _selectedPaymentMethod = PaymentMethod.fromCode(
           expense.paymentMethod ?? PaymentMethod.card.code,
         );
-        _amountController.text =
-            _amountFormatter.format(expense.amount);
+        _amountController.text = _amountFormatter.format(expense.amount);
         _merchantController.text = expense.merchant ?? '';
         _memoController.text = expense.memo ?? '';
         _isLoading = false;
@@ -164,6 +165,20 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               : _memoController.text.trim(),
           paymentMethod: _selectedPaymentMethod.code,
         );
+
+        // 1. Optimistic Update
+        final oldTransaction = TransactionEntity.fromExpense(base);
+        final newTransaction = TransactionEntity.fromExpense(
+            updated.copyWith(expenseId: base.expenseId ?? widget.expenseId));
+
+        ref
+            .read(homeViewModelProvider.notifier)
+            .updateTransactionOptimistically(
+              oldTransaction: oldTransaction,
+              newTransaction: newTransaction,
+            );
+
+        // 2. 백그라운드 API 호출
         await ref.read(updateExpenseUseCaseProvider).call(
             expenseId: base.expenseId ?? widget.expenseId!, expense: updated);
       } else {
@@ -179,16 +194,39 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               : _memoController.text.trim(),
           paymentMethod: _selectedPaymentMethod.code,
         );
+
+        // 1. Optimistic Update: 먼저 로컬 상태 업데이트
+        final optimisticTransaction = TransactionEntity(
+          id: '', // 임시 ID (API 응답 후 갱신됨)
+          amount: amount,
+          date: _selectedDate,
+          title: expense.merchant ?? _selectedCategory,
+          category: _selectedCategory,
+          memo: expense.memo,
+          type: TransactionType.expense,
+          createdAt: DateTime.now(),
+        );
+        ref
+            .read(homeViewModelProvider.notifier)
+            .addTransactionOptimistically(optimisticTransaction);
+
+        // 2. 백그라운드에서 실제 API 호출
         await ref
             .read(expenseViewModelProvider.notifier)
             .createExpense(expense);
       }
 
+      // 3. 서버 데이터로 갱신 (실제 ID 포함)
+      final homeViewModel = ref.read(homeViewModelProvider.notifier);
+      unawaited(homeViewModel.fetchMonthlyData(
+        _selectedDate,
+        forceRefresh: true,
+      ));
+
+      // 4. 예산/자산 정보 갱신 (백그라운드)
+      homeViewModel.refreshBudgetAndAsset();
+
       if (mounted) {
-        // 새로운 데이터 즉시 갱신 되도록 변경
-        ref
-            .read(homeViewModelProvider.notifier)
-            .fetchMonthlyData(_selectedDate, forceRefresh: true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -200,6 +238,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         Navigator.of(context).pop(true);
       }
     } catch (e) {
+      // TODO: API 호출 실패 시 Optimistic Update를 롤백하는 로직 추가 필요 (이전 상태로 복구)
       if (mounted) {
         if (kDebugMode) {
           debugPrint(e.toString());
@@ -271,7 +310,31 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                 ),
                                 const SizedBox(height: 28),
 
-                                // 3. Category Selection
+                                // 3. Additional Fields (Merchant, Memo)
+                                TransactionFormCard(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 6),
+                                  child: Column(
+                                    children: [
+                                      TransactionTextField(
+                                        controller: _merchantController,
+                                        hint: '어디서 썼나요?',
+                                        icon: Icons.store_outlined,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      const SizedBox(height: 4),
+                                      TransactionTextField(
+                                        controller: _memoController,
+                                        hint: '메모를 남겨주세요',
+                                        icon: Icons.edit_outlined,
+                                        multiline: true,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 28),
+
+                                // 4. Category Selection
                                 Text(
                                   '카테고리',
                                   style: TextStyle(
@@ -370,35 +433,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                 ),
                                 const SizedBox(height: 28),
 
-                                // 4. Additional Fields (Merchant, Memo)
-                                TransactionFormCard(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 6),
-                                  child: Column(
-                                    children: [
-                                      TransactionTextField(
-                                        controller: _merchantController,
-                                        hint: '어디서 썼나요?',
-                                        icon: Icons.store_outlined,
-                                      ),
-                                      const SizedBox(
-                                        height: 4,
-                                      ),
-                                      const SizedBox(
-                                        height: 4,
-                                      ),
-                                      TransactionTextField(
-                                        controller: _memoController,
-                                        hint: '메모를 남겨주세요',
-                                        icon: Icons.edit_outlined,
-                                        multiline: true,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 24),
-
-                                // 5. 결제 수단 선택 필드
+                                // 4. 결제 수단 선택 필드
                                 Text(
                                   '결제 수단',
                                   style: TextStyle(

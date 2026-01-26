@@ -1,4 +1,5 @@
 // packages
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +22,7 @@ import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dar
 
 // entities
 import 'package:moamoa/features/income/domain/entities/income.dart';
+import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 
 class AddIncomeScreen extends ConsumerStatefulWidget {
   final DateTime? initialDate;
@@ -152,6 +154,20 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
               ? null
               : _descriptionController.text.trim(),
         );
+
+        // 1. Optimistic Update
+        final oldTransaction = TransactionEntity.fromIncome(base);
+        final newTransaction = TransactionEntity.fromIncome(
+            updated.copyWith(incomeId: base.incomeId ?? widget.incomeId));
+
+        ref
+            .read(homeViewModelProvider.notifier)
+            .updateTransactionOptimistically(
+              oldTransaction: oldTransaction,
+              newTransaction: newTransaction,
+            );
+
+        // 2. 백그라운드 API 호출
         await ref.read(updateIncomeUsecaseProvider).call(
               incomeId: base.incomeId ?? widget.incomeId!,
               income: updated,
@@ -166,14 +182,37 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
               ? null
               : _descriptionController.text.trim(),
         );
+
+        // 1. Optimistic Update: 먼저 로컬 상태 업데이트
+        final optimisticTransaction = TransactionEntity(
+          id: '', // 임시 ID (API 응답 후 갱신됨)
+          amount: amount,
+          date: _selectedDate,
+          title: income.description ?? _selectedSource,
+          category: _selectedSource,
+          memo: null,
+          type: TransactionType.income,
+          createdAt: DateTime.now(),
+        );
+        ref
+            .read(homeViewModelProvider.notifier)
+            .addTransactionOptimistically(optimisticTransaction);
+
+        // 2. 백그라운드에서 실제 API 호출
         await ref.read(incomeViewModelProvider.notifier).createIncome(income);
       }
 
+      // 3. 서버 데이터로 갱신 (실제 ID 포함)
+      final homeViewModel = ref.read(homeViewModelProvider.notifier);
+      unawaited(homeViewModel.fetchMonthlyData(
+        _selectedDate,
+        forceRefresh: true,
+      ));
+
+      // 4. 예산/자산 정보 갱신 (백그라운드)
+      homeViewModel.refreshBudgetAndAsset();
+
       if (mounted) {
-        // 새로운 데이터 즉시 갱신 되도록 변경
-        ref
-            .read(homeViewModelProvider.notifier)
-            .fetchMonthlyData(_selectedDate, forceRefresh: true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -185,6 +224,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
         Navigator.of(context).pop(true);
       }
     } catch (e) {
+      // TODO: API 호출 실패 시 Optimistic Update를 롤백하는 로직 추가 필요 (이전 상태로 복구)
       if (mounted && kDebugMode) {
         debugPrint(e.toString());
       }
@@ -257,7 +297,20 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                 ),
                                 const SizedBox(height: 28),
 
-                                // 3. Source Selection
+                                // 3. 메모 필드
+                                TransactionFormCard(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 10),
+                                  child: TransactionTextField(
+                                    controller: _descriptionController,
+                                    hint: '어떤 수입인가요?',
+                                    icon: Icons.edit_outlined,
+                                    multiline: true,
+                                  ),
+                                ),
+                                const SizedBox(height: 28),
+
+                                // 4. Source Selection
                                 Text(
                                   '수입 출처',
                                   style: TextStyle(
@@ -358,17 +411,6 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                 ),
                                 const SizedBox(height: 28),
 
-                                // 4. 메모 필드
-                                TransactionFormCard(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 10),
-                                  child: TransactionTextField(
-                                    controller: _descriptionController,
-                                    hint: '어떤 수입인가요?',
-                                    icon: Icons.edit_outlined,
-                                    multiline: true,
-                                  ),
-                                ),
                                 const SizedBox(height: 48),
                               ],
                             ),

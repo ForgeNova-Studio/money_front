@@ -10,6 +10,11 @@ abstract class AccountBookRemoteDataSource {
     required AccountBookModel accountBook,
   });
 
+  Future<AccountBookModel> updateAccountBook({
+    required String accountBookId,
+    required AccountBookModel accountBook,
+  });
+
   Future<List<AccountBookMemberInfoModel>> getMembers({
     required String accountBookId,
   });

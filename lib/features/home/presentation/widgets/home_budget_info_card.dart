@@ -244,6 +244,16 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
   }
 
   Widget _buildAssetContent(BuildContext context, AssetEntity? assetInfo) {
+    // 현재 월의 수입/지출 합계를 monthlyData에서 계산 (낙관적 업데이트 반영)
+    final homeState = ref.watch(homeViewModelProvider);
+    final monthlyData = homeState.monthlyData.asData?.value ?? {};
+    double periodIncome = 0;
+    double periodExpense = 0;
+    for (final summary in monthlyData.values) {
+      periodIncome += summary.totalIncome;
+      periodExpense += summary.totalExpense;
+    }
+
     if (assetInfo == null) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,19 +352,19 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
           ],
         ),
         const Spacer(),
-        // 수입/지출 요약
+        // 수입/지출 요약 (monthlyData에서 계산한 값 사용)
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '수입 ${NumberFormat('#,###').format(assetInfo.periodIncome.toInt())}원',
+              '수입 ${NumberFormat('#,###').format(periodIncome.toInt())}원',
               style: TextStyle(
                 fontSize: 12,
                 color: context.appColors.success,
               ),
             ),
             Text(
-              '지출 ${NumberFormat('#,###').format(assetInfo.periodExpense.toInt())}원',
+              '지출 ${NumberFormat('#,###').format(periodExpense.toInt())}원',
               style: TextStyle(
                 fontSize: 12,
                 color: context.appColors.error,

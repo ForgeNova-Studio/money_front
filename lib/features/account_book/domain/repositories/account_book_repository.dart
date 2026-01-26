@@ -8,6 +8,11 @@ abstract class AccountBookRepository {
 
   Future<AccountBook> createAccountBook({required AccountBook accountBook});
 
+  Future<AccountBook> updateAccountBook({
+    required String accountBookId,
+    required AccountBook accountBook,
+  });
+
   Future<List<MemberInfo>> getMembers({required String accountBookId});
 
   Future<void> addMember({

@@ -1,3 +1,4 @@
+import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:moamoa/features/home/domain/entities/monthly_home_cache.dart';
 
@@ -22,5 +23,27 @@ abstract class HomeRepository {
     required DateTime yearMonth,
     required String userId,
     required String accountBookId,
+  });
+
+  // ========== 예산 캐시 ==========
+  Future<CachedBudget?> getCachedBudget({
+    required DateTime month,
+    required String accountBookId,
+  });
+
+  Future<void> saveCachedBudget({
+    required DateTime month,
+    required String accountBookId,
+    required BudgetEntity? budget,
+  });
+
+  // ========== 자산 캐시 ==========
+  Future<CachedAsset?> getCachedAsset({
+    required String accountBookId,
+  });
+
+  Future<void> saveCachedAsset({
+    required String accountBookId,
+    required AssetEntity asset,
   });
 }

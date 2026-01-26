@@ -18,6 +18,7 @@ class RouteNames {
 
   /// 비밀번호 재설정 화면
   static const String resetPassword = '/reset-password';
+
   /// 온보딩 화면
   static const String onboarding = '/onboarding';
 
@@ -88,7 +89,15 @@ class RouteNames {
 
   // ==================== AccountBook Routes ====================
   /// 가계부 생성 화면
-  static const String accountBookCreate = '/account-books/create';
+  static const String accountBookCreate = '/account-book-create';
+  static const String accountBookList = '/account-books';
+  static const String accountBookDetail =
+      'accountBookDetail'; // Name으로 사용하기 위해 경로가 아닌 이름으로 정의하거나, 경로라면 :id 포함해야 함. 보통 RouteNames에는 path 뿐만 아니라 name도 같이 관리하거나, path만 관리함. 여기서는 path로 관리하는 듯함.
+  // 기존 패턴: static const String addExpense = '/add-expense';
+  // 상세 패턴: static const String expenseDetail = '/expenses/:id';
+  static const String accountBookDetailPath = '/account-books/:id';
+  static const String accountBookEdit = 'accountBookEdit';
+  static const String accountBookEditPath = '/account-books/:id/edit';
 
   // ==================== OCR Route ====================
   /// OCR 테스트 화면
