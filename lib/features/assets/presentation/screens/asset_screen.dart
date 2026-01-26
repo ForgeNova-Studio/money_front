@@ -1,35 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:moamoa/core/constants/app_constants.dart';
 
 class AssetScreen extends StatelessWidget {
   const AssetScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: context.appColors.backgroundLight,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: Text(
           '자산',
           style: TextStyle(
-            color: context.appColors.textPrimary,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
-        backgroundColor: context.appColors.backgroundLight,
-        foregroundColor: context.appColors.textPrimary,
-        iconTheme: IconThemeData(color: context.appColors.textPrimary),
+        backgroundColor: colorScheme.surface,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
         centerTitle: false,
+        automaticallyImplyLeading: false,
       ),
       body: Center(
         child: Text(
           '자산 스크린',
-          style: TextStyle(color: context.appColors.textSecondary),
+          style: TextStyle(color: colorScheme.onSurface.withOpacity(0.5)),
         ),
       ),
     );
