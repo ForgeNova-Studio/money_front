@@ -201,6 +201,9 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
         await ref.read(incomeViewModelProvider.notifier).createIncome(income);
       }
 
+      // 3. 예산/자산 정보 갱신 (백그라운드)
+      ref.read(homeViewModelProvider.notifier).refreshBudgetAndAsset();
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

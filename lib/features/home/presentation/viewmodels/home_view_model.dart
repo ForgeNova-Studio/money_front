@@ -282,6 +282,9 @@ class HomeViewModel extends _$HomeViewModel {
       rethrow;
     }
 
+    // 예산/자산 정보 갱신 (백그라운드)
+    unawaited(refreshBudgetAndAsset());
+
     // 3. 캐시 무효화 (다음 새로고침 시 최신 데이터 보장)
     final userId = _resolveUserId();
     final accountBookId = _resolveAccountBookId();
@@ -466,6 +469,19 @@ class HomeViewModel extends _$HomeViewModel {
     _cachedAccountBookId = accountBookId;
     _budgetCache.clear();
     _assetCache = null;
+  }
+
+  /// 예산/자산 정보를 강제로 새로고침 (백그라운드)
+  Future<void> refreshBudgetAndAsset() async {
+    final accountBookId =
+        ref.read(selectedAccountBookViewModelProvider).asData?.value;
+    if (accountBookId == null) return;
+
+    await _fetchBudgetAndAssetInfo(
+      state.selectedDate,
+      accountBookId,
+      forceRefresh: true,
+    );
   }
 
   /// 예산/자산 정보를 메모리/로컬/서버 순으로 로드하여 _budgetCache/_assetCache에 저장

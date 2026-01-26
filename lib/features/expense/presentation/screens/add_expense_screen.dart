@@ -215,6 +215,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
             .createExpense(expense);
       }
 
+      // 3. 예산/자산 정보 갱신 (백그라운드)
+      ref.read(homeViewModelProvider.notifier).refreshBudgetAndAsset();
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
