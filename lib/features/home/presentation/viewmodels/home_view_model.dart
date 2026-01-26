@@ -2,10 +2,9 @@ import 'dart:async';
 
 import 'package:intl/intl.dart';
 
-import 'package:flutter/foundation.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
-import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
+
 import 'package:moamoa/features/budget/presentation/providers/budget_providers.dart';
 import 'package:moamoa/features/expense/presentation/providers/expense_providers.dart';
 import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
@@ -26,9 +25,9 @@ class HomeViewModel extends _$HomeViewModel {
   // Track account book changes to invalidate in-memory budget/asset cache.
   String? _cachedAccountBookId;
   // Cache monthly budget per YYYYMM key to align with monthly prefetch.
-  final Map<int, _BudgetCacheEntry> _budgetCache = {};
+  final Map<int, CachedBudget> _budgetCache = {};
   // Cache total assets (not month-specific) with the same TTL.
-  _AssetCacheEntry? _assetCache;
+  CachedAsset? _assetCache;
 
   @override
   HomeState build() {
@@ -166,86 +165,21 @@ class HomeViewModel extends _$HomeViewModel {
     String accountBookId, {
     bool forceRefresh = false,
   }) async {
+    // 로컬/서버에서 데이터 로드 (캐시 갱신)
+    await _loadBudgetAndAsset(
+      month,
+      accountBookId,
+      forceRefresh: forceRefresh,
+    );
+
+    if (!ref.mounted) return;
+
+    // State에 반영
     final monthKey = _monthKey(month);
-    final now = DateTime.now();
-
-    BudgetEntity? nextBudgetInfo = state.budgetInfo;
-    AssetEntity? nextAssetInfo = state.assetInfo;
-
-    final cachedBudgetEntry = forceRefresh ? null : _budgetCache[monthKey];
-    final hasFreshBudgetCache =
-        cachedBudgetEntry != null && !cachedBudgetEntry.isExpired(_cacheTtl);
-
-    if (cachedBudgetEntry != null && cachedBudgetEntry.isExpired(_cacheTtl)) {
-      _budgetCache.remove(monthKey);
-    }
-
-    final cachedAssetEntry = forceRefresh ? null : _assetCache;
-    final hasFreshAssetCache =
-        cachedAssetEntry != null && !cachedAssetEntry.isExpired(_cacheTtl);
-
-    if (cachedAssetEntry != null && cachedAssetEntry.isExpired(_cacheTtl)) {
-      _assetCache = null;
-    }
-
-    if (hasFreshBudgetCache) {
-      nextBudgetInfo = cachedBudgetEntry.value;
-    }
-    if (hasFreshAssetCache) {
-      nextAssetInfo = cachedAssetEntry.value;
-    }
-
-    if ((hasFreshBudgetCache || hasFreshAssetCache) && ref.mounted) {
-      state = state.copyWith(
-        budgetInfo: nextBudgetInfo,
-        assetInfo: nextAssetInfo,
-      );
-      if (hasFreshBudgetCache && hasFreshAssetCache && !forceRefresh) {
-        return;
-      }
-    }
-
-    try {
-      if (!ref.mounted) return;
-      // 예산 정보 가져오기
-      final budgetUseCase = ref.read(getMonthlyBudgetUseCaseProvider);
-      if (!hasFreshBudgetCache || forceRefresh) {
-        nextBudgetInfo = await budgetUseCase(
-          year: month.year,
-          month: month.month,
-          accountBookId: accountBookId,
-        );
-        _budgetCache[monthKey] = _BudgetCacheEntry(
-          value: nextBudgetInfo,
-          cachedAt: now,
-        );
-      }
-
-      // 자산 정보 가져오기
-      final assetUseCase = ref.read(getTotalAssetsUseCaseProvider);
-      if (!hasFreshAssetCache || forceRefresh) {
-        nextAssetInfo = await assetUseCase(
-          accountBookId: accountBookId,
-        );
-        _assetCache = _AssetCacheEntry(
-          value: nextAssetInfo,
-          cachedAt: now,
-        );
-      }
-
-      if (!ref.mounted) return;
-
-      state = state.copyWith(
-        budgetInfo: nextBudgetInfo,
-        assetInfo: nextAssetInfo,
-      );
-    } catch (e, stackTrace) {
-      if (kDebugMode) {
-        debugPrint('[HomeViewModel] Failed to fetch budget/asset info: $e');
-        debugPrint('[HomeViewModel] Stack trace: $stackTrace');
-      }
-      // 예산/자산 정보 실패는 무시하고 기존 데이터 유지
-    }
+    state = state.copyWith(
+      budgetInfo: _budgetCache[monthKey]?.data,
+      assetInfo: _assetCache?.data,
+    );
   }
 
   /// 날짜가 선택되었을 때 호출
@@ -492,7 +426,7 @@ class HomeViewModel extends _$HomeViewModel {
 
     if (!ref.mounted) return;
     if (cached != null && !cached.isExpired(_cacheTtl)) {
-      await _prefetchBudgetAndAssetInfo(month, accountBookId);
+      unawaited(_loadBudgetAndAsset(month, accountBookId));
       return;
     }
 
@@ -504,7 +438,7 @@ class HomeViewModel extends _$HomeViewModel {
         userId: userId,
         accountBookId: accountBookId,
       );
-      await _prefetchBudgetAndAssetInfo(month, accountBookId);
+      unawaited(_loadBudgetAndAsset(month, accountBookId));
     } catch (e) {
       // Ignore prefetch failures.
     }
@@ -534,86 +468,99 @@ class HomeViewModel extends _$HomeViewModel {
     _assetCache = null;
   }
 
-  Future<void> _prefetchBudgetAndAssetInfo(
+  /// 예산/자산 정보를 메모리/로컬/서버 순으로 로드하여 _budgetCache/_assetCache에 저장
+  Future<void> _loadBudgetAndAsset(
     DateTime month,
-    String accountBookId,
-  ) async {
-    // Prefetch with cache guards to avoid redundant network calls.
+    String accountBookId, {
+    bool forceRefresh = false,
+  }) async {
     final monthKey = _monthKey(month);
     final now = DateTime.now();
 
-    final cachedBudgetEntry = _budgetCache[monthKey];
-    final hasFreshBudgetCache =
-        cachedBudgetEntry != null && !cachedBudgetEntry.isExpired(_cacheTtl);
-    if (cachedBudgetEntry != null && cachedBudgetEntry.isExpired(_cacheTtl)) {
-      _budgetCache.remove(monthKey);
-    }
+    // 1. Budget Load Strategy
+    var budgetEntry = forceRefresh ? null : _budgetCache[monthKey];
+    var isBudgetFresh =
+        budgetEntry != null && !budgetEntry.isExpired(_cacheTtl);
 
-    final cachedAssetEntry = _assetCache;
-    final hasFreshAssetCache =
-        cachedAssetEntry != null && !cachedAssetEntry.isExpired(_cacheTtl);
-    if (cachedAssetEntry != null && cachedAssetEntry.isExpired(_cacheTtl)) {
-      _assetCache = null;
-    }
-
-    if (hasFreshBudgetCache && hasFreshAssetCache) {
-      return;
-    }
-
-    try {
-      final budgetUseCase = ref.read(getMonthlyBudgetUseCaseProvider);
-      if (!hasFreshBudgetCache) {
-        final budgetInfo = await budgetUseCase(
-          year: month.year,
-          month: month.month,
-          accountBookId: accountBookId,
-        );
-        _budgetCache[monthKey] = _BudgetCacheEntry(
-          value: budgetInfo,
-          cachedAt: now,
-        );
+    if (!isBudgetFresh) {
+      if (!forceRefresh) {
+        // Try Local Cache
+        try {
+          final localCache = await ref
+              .read(homeRepositoryProvider)
+              .getCachedBudget(month: month, accountBookId: accountBookId);
+          if (localCache != null && !localCache.isExpired(_cacheTtl)) {
+            _budgetCache[monthKey] = localCache;
+            isBudgetFresh = true;
+          }
+        } catch (_) {}
       }
 
-      final assetUseCase = ref.read(getTotalAssetsUseCaseProvider);
-      if (!hasFreshAssetCache) {
-        final assetInfo = await assetUseCase(
-          accountBookId: accountBookId,
-        );
-        _assetCache = _AssetCacheEntry(
-          value: assetInfo,
-          cachedAt: now,
-        );
+      if (!isBudgetFresh) {
+        // Fetch from Server
+        try {
+          final budgetUseCase = ref.read(getMonthlyBudgetUseCaseProvider);
+          final budgetInfo = await budgetUseCase(
+            year: month.year,
+            month: month.month,
+            accountBookId: accountBookId,
+          );
+
+          final entry = CachedBudget(
+            data: budgetInfo,
+            cachedAt: now,
+          );
+          _budgetCache[monthKey] = entry;
+
+          // Save to Local Cache
+          unawaited(ref.read(homeRepositoryProvider).saveCachedBudget(
+                month: month,
+                accountBookId: accountBookId,
+                budget: budgetInfo,
+              ));
+        } catch (_) {}
       }
-    } catch (_) {
-      // Ignore prefetch failures.
     }
-  }
-}
 
-class _BudgetCacheEntry {
-  final BudgetEntity? value;
-  final DateTime cachedAt;
+    // 2. Asset Load Strategy
+    var assetEntry = forceRefresh ? null : _assetCache;
+    var isAssetFresh = assetEntry != null && !assetEntry.isExpired(_cacheTtl);
 
-  const _BudgetCacheEntry({
-    required this.value,
-    required this.cachedAt,
-  });
+    if (!isAssetFresh) {
+      if (!forceRefresh) {
+        // Try Local Cache
+        try {
+          final localCache = await ref
+              .read(homeRepositoryProvider)
+              .getCachedAsset(accountBookId: accountBookId);
+          if (localCache != null && !localCache.isExpired(_cacheTtl)) {
+            _assetCache = localCache;
+            isAssetFresh = true;
+          }
+        } catch (_) {}
+      }
 
-  bool isExpired(Duration ttl) {
-    return DateTime.now().difference(cachedAt) > ttl;
-  }
-}
+      if (!isAssetFresh) {
+        // Fetch from Server
+        try {
+          final assetUseCase = ref.read(getTotalAssetsUseCaseProvider);
+          final assetInfo = await assetUseCase(
+            accountBookId: accountBookId,
+          );
 
-class _AssetCacheEntry {
-  final AssetEntity value;
-  final DateTime cachedAt;
+          final entry = CachedAsset(
+            data: assetInfo,
+            cachedAt: now,
+          );
+          _assetCache = entry;
 
-  const _AssetCacheEntry({
-    required this.value,
-    required this.cachedAt,
-  });
-
-  bool isExpired(Duration ttl) {
-    return DateTime.now().difference(cachedAt) > ttl;
+          // Save to Local Cache
+          unawaited(ref.read(homeRepositoryProvider).saveCachedAsset(
+                accountBookId: accountBookId,
+                asset: assetInfo,
+              ));
+        } catch (_) {}
+      }
+    }
   }
 }

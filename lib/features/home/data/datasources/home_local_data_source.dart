@@ -1,11 +1,33 @@
 import 'package:hive/hive.dart';
 import 'package:moamoa/features/home/data/models/home_monthly_response_model.dart';
 
+import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
+
 class HomeMonthlyCacheEntry {
   final DateTime cachedAt;
   final Map<String, DailyTransactionSummaryModel> data;
 
   HomeMonthlyCacheEntry({
+    required this.cachedAt,
+    required this.data,
+  });
+}
+
+class BudgetCacheEntry {
+  final DateTime cachedAt;
+  final BudgetEntity? data;
+
+  BudgetCacheEntry({
+    required this.cachedAt,
+    required this.data,
+  });
+}
+
+class AssetCacheEntry {
+  final DateTime cachedAt;
+  final AssetEntity data;
+
+  AssetCacheEntry({
     required this.cachedAt,
     required this.data,
   });
@@ -18,6 +40,18 @@ abstract class HomeLocalDataSource {
     required Map<String, DailyTransactionSummaryModel> data,
   });
   Future<void> deleteMonthlyData({required String cacheKey});
+
+  Future<BudgetCacheEntry?> getBudgetCache({required String cacheKey});
+  Future<void> saveBudgetCache({
+    required String cacheKey,
+    required BudgetEntity? data,
+  });
+
+  Future<AssetCacheEntry?> getAssetCache({required String cacheKey});
+  Future<void> saveAssetCache({
+    required String cacheKey,
+    required AssetEntity data,
+  });
 }
 
 class HomeLocalDataSourceImpl implements HomeLocalDataSource {
@@ -88,6 +122,81 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
   Future<void> deleteMonthlyData({required String cacheKey}) async {
     await _ensureInitialized();
     await _box?.delete(cacheKey);
+  }
+
+  @override
+  Future<BudgetCacheEntry?> getBudgetCache({required String cacheKey}) async {
+    await _ensureInitialized();
+    final box = _box;
+    if (box == null) return null;
+
+    final stored = box.get(cacheKey);
+    if (stored is! Map) return null;
+
+    final cachedAtMillis = stored['cachedAt'] as int?;
+    final data = stored['data'];
+    if (cachedAtMillis == null) return null;
+
+    BudgetEntity? parsedData;
+    if (data != null && data is Map) {
+      parsedData = BudgetEntity.fromJson(Map<String, dynamic>.from(data));
+    }
+
+    return BudgetCacheEntry(
+      cachedAt: DateTime.fromMillisecondsSinceEpoch(cachedAtMillis),
+      data: parsedData,
+    );
+  }
+
+  @override
+  Future<void> saveBudgetCache({
+    required String cacheKey,
+    required BudgetEntity? data,
+  }) async {
+    await _ensureInitialized();
+    final box = _box;
+    if (box == null) return;
+
+    await box.put(cacheKey, {
+      'cachedAt': DateTime.now().millisecondsSinceEpoch,
+      'data': data?.toJson(),
+    });
+  }
+
+  @override
+  Future<AssetCacheEntry?> getAssetCache({required String cacheKey}) async {
+    await _ensureInitialized();
+    final box = _box;
+    if (box == null) return null;
+
+    final stored = box.get(cacheKey);
+    if (stored is! Map) return null;
+
+    final cachedAtMillis = stored['cachedAt'] as int?;
+    final data = stored['data'];
+    if (cachedAtMillis == null || data is! Map) return null;
+
+    final parsedData = AssetEntity.fromJson(Map<String, dynamic>.from(data));
+
+    return AssetCacheEntry(
+      cachedAt: DateTime.fromMillisecondsSinceEpoch(cachedAtMillis),
+      data: parsedData,
+    );
+  }
+
+  @override
+  Future<void> saveAssetCache({
+    required String cacheKey,
+    required AssetEntity data,
+  }) async {
+    await _ensureInitialized();
+    final box = _box;
+    if (box == null) return;
+
+    await box.put(cacheKey, {
+      'cachedAt': DateTime.now().millisecondsSinceEpoch,
+      'data': data.toJson(),
+    });
   }
 
   Map<String, dynamic> _serializeSummary(

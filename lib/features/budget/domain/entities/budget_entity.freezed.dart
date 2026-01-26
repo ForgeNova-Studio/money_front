@@ -30,6 +30,9 @@ mixin _$BudgetEntity {
       _$BudgetEntityCopyWithImpl<BudgetEntity>(
           this as BudgetEntity, _$identity);
 
+  /// Serializes this BudgetEntity to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
@@ -49,6 +52,7 @@ mixin _$BudgetEntity {
                 other.usagePercentage == usagePercentage));
   }
 
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, budgetId, year, month,
       targetAmount, currentSpending, remainingAmount, usagePercentage);
@@ -327,7 +331,7 @@ extension BudgetEntityPatterns on BudgetEntity {
 }
 
 /// @nodoc
-
+@JsonSerializable()
 class _BudgetEntity implements BudgetEntity {
   const _BudgetEntity(
       {required this.budgetId,
@@ -337,6 +341,8 @@ class _BudgetEntity implements BudgetEntity {
       required this.currentSpending,
       required this.remainingAmount,
       required this.usagePercentage});
+  factory _BudgetEntity.fromJson(Map<String, dynamic> json) =>
+      _$BudgetEntityFromJson(json);
 
   @override
   final String budgetId;
@@ -362,6 +368,13 @@ class _BudgetEntity implements BudgetEntity {
       __$BudgetEntityCopyWithImpl<_BudgetEntity>(this, _$identity);
 
   @override
+  Map<String, dynamic> toJson() {
+    return _$BudgetEntityToJson(
+      this,
+    );
+  }
+
+  @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
@@ -380,6 +393,7 @@ class _BudgetEntity implements BudgetEntity {
                 other.usagePercentage == usagePercentage));
   }
 
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, budgetId, year, month,
       targetAmount, currentSpending, remainingAmount, usagePercentage);
@@ -487,6 +501,9 @@ mixin _$AssetEntity {
   $AssetEntityCopyWith<AssetEntity> get copyWith =>
       _$AssetEntityCopyWithImpl<AssetEntity>(this as AssetEntity, _$identity);
 
+  /// Serializes this AssetEntity to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
@@ -512,6 +529,7 @@ mixin _$AssetEntity {
                 other.periodNetIncome == periodNetIncome));
   }
 
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -823,7 +841,7 @@ extension AssetEntityPatterns on AssetEntity {
 }
 
 /// @nodoc
-
+@JsonSerializable()
 class _AssetEntity implements AssetEntity {
   const _AssetEntity(
       {required this.accountBookId,
@@ -835,6 +853,8 @@ class _AssetEntity implements AssetEntity {
       required this.periodIncome,
       required this.periodExpense,
       required this.periodNetIncome});
+  factory _AssetEntity.fromJson(Map<String, dynamic> json) =>
+      _$AssetEntityFromJson(json);
 
   @override
   final String accountBookId;
@@ -870,6 +890,13 @@ class _AssetEntity implements AssetEntity {
       __$AssetEntityCopyWithImpl<_AssetEntity>(this, _$identity);
 
   @override
+  Map<String, dynamic> toJson() {
+    return _$AssetEntityToJson(
+      this,
+    );
+  }
+
+  @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
@@ -894,6 +921,7 @@ class _AssetEntity implements AssetEntity {
                 other.periodNetIncome == periodNetIncome));
   }
 
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,

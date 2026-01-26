@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 // entities
 import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:moamoa/features/home/domain/entities/monthly_home_cache.dart';
+import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 
 // repository
 import 'package:moamoa/features/home/domain/repositories/home_repository.dart';
@@ -95,5 +96,45 @@ class HomeRepositoryImpl implements HomeRepository {
 
   String _buildCacheKey(String userId, String accountBookId, String yearMonth) {
     return 'home_monthly:$userId:$accountBookId:$yearMonth';
+  }
+
+  @override
+  Future<CachedBudget?> getCachedBudget({
+    required DateTime month,
+    required String accountBookId,
+  }) async {
+    final yearMonthStr = DateFormat('yyyy-MM').format(month);
+    final key = 'budget:$accountBookId:$yearMonthStr';
+    final entry = await _homeLocalDataSource.getBudgetCache(cacheKey: key);
+    if (entry == null) return null;
+    return CachedBudget(data: entry.data, cachedAt: entry.cachedAt);
+  }
+
+  @override
+  Future<void> saveCachedBudget({
+    required DateTime month,
+    required String accountBookId,
+    required BudgetEntity? budget,
+  }) async {
+    final yearMonthStr = DateFormat('yyyy-MM').format(month);
+    final key = 'budget:$accountBookId:$yearMonthStr';
+    await _homeLocalDataSource.saveBudgetCache(cacheKey: key, data: budget);
+  }
+
+  @override
+  Future<CachedAsset?> getCachedAsset({required String accountBookId}) async {
+    final key = 'asset:$accountBookId';
+    final entry = await _homeLocalDataSource.getAssetCache(cacheKey: key);
+    if (entry == null) return null;
+    return CachedAsset(data: entry.data, cachedAt: entry.cachedAt);
+  }
+
+  @override
+  Future<void> saveCachedAsset({
+    required String accountBookId,
+    required AssetEntity asset,
+  }) async {
+    final key = 'asset:$accountBookId';
+    await _homeLocalDataSource.saveAssetCache(cacheKey: key, data: asset);
   }
 }
