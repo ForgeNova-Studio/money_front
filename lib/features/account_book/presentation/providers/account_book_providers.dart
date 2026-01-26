@@ -12,6 +12,7 @@ import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
 // usecases
 import 'package:moamoa/features/account_book/domain/usecases/add_account_book_member_usecase.dart';
 import 'package:moamoa/features/account_book/domain/usecases/create_account_book_usecase.dart';
+import 'package:moamoa/features/account_book/domain/usecases/update_account_book_usecase.dart';
 import 'package:moamoa/features/account_book/domain/usecases/deactivate_account_book_usecase.dart';
 import 'package:moamoa/features/account_book/domain/usecases/get_account_book_detail_usecase.dart';
 import 'package:moamoa/features/account_book/domain/usecases/get_account_book_members_usecase.dart';
@@ -59,6 +60,11 @@ GetAccountBookDetailUseCase getAccountBookDetailUseCase(Ref ref) {
 @riverpod
 CreateAccountBookUseCase createAccountBookUseCase(Ref ref) {
   return CreateAccountBookUseCase(ref.read(accountBookRepositoryProvider));
+}
+
+@riverpod
+UpdateAccountBookUseCase updateAccountBookUseCase(Ref ref) {
+  return UpdateAccountBookUseCase(ref.read(accountBookRepositoryProvider));
 }
 
 @riverpod

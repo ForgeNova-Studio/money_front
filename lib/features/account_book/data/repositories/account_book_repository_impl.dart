@@ -33,6 +33,19 @@ class AccountBookRepositoryImpl implements AccountBookRepository {
   }
 
   @override
+  Future<AccountBook> updateAccountBook({
+    required String accountBookId,
+    required AccountBook accountBook,
+  }) async {
+    final model = AccountBookModel.fromEntity(accountBook);
+    final response = await _remoteDataSource.updateAccountBook(
+      accountBookId: accountBookId,
+      accountBook: model,
+    );
+    return response.toEntity();
+  }
+
+  @override
   Future<List<MemberInfo>> getMembers({required String accountBookId}) async {
     final response =
         await _remoteDataSource.getMembers(accountBookId: accountBookId);

@@ -96,6 +96,8 @@ class RouteNames {
   // 기존 패턴: static const String addExpense = '/add-expense';
   // 상세 패턴: static const String expenseDetail = '/expenses/:id';
   static const String accountBookDetailPath = '/account-books/:id';
+  static const String accountBookEdit = 'accountBookEdit';
+  static const String accountBookEditPath = '/account-books/:id/edit';
 
   // ==================== OCR Route ====================
   /// OCR 테스트 화면

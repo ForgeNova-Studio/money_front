@@ -52,6 +52,22 @@ class AccountBookRemoteDataSourceImpl implements AccountBookRemoteDataSource {
   }
 
   @override
+  Future<AccountBookModel> updateAccountBook({
+    required String accountBookId,
+    required AccountBookModel accountBook,
+  }) async {
+    try {
+      final response = await dio.put(
+        ApiConstants.accountBookById(accountBookId),
+        data: _buildUpdatePayload(accountBook),
+      );
+      return AccountBookModel.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
+  }
+
+  @override
   Future<List<AccountBookMemberInfoModel>> getMembers({
     required String accountBookId,
   }) async {
@@ -98,6 +114,20 @@ Map<String, dynamic> _buildCreatePayload(AccountBookModel accountBook) {
     'name': accountBook.name,
     'bookType': accountBook.bookType,
     'coupleId': accountBook.coupleId,
+    'memberCount': accountBook.memberCount,
+    'description': accountBook.description,
+    'startDate': _formatDate(accountBook.startDate),
+    'endDate': _formatDate(accountBook.endDate),
+  };
+
+  payload.removeWhere((key, value) => value == null);
+  payload.removeWhere((key, value) => value == null);
+  return payload;
+}
+
+Map<String, dynamic> _buildUpdatePayload(AccountBookModel accountBook) {
+  final payload = <String, dynamic>{
+    'name': accountBook.name,
     'memberCount': accountBook.memberCount,
     'description': accountBook.description,
     'startDate': _formatDate(accountBook.startDate),

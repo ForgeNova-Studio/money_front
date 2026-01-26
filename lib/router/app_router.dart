@@ -31,6 +31,8 @@ import 'package:moamoa/features/account_book/presentation/screens/account_book_c
 import 'package:moamoa/features/account_book/presentation/screens/account_book_list_screen.dart';
 import 'package:moamoa/features/account_book/presentation/screens/account_book_detail_screen.dart';
 
+import 'package:moamoa/features/account_book/presentation/screens/account_book_edit_screen.dart';
+
 // Expense Screens
 import 'package:moamoa/features/expense/presentation/screens/add_expense_screen.dart';
 
@@ -258,6 +260,14 @@ class AppRouter {
           builder: (context, state) {
             final id = state.pathParameters['id']!;
             return AccountBookDetailScreen(accountBookId: id);
+          },
+        ),
+        GoRoute(
+          path: RouteNames.accountBookEditPath,
+          name: RouteNames.accountBookEdit,
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return AccountBookEditScreen(accountBookId: id);
           },
         ),
         GoRoute(

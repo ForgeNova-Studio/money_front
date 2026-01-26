@@ -1,41 +1,70 @@
+// packages
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:moamoa/core/constants/app_constants.dart';
+// entities
 import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/account_book/domain/entities/book_type.dart';
+
+// providers
 import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
-import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+
+// widgets
 import 'package:moamoa/features/account_book/presentation/widgets/account_book_create_widgets.dart';
 
-class AccountBookCreateScreen extends ConsumerStatefulWidget {
-  const AccountBookCreateScreen({super.key});
+class AccountBookEditScreen extends ConsumerStatefulWidget {
+  final String accountBookId;
+
+  const AccountBookEditScreen({
+    super.key,
+    required this.accountBookId,
+  });
 
   @override
-  ConsumerState<AccountBookCreateScreen> createState() =>
-      _AccountBookCreateScreenState();
+  ConsumerState<AccountBookEditScreen> createState() =>
+      _AccountBookEditScreenState();
 }
 
-class _AccountBookCreateScreenState
-    extends ConsumerState<AccountBookCreateScreen> {
+class _AccountBookEditScreenState extends ConsumerState<AccountBookEditScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _memberCountController = TextEditingController();
-  final _coupleIdController = TextEditingController();
+  late TextEditingController _nameController;
+  late TextEditingController _descriptionController;
+  late TextEditingController _memberCountController;
 
+  bool _isInitialized = false;
+  bool _isSubmitting = false;
   BookType _selectedBookType = BookType.coupleLiving;
   DateTime? _startDate;
   DateTime? _endDate;
-  bool _isSubmitting = false;
+  AccountBook? _originalAccountBook;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _descriptionController = TextEditingController();
+    _memberCountController = TextEditingController();
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
     _memberCountController.dispose();
-    _coupleIdController.dispose();
     super.dispose();
+  }
+
+  void _initializeData(AccountBook accountBook) {
+    if (_isInitialized) return;
+    _isInitialized = true;
+    _originalAccountBook = accountBook;
+
+    _nameController.text = accountBook.name;
+    _descriptionController.text = accountBook.description ?? '';
+    _memberCountController.text = accountBook.memberCount.toString();
+    _selectedBookType = accountBook.bookType;
+    _startDate = accountBook.startDate;
+    _endDate = accountBook.endDate;
   }
 
   InputDecoration _buildInputDecoration(String label) {
@@ -64,6 +93,14 @@ class _AccountBookCreateScreenState
   }
 
   Future<void> _showBookTypeSheet() async {
+    // 기본 가계부는 유형 변경 불가
+    if (_selectedBookType == BookType.def) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('기본 가계부의 유형은 변경할 수 없습니다.')),
+      );
+      return;
+    }
+
     final colorScheme = Theme.of(context).colorScheme;
     final selected = await showModalBottomSheet<BookType>(
       context: context,
@@ -180,45 +217,41 @@ class _AccountBookCreateScreenState
     final memberCount = _memberCountController.text.trim().isEmpty
         ? null
         : int.tryParse(_memberCountController.text.trim());
-    final coupleId = _coupleIdController.text.trim().isEmpty
-        ? null
-        : _coupleIdController.text.trim();
 
-    final accountBook = AccountBook(
+    // 수정된 내용 생성
+    final updatedAccountBook = _originalAccountBook!.copyWith(
       name: _nameController.text.trim(),
-      bookType: _selectedBookType,
       description: _descriptionController.text.trim().isEmpty
           ? null
           : _descriptionController.text.trim(),
-      memberCount: memberCount,
-      coupleId: coupleId,
+      memberCount: memberCount ?? _originalAccountBook!.memberCount,
       startDate: _startDate,
       endDate: _endDate,
+      // bookType은 변경 불가 (API 스펙: update request에 없음) - 프론트에서 막았지만 혹시 몰라 원본 유지
+      // 만약 백엔드에서 bookType 수정을 지원하지 않는다면 여기서 보내도 무시되거나 에러.
+      // 현재 백엔드 로직에 bookType 수정은 없음.
     );
 
     setState(() => _isSubmitting = true);
 
     try {
-      final created = await ref
-          .read(createAccountBookUseCaseProvider)
-          .call(accountBook: accountBook);
+      await ref.read(updateAccountBookUseCaseProvider).call(
+            accountBookId: widget.accountBookId,
+            accountBook: updatedAccountBook,
+          );
 
       ref.invalidate(accountBooksProvider);
-      if (created.accountBookId != null) {
-        await ref
-            .read(selectedAccountBookViewModelProvider.notifier)
-            .setSelectedAccountBookId(created.accountBookId);
-      }
+      ref.invalidate(accountBookDetailProvider(widget.accountBookId));
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('가계부가 생성되었습니다.')),
+        const SnackBar(content: Text('가계부가 수정되었습니다.')),
       );
-      Navigator.of(context).pop(true);
+      Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('가계부 생성 실패: $e')),
+        SnackBar(content: Text('가계부 수정 실패: $e')),
       );
     } finally {
       if (mounted) {
@@ -230,6 +263,8 @@ class _AccountBookCreateScreenState
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final accountBookAsync =
+        ref.watch(accountBookDetailProvider(widget.accountBookId));
 
     return PopScope(
       canPop: true,
@@ -238,7 +273,7 @@ class _AccountBookCreateScreenState
         backgroundColor: colorScheme.surface,
         appBar: AppBar(
           title: Text(
-            '가계부 만들기',
+            '가계부 수정',
             style: TextStyle(
               color: colorScheme.onSurface,
               fontWeight: FontWeight.w600,
@@ -255,77 +290,89 @@ class _AccountBookCreateScreenState
             },
           ),
         ),
-        body: GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  AccountBookSectionCard(
-                    title: '기본 정보',
-                    child: AccountBookBasicInfoSection(
-                      nameController: _nameController,
-                      descriptionController: _descriptionController,
-                      selectedBookTypeLabel: _selectedBookType.label,
-                      onSelectBookType: _showBookTypeSheet,
-                      inputDecoration: _buildInputDecoration,
-                      validateName: _validateName,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  AccountBookSectionCard(
-                    title: '추가 정보',
-                    child: AccountBookAdditionalInfoSection(
-                      memberCountController: _memberCountController,
-                      coupleIdController: _coupleIdController,
-                      inputDecoration: _buildInputDecoration,
-                      validateMemberCount: _validateMemberCount,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  AccountBookSectionCard(
-                    title: '기간 설정',
-                    child: AccountBookPeriodSection(
-                      startDate: _startDate,
-                      endDate: _endDate,
-                      onStartTap: () => _selectDate(isStart: true),
-                      onEndTap: () => _selectDate(isStart: false),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: _isSubmitting ? null : _handleSubmit,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: context.appColors.primary,
-                        foregroundColor: context.appColors.textPrimary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+        body: accountBookAsync.when(
+          data: (accountBook) {
+            _initializeData(accountBook);
+            return GestureDetector(
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      AccountBookSectionCard(
+                        title: '기본 정보',
+                        child: AccountBookBasicInfoSection(
+                          nameController: _nameController,
+                          descriptionController: _descriptionController,
+                          selectedBookTypeLabel: _selectedBookType.label,
+                          onSelectBookType: _showBookTypeSheet,
+                          inputDecoration: _buildInputDecoration,
+                          validateName: _validateName,
                         ),
-                        elevation: 0,
                       ),
-                      child: _isSubmitting
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Text(
-                              '가계부 만들기',
-                              style: TextStyle(fontWeight: FontWeight.w700),
+                      const SizedBox(height: 16),
+                      AccountBookSectionCard(
+                        title: '추가 정보',
+                        child: AccountBookAdditionalInfoSection(
+                          memberCountController: _memberCountController,
+                          coupleIdController: TextEditingController(
+                              text: accountBook
+                                  .coupleId), // 커플 ID는 수정 불가하지만 뷰용으로 전달
+                          inputDecoration: _buildInputDecoration,
+                          validateMemberCount: _validateMemberCount,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      AccountBookSectionCard(
+                        title: '기간 설정',
+                        child: AccountBookPeriodSection(
+                          startDate: _startDate,
+                          endDate: _endDate,
+                          onStartTap: () => _selectDate(isStart: true),
+                          onEndTap: () => _selectDate(isStart: false),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: _isSubmitting ? null : _handleSubmit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: context.appColors.primary,
+                            foregroundColor: context.appColors.textPrimary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
                             ),
-                    ),
+                            elevation: 0,
+                          ),
+                          child: _isSubmitting
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  '수정 완료',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Center(
+            child: Text('가계부 정보를 불러오는데 실패했습니다: $error'),
           ),
         ),
       ),

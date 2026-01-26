@@ -231,6 +231,50 @@ final class CreateAccountBookUseCaseProvider extends $FunctionalProvider<
 String _$createAccountBookUseCaseHash() =>
     r'72524da69a2e892af7de01632fc71467d2114630';
 
+@ProviderFor(updateAccountBookUseCase)
+const updateAccountBookUseCaseProvider = UpdateAccountBookUseCaseProvider._();
+
+final class UpdateAccountBookUseCaseProvider extends $FunctionalProvider<
+    UpdateAccountBookUseCase,
+    UpdateAccountBookUseCase,
+    UpdateAccountBookUseCase> with $Provider<UpdateAccountBookUseCase> {
+  const UpdateAccountBookUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'updateAccountBookUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$updateAccountBookUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<UpdateAccountBookUseCase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  UpdateAccountBookUseCase create(Ref ref) {
+    return updateAccountBookUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(UpdateAccountBookUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<UpdateAccountBookUseCase>(value),
+    );
+  }
+}
+
+String _$updateAccountBookUseCaseHash() =>
+    r'3dad6efbf69bdcfecc5d2cf9a114559bf716a35e';
+
 @ProviderFor(getAccountBookMembersUseCase)
 const getAccountBookMembersUseCaseProvider =
     GetAccountBookMembersUseCaseProvider._();

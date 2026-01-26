@@ -6,11 +6,13 @@ import 'package:intl/intl.dart';
 
 // entities
 import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
+import 'package:moamoa/features/account_book/domain/entities/book_type.dart';
 
 // providers
 import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/router/route_names.dart';
 
 class AccountBookDetailScreen extends ConsumerWidget {
   final String accountBookId;
@@ -47,12 +49,12 @@ class AccountBookDetailScreen extends ConsumerWidget {
           onPressed: () => context.pop(),
         ),
         actions: [
-          // TODO: Owner인 경우 수정/삭제 버튼 표시
           IconButton(
             icon: Icon(Icons.edit_outlined, color: colorScheme.onSurface),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('수정 기능 준비 중입니다.')),
+              context.pushNamed(
+                RouteNames.accountBookEdit,
+                pathParameters: {'id': accountBookId},
               );
             },
           ),
@@ -127,9 +129,10 @@ class AccountBookDetailScreen extends ConsumerWidget {
 
           // Info Cards
           _buildInfoSection(context, '기본 정보', [
-            _buildInfoRow(context, '유형', accountBook.bookType.label),
-            _buildInfoRow(
-                context, '멤버', '${accountBook.memberCount}명'), // TODO: 실제 멤버 조회
+            _buildInfoRow(context, '유형', accountBook.bookType.label,
+                isBadge: accountBook.bookType == BookType.def),
+            _buildInfoRow(context, '멤버',
+                '${accountBook.memberCount ?? 0}명'), // TODO: 실제 멤버 조회
             _buildInfoRow(
                 context, '상태', accountBook.isActive != false ? '사용 중' : '비활성'),
           ]),
@@ -184,7 +187,8 @@ class AccountBookDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoRow(BuildContext context, String label, String value) {
+  Widget _buildInfoRow(BuildContext context, String label, String value,
+      {bool isBadge = false}) {
     final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -198,14 +202,31 @@ class AccountBookDetailScreen extends ConsumerWidget {
               color: colorScheme.onSurface.withOpacity(0.6),
             ),
           ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: colorScheme.onSurface,
+          if (isBadge)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                value,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onPrimaryContainer,
+                ),
+              ),
+            )
+          else
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: colorScheme.onSurface,
+              ),
             ),
-          ),
         ],
       ),
     );
