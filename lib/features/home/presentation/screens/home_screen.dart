@@ -350,6 +350,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   // Calendar 페이지 변경(월/주 변경)
   void _handlePageChanged(DateTime focused) {
     _collapseOverlaysIfNeeded();
+    _resetFabDimmed();
     ref.read(homeViewModelProvider.notifier).changeMonth(focused);
   }
 
