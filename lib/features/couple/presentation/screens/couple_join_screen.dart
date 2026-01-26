@@ -6,6 +6,7 @@ import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moamoa/features/couple/presentation/viewmodels/couple_view_model.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/router/route_names.dart';
 
 class CoupleJoinScreen extends ConsumerStatefulWidget {
   const CoupleJoinScreen({super.key});
@@ -47,6 +48,16 @@ class _CoupleJoinScreenState extends ConsumerState<CoupleJoinScreen> {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.black),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+              return;
+            }
+            context.go(RouteNames.settings);
+          },
+        ),
         title: const Text(
           '초대 코드 입력',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),

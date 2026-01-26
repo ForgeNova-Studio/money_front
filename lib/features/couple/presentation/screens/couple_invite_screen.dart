@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/couple/presentation/viewmodels/couple_view_model.dart';
+import 'package:moamoa/router/route_names.dart';
 import 'package:share_plus/share_plus.dart' show ShareParams, SharePlus;
 
 class CoupleInviteScreen extends ConsumerStatefulWidget {
@@ -30,6 +32,16 @@ class _CoupleInviteScreenState extends ConsumerState<CoupleInviteScreen> {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.black),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+              return;
+            }
+            context.go(RouteNames.settings);
+          },
+        ),
         title: const Text(
           '파트너 초대',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),

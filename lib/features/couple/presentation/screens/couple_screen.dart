@@ -18,6 +18,16 @@ class CoupleScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.black),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+              return;
+            }
+            context.go(RouteNames.settings);
+          },
+        ),
         title: const Text(
           '커플 연동',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
