@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:intl/intl.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
@@ -174,8 +176,7 @@ class HomeViewModel extends _$HomeViewModel {
     final hasFreshBudgetCache =
         cachedBudgetEntry != null && !cachedBudgetEntry.isExpired(_cacheTtl);
 
-    if (cachedBudgetEntry != null &&
-        cachedBudgetEntry.isExpired(_cacheTtl)) {
+    if (cachedBudgetEntry != null && cachedBudgetEntry.isExpired(_cacheTtl)) {
       _budgetCache.remove(monthKey);
     }
 
@@ -296,12 +297,45 @@ class HomeViewModel extends _$HomeViewModel {
     await fetchMonthlyData(state.focusedMonth, forceRefresh: true);
   }
 
-  // 지출/수입 삭제
+  // 지출/수입 삭제 (Optimistic Update)
   Future<void> deleteTransaction(TransactionEntity transaction) async {
     if (transaction.id.isEmpty) {
       throw StateError('Invalid transaction id');
     }
 
+    // 1. Optimistic Update: 먼저 로컬 상태에서 해당 트랜잭션 제거
+    final dateKey = DateFormat('yyyy-MM-dd').format(transaction.date);
+    final currentData = state.monthlyData.asData?.value;
+    if (currentData != null && currentData.containsKey(dateKey)) {
+      final daySummary = currentData[dateKey]!;
+      final updatedTransactions = daySummary.transactions
+          .where((tx) => tx.id != transaction.id)
+          .toList();
+
+      final updatedIncome = transaction.type == TransactionType.income
+          ? daySummary.totalIncome - transaction.amount
+          : daySummary.totalIncome;
+      final updatedExpense = transaction.type == TransactionType.expense
+          ? daySummary.totalExpense - transaction.amount
+          : daySummary.totalExpense;
+
+      final updatedSummary = DailyTransactionSummary(
+        date: daySummary.date,
+        transactions: updatedTransactions,
+        totalIncome: updatedIncome,
+        totalExpense: updatedExpense,
+      );
+
+      final updatedData =
+          Map<String, DailyTransactionSummary>.from(currentData);
+      updatedData[dateKey] = updatedSummary;
+
+      state = state.copyWith(
+        monthlyData: AsyncValue.data(updatedData),
+      );
+    }
+
+    // 2. 백그라운드에서 실제 삭제 API 호출
     if (transaction.type == TransactionType.expense) {
       await ref.read(deleteExpenseUseCaseProvider).call(transaction.id);
     } else {
@@ -310,20 +344,18 @@ class HomeViewModel extends _$HomeViewModel {
           .call(incomeId: transaction.id);
     }
 
+    // 3. 캐시 무효화 (다음 새로고침 시 최신 데이터 보장)
     final userId = _resolveUserId();
     final accountBookId = _resolveAccountBookId();
-    if (accountBookId == null || userId == null) {
-      return;
+    if (accountBookId != null && userId != null) {
+      final targetMonth =
+          DateTime(transaction.date.year, transaction.date.month, 1);
+      await ref.read(homeRepositoryProvider).invalidateMonthlyHomeData(
+            yearMonth: targetMonth,
+            userId: userId,
+            accountBookId: accountBookId,
+          );
     }
-    final targetMonth =
-        DateTime(transaction.date.year, transaction.date.month, 1);
-    await ref.read(homeRepositoryProvider).invalidateMonthlyHomeData(
-          yearMonth: targetMonth,
-          userId: userId,
-          accountBookId: accountBookId,
-        );
-
-    await refresh();
   }
 
   void _prefetchAdjacentMonths(
@@ -407,8 +439,7 @@ class HomeViewModel extends _$HomeViewModel {
     final cachedBudgetEntry = _budgetCache[monthKey];
     final hasFreshBudgetCache =
         cachedBudgetEntry != null && !cachedBudgetEntry.isExpired(_cacheTtl);
-    if (cachedBudgetEntry != null &&
-        cachedBudgetEntry.isExpired(_cacheTtl)) {
+    if (cachedBudgetEntry != null && cachedBudgetEntry.isExpired(_cacheTtl)) {
       _budgetCache.remove(monthKey);
     }
 
