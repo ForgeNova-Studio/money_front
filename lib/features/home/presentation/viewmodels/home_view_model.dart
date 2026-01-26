@@ -55,6 +55,7 @@ class HomeViewModel extends _$HomeViewModel {
     bool forceRefresh = false,
     bool useCache = true,
   }) async {
+    if (!ref.mounted) return;
     final userId = _resolveUserId();
     final accountBookId = _resolveAccountBookId();
     if (accountBookId == null) {
@@ -132,6 +133,7 @@ class HomeViewModel extends _$HomeViewModel {
     // 예산/자산 정보 가져오기
     await _fetchBudgetAndAssetInfo(month, accountBookId);
 
+    if (!ref.mounted) return;
     if (userId != null) {
       _prefetchAdjacentMonths(month, userId, accountBookId);
     }
@@ -143,6 +145,7 @@ class HomeViewModel extends _$HomeViewModel {
     String accountBookId,
   ) async {
     try {
+      if (!ref.mounted) return;
       // 예산 정보 가져오기
       final budgetUseCase = ref.read(getMonthlyBudgetUseCaseProvider);
       final budgetInfo = await budgetUseCase(
@@ -254,6 +257,7 @@ class HomeViewModel extends _$HomeViewModel {
     String userId,
     String accountBookId,
   ) {
+    if (!ref.mounted) return;
     final previous = DateTime(month.year, month.month - 1, 1);
     final next = DateTime(month.year, month.month + 1, 1);
 
@@ -266,6 +270,7 @@ class HomeViewModel extends _$HomeViewModel {
     String userId,
     String accountBookId,
   ) async {
+    if (!ref.mounted) return;
     final repository = ref.read(homeRepositoryProvider);
     final cached = await repository.getCachedMonthlyHomeData(
       yearMonth: month,
@@ -273,11 +278,13 @@ class HomeViewModel extends _$HomeViewModel {
       accountBookId: accountBookId,
     );
 
+    if (!ref.mounted) return;
     if (cached != null && !cached.isExpired(_cacheTtl)) {
       return;
     }
 
     try {
+      if (!ref.mounted) return;
       final useCase = ref.read(getHomeMonthlyDataUseCaseProvider);
       await useCase(
         yearMonth: month,
