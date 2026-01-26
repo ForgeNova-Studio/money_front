@@ -12,7 +12,7 @@ _IncomeListResponseModel _$IncomeListResponseModelFromJson(
       incomes: (json['incomes'] as List<dynamic>)
           .map((e) => IncomeModel.fromJson(e as Map<String, dynamic>))
           .toList(),
-      totalAmount: (json['totalAmount'] as num).toDouble(),
+      totalAmount: (json['totalAmount'] as num).toInt(),
       count: (json['count'] as num).toInt(),
     );
 

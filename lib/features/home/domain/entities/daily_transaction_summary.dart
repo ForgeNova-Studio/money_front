@@ -2,8 +2,8 @@ import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 
 class DailyTransactionSummary {
   final DateTime date;
-  final double totalIncome;
-  final double totalExpense;
+  final int totalIncome;
+  final int totalExpense;
   final List<TransactionEntity> transactions;
 
   DailyTransactionSummary({

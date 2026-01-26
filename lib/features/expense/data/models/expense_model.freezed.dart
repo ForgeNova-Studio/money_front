@@ -18,7 +18,7 @@ mixin _$ExpenseModel {
   String? get userId;
   String? get accountBookId;
   String? get fundingSource;
-  double get amount;
+  int get amount;
   DateTime get date;
   String? get category;
   String? get merchant;
@@ -107,7 +107,7 @@ abstract mixin class $ExpenseModelCopyWith<$Res> {
       String? userId,
       String? accountBookId,
       String? fundingSource,
-      double amount,
+      int amount,
       DateTime date,
       String? category,
       String? merchant,
@@ -166,7 +166,7 @@ class _$ExpenseModelCopyWithImpl<$Res> implements $ExpenseModelCopyWith<$Res> {
       amount: null == amount
           ? _self.amount
           : amount // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       date: null == date
           ? _self.date
           : date // ignore: cast_nullable_to_non_nullable
@@ -303,7 +303,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             String? userId,
             String? accountBookId,
             String? fundingSource,
-            double amount,
+            int amount,
             DateTime date,
             String? category,
             String? merchant,
@@ -359,7 +359,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             String? userId,
             String? accountBookId,
             String? fundingSource,
-            double amount,
+            int amount,
             DateTime date,
             String? category,
             String? merchant,
@@ -411,7 +411,7 @@ extension ExpenseModelPatterns on ExpenseModel {
             String? userId,
             String? accountBookId,
             String? fundingSource,
-            double amount,
+            int amount,
             DateTime date,
             String? category,
             String? merchant,
@@ -478,7 +478,7 @@ class _ExpenseModel extends ExpenseModel {
   @override
   final String? fundingSource;
   @override
-  final double amount;
+  final int amount;
   @override
   final DateTime date;
   @override
@@ -582,7 +582,7 @@ abstract mixin class _$ExpenseModelCopyWith<$Res>
       String? userId,
       String? accountBookId,
       String? fundingSource,
-      double amount,
+      int amount,
       DateTime date,
       String? category,
       String? merchant,
@@ -642,7 +642,7 @@ class __$ExpenseModelCopyWithImpl<$Res>
       amount: null == amount
           ? _self.amount
           : amount // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       date: null == date
           ? _self.date
           : date // ignore: cast_nullable_to_non_nullable

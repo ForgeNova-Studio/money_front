@@ -11,7 +11,7 @@ _IncomeModel _$IncomeModelFromJson(Map<String, dynamic> json) => _IncomeModel(
       userId: json['userId'] as String?,
       accountBookId: json['accountBookId'] as String?,
       fundingSource: json['fundingSource'] as String?,
-      amount: (json['amount'] as num).toDouble(),
+      amount: (json['amount'] as num).toInt(),
       date: DateTime.parse(json['date'] as String),
       source: json['source'] as String,
       description: json['description'] as String?,

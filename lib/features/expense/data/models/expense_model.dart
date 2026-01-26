@@ -16,7 +16,7 @@ sealed class ExpenseModel with _$ExpenseModel {
     String? userId,
     String? accountBookId,
     String? fundingSource,
-    required double amount,
+    required int amount,
     required DateTime date,
     String? category,
     String? merchant,
