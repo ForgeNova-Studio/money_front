@@ -286,7 +286,20 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                 ),
                                 const SizedBox(height: 28),
 
-                                // 3. Source Selection
+                                // 3. 메모 필드
+                                TransactionFormCard(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 10),
+                                  child: TransactionTextField(
+                                    controller: _descriptionController,
+                                    hint: '어떤 수입인가요?',
+                                    icon: Icons.edit_outlined,
+                                    multiline: true,
+                                  ),
+                                ),
+                                const SizedBox(height: 28),
+
+                                // 4. Source Selection
                                 Text(
                                   '수입 출처',
                                   style: TextStyle(
@@ -387,17 +400,6 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                 ),
                                 const SizedBox(height: 28),
 
-                                // 4. 메모 필드
-                                TransactionFormCard(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 10),
-                                  child: TransactionTextField(
-                                    controller: _descriptionController,
-                                    hint: '어떤 수입인가요?',
-                                    icon: Icons.edit_outlined,
-                                    multiline: true,
-                                  ),
-                                ),
                                 const SizedBox(height: 48),
                               ],
                             ),

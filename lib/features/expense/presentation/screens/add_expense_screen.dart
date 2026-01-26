@@ -299,7 +299,31 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                 ),
                                 const SizedBox(height: 28),
 
-                                // 3. Category Selection
+                                // 3. Additional Fields (Merchant, Memo)
+                                TransactionFormCard(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 6),
+                                  child: Column(
+                                    children: [
+                                      TransactionTextField(
+                                        controller: _merchantController,
+                                        hint: '어디서 썼나요?',
+                                        icon: Icons.store_outlined,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      const SizedBox(height: 4),
+                                      TransactionTextField(
+                                        controller: _memoController,
+                                        hint: '메모를 남겨주세요',
+                                        icon: Icons.edit_outlined,
+                                        multiline: true,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 28),
+
+                                // 4. Category Selection
                                 Text(
                                   '카테고리',
                                   style: TextStyle(
@@ -398,35 +422,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                 ),
                                 const SizedBox(height: 28),
 
-                                // 4. Additional Fields (Merchant, Memo)
-                                TransactionFormCard(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 6),
-                                  child: Column(
-                                    children: [
-                                      TransactionTextField(
-                                        controller: _merchantController,
-                                        hint: '어디서 썼나요?',
-                                        icon: Icons.store_outlined,
-                                      ),
-                                      const SizedBox(
-                                        height: 4,
-                                      ),
-                                      const SizedBox(
-                                        height: 4,
-                                      ),
-                                      TransactionTextField(
-                                        controller: _memoController,
-                                        hint: '메모를 남겨주세요',
-                                        icon: Icons.edit_outlined,
-                                        multiline: true,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 24),
-
-                                // 5. 결제 수단 선택 필드
+                                // 4. 결제 수단 선택 필드
                                 Text(
                                   '결제 수단',
                                   style: TextStyle(
