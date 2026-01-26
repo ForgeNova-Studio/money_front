@@ -213,6 +213,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
         Navigator.of(context).pop(true);
       }
     } catch (e) {
+      // TODO: API 호출 실패 시 Optimistic Update를 롤백하는 로직 추가 필요 (이전 상태로 복구)
       if (mounted && kDebugMode) {
         debugPrint(e.toString());
       }

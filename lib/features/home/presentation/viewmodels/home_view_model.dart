@@ -336,12 +336,18 @@ class HomeViewModel extends _$HomeViewModel {
     }
 
     // 2. 백그라운드에서 실제 삭제 API 호출
-    if (transaction.type == TransactionType.expense) {
-      await ref.read(deleteExpenseUseCaseProvider).call(transaction.id);
-    } else {
-      await ref
-          .read(deleteIncomeUsecaseProvider)
-          .call(incomeId: transaction.id);
+    // TODO: API 호출 실패 시 Optimistic Update를 롤백하는 로직 추가 필요 (이전 상태로 복구)
+    try {
+      if (transaction.type == TransactionType.expense) {
+        await ref.read(deleteExpenseUseCaseProvider).call(transaction.id);
+      } else {
+        await ref
+            .read(deleteIncomeUsecaseProvider)
+            .call(incomeId: transaction.id);
+      }
+    } catch (e) {
+      // 롤백 로직이 여기에 들어가야 함
+      rethrow;
     }
 
     // 3. 캐시 무효화 (다음 새로고침 시 최신 데이터 보장)
