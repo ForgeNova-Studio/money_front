@@ -57,7 +57,7 @@ class SettingsScreen extends ConsumerWidget {
                   icon: Icons.book_outlined,
                   iconColor: Colors.blue,
                   label: '가계부 관리',
-                  onTap: () => context.push(RouteNames.accountBookCreate),
+                  onTap: () => context.push(RouteNames.accountBookList),
                 ),
                 _MenuItem(
                   icon: Icons.calculate_outlined,

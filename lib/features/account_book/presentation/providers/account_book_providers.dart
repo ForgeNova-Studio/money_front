@@ -22,6 +22,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // providers
 import 'package:moamoa/features/common/providers/core_providers.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 
 part 'account_book_providers.g.dart';
 
@@ -78,4 +79,14 @@ DeactivateAccountBookUseCase deactivateAccountBookUseCase(Ref ref) {
 @riverpod
 Future<List<AccountBook>> accountBooks(Ref ref) async {
   return ref.read(getAccountBooksUseCaseProvider).call();
+}
+
+@riverpod
+Future<AccountBook> accountBookDetail(Ref ref, String accountBookId) async {
+  final userId = ref.read(authViewModelProvider).user?.userId;
+  if (userId == null) throw Exception('User not logged in');
+
+  return ref.read(getAccountBookDetailUseCaseProvider).call(
+        accountBookId: accountBookId,
+      );
 }

@@ -26,7 +26,10 @@ import 'package:moamoa/features/statistics/presentation/screens/statistics_scree
 import 'package:moamoa/features/assets/presentation/screens/asset_screen.dart';
 
 // AccountBook Screens
+// AccountBook Screens
 import 'package:moamoa/features/account_book/presentation/screens/account_book_create_screen.dart';
+import 'package:moamoa/features/account_book/presentation/screens/account_book_list_screen.dart';
+import 'package:moamoa/features/account_book/presentation/screens/account_book_detail_screen.dart';
 
 // Expense Screens
 import 'package:moamoa/features/expense/presentation/screens/add_expense_screen.dart';
@@ -244,6 +247,19 @@ class AppRouter {
         ),
 
         // ==================== AccountBook Routes ====================
+        GoRoute(
+          path: RouteNames.accountBookList,
+          name: 'accountBookList',
+          builder: (context, state) => const AccountBookListScreen(),
+        ),
+        GoRoute(
+          path: RouteNames.accountBookDetailPath,
+          name: RouteNames.accountBookDetail,
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return AccountBookDetailScreen(accountBookId: id);
+          },
+        ),
         GoRoute(
           path: RouteNames.accountBookCreate,
           name: 'accountBookCreate',

@@ -403,3 +403,78 @@ final class AccountBooksProvider extends $FunctionalProvider<
 }
 
 String _$accountBooksHash() => r'cdd041e5b51a851b77f751c88a7c24cd9d396529';
+
+@ProviderFor(accountBookDetail)
+const accountBookDetailProvider = AccountBookDetailFamily._();
+
+final class AccountBookDetailProvider extends $FunctionalProvider<
+        AsyncValue<AccountBook>, AccountBook, FutureOr<AccountBook>>
+    with $FutureModifier<AccountBook>, $FutureProvider<AccountBook> {
+  const AccountBookDetailProvider._(
+      {required AccountBookDetailFamily super.from,
+      required String super.argument})
+      : super(
+          retry: null,
+          name: r'accountBookDetailProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$accountBookDetailHash();
+
+  @override
+  String toString() {
+    return r'accountBookDetailProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<AccountBook> $createElement(
+          $ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<AccountBook> create(Ref ref) {
+    final argument = this.argument as String;
+    return accountBookDetail(
+      ref,
+      argument,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is AccountBookDetailProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$accountBookDetailHash() => r'234d6cf67868183aa0d2114512c61a030946016e';
+
+final class AccountBookDetailFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<AccountBook>, String> {
+  const AccountBookDetailFamily._()
+      : super(
+          retry: null,
+          name: r'accountBookDetailProvider',
+          dependencies: null,
+          $allTransitiveDependencies: null,
+          isAutoDispose: true,
+        );
+
+  AccountBookDetailProvider call(
+    String accountBookId,
+  ) =>
+      AccountBookDetailProvider._(argument: accountBookId, from: this);
+
+  @override
+  String toString() => r'accountBookDetailProvider';
+}
