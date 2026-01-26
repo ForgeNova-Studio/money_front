@@ -12,11 +12,13 @@ class TransactionListItem extends StatelessWidget {
     required this.transaction,
     this.onTap,
     this.onDelete,
+    this.onRevealActiveChanged,
   });
 
   final TransactionEntity transaction;
   final VoidCallback? onTap;
   final Future<void> Function()? onDelete;
+  final ValueChanged<bool>? onRevealActiveChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +48,7 @@ class TransactionListItem extends StatelessWidget {
 
     return SwipeToReveal(
       enabled: onDelete != null,
+      onRevealActiveChanged: onRevealActiveChanged,
       actionButton: _DeleteButton(
         onTap: () => onDelete?.call(),
       ),

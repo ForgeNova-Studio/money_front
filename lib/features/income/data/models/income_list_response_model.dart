@@ -11,7 +11,7 @@ part 'income_list_response_model.g.dart';
 sealed class IncomeListResponseModel with _$IncomeListResponseModel {
   const factory IncomeListResponseModel({
     required List<IncomeModel> incomes,
-    required double totalAmount,
+    required int totalAmount,
     required int count,
   }) = _IncomeListResponseModel;
 

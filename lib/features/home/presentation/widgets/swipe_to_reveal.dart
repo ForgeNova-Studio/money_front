@@ -8,12 +8,14 @@ class SwipeToReveal extends StatefulWidget {
     required this.actionButton,
     this.enabled = true,
     this.revealDistance = 92,
+    this.onRevealActiveChanged,
   });
 
   final Widget child;
   final Widget actionButton;
   final bool enabled;
   final double revealDistance;
+  final ValueChanged<bool>? onRevealActiveChanged;
 
   @override
   State<SwipeToReveal> createState() => _SwipeToRevealState();
@@ -24,6 +26,7 @@ class _SwipeToRevealState extends State<SwipeToReveal>
   late AnimationController _controller;
   late Animation<double> _animation;
   double _dragExtent = 0;
+  bool _isRevealActive = false;
 
   @override
   void initState() {
@@ -32,6 +35,7 @@ class _SwipeToRevealState extends State<SwipeToReveal>
     _animation = _controller.drive(Tween<double>(begin: 0, end: 0));
     _controller.addListener(() {
       setState(() => _dragExtent = _animation.value);
+      _notifyRevealActive();
     });
   }
 
@@ -51,6 +55,7 @@ class _SwipeToRevealState extends State<SwipeToReveal>
       _dragExtent =
           (_dragExtent + delta).clamp(-widget.revealDistance * 1.2, 0);
     });
+    _notifyRevealActive();
   }
 
   void _handleDragEnd(DragEndDetails details) {
@@ -79,6 +84,14 @@ class _SwipeToRevealState extends State<SwipeToReveal>
 
     _controller.duration = const Duration(milliseconds: 250);
     _controller.forward(from: 0);
+  }
+
+  void _notifyRevealActive() {
+    final next = _dragExtent.abs() > 1;
+    if (next != _isRevealActive) {
+      _isRevealActive = next;
+      widget.onRevealActiveChanged?.call(next);
+    }
   }
 
   @override

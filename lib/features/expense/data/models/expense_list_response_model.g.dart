@@ -12,7 +12,7 @@ _ExpenseListResponseModel _$ExpenseListResponseModelFromJson(
       expenses: (json['expenses'] as List<dynamic>)
           .map((e) => ExpenseModel.fromJson(e as Map<String, dynamic>))
           .toList(),
-      totalAmount: (json['totalAmount'] as num).toDouble(),
+      totalAmount: (json['totalAmount'] as num).toInt(),
       count: (json['count'] as num).toInt(),
     );
 

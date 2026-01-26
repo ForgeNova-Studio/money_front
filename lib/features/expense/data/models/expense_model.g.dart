@@ -12,7 +12,7 @@ _ExpenseModel _$ExpenseModelFromJson(Map<String, dynamic> json) =>
       userId: json['userId'] as String?,
       accountBookId: json['accountBookId'] as String?,
       fundingSource: json['fundingSource'] as String?,
-      amount: (json['amount'] as num).toDouble(),
+      amount: (json['amount'] as num).toInt(),
       date: DateTime.parse(json['date'] as String),
       category: json['category'] as String?,
       merchant: json['merchant'] as String?,

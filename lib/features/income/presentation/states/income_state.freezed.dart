@@ -24,7 +24,7 @@ mixin _$IncomeState {
   DateTime? get selectedDate;
 
   /// 총 수입 금액 (현재 조회된 목록 기준)
-  double get totalAmount;
+  int get totalAmount;
 
   /// Create a copy of IncomeState
   /// with the given fields replaced by the non-null parameter values.
@@ -67,7 +67,7 @@ abstract mixin class $IncomeStateCopyWith<$Res> {
       {AsyncValue<List<Income>> incomes,
       DateTime focusedDay,
       DateTime? selectedDate,
-      double totalAmount});
+      int totalAmount});
 }
 
 /// @nodoc
@@ -103,7 +103,7 @@ class _$IncomeStateCopyWithImpl<$Res> implements $IncomeStateCopyWith<$Res> {
       totalAmount: null == totalAmount
           ? _self.totalAmount
           : totalAmount // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
     ));
   }
 }
@@ -200,7 +200,7 @@ extension IncomeStatePatterns on IncomeState {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(AsyncValue<List<Income>> incomes, DateTime focusedDay,
-            DateTime? selectedDate, double totalAmount)?
+            DateTime? selectedDate, int totalAmount)?
         $default, {
     required TResult orElse(),
   }) {
@@ -230,7 +230,7 @@ extension IncomeStatePatterns on IncomeState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
     TResult Function(AsyncValue<List<Income>> incomes, DateTime focusedDay,
-            DateTime? selectedDate, double totalAmount)
+            DateTime? selectedDate, int totalAmount)
         $default,
   ) {
     final _that = this;
@@ -256,7 +256,7 @@ extension IncomeStatePatterns on IncomeState {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(AsyncValue<List<Income>> incomes, DateTime focusedDay,
-            DateTime? selectedDate, double totalAmount)?
+            DateTime? selectedDate, int totalAmount)?
         $default,
   ) {
     final _that = this;
@@ -295,7 +295,7 @@ class _IncomeState implements IncomeState {
   /// 총 수입 금액 (현재 조회된 목록 기준)
   @override
   @JsonKey()
-  final double totalAmount;
+  final int totalAmount;
 
   /// Create a copy of IncomeState
   /// with the given fields replaced by the non-null parameter values.
@@ -341,7 +341,7 @@ abstract mixin class _$IncomeStateCopyWith<$Res>
       {AsyncValue<List<Income>> incomes,
       DateTime focusedDay,
       DateTime? selectedDate,
-      double totalAmount});
+      int totalAmount});
 }
 
 /// @nodoc
@@ -377,7 +377,7 @@ class __$IncomeStateCopyWithImpl<$Res> implements _$IncomeStateCopyWith<$Res> {
       totalAmount: null == totalAmount
           ? _self.totalAmount
           : totalAmount // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
     ));
   }
 }

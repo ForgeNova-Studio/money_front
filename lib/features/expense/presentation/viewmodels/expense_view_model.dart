@@ -69,7 +69,7 @@ class ExpenseViewModel extends _$ExpenseViewModel {
   /// 지출 삭제
 
   /// 총 금액 계산
-  double _calculateTotalAmount(List<Expense> expenses) {
+  int _calculateTotalAmount(List<Expense> expenses) {
     return expenses.fold(0, (sum, item) => sum + item.amount);
   }
 }

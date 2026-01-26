@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ExpenseListResponseModel {
   List<ExpenseModel> get expenses;
-  double get totalAmount;
+  int get totalAmount;
   int get count;
 
   /// Create a copy of ExpenseListResponseModel
@@ -57,7 +57,7 @@ abstract mixin class $ExpenseListResponseModelCopyWith<$Res> {
           $Res Function(ExpenseListResponseModel) _then) =
       _$ExpenseListResponseModelCopyWithImpl;
   @useResult
-  $Res call({List<ExpenseModel> expenses, double totalAmount, int count});
+  $Res call({List<ExpenseModel> expenses, int totalAmount, int count});
 }
 
 /// @nodoc
@@ -85,7 +85,7 @@ class _$ExpenseListResponseModelCopyWithImpl<$Res>
       totalAmount: null == totalAmount
           ? _self.totalAmount
           : totalAmount // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       count: null == count
           ? _self.count
           : count // ignore: cast_nullable_to_non_nullable
@@ -185,8 +185,7 @@ extension ExpenseListResponseModelPatterns on ExpenseListResponseModel {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(
-            List<ExpenseModel> expenses, double totalAmount, int count)?
+    TResult Function(List<ExpenseModel> expenses, int totalAmount, int count)?
         $default, {
     required TResult orElse(),
   }) {
@@ -214,7 +213,7 @@ extension ExpenseListResponseModelPatterns on ExpenseListResponseModel {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(List<ExpenseModel> expenses, double totalAmount, int count)
+    TResult Function(List<ExpenseModel> expenses, int totalAmount, int count)
         $default,
   ) {
     final _that = this;
@@ -238,8 +237,7 @@ extension ExpenseListResponseModelPatterns on ExpenseListResponseModel {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(
-            List<ExpenseModel> expenses, double totalAmount, int count)?
+    TResult? Function(List<ExpenseModel> expenses, int totalAmount, int count)?
         $default,
   ) {
     final _that = this;
@@ -272,7 +270,7 @@ class _ExpenseListResponseModel implements ExpenseListResponseModel {
   }
 
   @override
-  final double totalAmount;
+  final int totalAmount;
   @override
   final int count;
 
@@ -322,7 +320,7 @@ abstract mixin class _$ExpenseListResponseModelCopyWith<$Res>
       __$ExpenseListResponseModelCopyWithImpl;
   @override
   @useResult
-  $Res call({List<ExpenseModel> expenses, double totalAmount, int count});
+  $Res call({List<ExpenseModel> expenses, int totalAmount, int count});
 }
 
 /// @nodoc
@@ -350,7 +348,7 @@ class __$ExpenseListResponseModelCopyWithImpl<$Res>
       totalAmount: null == totalAmount
           ? _self.totalAmount
           : totalAmount // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       count: null == count
           ? _self.count
           : count // ignore: cast_nullable_to_non_nullable

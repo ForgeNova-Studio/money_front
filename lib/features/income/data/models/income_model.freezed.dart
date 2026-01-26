@@ -18,7 +18,7 @@ mixin _$IncomeModel {
   String? get userId;
   String? get accountBookId;
   String? get fundingSource;
-  double get amount;
+  int get amount;
   DateTime get date;
   String get source;
   String? get description;
@@ -80,7 +80,7 @@ abstract mixin class $IncomeModelCopyWith<$Res> {
       String? userId,
       String? accountBookId,
       String? fundingSource,
-      double amount,
+      int amount,
       DateTime date,
       String source,
       String? description,
@@ -131,7 +131,7 @@ class _$IncomeModelCopyWithImpl<$Res> implements $IncomeModelCopyWith<$Res> {
       amount: null == amount
           ? _self.amount
           : amount // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       date: null == date
           ? _self.date
           : date // ignore: cast_nullable_to_non_nullable
@@ -252,7 +252,7 @@ extension IncomeModelPatterns on IncomeModel {
             String? userId,
             String? accountBookId,
             String? fundingSource,
-            double amount,
+            int amount,
             DateTime date,
             String source,
             String? description,
@@ -300,7 +300,7 @@ extension IncomeModelPatterns on IncomeModel {
             String? userId,
             String? accountBookId,
             String? fundingSource,
-            double amount,
+            int amount,
             DateTime date,
             String source,
             String? description,
@@ -344,7 +344,7 @@ extension IncomeModelPatterns on IncomeModel {
             String? userId,
             String? accountBookId,
             String? fundingSource,
-            double amount,
+            int amount,
             DateTime date,
             String source,
             String? description,
@@ -399,7 +399,7 @@ class _IncomeModel extends IncomeModel {
   @override
   final String? fundingSource;
   @override
-  final double amount;
+  final int amount;
   @override
   final DateTime date;
   @override
@@ -473,7 +473,7 @@ abstract mixin class _$IncomeModelCopyWith<$Res>
       String? userId,
       String? accountBookId,
       String? fundingSource,
-      double amount,
+      int amount,
       DateTime date,
       String source,
       String? description,
@@ -524,7 +524,7 @@ class __$IncomeModelCopyWithImpl<$Res> implements _$IncomeModelCopyWith<$Res> {
       amount: null == amount
           ? _self.amount
           : amount // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       date: null == date
           ? _self.date
           : date // ignore: cast_nullable_to_non_nullable

@@ -17,6 +17,6 @@ sealed class ExpenseState with _$ExpenseState {
     DateTime? selectedDate,
 
     /// 총 지출 금액 (현재 조회된 목록 기준)
-    @Default(0) double totalAmount,
+    @Default(0) int totalAmount,
   }) = _ExpenseState;
 }

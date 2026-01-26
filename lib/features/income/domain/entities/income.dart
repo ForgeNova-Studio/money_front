@@ -3,7 +3,8 @@ class Income {
   final String? userId;
   final String? accountBookId;
   final String? fundingSource;
-  final double amount;
+  /// Amount in KRW (won). Keep this as int to avoid floating point rounding.
+  final int amount;
   final DateTime date;
   final String source; // 급여, 부수입, 용돈, 상여금, 기타
   final String? description;
@@ -28,7 +29,7 @@ class Income {
     String? userId,
     String? accountBookId,
     String? fundingSource,
-    double? amount,
+    int? amount,
     DateTime? date,
     String? source,
     String? description,

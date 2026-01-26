@@ -24,7 +24,7 @@ mixin _$ExpenseState {
   DateTime? get selectedDate;
 
   /// 총 지출 금액 (현재 조회된 목록 기준)
-  double get totalAmount;
+  int get totalAmount;
 
   /// Create a copy of ExpenseState
   /// with the given fields replaced by the non-null parameter values.
@@ -69,7 +69,7 @@ abstract mixin class $ExpenseStateCopyWith<$Res> {
       {AsyncValue<List<Expense>> expenses,
       DateTime focusedDay,
       DateTime? selectedDate,
-      double totalAmount});
+      int totalAmount});
 }
 
 /// @nodoc
@@ -105,7 +105,7 @@ class _$ExpenseStateCopyWithImpl<$Res> implements $ExpenseStateCopyWith<$Res> {
       totalAmount: null == totalAmount
           ? _self.totalAmount
           : totalAmount // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
     ));
   }
 }
@@ -202,7 +202,7 @@ extension ExpenseStatePatterns on ExpenseState {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(AsyncValue<List<Expense>> expenses, DateTime focusedDay,
-            DateTime? selectedDate, double totalAmount)?
+            DateTime? selectedDate, int totalAmount)?
         $default, {
     required TResult orElse(),
   }) {
@@ -232,7 +232,7 @@ extension ExpenseStatePatterns on ExpenseState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
     TResult Function(AsyncValue<List<Expense>> expenses, DateTime focusedDay,
-            DateTime? selectedDate, double totalAmount)
+            DateTime? selectedDate, int totalAmount)
         $default,
   ) {
     final _that = this;
@@ -258,7 +258,7 @@ extension ExpenseStatePatterns on ExpenseState {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(AsyncValue<List<Expense>> expenses, DateTime focusedDay,
-            DateTime? selectedDate, double totalAmount)?
+            DateTime? selectedDate, int totalAmount)?
         $default,
   ) {
     final _that = this;
@@ -297,7 +297,7 @@ class _ExpenseState implements ExpenseState {
   /// 총 지출 금액 (현재 조회된 목록 기준)
   @override
   @JsonKey()
-  final double totalAmount;
+  final int totalAmount;
 
   /// Create a copy of ExpenseState
   /// with the given fields replaced by the non-null parameter values.
@@ -344,7 +344,7 @@ abstract mixin class _$ExpenseStateCopyWith<$Res>
       {AsyncValue<List<Expense>> expenses,
       DateTime focusedDay,
       DateTime? selectedDate,
-      double totalAmount});
+      int totalAmount});
 }
 
 /// @nodoc
@@ -381,7 +381,7 @@ class __$ExpenseStateCopyWithImpl<$Res>
       totalAmount: null == totalAmount
           ? _self.totalAmount
           : totalAmount // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
     ));
   }
 }

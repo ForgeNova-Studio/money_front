@@ -34,6 +34,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     with WidgetsBindingObserver {
   bool _isFabExpanded = false;
   bool _isAccountBookMenuOpen = false;
+  bool _isFabDimmed = false;
   ProviderSubscription<String?>? _refreshErrorSub;
 
   @override
@@ -219,29 +220,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           .read(homeViewModelProvider.notifier)
                           .resetToMonthView();
                     },
+                    onRevealActiveChanged: _handleTransactionReveal,
                   ),
                 ),
               ],
             ),
           ),
-          floatingActionButton: HomeFabMenu(
-            isExpanded: _isFabExpanded,
-            onToggle: () {
-              setState(() => _isFabExpanded = !_isFabExpanded);
-            },
-            onAddIncome: () {
-              setState(() => _isFabExpanded = false);
-              context.push(RouteNames.addIncome, extra: homeState.selectedDate);
-            },
-            onAddExpense: () {
-              setState(() => _isFabExpanded = false);
-              context.push(RouteNames.addExpense,
-                  extra: homeState.selectedDate);
-            },
-            onScanReceipt: () {
-              setState(() => _isFabExpanded = false);
-              context.push(RouteNames.ocrTest);
-            },
+          floatingActionButton: AnimatedOpacity(
+            opacity: _isFabDimmed ? 0 : 1,
+            duration: const Duration(milliseconds: 160),
+            curve: Curves.easeOut,
+            child: IgnorePointer(
+              ignoring: _isFabDimmed,
+              child: HomeFabMenu(
+                isExpanded: _isFabExpanded,
+                onToggle: () {
+                  setState(() => _isFabExpanded = !_isFabExpanded);
+                },
+                onAddIncome: () {
+                  setState(() => _isFabExpanded = false);
+                  context.push(RouteNames.addIncome,
+                      extra: homeState.selectedDate);
+                },
+                onAddExpense: () {
+                  setState(() => _isFabExpanded = false);
+                  context.push(RouteNames.addExpense,
+                      extra: homeState.selectedDate);
+                },
+                onScanReceipt: () {
+                  setState(() => _isFabExpanded = false);
+                  context.push(RouteNames.ocrTest);
+                },
+              ),
+            ),
           ),
         ),
         Positioned.fill(
@@ -363,6 +374,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       _isAccountBookMenuOpen = isOpen;
     });
     ref.read(appScrimActiveProvider.notifier).setActive(isOpen);
+  }
+
+  void _handleTransactionReveal(bool isActive) {
+    if (_isFabDimmed == isActive) {
+      return;
+    }
+    setState(() {
+      _isFabDimmed = isActive;
+      if (isActive) {
+        _isFabExpanded = false;
+      }
+    });
   }
 
   String _resolveSelectedAccountBookName(

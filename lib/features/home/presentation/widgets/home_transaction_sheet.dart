@@ -10,6 +10,7 @@ class HomeTransactionSheet extends StatelessWidget {
   final Future<void> Function(TransactionEntity transaction) onDelete;
   final VoidCallback onCameraTap;
   final VoidCallback onResetToMonthView;
+  final ValueChanged<bool>? onRevealActiveChanged;
 
   const HomeTransactionSheet({
     super.key,
@@ -17,6 +18,7 @@ class HomeTransactionSheet extends StatelessWidget {
     required this.onDelete,
     required this.onCameraTap,
     required this.onResetToMonthView,
+    this.onRevealActiveChanged,
   });
 
   @override
@@ -74,6 +76,7 @@ class HomeTransactionSheet extends StatelessWidget {
                         isModal: true,
                         onDelete: onDelete,
                         onCameraTap: onCameraTap,
+                        onRevealActiveChanged: onRevealActiveChanged,
                       ),
                     ),
                   );

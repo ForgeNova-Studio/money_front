@@ -13,9 +13,9 @@ class TransactionModalHeader extends StatelessWidget {
   });
 
   final DateTime selectedDate;
-  final double totalAmount;
-  final double totalIncome;
-  final double totalExpense;
+  final int totalAmount;
+  final int totalIncome;
+  final int totalExpense;
   final VoidCallback? onCameraTap;
 
   @override

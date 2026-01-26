@@ -39,7 +39,7 @@ sealed class HomeTransactionModel with _$HomeTransactionModel {
 
     return TransactionEntity(
       id: id,
-      amount: amount.toDouble(),
+      amount: amount,
       date: dateTime,
       title: title,
       category: category,
@@ -69,8 +69,8 @@ sealed class DailyTransactionSummaryModel with _$DailyTransactionSummaryModel {
 
     return DailyTransactionSummary(
       date: dateTime,
-      totalIncome: totalIncome.toDouble(),
-      totalExpense: totalExpense.toDouble(),
+      totalIncome: totalIncome,
+      totalExpense: totalExpense,
       transactions: transactions.map((t) => t.toEntity(dateTime)).toList(),
     );
   }

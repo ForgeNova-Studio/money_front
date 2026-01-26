@@ -88,7 +88,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           expense.paymentMethod ?? PaymentMethod.card.code,
         );
         _amountController.text =
-            _amountFormatter.format(expense.amount.round());
+            _amountFormatter.format(expense.amount);
         _merchantController.text = expense.merchant ?? '';
         _memoController.text = expense.memo ?? '';
         _isLoading = false;
@@ -126,7 +126,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         );
       return '';
     }
-    final amount = double.tryParse(value.replaceAll(',', ''));
+    final amount = int.tryParse(value.replaceAll(',', ''));
     if (amount == null || amount <= 0) {
       return '올바른 금액을 입력하세요';
     }
@@ -144,7 +144,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       return;
     }
 
-    final amount = double.parse(_amountController.text.replaceAll(',', ''));
+    final amount = int.parse(_amountController.text.replaceAll(',', ''));
 
     try {
       if (widget.expenseId != null) {

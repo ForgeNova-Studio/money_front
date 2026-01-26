@@ -17,6 +17,6 @@ sealed class IncomeState with _$IncomeState {
     DateTime? selectedDate,
 
     /// 총 수입 금액 (현재 조회된 목록 기준)
-    @Default(0) double totalAmount,
+    @Default(0) int totalAmount,
   }) = _IncomeState;
 }

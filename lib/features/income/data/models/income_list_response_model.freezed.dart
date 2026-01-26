@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$IncomeListResponseModel {
   List<IncomeModel> get incomes;
-  double get totalAmount;
+  int get totalAmount;
   int get count;
 
   /// Create a copy of IncomeListResponseModel
@@ -57,7 +57,7 @@ abstract mixin class $IncomeListResponseModelCopyWith<$Res> {
           $Res Function(IncomeListResponseModel) _then) =
       _$IncomeListResponseModelCopyWithImpl;
   @useResult
-  $Res call({List<IncomeModel> incomes, double totalAmount, int count});
+  $Res call({List<IncomeModel> incomes, int totalAmount, int count});
 }
 
 /// @nodoc
@@ -85,7 +85,7 @@ class _$IncomeListResponseModelCopyWithImpl<$Res>
       totalAmount: null == totalAmount
           ? _self.totalAmount
           : totalAmount // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       count: null == count
           ? _self.count
           : count // ignore: cast_nullable_to_non_nullable
@@ -185,7 +185,7 @@ extension IncomeListResponseModelPatterns on IncomeListResponseModel {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(List<IncomeModel> incomes, double totalAmount, int count)?
+    TResult Function(List<IncomeModel> incomes, int totalAmount, int count)?
         $default, {
     required TResult orElse(),
   }) {
@@ -213,7 +213,7 @@ extension IncomeListResponseModelPatterns on IncomeListResponseModel {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(List<IncomeModel> incomes, double totalAmount, int count)
+    TResult Function(List<IncomeModel> incomes, int totalAmount, int count)
         $default,
   ) {
     final _that = this;
@@ -237,7 +237,7 @@ extension IncomeListResponseModelPatterns on IncomeListResponseModel {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(List<IncomeModel> incomes, double totalAmount, int count)?
+    TResult? Function(List<IncomeModel> incomes, int totalAmount, int count)?
         $default,
   ) {
     final _that = this;
@@ -270,7 +270,7 @@ class _IncomeListResponseModel implements IncomeListResponseModel {
   }
 
   @override
-  final double totalAmount;
+  final int totalAmount;
   @override
   final int count;
 
@@ -320,7 +320,7 @@ abstract mixin class _$IncomeListResponseModelCopyWith<$Res>
       __$IncomeListResponseModelCopyWithImpl;
   @override
   @useResult
-  $Res call({List<IncomeModel> incomes, double totalAmount, int count});
+  $Res call({List<IncomeModel> incomes, int totalAmount, int count});
 }
 
 /// @nodoc
@@ -348,7 +348,7 @@ class __$IncomeListResponseModelCopyWithImpl<$Res>
       totalAmount: null == totalAmount
           ? _self.totalAmount
           : totalAmount // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       count: null == count
           ? _self.count
           : count // ignore: cast_nullable_to_non_nullable

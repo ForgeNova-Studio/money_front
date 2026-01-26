@@ -82,7 +82,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
         _originalIncome = income;
         _selectedDate = income.date;
         _selectedSource = income.source;
-        _amountController.text = _amountFormatter.format(income.amount.round());
+        _amountController.text = _amountFormatter.format(income.amount);
         _descriptionController.text = income.description ?? '';
         _isLoading = false;
       });
@@ -122,7 +122,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
         );
       return '';
     }
-    final amount = double.tryParse(value.replaceAll(',', ''));
+    final amount = int.tryParse(value.replaceAll(',', ''));
     if (amount == null || amount <= 0) {
       return '올바른 금액을 입력하세요';
     }
@@ -136,7 +136,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
       return;
     }
 
-    final amount = double.parse(_amountController.text.replaceAll(',', ''));
+    final amount = int.parse(_amountController.text.replaceAll(',', ''));
 
     try {
       if (widget.incomeId != null) {
