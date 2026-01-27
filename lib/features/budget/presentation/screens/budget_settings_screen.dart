@@ -8,6 +8,7 @@ import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moamoa/features/budget/presentation/providers/budget_providers.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/features/common/widgets/default_layout.dart';
 
 /// 예산 설정 화면
 class BudgetSettingsScreen extends ConsumerStatefulWidget {
@@ -135,7 +136,8 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
 
   void _changeMonth(int delta) {
     setState(() {
-      _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month + delta);
+      _selectedMonth =
+          DateTime(_selectedMonth.year, _selectedMonth.month + delta);
       _amountController.clear();
     });
     _loadCurrentBudget();
@@ -143,47 +145,37 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return DefaultLayout(
+      title: '예산 설정',
       backgroundColor: context.appColors.backgroundLight,
-      appBar: AppBar(
-        title: Text(
-          '예산 설정',
-          style: TextStyle(
-            color: context.appColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        backgroundColor: context.appColors.backgroundLight,
-        foregroundColor: context.appColors.textPrimary,
-        iconTheme: IconThemeData(color: context.appColors.textPrimary),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => context.pop(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: (_isLoading || _isSaving) ? null : _saveBudget,
-            child: _isSaving
-                ? SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: context.appColors.primary,
-                    ),
-                  )
-                : Text(
-                    '저장',
-                    style: TextStyle(
-                      color: _isLoading ? context.appColors.textTertiary : context.appColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-          ),
-        ],
+      leading: IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: () => context.pop(),
       ),
-      body: _isLoading
+      actions: [
+        TextButton(
+          onPressed: (_isLoading || _isSaving) ? null : _saveBudget,
+          child: _isSaving
+              ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: context.appColors.primary,
+                  ),
+                )
+              : Text(
+                  '저장',
+                  style: TextStyle(
+                    color: _isLoading
+                        ? context.appColors.textTertiary
+                        : context.appColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+        ),
+      ],
+      child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(24),
@@ -245,7 +237,9 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('이번 달 예산', style: TextStyle(fontSize: 14, color: context.appColors.textSecondary)),
+          Text('이번 달 예산',
+              style: TextStyle(
+                  fontSize: 14, color: context.appColors.textSecondary)),
           const SizedBox(height: 12),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -254,20 +248,34 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
                 child: TextFormField(
                   controller: _amountController,
                   keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(15)],
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(15)
+                  ],
                   onChanged: _onAmountChanged,
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: context.appColors.textPrimary),
+                  style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: context.appColors.textPrimary),
                   decoration: InputDecoration(
                     hintText: '0',
-                    hintStyle: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: context.appColors.gray300),
+                    hintStyle: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: context.appColors.gray300),
                     border: InputBorder.none,
                   ),
-                  validator: (value) => (value == null || value.isEmpty) ? '예산 금액을 입력해주세요' : null,
+                  validator: (value) =>
+                      (value == null || value.isEmpty) ? '예산 금액을 입력해주세요' : null,
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: Text('원', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: context.appColors.textSecondary)),
+                child: Text('원',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: context.appColors.textSecondary)),
               ),
             ],
           ),
@@ -281,7 +289,9 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('추천 금액', style: TextStyle(fontSize: 14, color: context.appColors.textSecondary)),
+        Text('추천 금액',
+            style: TextStyle(
+                fontSize: 14, color: context.appColors.textSecondary)),
         const SizedBox(height: 12),
         Wrap(
           spacing: 8,
@@ -289,7 +299,8 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
           children: suggestions.map((amount) {
             return ActionChip(
               label: Text('${_numberFormat.format(amount)}원'),
-              onPressed: () => _amountController.text = _numberFormat.format(amount),
+              onPressed: () =>
+                  _amountController.text = _numberFormat.format(amount),
               backgroundColor: context.appColors.gray100,
               labelStyle: TextStyle(color: context.appColors.textPrimary),
             );

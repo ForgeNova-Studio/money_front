@@ -13,6 +13,7 @@ import 'package:moamoa/features/account_book/presentation/providers/account_book
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/router/route_names.dart';
+import 'package:moamoa/features/common/widgets/default_layout.dart';
 
 class AccountBookDetailScreen extends ConsumerWidget {
   final String accountBookId;
@@ -31,46 +32,34 @@ class AccountBookDetailScreen extends ConsumerWidget {
         ref.watch(selectedAccountBookViewModelProvider).asData?.value;
     final isCurrent = accountBookId == selectedAccountBookId;
 
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        title: Text(
-          '가계부 상세',
-          style: TextStyle(
-            color: colorScheme.onSurface,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        ),
-        backgroundColor: colorScheme.surface,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
-          onPressed: () => context.pop(),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.edit_outlined, color: colorScheme.onSurface),
-            onPressed: () {
-              context.pushNamed(
-                RouteNames.accountBookEdit,
-                pathParameters: {'id': accountBookId},
-              );
-            },
-          ),
-        ],
+    return DefaultLayout(
+      title: '가계부 상세',
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+        onPressed: () => context.pop(),
       ),
-      body: accountBookAsync.when(
+      actions: [
+        IconButton(
+          icon: Icon(Icons.edit_outlined, color: colorScheme.onSurface),
+          onPressed: () {
+            context.pushNamed(
+              RouteNames.accountBookEdit,
+              pathParameters: {'id': accountBookId},
+            );
+          },
+        ),
+      ],
+      bottomNavigationBar: accountBookAsync.asData?.value != null
+          ? _buildBottomButton(
+              context, ref, accountBookAsync.asData!.value, isCurrent)
+          : null,
+      child: accountBookAsync.when(
         data: (accountBook) => _buildBody(context, ref, accountBook, isCurrent),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
           child: Text('가계부 정보를 불러오는데 실패했습니다: $error'),
         ),
       ),
-      bottomNavigationBar: accountBookAsync.asData?.value != null
-          ? _buildBottomButton(
-              context, ref, accountBookAsync.asData!.value, isCurrent)
-          : null,
     );
   }
 

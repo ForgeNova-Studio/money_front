@@ -6,6 +6,7 @@ import 'package:moamoa/router/route_names.dart';
 import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moamoa/features/couple/presentation/viewmodels/couple_view_model.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/features/common/widgets/default_layout.dart';
 
 class CoupleScreen extends ConsumerWidget {
   const CoupleScreen({super.key});
@@ -13,31 +14,21 @@ class CoupleScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(coupleViewModelProvider);
-    final colorScheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-              return;
-            }
-            context.go(RouteNames.settings);
-          },
-        ),
-        title: const Text(
-          '커플 연동',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        backgroundColor: colorScheme.surface,
-        foregroundColor: colorScheme.onSurface,
-        elevation: 0,
-        centerTitle: true,
+    return DefaultLayout(
+      title: '커플 연동',
+      centerTitle: true,
+      leading: IconButton(
+        icon: const Icon(Icons.close, color: Colors.black),
+        onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+            return;
+          }
+          context.go(RouteNames.settings);
+        },
       ),
-      body: state.isLoading
+      child: state.isLoading
           ? const Center(child: CircularProgressIndicator())
           : state.isLinked
               ? _LinkedCoupleView(state: state)

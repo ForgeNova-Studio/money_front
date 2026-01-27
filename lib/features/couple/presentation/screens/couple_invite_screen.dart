@@ -6,6 +6,7 @@ import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/couple/presentation/viewmodels/couple_view_model.dart';
 import 'package:moamoa/router/route_names.dart';
 import 'package:share_plus/share_plus.dart' show ShareParams, SharePlus;
+import 'package:moamoa/features/common/widgets/default_layout.dart';
 
 class CoupleInviteScreen extends ConsumerStatefulWidget {
   const CoupleInviteScreen({super.key});
@@ -27,31 +28,21 @@ class _CoupleInviteScreenState extends ConsumerState<CoupleInviteScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(coupleViewModelProvider);
-    final colorScheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-              return;
-            }
-            context.go(RouteNames.settings);
-          },
-        ),
-        title: const Text(
-          '파트너 초대',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        backgroundColor: colorScheme.surface,
-        foregroundColor: colorScheme.onSurface,
-        elevation: 0,
-        centerTitle: true,
+    return DefaultLayout(
+      title: '파트너 초대',
+      centerTitle: true,
+      leading: IconButton(
+        icon: const Icon(Icons.close, color: Colors.black),
+        onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+            return;
+          }
+          context.go(RouteNames.settings);
+        },
       ),
-      body: state.isLoading
+      child: state.isLoading
           ? const Center(child: CircularProgressIndicator())
           : state.errorMessage != null
               ? _ErrorView(
@@ -287,8 +278,7 @@ class _InviteCodeView extends StatelessWidget {
   void _shareCode(String code) {
     SharePlus.instance.share(
       ShareParams(
-        text:
-            '모아모아에서 함께 가계부를 관리해요!\n\n초대 코드: $code\n\n앱에서 초대 코드를 입력해주세요.',
+        text: '모아모아에서 함께 가계부를 관리해요!\n\n초대 코드: $code\n\n앱에서 초대 코드를 입력해주세요.',
         subject: '모아모아 커플 초대',
       ),
     );

@@ -25,6 +25,7 @@ import 'package:moamoa/features/common/widgets/transaction_form/form_submit_butt
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_card.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_styles.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_text_field.dart';
+import 'package:moamoa/features/common/widgets/default_layout.dart';
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
   final DateTime? initialDate;
@@ -253,253 +254,235 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     ref.watch(expenseViewModelProvider);
     final isEditing = widget.expenseId != null;
 
-    return PopScope(
-        canPop: false,
-        child: Scaffold(
-          backgroundColor: colorScheme.surface,
-          appBar: AppBar(
-            title: Text(
-              isEditing ? '지출 수정' : '지출 등록',
-              style: TextStyle(
-                color: colorScheme.onSurface,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            centerTitle: true,
-            backgroundColor: colorScheme.surface,
-            elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.close, color: colorScheme.onSurface),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ),
-          body: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
-                  children: [
-                    Expanded(
-                      child: NotificationListener<ScrollStartNotification>(
-                        onNotification: (notification) {
-                          if (notification.dragDetails != null) {
-                            FocusManager.instance.primaryFocus?.unfocus();
-                          }
-                          return false;
-                        },
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                SizedBox(height: 20),
-                                // 1. Large Amount Input
-                                AmountInputCard(
-                                  controller: _amountController,
-                                  focusNode: _amountFocusNode,
-                                  validator: _validateAmount,
-                                  amountColor: context.appColors.black,
-                                  unitColor: context.appColors.textPrimary,
-                                ),
-                                const SizedBox(height: 24),
+    return DefaultLayout(
+      title: isEditing ? '지출 수정' : '지출 등록',
+      centerTitle: true,
+      canPop: false,
+      leading: IconButton(
+        icon: Icon(Icons.close, color: colorScheme.onSurface),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+      child: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Expanded(
+                  child: NotificationListener<ScrollStartNotification>(
+                    onNotification: (notification) {
+                      if (notification.dragDetails != null) {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                      }
+                      return false;
+                    },
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            SizedBox(height: 20),
+                            // 1. Large Amount Input
+                            AmountInputCard(
+                              controller: _amountController,
+                              focusNode: _amountFocusNode,
+                              validator: _validateAmount,
+                              amountColor: context.appColors.black,
+                              unitColor: context.appColors.textPrimary,
+                            ),
+                            const SizedBox(height: 24),
 
-                                // 2. Date Selection
-                                DatePickerCard(
-                                  selectedDate: _selectedDate,
-                                  onTap: () => _selectDate(context),
-                                ),
-                                const SizedBox(height: 28),
+                            // 2. Date Selection
+                            DatePickerCard(
+                              selectedDate: _selectedDate,
+                              onTap: () => _selectDate(context),
+                            ),
+                            const SizedBox(height: 28),
 
-                                // 3. Additional Fields (Merchant, Memo)
-                                TransactionFormCard(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 6),
-                                  child: Column(
-                                    children: [
-                                      TransactionTextField(
-                                        controller: _merchantController,
-                                        hint: '어디서 썼나요?',
-                                        icon: Icons.store_outlined,
-                                      ),
-                                      const SizedBox(height: 4),
-                                      const SizedBox(height: 4),
-                                      TransactionTextField(
-                                        controller: _memoController,
-                                        hint: '메모를 남겨주세요',
-                                        icon: Icons.edit_outlined,
-                                        multiline: true,
-                                      ),
-                                    ],
+                            // 3. Additional Fields (Merchant, Memo)
+                            TransactionFormCard(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 6),
+                              child: Column(
+                                children: [
+                                  TransactionTextField(
+                                    controller: _merchantController,
+                                    hint: '어디서 썼나요?',
+                                    icon: Icons.store_outlined,
                                   ),
-                                ),
-                                const SizedBox(height: 28),
-
-                                // 4. Category Selection
-                                Text(
-                                  '카테고리',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: context.appColors.textSecondary,
+                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 4),
+                                  TransactionTextField(
+                                    controller: _memoController,
+                                    hint: '메모를 남겨주세요',
+                                    icon: Icons.edit_outlined,
+                                    multiline: true,
                                   ),
-                                ),
-                                const SizedBox(height: 12),
-                                LayoutBuilder(
-                                  builder: (context, constraints) {
-                                    final itemWidth =
-                                        (constraints.maxWidth - 24) / 3;
-                                    return Wrap(
-                                      spacing: 12,
-                                      runSpacing: 12,
-                                      children: DefaultExpenseCategories.all
-                                          .map((category) {
-                                        final isSelected =
-                                            _selectedCategory == category.id;
-                                        final color =
-                                            _categoryColor(category.color);
-                                        return SizedBox(
-                                          width: itemWidth,
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              onTap: () {
-                                                setState(() {
-                                                  _selectedCategory =
-                                                      category.id;
-                                                });
-                                              },
-                                              child: AnimatedContainer(
-                                                duration: const Duration(
-                                                    milliseconds: 200),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 12,
-                                                        vertical: 14),
-                                                decoration:
-                                                    transactionFormCardDecoration(
-                                                  context,
-                                                  backgroundColor: isSelected
-                                                      ? color.withOpacity(0.12)
-                                                      : Colors.white,
-                                                ),
-                                                child: Column(
-                                                  children: [
-                                                    Container(
-                                                      width: 36,
-                                                      height: 36,
-                                                      decoration: BoxDecoration(
-                                                        color: isSelected
-                                                            ? color
-                                                            : color.withOpacity(
-                                                                0.12),
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                      child: Icon(
-                                                        expenseIconFromName(
-                                                            category.icon),
-                                                        color: isSelected
-                                                            ? Colors.white
-                                                            : color,
-                                                        size: 18,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Text(
-                                                      category.name,
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: isSelected
-                                                            ? color
-                                                            : context.appColors
-                                                                .textSecondary,
-                                                        fontWeight: isSelected
-                                                            ? FontWeight.w700
-                                                            : FontWeight.w600,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      }).toList(),
-                                    );
-                                  },
-                                ),
-                                const SizedBox(height: 28),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 28),
 
-                                // 4. 결제 수단 선택 필드
-                                Text(
-                                  '결제 수단',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: context.appColors.textSecondary,
-                                  ),
-                                ),
-                                SizedBox(height: 12),
-                                Row(
-                                  children: PaymentMethod.values.map((method) {
+                            // 4. Category Selection
+                            Text(
+                              '카테고리',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: context.appColors.textSecondary,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                final itemWidth =
+                                    (constraints.maxWidth - 24) / 3;
+                                return Wrap(
+                                  spacing: 12,
+                                  runSpacing: 12,
+                                  children: DefaultExpenseCategories.all
+                                      .map((category) {
                                     final isSelected =
-                                        _selectedPaymentMethod == method;
-                                    return Padding(
-                                      padding: const EdgeInsets.only(right: 12),
-                                      child: ChoiceChip(
-                                        label: Text(method.label),
-                                        selected: isSelected,
-                                        onSelected: (selected) {
-                                          if (selected) {
-                                            setState(() {
-                                              _selectedPaymentMethod = method;
-                                            });
-                                          }
-                                        },
-                                        backgroundColor: colorScheme.surface,
-                                        selectedColor:
-                                            colorScheme.primaryContainer,
-                                        labelStyle: TextStyle(
-                                          color: isSelected
-                                              ? context.appColors.black54
-                                              : colorScheme.onSurfaceVariant,
-                                          fontWeight: isSelected
-                                              ? FontWeight.w600
-                                              : FontWeight.normal,
-                                        ),
-                                        side: BorderSide(
-                                          color: isSelected
-                                              ? colorScheme.primary
-                                              : Colors.transparent,
-                                        ),
-                                        shape: RoundedRectangleBorder(
+                                        _selectedCategory == category.id;
+                                    final color =
+                                        _categoryColor(category.color);
+                                    return SizedBox(
+                                      width: itemWidth,
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
                                           borderRadius:
                                               BorderRadius.circular(20),
+                                          onTap: () {
+                                            setState(() {
+                                              _selectedCategory = category.id;
+                                            });
+                                          },
+                                          child: AnimatedContainer(
+                                            duration: const Duration(
+                                                milliseconds: 200),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 14),
+                                            decoration:
+                                                transactionFormCardDecoration(
+                                              context,
+                                              backgroundColor: isSelected
+                                                  ? color.withOpacity(0.12)
+                                                  : Colors.white,
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  width: 36,
+                                                  height: 36,
+                                                  decoration: BoxDecoration(
+                                                    color: isSelected
+                                                        ? color
+                                                        : color
+                                                            .withOpacity(0.12),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: Icon(
+                                                    expenseIconFromName(
+                                                        category.icon),
+                                                    color: isSelected
+                                                        ? Colors.white
+                                                        : color,
+                                                    size: 18,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                Text(
+                                                  category.name,
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: isSelected
+                                                        ? color
+                                                        : context.appColors
+                                                            .textSecondary,
+                                                    fontWeight: isSelected
+                                                        ? FontWeight.w700
+                                                        : FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ),
-                                        showCheckmark: false,
                                       ),
                                     );
                                   }).toList(),
-                                ),
-                                const SizedBox(height: 48),
-                              ],
+                                );
+                              },
                             ),
-                          ),
+                            const SizedBox(height: 28),
+
+                            // 4. 결제 수단 선택 필드
+                            Text(
+                              '결제 수단',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: context.appColors.textSecondary,
+                              ),
+                            ),
+                            SizedBox(height: 12),
+                            Row(
+                              children: PaymentMethod.values.map((method) {
+                                final isSelected =
+                                    _selectedPaymentMethod == method;
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 12),
+                                  child: ChoiceChip(
+                                    label: Text(method.label),
+                                    selected: isSelected,
+                                    onSelected: (selected) {
+                                      if (selected) {
+                                        setState(() {
+                                          _selectedPaymentMethod = method;
+                                        });
+                                      }
+                                    },
+                                    backgroundColor: colorScheme.surface,
+                                    selectedColor: colorScheme.primaryContainer,
+                                    labelStyle: TextStyle(
+                                      color: isSelected
+                                          ? context.appColors.black54
+                                          : colorScheme.onSurfaceVariant,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                    ),
+                                    side: BorderSide(
+                                      color: isSelected
+                                          ? colorScheme.primary
+                                          : Colors.transparent,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    showCheckmark: false,
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                            const SizedBox(height: 48),
+                          ],
                         ),
                       ),
                     ),
-
-                    // Bottom Button
-                    FormSubmitButton(
-                      isVisible: MediaQuery.of(context).viewInsets.bottom == 0,
-                      label: isEditing ? '수정하기' : '등록하기',
-                      onPressed: _handleSubmit,
-                    ),
-                  ],
+                  ),
                 ),
-        ));
+
+                // Bottom Button
+                FormSubmitButton(
+                  isVisible: MediaQuery.of(context).viewInsets.bottom == 0,
+                  label: isEditing ? '수정하기' : '등록하기',
+                  onPressed: _handleSubmit,
+                ),
+              ],
+            ),
+    );
   }
 }

@@ -11,6 +11,8 @@ import 'package:moamoa/features/account_book/presentation/providers/account_book
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 
 // widgets
+import 'package:moamoa/features/common/widgets/default_layout.dart';
+
 class AccountBookListScreen extends ConsumerWidget {
   const AccountBookListScreen({super.key});
 
@@ -21,42 +23,30 @@ class AccountBookListScreen extends ConsumerWidget {
     final selectedAccountBookId =
         ref.watch(selectedAccountBookViewModelProvider).asData?.value;
 
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        titleSpacing: 0,
-        title: Text(
-          '가계부 관리',
-          style: TextStyle(
-            color: colorScheme.onSurface,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
+    return DefaultLayout(
+      title: '가계부 관리',
+      titleSpacing: -4, // 타이틀을 왼쪽 화살표에 붙이기 위해 유지
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 16.0),
+        child: IconButton(
+          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+          onPressed: () => context.pop(),
         ),
-        backgroundColor: colorScheme.surface,
-        elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16.0),
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 16.0),
           child: IconButton(
-            icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
-            onPressed: () => context.pop(),
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: IconButton(
-              onPressed: () => context.push(RouteNames.accountBookCreate),
-              icon: Icon(
-                Icons.add,
-                color: colorScheme.onSurface,
-                size: 28,
-              ),
+            onPressed: () => context.push(RouteNames.accountBookCreate),
+            icon: Icon(
+              Icons.add,
+              color: colorScheme.onSurface,
+              size: 28,
             ),
           ),
-        ],
-      ),
-      body: accountBooksState.when(
+        ),
+      ],
+      child: accountBooksState.when(
         data: (accountBooks) {
           if (accountBooks.isEmpty) {
             return Center(

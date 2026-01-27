@@ -11,6 +11,7 @@ import 'package:moamoa/features/account_book/presentation/providers/account_book
 
 // widgets
 import 'package:moamoa/features/account_book/presentation/widgets/account_book_create_widgets.dart';
+import 'package:moamoa/features/common/widgets/default_layout.dart';
 
 class AccountBookEditScreen extends ConsumerStatefulWidget {
   final String accountBookId;
@@ -266,114 +267,101 @@ class _AccountBookEditScreenState extends ConsumerState<AccountBookEditScreen> {
     final accountBookAsync =
         ref.watch(accountBookDetailProvider(widget.accountBookId));
 
-    return PopScope(
+    return DefaultLayout(
+      title: '가계부 수정',
+      centerTitle: true,
       canPop: true,
-      onPopInvoked: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-        backgroundColor: colorScheme.surface,
-        appBar: AppBar(
-          title: Text(
-            '가계부 수정',
-            style: TextStyle(
-              color: colorScheme.onSurface,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          centerTitle: true,
-          backgroundColor: colorScheme.surface,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.close, color: colorScheme.onSurface),
-            onPressed: () {
-              FocusManager.instance.primaryFocus?.unfocus();
-              Navigator.of(context).pop();
-            },
-          ),
-        ),
-        body: accountBookAsync.when(
-          data: (accountBook) {
-            _initializeData(accountBook);
-            return GestureDetector(
-              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      AccountBookSectionCard(
-                        title: '기본 정보',
-                        child: AccountBookBasicInfoSection(
-                          nameController: _nameController,
-                          descriptionController: _descriptionController,
-                          selectedBookTypeLabel: _selectedBookType.label,
-                          onSelectBookType: _showBookTypeSheet,
-                          inputDecoration: _buildInputDecoration,
-                          validateName: _validateName,
-                        ),
+      onPopInvokedWithResult: (_, __) =>
+          FocusManager.instance.primaryFocus?.unfocus(),
+      leading: IconButton(
+        icon: Icon(Icons.close, color: colorScheme.onSurface),
+        onPressed: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+          Navigator.of(context).pop();
+        },
+      ),
+      child: accountBookAsync.when(
+        data: (accountBook) {
+          _initializeData(accountBook);
+          return GestureDetector(
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AccountBookSectionCard(
+                      title: '기본 정보',
+                      child: AccountBookBasicInfoSection(
+                        nameController: _nameController,
+                        descriptionController: _descriptionController,
+                        selectedBookTypeLabel: _selectedBookType.label,
+                        onSelectBookType: _showBookTypeSheet,
+                        inputDecoration: _buildInputDecoration,
+                        validateName: _validateName,
                       ),
-                      const SizedBox(height: 16),
-                      AccountBookSectionCard(
-                        title: '추가 정보',
-                        child: AccountBookAdditionalInfoSection(
-                          memberCountController: _memberCountController,
-                          coupleIdController: TextEditingController(
-                              text: accountBook
-                                  .coupleId), // 커플 ID는 수정 불가하지만 뷰용으로 전달
-                          inputDecoration: _buildInputDecoration,
-                          validateMemberCount: _validateMemberCount,
-                        ),
+                    ),
+                    const SizedBox(height: 16),
+                    AccountBookSectionCard(
+                      title: '추가 정보',
+                      child: AccountBookAdditionalInfoSection(
+                        memberCountController: _memberCountController,
+                        coupleIdController: TextEditingController(
+                            text: accountBook
+                                .coupleId), // 커플 ID는 수정 불가하지만 뷰용으로 전달
+                        inputDecoration: _buildInputDecoration,
+                        validateMemberCount: _validateMemberCount,
                       ),
-                      const SizedBox(height: 16),
-                      AccountBookSectionCard(
-                        title: '기간 설정',
-                        child: AccountBookPeriodSection(
-                          startDate: _startDate,
-                          endDate: _endDate,
-                          onStartTap: () => _selectDate(isStart: true),
-                          onEndTap: () => _selectDate(isStart: false),
-                        ),
+                    ),
+                    const SizedBox(height: 16),
+                    AccountBookSectionCard(
+                      title: '기간 설정',
+                      child: AccountBookPeriodSection(
+                        startDate: _startDate,
+                        endDate: _endDate,
+                        onStartTap: () => _selectDate(isStart: true),
+                        onEndTap: () => _selectDate(isStart: false),
                       ),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: _isSubmitting ? null : _handleSubmit,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: context.appColors.primary,
-                            foregroundColor: context.appColors.textPrimary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            elevation: 0,
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: _isSubmitting ? null : _handleSubmit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: context.appColors.primary,
+                          foregroundColor: context.appColors.textPrimary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
                           ),
-                          child: _isSubmitting
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Text(
-                                  '수정 완료',
-                                  style: TextStyle(fontWeight: FontWeight.w700),
-                                ),
+                          elevation: 0,
                         ),
+                        child: _isSubmitting
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                '수정 완료',
+                                style: TextStyle(fontWeight: FontWeight.w700),
+                              ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(
-            child: Text('가계부 정보를 불러오는데 실패했습니다: $error'),
-          ),
+            ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Text('가계부 정보를 불러오는데 실패했습니다: $error'),
         ),
       ),
     );

@@ -6,6 +6,7 @@ import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/router/route_names.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
+import 'package:moamoa/features/common/widgets/default_layout.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -15,33 +16,10 @@ class SettingsScreen extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final authState = ref.watch(authViewModelProvider);
 
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        title: Text(
-          '더보기',
-          style: TextStyle(
-            color: colorScheme.onSurface,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        ),
-        backgroundColor: colorScheme.surface,
-        elevation: 0,
-        centerTitle: false,
-        automaticallyImplyLeading: false,
-        // 임시 주석
-        // actions: [
-        //   IconButton(
-        //     icon: Icon(Icons.settings_outlined, color: colorScheme.onSurface),
-        //     onPressed: () {
-        //       // TODO: 앱 설정 화면으로 이동
-        //     },
-        //   ),
-        //   const SizedBox(width: 8),
-        // ],
-      ),
-      body: SingleChildScrollView(
+    return DefaultLayout(
+      title: '더보기',
+      automaticallyImplyLeading: false,
+      child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
