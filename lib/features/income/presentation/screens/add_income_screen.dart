@@ -276,6 +276,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                               validator: _validateAmount,
                               amountColor: context.appColors.primary,
                               unitColor: context.appColors.textPrimary,
+                              maxDigits: 12, // 입력 허용 최대 자릿수
                             ),
                             const SizedBox(height: 24),
 

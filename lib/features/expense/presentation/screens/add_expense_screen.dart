@@ -289,6 +289,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                               validator: _validateAmount,
                               amountColor: context.appColors.black,
                               unitColor: context.appColors.textPrimary,
+                              maxDigits: 12, // 입력 허용 최대 자릿수
                             ),
                             const SizedBox(height: 24),
 
