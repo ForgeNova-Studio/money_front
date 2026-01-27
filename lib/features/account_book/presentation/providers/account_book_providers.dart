@@ -82,7 +82,7 @@ DeactivateAccountBookUseCase deactivateAccountBookUseCase(Ref ref) {
   return DeactivateAccountBookUseCase(ref.read(accountBookRepositoryProvider));
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<List<AccountBook>> accountBooks(Ref ref) async {
   return ref.read(getAccountBooksUseCaseProvider).call();
 }
