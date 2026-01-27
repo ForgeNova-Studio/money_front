@@ -225,27 +225,13 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    // 로딩 상태 여부에 따라 위젯 분기
-                    // 로딩 중: 로딩 인디케이터 표시
-                    // 로딩 완료: 로그인 버튼 표시
-                    child: authState.isLoading
-                        ? SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                colorScheme.onPrimary,
-                              ),
-                            ),
-                          )
-                        : const Text(
-                            '로그인',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                    child: const Text(
+                      '로그인',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
 
@@ -277,8 +263,9 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
                 // 네이버 로그인 버튼 (공식 디자인 가이드라인 적용)
                 NaverLoginButton(
-                  onPressed: authState.isLoading ? null : () => _handleNaverLogin(),
-                  isLoading: authState.isLoading,
+                  onPressed:
+                      authState.isLoading ? null : () => _handleNaverLogin(),
+                  isLoading: false,
                 ),
 
                 SizedBox(height: 32),
@@ -399,14 +386,14 @@ Widget _buildRowDivider(BuildContext context) {
 // 마지막 로그인 방법 힌트 위젯
 Widget _buildLastLoginHint(WidgetRef ref) {
   final lastLoginAsync = ref.watch(lastLoginProviderProvider);
-  
+
   return lastLoginAsync.when(
     data: (provider) {
       if (provider == null) return const SizedBox.shrink();
-      
+
       final providerName = _getProviderDisplayName(provider);
       if (providerName == null) return const SizedBox.shrink();
-      
+
       return Padding(
         padding: const EdgeInsets.only(bottom: 16),
         child: Row(
