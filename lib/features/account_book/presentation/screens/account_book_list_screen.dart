@@ -25,7 +25,7 @@ class AccountBookListScreen extends ConsumerWidget {
 
     return DefaultLayout(
       title: '가계부 관리',
-      titleSpacing: -4, // 타이틀을 왼쪽 화살표에 붙이기 위해 유지
+      titleSpacing: 0, // 타이틀을 왼쪽 화살표에 붙이기 위해 유지
       leading: Padding(
         padding: const EdgeInsets.only(left: 16.0),
         child: IconButton(
