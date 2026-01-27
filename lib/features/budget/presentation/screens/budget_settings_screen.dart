@@ -402,6 +402,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
                         focusNode: _amountFocusNode,
                         keyboardType: TextInputType.number,
                         textAlign: TextAlign.center,
+                        onChanged: (_) => setState(() {}),
                         style: TextStyle(
                           fontSize: 42,
                           fontWeight: FontWeight.bold,
@@ -465,26 +466,59 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
       (1500000, '150만'),
       (2000000, '200만'),
       (3000000, '300만'),
+      (5000000, '500만'),
     ];
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4),
-          child: Text(
-            '빠른 입력',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: context.appColors.textSecondary,
+        // 헤더: 빠른 입력 + 초기화 버튼
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '빠른 입력',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: context.appColors.textSecondary,
+              ),
             ),
-          ),
+            if (_amountController.text.isNotEmpty) ...[
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () {
+                  _amountController.clear();
+                  setState(() {});
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: context.appColors.gray100,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    '초기화',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: context.appColors.textTertiary,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 10,
-          runSpacing: 10,
+        const SizedBox(height: 16),
+        // 2x3 그리드
+        GridView.count(
+          crossAxisCount: 3,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          childAspectRatio: 2.2,
           children: suggestions.map((item) {
             final isSelected =
                 _amountController.text == _numberFormat.format(item.$1);
@@ -492,10 +526,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
               onTap: () => _setSuggestedAmount(item.$1),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
+                alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: isSelected
                       ? context.appColors.primary.withValues(alpha: 0.1)
@@ -538,22 +569,12 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
   Widget _buildSaveButton() {
     final hasValue = _amountController.text.isNotEmpty;
 
-    return Container(
+    return Padding(
       padding: EdgeInsets.only(
         left: 24,
         right: 24,
         top: 16,
         bottom: MediaQuery.of(context).padding.bottom + 16,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -4),
-          ),
-        ],
       ),
       child: SizedBox(
         width: double.infinity,
