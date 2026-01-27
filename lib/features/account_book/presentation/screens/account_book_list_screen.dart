@@ -24,6 +24,7 @@ class AccountBookListScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
+        titleSpacing: 0,
         title: Text(
           '가계부 관리',
           style: TextStyle(
@@ -34,18 +35,26 @@ class AccountBookListScreen extends ConsumerWidget {
         ),
         backgroundColor: colorScheme.surface,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
-          onPressed: () => context.pop(),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16.0),
+          child: IconButton(
+            icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+            onPressed: () => context.pop(),
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(RouteNames.accountBookCreate),
-        icon: const Icon(Icons.add),
-        label: const Text('새 가계부'),
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        elevation: 2,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton(
+              onPressed: () => context.push(RouteNames.accountBookCreate),
+              icon: Icon(
+                Icons.add,
+                color: colorScheme.onSurface,
+                size: 28,
+              ),
+            ),
+          ),
+        ],
       ),
       body: accountBooksState.when(
         data: (accountBooks) {
