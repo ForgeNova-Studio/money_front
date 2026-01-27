@@ -16,14 +16,14 @@ ThemeData buildLightTheme() {
 
     // AppBar Theme
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.primary,
-      foregroundColor: AppColors.textWhite,
+      backgroundColor: AppColors.backgroundWhite,
+      foregroundColor: AppColors.textPrimary,
       elevation: 0,
       centerTitle: false,
-      titleSpacing: 30, // 앱바 타이틀 좌측 패딩
-      iconTheme: IconThemeData(color: AppColors.textWhite),
+      titleSpacing: 30, // 표준 패딩값으로 변경
+      iconTheme: IconThemeData(color: AppColors.textPrimary),
       titleTextStyle: TextStyle(
-        color: AppColors.textWhite,
+        color: AppColors.textPrimary,
         fontSize: 20,
         fontWeight: FontWeight.w600,
       ),
