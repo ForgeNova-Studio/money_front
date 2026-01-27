@@ -233,7 +233,7 @@ Future<void> _prefetchMonthlyData(
   }
 }
 
-/// 예산 정보 prefetch
+/// 예산 정보 prefetch (로컬 캐시에 저장)
 Future<void> _prefetchBudget(
   Ref ref,
   DateTime month,
@@ -241,25 +241,42 @@ Future<void> _prefetchBudget(
 ) async {
   try {
     final useCase = ref.read(getMonthlyBudgetUseCaseProvider);
-    await useCase(
+    final budget = await useCase(
       year: month.year,
       month: month.month,
       accountBookId: accountBookId,
     );
+
+    // HomeViewModel이 사용하는 로컬 캐시에 저장
+    final homeRepository = ref.read(homeRepositoryProvider);
+    await homeRepository.saveCachedBudget(
+      month: month,
+      accountBookId: accountBookId,
+      budget: budget,
+    );
+
     logStartupDebug('prefetch_budget_success');
   } catch (e) {
     logStartupDebug('prefetch_budget_failed: $e');
   }
 }
 
-/// 총 자산 정보 prefetch
+/// 총 자산 정보 prefetch (로컬 캐시에 저장)
 Future<void> _prefetchAsset(
   Ref ref,
   String accountBookId,
 ) async {
   try {
     final useCase = ref.read(getTotalAssetsUseCaseProvider);
-    await useCase(accountBookId: accountBookId);
+    final asset = await useCase(accountBookId: accountBookId);
+
+    // HomeViewModel이 사용하는 로컬 캐시에 저장
+    final homeRepository = ref.read(homeRepositoryProvider);
+    await homeRepository.saveCachedAsset(
+      accountBookId: accountBookId,
+      asset: asset,
+    );
+
     logStartupDebug('prefetch_asset_success');
   } catch (e) {
     logStartupDebug('prefetch_asset_failed: $e');
