@@ -97,6 +97,7 @@ class AccountBookAdditionalInfoSection extends StatelessWidget {
   final TextEditingController coupleIdController;
   final InputDecoration Function(String) inputDecoration;
   final String? Function(String?) validateMemberCount;
+  final bool isCoupleBook;
 
   const AccountBookAdditionalInfoSection({
     super.key,
@@ -104,6 +105,7 @@ class AccountBookAdditionalInfoSection extends StatelessWidget {
     required this.coupleIdController,
     required this.inputDecoration,
     required this.validateMemberCount,
+    this.isCoupleBook = false,
   });
 
   @override
@@ -112,9 +114,11 @@ class AccountBookAdditionalInfoSection extends StatelessWidget {
       children: [
         TextFormField(
           controller: memberCountController,
-          decoration: inputDecoration('정산 인원 (선택)'),
+          decoration:
+              inputDecoration(isCoupleBook ? '정산 인원 (2명 고정)' : '정산 인원 (선택)'),
           keyboardType: TextInputType.number,
           validator: validateMemberCount,
+          enabled: !isCoupleBook, // 커플이면 비활성화
         ),
         const SizedBox(height: 16),
         TextFormField(
@@ -132,6 +136,7 @@ class AccountBookPeriodSection extends StatelessWidget {
   final DateTime? endDate;
   final VoidCallback onStartTap;
   final VoidCallback onEndTap;
+  final bool isCoupleBook;
 
   const AccountBookPeriodSection({
     super.key,
@@ -139,17 +144,20 @@ class AccountBookPeriodSection extends StatelessWidget {
     required this.endDate,
     required this.onStartTap,
     required this.onEndTap,
+    this.isCoupleBook = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    // 커플 가계부는 기간 설정 불가 -> 비활성화된 UI 또는 안내 메시지 표시
+    // 여기서는 기존 필드를 비활성화 처리
     return Row(
       children: [
         Expanded(
           child: AccountBookDatePickerField(
             label: '시작일',
             date: startDate,
-            onTap: onStartTap,
+            onTap: isCoupleBook ? null : onStartTap, // 커플이면 탭 불가
           ),
         ),
         const SizedBox(width: 12),
@@ -157,7 +165,7 @@ class AccountBookPeriodSection extends StatelessWidget {
           child: AccountBookDatePickerField(
             label: '종료일',
             date: endDate,
-            onTap: onEndTap,
+            onTap: isCoupleBook ? null : onEndTap, // 커플이면 탭 불가
           ),
         ),
       ],
@@ -169,7 +177,7 @@ class AccountBookPeriodSection extends StatelessWidget {
 class AccountBookDatePickerField extends StatelessWidget {
   final String label;
   final DateTime? date;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const AccountBookDatePickerField({
     super.key,
@@ -180,10 +188,13 @@ class AccountBookDatePickerField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDisabled = onTap == null;
     final textStyle = TextStyle(
-      color: date == null
-          ? context.appColors.textTertiary
-          : context.appColors.textPrimary,
+      color: isDisabled
+          ? context.appColors.textTertiary.withOpacity(0.5)
+          : (date == null
+              ? context.appColors.textTertiary
+              : context.appColors.textPrimary),
       fontWeight: FontWeight.w600,
     );
 
@@ -193,9 +204,14 @@ class AccountBookDatePickerField extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-          color: context.appColors.background,
+          color: isDisabled
+              ? context.appColors.background.withOpacity(0.5)
+              : context.appColors.background,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: context.appColors.border),
+          border: Border.all(
+              color: isDisabled
+                  ? context.appColors.border.withOpacity(0.5)
+                  : context.appColors.border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -204,13 +220,15 @@ class AccountBookDatePickerField extends StatelessWidget {
               label,
               style: TextStyle(
                 fontSize: 12,
-                color: context.appColors.textSecondary,
+                color: isDisabled
+                    ? context.appColors.textSecondary.withOpacity(0.5)
+                    : context.appColors.textSecondary,
               ),
             ),
             const SizedBox(height: 6),
             Text(
               date == null
-                  ? '선택'
+                  ? (isDisabled ? '기간 없음' : '선택')
                   : '${date!.year}.${date!.month.toString().padLeft(2, '0')}.${date!.day.toString().padLeft(2, '0')}',
               style: textStyle,
             ),

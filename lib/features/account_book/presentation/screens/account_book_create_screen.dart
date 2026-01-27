@@ -114,7 +114,22 @@ class _AccountBookCreateScreenState
     );
 
     if (selected != null) {
-      setState(() => _selectedBookType = selected);
+      setState(() {
+        _selectedBookType = selected;
+        // 커플 가계부는 인원 2명 고정, 기간 설정 불가(null)
+        if (selected == BookType.coupleLiving) {
+          _memberCountController.text = '2';
+          _startDate = null;
+          _endDate = null;
+        } else {
+          // 다른 타입으로 변경 시 초기화 (필요하면)
+          // _memberCountController.clear(); // 사용자가 입력한 값을 유지할지 여부에 따라 결정
+          // 여기서는 '2'로 자동 설정된 것이 다른 타입으로 가면 그대로 '2'로 남아있게 됩니다.
+          // 사용자 경험상 명시적으로 지워주는게 좋을 수도 있지만,
+          // 실수로 타입 바꿨다가 돌아왔을 때 데이터 날아가는 것 방지를 위해 유지할 수도 있습니다.
+          // 요청 사항은 "커플일 경우 고정"이므로, 아닌 경우는 자유롭게 놔둡니다.
+        }
+      });
     }
   }
 
@@ -230,6 +245,7 @@ class _AccountBookCreateScreenState
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isCoupleBook = _selectedBookType == BookType.coupleLiving;
 
     return PopScope(
       canPop: true,
@@ -283,6 +299,7 @@ class _AccountBookCreateScreenState
                       coupleIdController: _coupleIdController,
                       inputDecoration: _buildInputDecoration,
                       validateMemberCount: _validateMemberCount,
+                      isCoupleBook: isCoupleBook,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -293,6 +310,7 @@ class _AccountBookCreateScreenState
                       endDate: _endDate,
                       onStartTap: () => _selectDate(isStart: true),
                       onEndTap: () => _selectDate(isStart: false),
+                      isCoupleBook: isCoupleBook,
                     ),
                   ),
                   const SizedBox(height: 24),
