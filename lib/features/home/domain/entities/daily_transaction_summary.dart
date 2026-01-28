@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 
 class DailyTransactionSummary {
@@ -6,7 +7,7 @@ class DailyTransactionSummary {
   final int totalExpense;
   final List<TransactionEntity> transactions;
 
-  DailyTransactionSummary({
+  const DailyTransactionSummary({
     required this.date,
     required this.totalIncome,
     required this.totalExpense,
@@ -18,7 +19,24 @@ class DailyTransactionSummary {
       date: date,
       totalIncome: 0,
       totalExpense: 0,
-      transactions: [],
+      transactions: const [],
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DailyTransactionSummary &&
+          runtimeType == other.runtimeType &&
+          date == other.date &&
+          totalIncome == other.totalIncome &&
+          totalExpense == other.totalExpense &&
+          listEquals(transactions, other.transactions);
+
+  @override
+  int get hashCode =>
+      date.hashCode ^
+      totalIncome.hashCode ^
+      totalExpense.hashCode ^
+      Object.hashAll(transactions);
 }

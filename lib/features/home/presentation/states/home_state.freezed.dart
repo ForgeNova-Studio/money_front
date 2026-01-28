@@ -80,9 +80,6 @@ abstract mixin class $HomeStateCopyWith<$Res> {
       CalendarFormat calendarFormat,
       BudgetEntity? budgetInfo,
       AssetEntity? assetInfo});
-
-  $BudgetEntityCopyWith<$Res>? get budgetInfo;
-  $AssetEntityCopyWith<$Res>? get assetInfo;
 }
 
 /// @nodoc
@@ -130,34 +127,6 @@ class _$HomeStateCopyWithImpl<$Res> implements $HomeStateCopyWith<$Res> {
           : assetInfo // ignore: cast_nullable_to_non_nullable
               as AssetEntity?,
     ));
-  }
-
-  /// Create a copy of HomeState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $BudgetEntityCopyWith<$Res>? get budgetInfo {
-    if (_self.budgetInfo == null) {
-      return null;
-    }
-
-    return $BudgetEntityCopyWith<$Res>(_self.budgetInfo!, (value) {
-      return _then(_self.copyWith(budgetInfo: value));
-    });
-  }
-
-  /// Create a copy of HomeState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $AssetEntityCopyWith<$Res>? get assetInfo {
-    if (_self.assetInfo == null) {
-      return null;
-    }
-
-    return $AssetEntityCopyWith<$Res>(_self.assetInfo!, (value) {
-      return _then(_self.copyWith(assetInfo: value));
-    });
   }
 }
 
@@ -442,11 +411,6 @@ abstract mixin class _$HomeStateCopyWith<$Res>
       CalendarFormat calendarFormat,
       BudgetEntity? budgetInfo,
       AssetEntity? assetInfo});
-
-  @override
-  $BudgetEntityCopyWith<$Res>? get budgetInfo;
-  @override
-  $AssetEntityCopyWith<$Res>? get assetInfo;
 }
 
 /// @nodoc
@@ -494,34 +458,6 @@ class __$HomeStateCopyWithImpl<$Res> implements _$HomeStateCopyWith<$Res> {
           : assetInfo // ignore: cast_nullable_to_non_nullable
               as AssetEntity?,
     ));
-  }
-
-  /// Create a copy of HomeState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $BudgetEntityCopyWith<$Res>? get budgetInfo {
-    if (_self.budgetInfo == null) {
-      return null;
-    }
-
-    return $BudgetEntityCopyWith<$Res>(_self.budgetInfo!, (value) {
-      return _then(_self.copyWith(budgetInfo: value));
-    });
-  }
-
-  /// Create a copy of HomeState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $AssetEntityCopyWith<$Res>? get assetInfo {
-    if (_self.assetInfo == null) {
-      return null;
-    }
-
-    return $AssetEntityCopyWith<$Res>(_self.assetInfo!, (value) {
-      return _then(_self.copyWith(assetInfo: value));
-    });
   }
 }
 

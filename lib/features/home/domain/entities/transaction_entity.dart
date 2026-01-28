@@ -5,16 +5,18 @@ enum TransactionType { income, expense }
 
 class TransactionEntity {
   final String id;
+
   /// Amount in KRW (won). Keep this as int to avoid floating point rounding.
   final int amount;
   final DateTime date;
-  final String title; // 사용자 입력 설명 (merchant or description), fallback: category label
+  final String
+      title; // 사용자 입력 설명 (merchant or description), fallback: category label
   final String category; // 카테고리 코드 (category or source)
   final String? memo; // 추가 메모 (지출 memo, 수입은 null)
   final TransactionType type;
   final DateTime createdAt;
 
-  TransactionEntity({
+  const TransactionEntity({
     required this.id,
     required this.amount,
     required this.date,
@@ -54,4 +56,29 @@ class TransactionEntity {
       createdAt: income.createdAt ?? DateTime.now(),
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TransactionEntity &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          amount == other.amount &&
+          date == other.date &&
+          title == other.title &&
+          category == other.category &&
+          memo == other.memo &&
+          type == other.type &&
+          createdAt == other.createdAt;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      amount.hashCode ^
+      date.hashCode ^
+      title.hashCode ^
+      category.hashCode ^
+      memo.hashCode ^
+      type.hashCode ^
+      createdAt.hashCode;
 }

@@ -1,46 +1,101 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'budget_entity.freezed.dart';
-part 'budget_entity.g.dart';
-
 /// 월간 예산 정보 엔티티
-@freezed
-sealed class BudgetEntity with _$BudgetEntity {
-  const factory BudgetEntity({
-    required String budgetId,
-    required int year,
-    required int month,
-    required double targetAmount,
-    required double currentSpending,
-    required double remainingAmount,
-    required double usagePercentage,
-  }) = _BudgetEntity;
+class BudgetEntity {
+  final String budgetId;
+  final int year;
+  final int month;
+  final double targetAmount;
+  final double currentSpending;
+  final double remainingAmount;
+  final double usagePercentage;
 
-  factory BudgetEntity.fromJson(Map<String, dynamic> json) =>
-      _$BudgetEntityFromJson(json);
+  const BudgetEntity({
+    required this.budgetId,
+    required this.year,
+    required this.month,
+    required this.targetAmount,
+    required this.currentSpending,
+    required this.remainingAmount,
+    required this.usagePercentage,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BudgetEntity &&
+          runtimeType == other.runtimeType &&
+          budgetId == other.budgetId &&
+          year == other.year &&
+          month == other.month &&
+          targetAmount == other.targetAmount &&
+          currentSpending == other.currentSpending &&
+          remainingAmount == other.remainingAmount &&
+          usagePercentage == other.usagePercentage;
+
+  @override
+  int get hashCode =>
+      budgetId.hashCode ^
+      year.hashCode ^
+      month.hashCode ^
+      targetAmount.hashCode ^
+      currentSpending.hashCode ^
+      remainingAmount.hashCode ^
+      usagePercentage.hashCode;
 }
 
 /// 총 자산 정보 엔티티
-@freezed
-sealed class AssetEntity with _$AssetEntity {
-  const factory AssetEntity({
-    required String accountBookId,
-    required String accountBookName,
-    required double currentTotalAssets,
-    required double initialBalance,
-    required double totalIncome,
-    required double totalExpense,
+class AssetEntity {
+  final String accountBookId;
+  final String accountBookName;
+  final double currentTotalAssets;
+  final double initialBalance;
+  final double totalIncome;
+  final double totalExpense;
 
-    /// 이번 달 수입
-    required double periodIncome,
+  /// 이번 달 수입
+  final double periodIncome;
 
-    /// 이번 달 지출
-    required double periodExpense,
+  /// 이번 달 지출
+  final double periodExpense;
 
-    /// 이번 달 순수익
-    required double periodNetIncome,
-  }) = _AssetEntity;
+  /// 이번 달 순수익
+  final double periodNetIncome;
 
-  factory AssetEntity.fromJson(Map<String, dynamic> json) =>
-      _$AssetEntityFromJson(json);
+  const AssetEntity({
+    required this.accountBookId,
+    required this.accountBookName,
+    required this.currentTotalAssets,
+    required this.initialBalance,
+    required this.totalIncome,
+    required this.totalExpense,
+    required this.periodIncome,
+    required this.periodExpense,
+    required this.periodNetIncome,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AssetEntity &&
+          runtimeType == other.runtimeType &&
+          accountBookId == other.accountBookId &&
+          accountBookName == other.accountBookName &&
+          currentTotalAssets == other.currentTotalAssets &&
+          initialBalance == other.initialBalance &&
+          totalIncome == other.totalIncome &&
+          totalExpense == other.totalExpense &&
+          periodIncome == other.periodIncome &&
+          periodExpense == other.periodExpense &&
+          periodNetIncome == other.periodNetIncome;
+
+  @override
+  int get hashCode =>
+      accountBookId.hashCode ^
+      accountBookName.hashCode ^
+      currentTotalAssets.hashCode ^
+      initialBalance.hashCode ^
+      totalIncome.hashCode ^
+      totalExpense.hashCode ^
+      periodIncome.hashCode ^
+      periodExpense.hashCode ^
+      periodNetIncome.hashCode;
 }

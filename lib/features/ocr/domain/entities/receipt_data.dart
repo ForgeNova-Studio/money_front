@@ -14,7 +14,6 @@ enum ReceiptStatus {
 /// 기능:
 /// - 금액, 날짜, 가맹점, 승인/취소 상태 저장
 /// - 브랜드 매칭 및 카테고리 자동 분류
-/// - 백엔드 전송용 JSON 변환
 class ReceiptData {
   /// 파싱된 금액 (원)
   final int? amount;
@@ -41,7 +40,7 @@ class ReceiptData {
   /// 카드사 식별 (선택적)
   final String? cardIssuer;
 
-  ReceiptData({
+  const ReceiptData({
     this.amount,
     this.date,
     this.merchant,
@@ -89,19 +88,6 @@ class ReceiptData {
     );
   }
 
-  /// JSON으로 변환 (백엔드 전송용)
-  Map<String, dynamic> toJson() {
-    return {
-      'amount': amount,
-      'date': date?.toIso8601String().split('T')[0],
-      'merchant': displayName ?? merchant, // 정규화된 이름 우선
-      'category': category?.code, // 백엔드 코드 전송
-      'status': status?.name,
-      'rawText': rawText,
-      'cardIssuer': cardIssuer,
-    };
-  }
-
   /// 모든 필수 필드가 파싱되었는지 확인
   bool get isComplete {
     return amount != null && date != null && merchant != null;
@@ -111,6 +97,31 @@ class ReceiptData {
   bool get isApproved {
     return status == ReceiptStatus.approved || status == null;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ReceiptData &&
+          runtimeType == other.runtimeType &&
+          amount == other.amount &&
+          date == other.date &&
+          merchant == other.merchant &&
+          displayName == other.displayName &&
+          category == other.category &&
+          status == other.status &&
+          rawText == other.rawText &&
+          cardIssuer == other.cardIssuer;
+
+  @override
+  int get hashCode =>
+      amount.hashCode ^
+      date.hashCode ^
+      merchant.hashCode ^
+      displayName.hashCode ^
+      category.hashCode ^
+      status.hashCode ^
+      rawText.hashCode ^
+      cardIssuer.hashCode;
 
   @override
   String toString() {

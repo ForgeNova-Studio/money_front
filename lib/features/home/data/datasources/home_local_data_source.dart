@@ -139,7 +139,16 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
 
     BudgetEntity? parsedData;
     if (data != null && data is Map) {
-      parsedData = BudgetEntity.fromJson(Map<String, dynamic>.from(data));
+      final map = Map<String, dynamic>.from(data);
+      parsedData = BudgetEntity(
+        budgetId: map['budgetId'],
+        year: map['year'],
+        month: map['month'],
+        targetAmount: map['targetAmount'],
+        currentSpending: map['currentSpending'],
+        remainingAmount: map['remainingAmount'],
+        usagePercentage: map['usagePercentage'],
+      );
     }
 
     return BudgetCacheEntry(
@@ -157,9 +166,22 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
     final box = _box;
     if (box == null) return;
 
+    Map<String, dynamic>? dataMap;
+    if (data != null) {
+      dataMap = {
+        'budgetId': data.budgetId,
+        'year': data.year,
+        'month': data.month,
+        'targetAmount': data.targetAmount,
+        'currentSpending': data.currentSpending,
+        'remainingAmount': data.remainingAmount,
+        'usagePercentage': data.usagePercentage,
+      };
+    }
+
     await box.put(cacheKey, {
       'cachedAt': DateTime.now().millisecondsSinceEpoch,
-      'data': data?.toJson(),
+      'data': dataMap,
     });
   }
 
@@ -176,7 +198,18 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
     final data = stored['data'];
     if (cachedAtMillis == null || data is! Map) return null;
 
-    final parsedData = AssetEntity.fromJson(Map<String, dynamic>.from(data));
+    final map = Map<String, dynamic>.from(data);
+    final parsedData = AssetEntity(
+      accountBookId: map['accountBookId'],
+      accountBookName: map['accountBookName'],
+      currentTotalAssets: map['currentTotalAssets'],
+      initialBalance: map['initialBalance'],
+      totalIncome: map['totalIncome'],
+      totalExpense: map['totalExpense'],
+      periodIncome: map['periodIncome'],
+      periodExpense: map['periodExpense'],
+      periodNetIncome: map['periodNetIncome'],
+    );
 
     return AssetCacheEntry(
       cachedAt: DateTime.fromMillisecondsSinceEpoch(cachedAtMillis),
@@ -193,9 +226,21 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
     final box = _box;
     if (box == null) return;
 
+    final dataMap = {
+      'accountBookId': data.accountBookId,
+      'accountBookName': data.accountBookName,
+      'currentTotalAssets': data.currentTotalAssets,
+      'initialBalance': data.initialBalance,
+      'totalIncome': data.totalIncome,
+      'totalExpense': data.totalExpense,
+      'periodIncome': data.periodIncome,
+      'periodExpense': data.periodExpense,
+      'periodNetIncome': data.periodNetIncome,
+    };
+
     await box.put(cacheKey, {
       'cachedAt': DateTime.now().millisecondsSinceEpoch,
-      'data': data.toJson(),
+      'data': dataMap,
     });
   }
 

@@ -23,11 +23,24 @@ class OcrApiService {
     try {
       final response = await dio.post(
         ApiConstants.expensesOcr,
-        data: receiptData.toJson(),
+        data: _receiptDataToJson(receiptData),
       );
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     }
+  }
+
+  /// ReceiptData를 JSON으로 변환 (Data Layer 책임)
+  Map<String, dynamic> _receiptDataToJson(ReceiptData data) {
+    return {
+      'amount': data.amount,
+      'date': data.date?.toIso8601String().split('T')[0],
+      'merchant': data.displayName ?? data.merchant, // 정규화된 이름 우선
+      'category': data.category?.code, // 백엔드 코드 전송
+      'status': data.status?.name,
+      'rawText': data.rawText,
+      'cardIssuer': data.cardIssuer,
+    };
   }
 }

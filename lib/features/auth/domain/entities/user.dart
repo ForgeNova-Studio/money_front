@@ -18,4 +18,23 @@ class User {
     this.gender,
     this.lastLoginAt,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is User &&
+          runtimeType == other.runtimeType &&
+          userId == other.userId &&
+          email == other.email &&
+          nickname == other.nickname &&
+          gender == other.gender &&
+          lastLoginAt == other.lastLoginAt;
+
+  @override
+  int get hashCode =>
+      userId.hashCode ^
+      email.hashCode ^
+      nickname.hashCode ^
+      gender.hashCode ^
+      lastLoginAt.hashCode;
 }

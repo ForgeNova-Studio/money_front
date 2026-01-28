@@ -9,7 +9,7 @@ class Couple {
   final DateTime? linkedAt;
   final DateTime createdAt;
 
-  Couple({
+  const Couple({
     required this.coupleId,
     this.user1,
     this.user2,
@@ -26,6 +26,31 @@ class Couple {
     if (user2?.userId == currentUserId) return user1;
     return null;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Couple &&
+          runtimeType == other.runtimeType &&
+          coupleId == other.coupleId &&
+          user1 == other.user1 &&
+          user2 == other.user2 &&
+          inviteCode == other.inviteCode &&
+          codeExpiresAt == other.codeExpiresAt &&
+          linked == other.linked &&
+          linkedAt == other.linkedAt &&
+          createdAt == other.createdAt;
+
+  @override
+  int get hashCode =>
+      coupleId.hashCode ^
+      user1.hashCode ^
+      user2.hashCode ^
+      inviteCode.hashCode ^
+      codeExpiresAt.hashCode ^
+      linked.hashCode ^
+      linkedAt.hashCode ^
+      createdAt.hashCode;
 }
 
 /// 커플 사용자 정보
@@ -34,7 +59,7 @@ class CoupleUser {
   final String? nickname;
   final String? email;
 
-  CoupleUser({
+  const CoupleUser({
     required this.userId,
     this.nickname,
     this.email,
@@ -42,6 +67,18 @@ class CoupleUser {
 
   /// 표시할 이름 (닉네임 우선, 없으면 이메일)
   String get displayName => nickname ?? email ?? '사용자';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CoupleUser &&
+          runtimeType == other.runtimeType &&
+          userId == other.userId &&
+          nickname == other.nickname &&
+          email == other.email;
+
+  @override
+  int get hashCode => userId.hashCode ^ nickname.hashCode ^ email.hashCode;
 }
 
 /// 초대 응답 엔티티
@@ -50,9 +87,22 @@ class InviteInfo {
   final DateTime expiresAt;
   final String? message;
 
-  InviteInfo({
+  const InviteInfo({
     required this.inviteCode,
     required this.expiresAt,
     this.message,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InviteInfo &&
+          runtimeType == other.runtimeType &&
+          inviteCode == other.inviteCode &&
+          expiresAt == other.expiresAt &&
+          message == other.message;
+
+  @override
+  int get hashCode =>
+      inviteCode.hashCode ^ expiresAt.hashCode ^ message.hashCode;
 }

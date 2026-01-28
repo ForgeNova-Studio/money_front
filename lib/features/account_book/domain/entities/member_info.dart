@@ -1,14 +1,34 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+class MemberInfo {
+  final String userId;
+  final String nickname;
+  final String email;
+  final String role;
+  final DateTime joinedAt;
 
-part 'member_info.freezed.dart';
+  const MemberInfo({
+    required this.userId,
+    required this.nickname,
+    required this.email,
+    required this.role,
+    required this.joinedAt,
+  });
 
-@freezed
-sealed class MemberInfo with _$MemberInfo {
-  const factory MemberInfo({
-    required String userId,
-    required String nickname,
-    required String email,
-    required String role,
-    required DateTime joinedAt,
-  }) = _MemberInfo;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MemberInfo &&
+          runtimeType == other.runtimeType &&
+          userId == other.userId &&
+          nickname == other.nickname &&
+          email == other.email &&
+          role == other.role &&
+          joinedAt == other.joinedAt;
+
+  @override
+  int get hashCode =>
+      userId.hashCode ^
+      nickname.hashCode ^
+      email.hashCode ^
+      role.hashCode ^
+      joinedAt.hashCode;
 }

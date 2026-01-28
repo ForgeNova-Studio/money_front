@@ -3,6 +3,7 @@ class Income {
   final String? userId;
   final String? accountBookId;
   final String? fundingSource;
+
   /// Amount in KRW (won). Keep this as int to avoid floating point rounding.
   final int amount;
   final DateTime date;
@@ -11,7 +12,7 @@ class Income {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  Income({
+  const Income({
     this.incomeId,
     this.userId,
     this.accountBookId,
@@ -49,6 +50,35 @@ class Income {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Income &&
+          runtimeType == other.runtimeType &&
+          incomeId == other.incomeId &&
+          userId == other.userId &&
+          accountBookId == other.accountBookId &&
+          fundingSource == other.fundingSource &&
+          amount == other.amount &&
+          date == other.date &&
+          source == other.source &&
+          description == other.description &&
+          createdAt == other.createdAt &&
+          updatedAt == other.updatedAt;
+
+  @override
+  int get hashCode =>
+      incomeId.hashCode ^
+      userId.hashCode ^
+      accountBookId.hashCode ^
+      fundingSource.hashCode ^
+      amount.hashCode ^
+      date.hashCode ^
+      source.hashCode ^
+      description.hashCode ^
+      createdAt.hashCode ^
+      updatedAt.hashCode;
 }
 
 /// 수입 출처 상수

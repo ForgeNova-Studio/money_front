@@ -17,12 +17,25 @@ class BrandInfo {
   /// - 0.6~0.8: Fuzzy Matching (Phase 2)
   final double confidence;
 
-  BrandInfo({
+  const BrandInfo({
     required this.name,
     required this.category,
     this.confidence = 1.0,
   });
 
   @override
-  String toString() => 'BrandInfo(name: $name, category: ${category.displayName}, confidence: $confidence)';
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BrandInfo &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          category == other.category &&
+          confidence == other.confidence;
+
+  @override
+  int get hashCode => name.hashCode ^ category.hashCode ^ confidence.hashCode;
+
+  @override
+  String toString() =>
+      'BrandInfo(name: $name, category: ${category.displayName}, confidence: $confidence)';
 }
