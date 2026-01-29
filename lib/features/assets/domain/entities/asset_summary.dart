@@ -1,4 +1,3 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:moamoa/features/assets/domain/entities/asset_category.dart';
 
 class AssetSummary {

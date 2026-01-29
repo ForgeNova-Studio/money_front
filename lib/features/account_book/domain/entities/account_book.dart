@@ -1,6 +1,14 @@
-import 'package:flutter/foundation.dart';
 import 'package:moamoa/features/account_book/domain/entities/book_type.dart';
 import 'package:moamoa/features/account_book/domain/entities/member_info.dart';
+
+bool _listEquals<T>(List<T>? a, List<T>? b) {
+  if (a == null) return b == null;
+  if (b == null || a.length != b.length) return false;
+  for (int i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
+}
 
 class AccountBook {
   final String? accountBookId;
@@ -72,7 +80,7 @@ class AccountBook {
           endDate == other.endDate &&
           isActive == other.isActive &&
           createdAt == other.createdAt &&
-          listEquals(members, other.members);
+          _listEquals(members, other.members);
 
   @override
   int get hashCode =>

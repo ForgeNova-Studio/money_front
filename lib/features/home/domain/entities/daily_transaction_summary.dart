@@ -1,5 +1,13 @@
-import 'package:flutter/foundation.dart';
 import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
+
+bool _listEquals<T>(List<T>? a, List<T>? b) {
+  if (a == null) return b == null;
+  if (b == null || a.length != b.length) return false;
+  for (int i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
+}
 
 class DailyTransactionSummary {
   final DateTime date;
@@ -31,7 +39,7 @@ class DailyTransactionSummary {
           date == other.date &&
           totalIncome == other.totalIncome &&
           totalExpense == other.totalExpense &&
-          listEquals(transactions, other.transactions);
+          _listEquals(transactions, other.transactions);
 
   @override
   int get hashCode =>
