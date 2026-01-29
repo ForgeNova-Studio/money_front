@@ -78,6 +78,12 @@ class ApiConstants {
   static String recurringExpenseById(String recurringExpenseId) =>
       '/api/recurring-expenses/$recurringExpenseId';
 
+  // ========== Asset endpoints ==========
+  static const String assets = '/api/assets';
+  static const String assetsSummary = '/api/assets/summary';
+  // 동적 경로: /api/assets/{assetId}
+  static String assetById(String assetId) => '/api/assets/$assetId';
+
   // ========== AccountBook endpoints ==========
   static const String accountBooks = '/api/account-books';
   // 동적 경로: /api/account-books/{accountBookId}
