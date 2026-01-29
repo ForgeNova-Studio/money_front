@@ -44,7 +44,7 @@ final class AssetViewModelProvider
   }
 }
 
-String _$assetViewModelHash() => r'd07880a6e6ba9c7ed52f0be8b9b0aa2dbc92193c';
+String _$assetViewModelHash() => r'cab74ef8e43a5e254f6cd6a3b94a6bdbf3fab45e';
 
 /// 자산 관리 ViewModel
 

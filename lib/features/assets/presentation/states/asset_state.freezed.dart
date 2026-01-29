@@ -66,8 +66,6 @@ abstract mixin class $AssetStateCopyWith<$Res> {
       List<Asset> assets,
       bool isLoading,
       String? error});
-
-  $AssetSummaryCopyWith<$Res>? get summary;
 }
 
 /// @nodoc
@@ -105,20 +103,6 @@ class _$AssetStateCopyWithImpl<$Res> implements $AssetStateCopyWith<$Res> {
           : error // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
-  }
-
-  /// Create a copy of AssetState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $AssetSummaryCopyWith<$Res>? get summary {
-    if (_self.summary == null) {
-      return null;
-    }
-
-    return $AssetSummaryCopyWith<$Res>(_self.summary!, (value) {
-      return _then(_self.copyWith(summary: value));
-    });
   }
 }
 
@@ -363,9 +347,6 @@ abstract mixin class _$AssetStateCopyWith<$Res>
       List<Asset> assets,
       bool isLoading,
       String? error});
-
-  @override
-  $AssetSummaryCopyWith<$Res>? get summary;
 }
 
 /// @nodoc
@@ -403,20 +384,6 @@ class __$AssetStateCopyWithImpl<$Res> implements _$AssetStateCopyWith<$Res> {
           : error // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
-  }
-
-  /// Create a copy of AssetState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $AssetSummaryCopyWith<$Res>? get summary {
-    if (_self.summary == null) {
-      return null;
-    }
-
-    return $AssetSummaryCopyWith<$Res>(_self.summary!, (value) {
-      return _then(_self.copyWith(summary: value));
-    });
   }
 }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/assets/domain/entities/asset.dart';
+import 'package:moamoa/features/assets/presentation/utils/asset_extensions.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_styles.dart';
 
 /// 개별 자산 항목 위젯
@@ -31,7 +32,8 @@ class AssetListItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           child: Container(
             padding: const EdgeInsets.all(16),
-            decoration: transactionFormCardDecoration(context, borderRadius: 16),
+            decoration:
+                transactionFormCardDecoration(context, borderRadius: 16),
             child: Row(
               children: [
                 // 카테고리 아이콘

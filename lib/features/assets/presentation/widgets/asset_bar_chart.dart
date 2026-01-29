@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/assets/domain/entities/asset_summary.dart';
+import 'package:moamoa/features/assets/presentation/utils/asset_extensions.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_styles.dart';
 
 /// 자산 구성 막대 그래프
@@ -63,7 +64,8 @@ class _BarItem extends StatefulWidget {
   State<_BarItem> createState() => _BarItemState();
 }
 
-class _BarItemState extends State<_BarItem> with SingleTickerProviderStateMixin {
+class _BarItemState extends State<_BarItem>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 

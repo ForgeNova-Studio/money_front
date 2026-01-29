@@ -5,6 +5,7 @@ import 'package:moamoa/core/exceptions/exception_handler.dart';
 import 'package:moamoa/features/assets/domain/entities/asset.dart';
 import 'package:moamoa/features/assets/domain/entities/asset_category.dart';
 import 'package:moamoa/features/assets/domain/entities/asset_summary.dart';
+import 'package:moamoa/features/assets/presentation/utils/asset_extensions.dart';
 import 'package:moamoa/features/assets/presentation/viewmodels/asset_view_model.dart';
 import 'package:moamoa/features/assets/presentation/widgets/asset_total_card.dart';
 import 'package:moamoa/features/assets/presentation/widgets/asset_bar_chart.dart';
@@ -152,8 +153,7 @@ class AssetScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 총 자산 카드
-            if (summary != null)
-              AssetTotalCard(summary: summary),
+            if (summary != null) AssetTotalCard(summary: summary),
             const SizedBox(height: 24),
 
             // 자산 구성 그래프
@@ -222,7 +222,9 @@ class AssetScreen extends ConsumerWidget {
         asset: asset,
         onSave: (updatedAsset) async {
           try {
-            await ref.read(assetViewModelProvider.notifier).updateAsset(updatedAsset);
+            await ref
+                .read(assetViewModelProvider.notifier)
+                .updateAsset(updatedAsset);
             navigator.pop();
             messenger.showSnackBar(
               SnackBar(
@@ -434,7 +436,9 @@ class _AssetFormSheetState extends State<_AssetFormSheet> {
                   },
                   selectedColor: category.color,
                   labelStyle: TextStyle(
-                    color: isSelected ? Colors.white : context.appColors.textPrimary,
+                    color: isSelected
+                        ? Colors.white
+                        : context.appColors.textPrimary,
                     fontWeight: FontWeight.w500,
                   ),
                 );
@@ -544,4 +548,3 @@ class _AssetFormSheetState extends State<_AssetFormSheet> {
     await widget.onSave(asset);
   }
 }
-

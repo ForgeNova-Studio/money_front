@@ -426,7 +426,7 @@ final class AccountBooksProvider extends $FunctionalProvider<
           argument: null,
           retry: null,
           name: r'accountBooksProvider',
-          isAutoDispose: true,
+          isAutoDispose: false,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
@@ -446,7 +446,7 @@ final class AccountBooksProvider extends $FunctionalProvider<
   }
 }
 
-String _$accountBooksHash() => r'cdd041e5b51a851b77f751c88a7c24cd9d396529';
+String _$accountBooksHash() => r'c7e0ea08259ccdb30f3c8a93a522fe562833204e';
 
 @ProviderFor(accountBookDetail)
 const accountBookDetailProvider = AccountBookDetailFamily._();

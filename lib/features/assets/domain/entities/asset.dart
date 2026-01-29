@@ -1,41 +1,79 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:moamoa/features/assets/domain/entities/asset_category.dart';
 
-part 'asset.freezed.dart';
+class Asset {
+  /// 자산 ID
+  final String id;
 
-/// 개별 자산 엔티티
-@freezed
-sealed class Asset with _$Asset {
-  const Asset._();
+  /// 자산명 (예: "비상금 통장", "삼성전자")
+  final String name;
 
-  const factory Asset({
-    /// 자산 ID
-    required String id,
+  /// 자산 카테고리
+  final AssetCategory category;
 
-    /// 자산명 (예: "비상금 통장", "삼성전자")
-    required String name,
+  /// 현재 금액
+  final int amount;
 
-    /// 자산 카테고리
-    required AssetCategory category,
+  /// 메모 (선택)
+  final String? memo;
 
-    /// 현재 금액
-    required int amount,
+  /// 생성일
+  final DateTime? createdAt;
 
-    /// 메모 (선택)
+  /// 수정일
+  final DateTime? updatedAt;
+
+  const Asset({
+    required this.id,
+    required this.name,
+    required this.category,
+    required this.amount,
+    this.memo,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  Asset copyWith({
+    String? id,
+    String? name,
+    AssetCategory? category,
+    int? amount,
     String? memo,
-
-    /// 생성일
     DateTime? createdAt,
-
-    /// 수정일
     DateTime? updatedAt,
-  }) = _Asset;
-
-  /// 금액 포맷팅 (1,000,000)
-  String get formattedAmount {
-    return amount.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (match) => '${match[1]},',
+  }) {
+    return Asset(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      category: category ?? this.category,
+      amount: amount ?? this.amount,
+      memo: memo ?? this.memo,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Asset &&
+        other.id == id &&
+        other.name == name &&
+        other.category == category &&
+        other.amount == amount &&
+        other.memo == memo &&
+        other.createdAt == createdAt &&
+        other.updatedAt == updatedAt;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        name.hashCode ^
+        category.hashCode ^
+        amount.hashCode ^
+        memo.hashCode ^
+        createdAt.hashCode ^
+        updatedAt.hashCode;
   }
 }
