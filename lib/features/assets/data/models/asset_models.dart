@@ -125,16 +125,14 @@ class AssetSummaryResponseModel {
       previousMonthDiff: _asInt(json['previousMonthDiff']),
       categoryBreakdowns: categoryBreakdownsRaw is List
           ? categoryBreakdownsRaw
-              .whereType<Map>()
-              .map((e) => CategoryBreakdownModel.fromJson(
-                  Map<String, dynamic>.from(e as Map)))
+              .whereType<Map<String, dynamic>>()
+              .map((e) => CategoryBreakdownModel.fromJson(e))
               .toList()
           : const [],
       assets: assetsRaw is List
           ? assetsRaw
-              .whereType<Map>()
-              .map((e) => AssetResponseModel.fromJson(
-                  Map<String, dynamic>.from(e as Map)))
+              .whereType<Map<String, dynamic>>()
+              .map((e) => AssetResponseModel.fromJson(e))
               .toList()
           : const [],
     );
