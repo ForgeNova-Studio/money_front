@@ -165,7 +165,7 @@ class AssetScreen extends ConsumerWidget {
             AssetCategoryList(
               assets: state.assets,
               onAssetTap: (asset) {
-                // TODO: Navigate to asset detail
+                _showEditAssetSheet(context, ref, asset);
               },
               onAssetDelete: (assetId) {
                 _showDeleteConfirmDialog(context, ref, assetId);
@@ -184,22 +184,49 @@ class AssetScreen extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (sheetContext) => _AddAssetSheet(
-        onAdd: (name, category, amount, memo) async {
+      builder: (sheetContext) => _AssetFormSheet(
+        onSave: (asset) async {
           try {
-            await ref.read(assetViewModelProvider.notifier).addAsset(
-                  Asset(
-                    id: '',
-                    name: name,
-                    category: category,
-                    amount: amount,
-                    memo: memo.isEmpty ? null : memo,
-                  ),
-                );
+            await ref.read(assetViewModelProvider.notifier).addAsset(asset);
             navigator.pop();
             messenger.showSnackBar(
               SnackBar(
-                content: Text('$name 자산이 추가되었습니다'),
+                content: Text('${asset.name} 자산이 추가되었습니다'),
+                backgroundColor: sheetContext.appColors.success,
+              ),
+            );
+          } catch (e) {
+            final message = e is Exception
+                ? ExceptionHandler.getErrorMessage(e)
+                : '오류가 발생했습니다';
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(message),
+                backgroundColor: sheetContext.appColors.error,
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  void _showEditAssetSheet(BuildContext context, WidgetRef ref, Asset asset) {
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => _AssetFormSheet(
+        asset: asset,
+        onSave: (updatedAsset) async {
+          try {
+            await ref.read(assetViewModelProvider.notifier).updateAsset(updatedAsset);
+            navigator.pop();
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text('${updatedAsset.name} 자산이 수정되었습니다'),
                 backgroundColor: sheetContext.appColors.success,
               ),
             );
@@ -273,26 +300,40 @@ class AssetScreen extends ConsumerWidget {
   }
 }
 
-/// 자산 추가 바텀 시트
-class _AddAssetSheet extends StatefulWidget {
-  final Future<void> Function(
-    String name,
-    AssetCategory category,
-    int amount,
-    String memo,
-  ) onAdd;
+/// 자산 추가/수정 바텀 시트
+class _AssetFormSheet extends StatefulWidget {
+  final Asset? asset; // null이면 추가 모드, 있으면 수정 모드
+  final Future<void> Function(Asset asset) onSave;
 
-  const _AddAssetSheet({required this.onAdd});
+  const _AssetFormSheet({
+    this.asset,
+    required this.onSave,
+  });
+
+  bool get isEditMode => asset != null;
 
   @override
-  State<_AddAssetSheet> createState() => _AddAssetSheetState();
+  State<_AssetFormSheet> createState() => _AssetFormSheetState();
 }
 
-class _AddAssetSheetState extends State<_AddAssetSheet> {
+class _AssetFormSheetState extends State<_AssetFormSheet> {
   final _nameController = TextEditingController();
   final _amountController = TextEditingController();
   final _memoController = TextEditingController();
-  AssetCategory _selectedCategory = AssetCategory.cash;
+  late AssetCategory _selectedCategory;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.asset != null) {
+      _nameController.text = widget.asset!.name;
+      _amountController.text = widget.asset!.amount.toString();
+      _memoController.text = widget.asset!.memo ?? '';
+      _selectedCategory = widget.asset!.category;
+    } else {
+      _selectedCategory = AssetCategory.cash;
+    }
+  }
 
   @override
   void dispose() {
@@ -333,7 +374,7 @@ class _AddAssetSheetState extends State<_AddAssetSheet> {
 
             // 제목
             Text(
-              '자산 추가',
+              widget.isEditMode ? '자산 수정' : '자산 추가',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -444,7 +485,7 @@ class _AddAssetSheetState extends State<_AddAssetSheet> {
               height: 52,
               child: ElevatedButton(
                 onPressed: () {
-                  _handleAdd();
+                  _handleSave();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.appColors.primary,
@@ -454,9 +495,9 @@ class _AddAssetSheetState extends State<_AddAssetSheet> {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  '추가하기',
-                  style: TextStyle(
+                child: Text(
+                  widget.isEditMode ? '수정하기' : '추가하기',
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -470,7 +511,7 @@ class _AddAssetSheetState extends State<_AddAssetSheet> {
     );
   }
 
-  Future<void> _handleAdd() async {
+  Future<void> _handleSave() async {
     final name = _nameController.text.trim();
     final amountText = _amountController.text.replaceAll(RegExp(r'[^0-9]'), '');
     final amount = int.tryParse(amountText) ?? 0;
@@ -490,6 +531,17 @@ class _AddAssetSheetState extends State<_AddAssetSheet> {
       return;
     }
 
-    await widget.onAdd(name, _selectedCategory, amount, memo);
+    final asset = Asset(
+      id: widget.asset?.id ?? '',
+      name: name,
+      category: _selectedCategory,
+      amount: amount,
+      memo: memo.isEmpty ? null : memo,
+      createdAt: widget.asset?.createdAt,
+      updatedAt: DateTime.now(),
+    );
+
+    await widget.onSave(asset);
   }
 }
+
