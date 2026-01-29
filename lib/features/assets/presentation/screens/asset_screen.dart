@@ -10,6 +10,7 @@ import 'package:moamoa/features/assets/presentation/viewmodels/asset_view_model.
 import 'package:moamoa/features/assets/presentation/widgets/asset_total_card.dart';
 import 'package:moamoa/features/assets/presentation/widgets/asset_bar_chart.dart';
 import 'package:moamoa/features/assets/presentation/widgets/asset_category_list.dart';
+import 'package:moamoa/features/common/widgets/default_layout.dart';
 
 /// 자산 화면
 class AssetScreen extends ConsumerWidget {
@@ -20,38 +21,21 @@ class AssetScreen extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final state = ref.watch(assetViewModelProvider);
 
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        title: Text(
-          '자산',
-          style: TextStyle(
+    return DefaultLayout(
+      title: '자산',
+      centerTitle: false,
+      automaticallyImplyLeading: false,
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.settings_outlined,
             color: colorScheme.onSurface,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
           ),
+          onPressed: () {
+            // TODO: Navigate to asset settings
+          },
         ),
-        backgroundColor: colorScheme.surface,
-        elevation: 0,
-        centerTitle: false,
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.settings_outlined,
-              color: colorScheme.onSurface,
-            ),
-            onPressed: () {
-              // TODO: Navigate to asset settings
-            },
-          ),
-        ],
-      ),
-      body: state.isLoading
-          ? _buildLoadingState(context)
-          : state.error != null
-              ? _buildErrorState(context, state.error!, ref)
-              : _buildContent(context, state, ref),
+      ],
       floatingActionButton: SizedBox(
         width: 80,
         height: 35,
@@ -67,6 +51,11 @@ class AssetScreen extends ConsumerWidget {
           child: const Icon(Icons.add),
         ),
       ),
+      child: state.isLoading
+          ? _buildLoadingState(context)
+          : state.error != null
+              ? _buildErrorState(context, state.error!, ref)
+              : _buildContent(context, state, ref),
     );
   }
 
