@@ -143,7 +143,7 @@ class _BarItemState extends State<_BarItem>
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  '${widget.breakdown.percent.toStringAsFixed(1)}%',
+                  '${widget.breakdown.percent.toStringAsFixed(2)}%',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,

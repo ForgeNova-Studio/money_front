@@ -481,10 +481,12 @@ class _AssetFormSheetState extends State<_AssetFormSheet> {
             TextField(
               controller: _amountController,
               keyboardType: TextInputType.number,
+              maxLength: 13,
               decoration: InputDecoration(
                 labelText: '금액',
                 hintText: '0',
                 prefixText: '₩ ',
+                counterText: '',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -562,6 +564,13 @@ class _AssetFormSheetState extends State<_AssetFormSheet> {
     if (amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('금액을 입력해주세요')),
+      );
+      return;
+    }
+
+    if (amount >= 10000000000000) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('금액은 1조 미만이어야 합니다')),
       );
       return;
     }
