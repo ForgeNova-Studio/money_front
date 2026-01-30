@@ -55,7 +55,49 @@ class AssetScreen extends ConsumerWidget {
           ? _buildLoadingState(context)
           : state.error != null
               ? _buildErrorState(context, state.error!, ref)
-              : _buildContent(context, state, ref),
+              : state.assets.isEmpty
+                  ? _buildEmptyState(context)
+                  : _buildContent(context, state, ref),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              color: context.appColors.primaryPale,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.account_balance_wallet_outlined,
+              size: 32,
+              color: context.appColors.primary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            '등록된 자산이 없습니다',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: context.appColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '자산을 추가하여 관리해보세요',
+            style: TextStyle(
+              fontSize: 14,
+              color: context.appColors.textTertiary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
