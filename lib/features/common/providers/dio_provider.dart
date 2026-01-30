@@ -107,12 +107,10 @@ class _AuthInterceptor extends Interceptor {
 
     if (statusCode == 403 &&
         _isAccountBookAccessForbidden(err.response?.data)) {
-      await localDataSource.clearAll();
-      ref.read(authViewModelProvider.notifier).forceUnauthenticated(
-            errorMessage: '계정이 유효하지 않습니다. 다시 로그인해주세요.',
-          );
+      // 장부 접근 권한 없음 → 로그아웃하지 않고, 에러만 전달
+      // (다른 사용자의 장부 ID가 캐시되어 있을 때 발생)
       if (kDebugMode) {
-        debugPrint('[AuthInterceptor] 계정 접근 불가(403 A003) → 자동 로그아웃 처리');
+        debugPrint('[AuthInterceptor] 장부 접근 불가(403) → 에러 전달 (로그아웃 X)');
       }
       return handler.next(err);
     }
