@@ -90,6 +90,10 @@ class RouteNames {
   /// 설정 화면
   static const String settings = '/settings';
 
+  // ==================== Notification Routes ====================
+  /// 알림 목록 화면
+  static const String notifications = '/notifications';
+
   // ==================== AccountBook Routes ====================
   /// 가계부 생성 화면
   static const String accountBookCreate = '/account-book-create';

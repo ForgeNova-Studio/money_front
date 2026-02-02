@@ -57,6 +57,9 @@ import 'package:moamoa/features/ocr/presentation/screens/ocr_test_screen.dart';
 import 'package:moamoa/features/budget/presentation/screens/budget_settings_screen.dart';
 import 'package:moamoa/features/budget/presentation/screens/initial_balance_settings_screen.dart';
 
+// Notification Screens
+import 'package:moamoa/features/notification/presentation/screens/notification_list_screen.dart';
+
 /// 앱 라우트 설정 클래스
 class AppRouter {
   AppRouter._();
@@ -298,6 +301,13 @@ class AppRouter {
           path: RouteNames.initialBalanceSettings,
           name: 'initialBalanceSettings',
           builder: (context, state) => const InitialBalanceSettingsScreen(),
+        ),
+
+        // ==================== Notification Routes ====================
+        GoRoute(
+          path: RouteNames.notifications,
+          name: 'notifications',
+          builder: (context, state) => const NotificationListScreen(),
         ),
       ];
 

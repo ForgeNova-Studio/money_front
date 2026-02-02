@@ -92,4 +92,12 @@ class ApiConstants {
   // 동적 경로: /api/account-books/{accountBookId}/members
   static String accountBookMembers(String accountBookId) =>
       '/api/account-books/$accountBookId/members';
+
+  // ========== Notification endpoints ==========
+  static const String notifications = '/api/notifications';
+  static const String notificationsUnreadCount =
+      '/api/notifications/unread-count';
+  // 동적 경로: /api/notifications/{notificationId}/read
+  static String notificationMarkAsRead(String notificationId) =>
+      '/api/notifications/$notificationId/read';
 }
