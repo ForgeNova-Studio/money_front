@@ -16,6 +16,7 @@ import 'package:moamoa/router/router_provider.dart';
 
 // features
 import 'package:moamoa/features/common/screens/splash_screen.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 void main() {
   /// Native Splash Screen 유지 (Flutter 엔진 초기화 중 표시)
@@ -33,12 +34,20 @@ void main() {
     ),
   );
 
+  // Push Notification 설정
+  // Enable verbose logging for debugging (remove in production)
+  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+  // Initialize with your OneSignal App ID
+  OneSignal.initialize("YOUR_APP_ID");
+  // Use this method to prompt for push notifications.
+  // We recommend removing this method after testing and instead use In-App Messages to prompt for notification permission.
+  OneSignal.Notifications.requestPermission(false);
+
   // Flutter 스플래시가 표시되도록 네이티브 스플래시 제거
   WidgetsBinding.instance.addPostFrameCallback((_) {
     FlutterNativeSplash.remove();
   });
 }
-
 
 class MoneyFlowApp extends ConsumerWidget {
   const MoneyFlowApp({super.key});
