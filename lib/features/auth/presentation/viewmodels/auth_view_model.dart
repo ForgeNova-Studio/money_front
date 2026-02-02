@@ -9,6 +9,8 @@ import 'package:moamoa/core/exceptions/exceptions.dart';
 // providers/states
 import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
+import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
+import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 
 // entities
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
@@ -176,11 +178,36 @@ class AuthViewModel extends _$AuthViewModel {
       final useCase = ref.read(logoutUseCaseProvider);
       await useCase();
 
+      // 🔴 중요: 모든 사용자 관련 Provider들을 무효화하여 이전 계정 데이터 완전 초기화
+      // 로그아웃 후 다른 계정 로그인 시 이전 데이터가 남지 않도록 함
+      _invalidateAllUserProviders();
+
       state = AuthState.unauthenticated();
     } catch (e) {
       state = _setErrorMessage('로그아웃 중 오류가 발생했습니다: $e');
       rethrow;
     }
+  }
+
+  /// 모든 사용자 관련 Provider 무효화
+  void _invalidateAllUserProviders() {
+    // 가계부 관련
+    ref.invalidate(accountBooksProvider);
+    ref.invalidate(selectedAccountBookViewModelProvider);
+
+    // 주석 처리한 이유는 이미 잘 처리되고 있어 명시적으로 할 필요 없기 때문
+    // 추후 필요시 명시적으로 제거 가능
+    // 홈/거래 관련 (autoDispose이지만 명시적 초기화)
+    // ref.invalidate(homeViewModelProvider); // 필요시 import 추가
+
+    // 알림 관련
+    // ref.invalidate(notificationViewModelProvider); // 필요시 import 추가
+
+    // 자산 관련
+    // ref.invalidate(assetViewModelProvider); // 필요시 import 추가
+
+    // 커플 관련
+    // ref.invalidate(coupleViewModelProvider); // 필요시 import 추가
   }
 
   /// Google 로그인
