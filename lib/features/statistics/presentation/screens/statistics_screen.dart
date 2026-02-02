@@ -5,48 +5,41 @@ import 'package:intl/intl.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/core/constants/expense_categories.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/features/statistics/domain/entities/category_breakdown.dart';
+import 'package:moamoa/features/statistics/domain/entities/monthly_statistics.dart';
+import 'package:moamoa/features/statistics/presentation/viewmodels/statistics_view_model.dart';
 
-/// 카테고리별 지출 데이터 모델
-class CategoryExpense {
+/// 카테고리별 지출 데이터 (UI용)
+class CategoryExpenseUI {
   final String id;
   final String category;
   final int amount;
   final Color color;
+  final int percentage;
 
-  const CategoryExpense({
+  const CategoryExpenseUI({
     required this.id,
     required this.category,
     required this.amount,
     required this.color,
+    required this.percentage,
   });
 
-  double getPercentage(int total) => total > 0 ? (amount / total) * 100 : 0;
-}
-
-/// 더미 데이터 생성 (실제 카테고리 사용)
-List<CategoryExpense> _generateDummyData() {
-  // 실제 카테고리를 사용한 더미 데이터
-  final dummyAmounts = {
-    'FOOD': 450000,
-    'CAFE_SNACK': 125000,
-    'TRANSPORT': 180000,
-    'HOUSING': 850000,
-    'COMMUNICATION': 75000,
-    'SHOPPING': 320000,
-    'HEALTH': 120000,
-    'CULTURE': 95000,
-    'LIVING': 85000,
-  };
-
-  return DefaultExpenseCategories.all
-      .where((cat) => dummyAmounts.containsKey(cat.id))
-      .map((cat) => CategoryExpense(
-            id: cat.id,
-            category: cat.name,
-            amount: dummyAmounts[cat.id]!,
-            color: _hexToColor(cat.color),
-          ))
-      .toList();
+  /// Domain Entity에서 변환
+  factory CategoryExpenseUI.fromEntity(CategoryBreakdown entity) {
+    // 카테고리 ID로 카테고리 정보 찾기
+    final categoryInfo = DefaultExpenseCategories.all
+        .where((c) => c.id == entity.category)
+        .firstOrNull;
+    return CategoryExpenseUI(
+      id: entity.category,
+      category: categoryInfo?.name ?? entity.category,
+      amount: entity.amount,
+      color:
+          categoryInfo != null ? _hexToColor(categoryInfo.color) : Colors.grey,
+      percentage: entity.percentage,
+    );
+  }
 }
 
 Color _hexToColor(String hex) {
@@ -61,82 +54,162 @@ class StatisticsScreen extends ConsumerStatefulWidget {
 }
 
 class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
-  late DateTime _selectedMonth;
-  late DateTime _currentMonth;
-  late List<CategoryExpense> _expenses;
   int _touchedIndex = -1;
 
   @override
-  void initState() {
-    super.initState();
-    final now = DateTime.now();
-    _currentMonth = DateTime(now.year, now.month);
-    _selectedMonth = _currentMonth;
-    _expenses = _generateDummyData();
-  }
-
-  bool get _isCurrentMonth =>
-      _selectedMonth.year == _currentMonth.year &&
-      _selectedMonth.month == _currentMonth.month;
-
-  int get _totalExpense => _expenses.fold(0, (sum, e) => sum + e.amount);
-
-  void _changeMonth(int delta) {
-    setState(() {
-      _selectedMonth = DateTime(
-        _selectedMonth.year,
-        _selectedMonth.month + delta,
-      );
-      // 실제 API 연동 시 여기서 데이터 새로고침
-      _expenses = _generateDummyData();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final statisticsState = ref.watch(statisticsViewModelProvider);
+    final viewModel = ref.read(statisticsViewModelProvider.notifier);
+
     return DefaultLayout(
       title: '분석',
       automaticallyImplyLeading: false,
+      child: statisticsState.statistics.when(
+        data: (statistics) => _buildContent(
+          context,
+          viewModel,
+          statisticsState,
+          statistics,
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => _buildError(context, viewModel, error),
+      ),
+    );
+  }
+
+  Widget _buildContent(
+    BuildContext context,
+    StatisticsViewModel viewModel,
+    StatisticsState state,
+    MonthlyStatistics? statistics,
+  ) {
+    // 데이터 변환
+    final expenses = statistics?.categoryBreakdown
+            .map((e) => CategoryExpenseUI.fromEntity(e))
+            .toList() ??
+        [];
+    final totalExpense = statistics?.totalAmount ?? 0;
+
+    return RefreshIndicator(
+      onRefresh: viewModel.refresh,
       child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 월 선택기
             _MonthSelector(
-              selectedMonth: _selectedMonth,
-              isCurrentMonth: _isCurrentMonth,
-              onPrevious: () => _changeMonth(-1),
-              onNext: () => _changeMonth(1),
-              onGoToCurrentMonth: () {
-                if (!_isCurrentMonth) {
-                  setState(() => _selectedMonth = _currentMonth);
-                  _expenses = _generateDummyData();
-                }
-              },
+              selectedMonth: state.selectedMonth,
+              isCurrentMonth: state.isCurrentMonth,
+              onPrevious: () => viewModel.changeMonth(-1),
+              onNext: () => viewModel.changeMonth(1),
+              onGoToCurrentMonth: viewModel.goToCurrentMonth,
             ),
             const SizedBox(height: 24),
 
-            // 지출 내역 타이틀
-            _ExpenseHeader(
-              selectedMonth: _selectedMonth,
-              totalExpense: _totalExpense,
+            // 데이터가 없을 경우
+            if (expenses.isEmpty) ...[
+              _buildEmptyState(context, state.selectedMonth),
+            ] else ...[
+              // 지출 내역 타이틀
+              _ExpenseHeader(
+                selectedMonth: state.selectedMonth,
+                totalExpense: totalExpense,
+                comparison: statistics?.comparisonWithLastMonth,
+              ),
+              const SizedBox(height: 24),
+
+              // 파이 차트
+              _ExpensePieChart(
+                expenses: expenses,
+                totalExpense: totalExpense,
+                touchedIndex: _touchedIndex,
+                onTouched: (index) => setState(() => _touchedIndex = index),
+              ),
+              const SizedBox(height: 24),
+
+              // 카테고리별 리스트
+              _CategoryList(
+                expenses: expenses,
+                totalExpense: totalExpense,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context, DateTime month) {
+    final appColors = context.appColors;
+    final monthText = DateFormat('M월').format(month);
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 80),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.pie_chart_outline,
+              size: 64,
+              color: appColors.gray300,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              '$monthText 지출 내역이 없습니다',
+              style: TextStyle(
+                fontSize: 16,
+                color: appColors.gray500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildError(
+    BuildContext context,
+    StatisticsViewModel viewModel,
+    Object error,
+  ) {
+    final appColors = context.appColors;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 48,
+              color: appColors.error,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              '데이터를 불러올 수 없습니다',
+              style: TextStyle(
+                fontSize: 16,
+                color: appColors.gray700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              error.toString(),
+              style: TextStyle(
+                fontSize: 12,
+                color: appColors.gray500,
+              ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-
-            // 파이 차트
-            _ExpensePieChart(
-              expenses: _expenses,
-              totalExpense: _totalExpense,
-              touchedIndex: _touchedIndex,
-              onTouched: (index) => setState(() => _touchedIndex = index),
-            ),
-            const SizedBox(height: 24),
-
-            // 카테고리별 리스트
-            _CategoryList(
-              expenses: _expenses,
-              totalExpense: _totalExpense,
+            ElevatedButton.icon(
+              onPressed: viewModel.refresh,
+              icon: const Icon(Icons.refresh),
+              label: const Text('다시 시도'),
             ),
           ],
         ),
@@ -245,34 +318,70 @@ class _MonthSelector extends StatelessWidget {
 class _ExpenseHeader extends StatelessWidget {
   final DateTime selectedMonth;
   final int totalExpense;
+  final ComparisonData? comparison;
 
   const _ExpenseHeader({
     required this.selectedMonth,
     required this.totalExpense,
+    this.comparison,
   });
 
   @override
   Widget build(BuildContext context) {
-    final formatter = NumberFormat('#,###', 'ko_KR');
-    final month = selectedMonth.month;
+    final appColors = context.appColors;
+    final monthName = DateFormat('M월').format(selectedMonth);
+    final formatter = NumberFormat('#,###');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '$month월 지출 내역',
-          style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
+          '$monthName 지출',
+          style: TextStyle(
+            fontSize: 14,
+            color: appColors.gray500,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         Text(
-          '총 ${formatter.format(totalExpense)}원',
-          style: TextStyle(
+          '${formatter.format(totalExpense)}원',
+          style: const TextStyle(
             fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        // 전월 대비 표시
+        if (comparison != null) ...[
+          const SizedBox(height: 8),
+          _buildComparisonText(appColors, comparison!),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildComparisonText(dynamic appColors, ComparisonData data) {
+    final formatter = NumberFormat('#,###');
+    final isIncrease = data.diff > 0;
+    final color = isIncrease ? Colors.red : Colors.green;
+    final arrow = isIncrease ? '↑' : '↓';
+    final diffText = formatter.format(data.diff.abs());
+    final percentText = data.diffPercentage.abs().toStringAsFixed(1);
+
+    return Row(
+      children: [
+        Text(
+          '전월 대비 ',
+          style: TextStyle(
+            fontSize: 13,
+            color: appColors.gray500,
+          ),
+        ),
+        Text(
+          '$arrow $diffText원 ($percentText%)',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: color,
           ),
         ),
       ],
@@ -280,9 +389,9 @@ class _ExpenseHeader extends StatelessWidget {
   }
 }
 
-/// 파이 차트 위젯 (fl_chart Sample 2 스타일)
+/// 파이 차트
 class _ExpensePieChart extends StatelessWidget {
-  final List<CategoryExpense> expenses;
+  final List<CategoryExpenseUI> expenses;
   final int totalExpense;
   final int touchedIndex;
   final ValueChanged<int> onTouched;
@@ -297,7 +406,7 @@ class _ExpensePieChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 금액순 정렬
-    final sortedExpenses = List<CategoryExpense>.from(expenses)
+    final sortedExpenses = List<CategoryExpenseUI>.from(expenses)
       ..sort((a, b) => b.amount.compareTo(a.amount));
 
     return Container(
@@ -330,45 +439,68 @@ class _ExpensePieChart extends StatelessWidget {
               children: [
                 // 파이차트
                 Expanded(
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: PieChart(
-                      PieChartData(
-                        pieTouchData: PieTouchData(
-                          touchCallback:
-                              (FlTouchEvent event, pieTouchResponse) {
-                            if (!event.isInterestedForInteractions ||
-                                pieTouchResponse == null ||
-                                pieTouchResponse.touchedSection == null) {
-                              onTouched(-1);
-                              return;
-                            }
-                            onTouched(pieTouchResponse
-                                .touchedSection!.touchedSectionIndex);
-                          },
-                        ),
-                        borderData: FlBorderData(show: false),
-                        sectionsSpace: 0,
-                        centerSpaceRadius: 40,
-                        sections: _showingSections(sortedExpenses),
+                  flex: 3,
+                  child: PieChart(
+                    PieChartData(
+                      pieTouchData: PieTouchData(
+                        touchCallback: (event, response) {
+                          if (!event.isInterestedForInteractions ||
+                              response == null ||
+                              response.touchedSection == null) {
+                            onTouched(-1);
+                            return;
+                          }
+                          onTouched(
+                              response.touchedSection!.touchedSectionIndex);
+                        },
                       ),
+                      startDegreeOffset: 270,
+                      sectionsSpace: 2,
+                      centerSpaceRadius: 0,
+                      sections: sortedExpenses.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final expense = entry.value;
+                        final isTouched = index == touchedIndex;
+                        final radius = isTouched ? 95.0 : 80.0;
+
+                        return PieChartSectionData(
+                          color: expense.color,
+                          value: expense.amount.toDouble(),
+                          title: '${expense.percentage}%',
+                          radius: radius,
+                          titleStyle: TextStyle(
+                            fontSize: isTouched ? 16 : 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            shadows: const [
+                              Shadow(
+                                color: Colors.black26,
+                                blurRadius: 2,
+                              ),
+                            ],
+                          ),
+                          titlePositionPercentageOffset: 0.6,
+                        );
+                      }).toList(),
                     ),
                   ),
                 ),
                 const SizedBox(width: 16),
-                // 범례 (Indicators)
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: sortedExpenses.take(6).map((expense) {
-                    return _Indicator(
-                      color: expense.color,
-                      text: expense.category,
-                      isSquare: true,
-                    );
-                  }).toList(),
+                // 범례
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: sortedExpenses.take(6).map((expense) {
+                      return _Indicator(
+                        color: expense.color,
+                        text: expense.category,
+                        isSquare: true,
+                      );
+                    }).toList(),
+                  ),
                 ),
-                const SizedBox(width: 16),
               ],
             ),
           ),
@@ -376,47 +508,20 @@ class _ExpensePieChart extends StatelessWidget {
       ),
     );
   }
-
-  List<PieChartSectionData> _showingSections(
-      List<CategoryExpense> sortedExpenses) {
-    return sortedExpenses.asMap().entries.map((entry) {
-      final index = entry.key;
-      final expense = entry.value;
-      final isTouched = index == touchedIndex;
-      final percentage = expense.getPercentage(totalExpense);
-
-      final fontSize = isTouched ? 20.0 : 14.0;
-      final radius = isTouched ? 60.0 : 50.0;
-      const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
-
-      return PieChartSectionData(
-        color: expense.color,
-        value: expense.amount.toDouble(),
-        title: '${percentage.toStringAsFixed(0)}%',
-        radius: radius,
-        titleStyle: TextStyle(
-          fontSize: fontSize,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-          shadows: shadows,
-        ),
-      );
-    }).toList();
-  }
 }
 
-/// 범례 인디케이터 위젯
+/// 범례 인디케이터
 class _Indicator extends StatelessWidget {
   final Color color;
   final String text;
   final bool isSquare;
 
-  static const double _size = 12;
+  static const double _size = 14;
 
   const _Indicator({
     required this.color,
     required this.text,
-    required this.isSquare,
+    this.isSquare = false,
   });
 
   @override
@@ -449,9 +554,9 @@ class _Indicator extends StatelessWidget {
   }
 }
 
-/// 카테고리 리스트 위젯
+/// 카테고리별 리스트
 class _CategoryList extends StatelessWidget {
-  final List<CategoryExpense> expenses;
+  final List<CategoryExpenseUI> expenses;
   final int totalExpense;
 
   const _CategoryList({
@@ -461,101 +566,160 @@ class _CategoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formatter = NumberFormat('#,###', 'ko_KR');
-    // 금액 순 정렬
-    final sortedExpenses = List<CategoryExpense>.from(expenses)
+    // 금액순 정렬
+    final sortedExpenses = List<CategoryExpenseUI>.from(expenses)
       ..sort((a, b) => b.amount.compareTo(a.amount));
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '상세 내역',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
           ),
-        ],
+        ),
+        const SizedBox(height: 12),
+        ...sortedExpenses.map((expense) => _CategoryListItem(
+              expense: expense,
+              totalExpense: totalExpense,
+            )),
+      ],
+    );
+  }
+}
+
+/// 카테고리 리스트 아이템
+class _CategoryListItem extends StatelessWidget {
+  final CategoryExpenseUI expense;
+  final int totalExpense;
+
+  const _CategoryListItem({
+    required this.expense,
+    required this.totalExpense,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    final formatter = NumberFormat('#,###');
+    final percentage = expense.percentage;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: appColors.gray100),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          const Text(
-            '상세 내역',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+          // 카테고리 아이콘
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: expense.color.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              _getCategoryIcon(expense.id),
+              color: expense.color,
+              size: 20,
             ),
           ),
-          const SizedBox(height: 16),
-          ...sortedExpenses.map((expense) {
-            final percentage = expense.getPercentage(totalExpense);
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: expense.color,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          expense.category,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        '${formatter.format(expense.amount)}원',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      SizedBox(
-                        width: 45,
-                        child: Text(
-                          '${percentage.toStringAsFixed(1)}%',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                    ],
+          const SizedBox(width: 12),
+          // 카테고리 이름
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  expense.category,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                   ),
-                  const SizedBox(height: 8),
-                  // 진행률 바
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: LinearProgressIndicator(
-                      value: percentage / 100,
-                      backgroundColor:
-                          Theme.of(context).colorScheme.surfaceContainerHighest,
-                      valueColor: AlwaysStoppedAnimation<Color>(expense.color),
-                      minHeight: 6,
-                    ),
+                ),
+                const SizedBox(height: 4),
+                // 진행 바
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: percentage / 100,
+                    backgroundColor: appColors.gray100,
+                    valueColor: AlwaysStoppedAnimation<Color>(expense.color),
+                    minHeight: 6,
                   ),
-                ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          // 금액 & 비율
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${formatter.format(expense.amount)}원',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            );
-          }),
+              Text(
+                '$percentage%',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: appColors.gray500,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
+  }
+
+  IconData _getCategoryIcon(String categoryId) {
+    // 카테고리 ID로 카테고리 정보 찾기
+    final category = DefaultExpenseCategories.all
+        .where((c) => c.id == categoryId)
+        .firstOrNull;
+    if (category == null) return Icons.category;
+
+    // 카테고리 아이콘 매핑
+    switch (categoryId) {
+      case 'FOOD':
+        return Icons.restaurant;
+      case 'CAFE_SNACK':
+        return Icons.local_cafe;
+      case 'TRANSPORT':
+        return Icons.directions_car;
+      case 'HOUSING':
+        return Icons.home;
+      case 'COMMUNICATION':
+        return Icons.phone;
+      case 'SHOPPING':
+        return Icons.shopping_bag;
+      case 'HEALTH':
+        return Icons.favorite;
+      case 'CULTURE':
+        return Icons.movie;
+      case 'LIVING':
+        return Icons.weekend;
+      case 'EDUCATION':
+        return Icons.school;
+      case 'ALCOHOL':
+        return Icons.sports_bar;
+      case 'TRAVEL':
+        return Icons.flight;
+      case 'OTHER':
+        return Icons.more_horiz;
+      default:
+        return Icons.category;
+    }
   }
 }
