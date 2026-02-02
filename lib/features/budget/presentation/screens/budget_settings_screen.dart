@@ -32,6 +32,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
 
   bool _isInitialLoading = true;
   bool _isSaving = false;
+  bool _didAutoFocusAmount = false;
   late DateTime _selectedMonth;
   late DateTime _currentMonth;
 
@@ -94,7 +95,19 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     if (mounted) {
       _updateAmountFromCache();
       setState(() => _isInitialLoading = false);
+      _autoFocusAmountIfNeeded();
     }
+  }
+
+  /// 예산이 설정되지 않은 경우 금액 필드 포커싱
+  void _autoFocusAmountIfNeeded() {
+    if (_didAutoFocusAmount) return;
+    if (_amountController.text.isNotEmpty) return;
+    _didAutoFocusAmount = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _amountFocusNode.requestFocus();
+    });
   }
 
   /// 캐시에서 현재 선택된 월의 예산을 가져와 입력 필드에 설정
