@@ -15,8 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CategoryBreakdownModel {
   String get category;
-  int get amount;
-  int get percentage;
+  num get amount; // BigDecimal 호환
+  num get percentage;
 
   /// Create a copy of CategoryBreakdownModel
   /// with the given fields replaced by the non-null parameter values.
@@ -57,7 +57,7 @@ abstract mixin class $CategoryBreakdownModelCopyWith<$Res> {
           $Res Function(CategoryBreakdownModel) _then) =
       _$CategoryBreakdownModelCopyWithImpl;
   @useResult
-  $Res call({String category, int amount, int percentage});
+  $Res call({String category, num amount, num percentage});
 }
 
 /// @nodoc
@@ -85,11 +85,11 @@ class _$CategoryBreakdownModelCopyWithImpl<$Res>
       amount: null == amount
           ? _self.amount
           : amount // ignore: cast_nullable_to_non_nullable
-              as int,
+              as num,
       percentage: null == percentage
           ? _self.percentage
           : percentage // ignore: cast_nullable_to_non_nullable
-              as int,
+              as num,
     ));
   }
 }
@@ -185,7 +185,7 @@ extension CategoryBreakdownModelPatterns on CategoryBreakdownModel {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(String category, int amount, int percentage)? $default, {
+    TResult Function(String category, num amount, num percentage)? $default, {
     required TResult orElse(),
   }) {
     final _that = this;
@@ -212,7 +212,7 @@ extension CategoryBreakdownModelPatterns on CategoryBreakdownModel {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(String category, int amount, int percentage) $default,
+    TResult Function(String category, num amount, num percentage) $default,
   ) {
     final _that = this;
     switch (_that) {
@@ -235,7 +235,7 @@ extension CategoryBreakdownModelPatterns on CategoryBreakdownModel {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(String category, int amount, int percentage)? $default,
+    TResult? Function(String category, num amount, num percentage)? $default,
   ) {
     final _that = this;
     switch (_that) {
@@ -259,9 +259,10 @@ class _CategoryBreakdownModel extends CategoryBreakdownModel {
   @override
   final String category;
   @override
-  final int amount;
+  final num amount;
+// BigDecimal 호환
   @override
-  final int percentage;
+  final num percentage;
 
   /// Create a copy of CategoryBreakdownModel
   /// with the given fields replaced by the non-null parameter values.
@@ -309,7 +310,7 @@ abstract mixin class _$CategoryBreakdownModelCopyWith<$Res>
       __$CategoryBreakdownModelCopyWithImpl;
   @override
   @useResult
-  $Res call({String category, int amount, int percentage});
+  $Res call({String category, num amount, num percentage});
 }
 
 /// @nodoc
@@ -337,19 +338,19 @@ class __$CategoryBreakdownModelCopyWithImpl<$Res>
       amount: null == amount
           ? _self.amount
           : amount // ignore: cast_nullable_to_non_nullable
-              as int,
+              as num,
       percentage: null == percentage
           ? _self.percentage
           : percentage // ignore: cast_nullable_to_non_nullable
-              as int,
+              as num,
     ));
   }
 }
 
 /// @nodoc
 mixin _$ComparisonDataModel {
-  int get diff;
-  double get diffPercentage;
+  num get diff; // BigDecimal 호환
+  num get diffPercentage;
 
   /// Create a copy of ComparisonDataModel
   /// with the given fields replaced by the non-null parameter values.
@@ -388,7 +389,7 @@ abstract mixin class $ComparisonDataModelCopyWith<$Res> {
           ComparisonDataModel value, $Res Function(ComparisonDataModel) _then) =
       _$ComparisonDataModelCopyWithImpl;
   @useResult
-  $Res call({int diff, double diffPercentage});
+  $Res call({num diff, num diffPercentage});
 }
 
 /// @nodoc
@@ -411,11 +412,11 @@ class _$ComparisonDataModelCopyWithImpl<$Res>
       diff: null == diff
           ? _self.diff
           : diff // ignore: cast_nullable_to_non_nullable
-              as int,
+              as num,
       diffPercentage: null == diffPercentage
           ? _self.diffPercentage
           : diffPercentage // ignore: cast_nullable_to_non_nullable
-              as double,
+              as num,
     ));
   }
 }
@@ -511,7 +512,7 @@ extension ComparisonDataModelPatterns on ComparisonDataModel {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(int diff, double diffPercentage)? $default, {
+    TResult Function(num diff, num diffPercentage)? $default, {
     required TResult orElse(),
   }) {
     final _that = this;
@@ -538,7 +539,7 @@ extension ComparisonDataModelPatterns on ComparisonDataModel {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(int diff, double diffPercentage) $default,
+    TResult Function(num diff, num diffPercentage) $default,
   ) {
     final _that = this;
     switch (_that) {
@@ -561,7 +562,7 @@ extension ComparisonDataModelPatterns on ComparisonDataModel {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(int diff, double diffPercentage)? $default,
+    TResult? Function(num diff, num diffPercentage)? $default,
   ) {
     final _that = this;
     switch (_that) {
@@ -582,9 +583,10 @@ class _ComparisonDataModel extends ComparisonDataModel {
       _$ComparisonDataModelFromJson(json);
 
   @override
-  final int diff;
+  final num diff;
+// BigDecimal 호환
   @override
-  final double diffPercentage;
+  final num diffPercentage;
 
   /// Create a copy of ComparisonDataModel
   /// with the given fields replaced by the non-null parameter values.
@@ -630,7 +632,7 @@ abstract mixin class _$ComparisonDataModelCopyWith<$Res>
       __$ComparisonDataModelCopyWithImpl;
   @override
   @useResult
-  $Res call({int diff, double diffPercentage});
+  $Res call({num diff, num diffPercentage});
 }
 
 /// @nodoc
@@ -653,11 +655,11 @@ class __$ComparisonDataModelCopyWithImpl<$Res>
       diff: null == diff
           ? _self.diff
           : diff // ignore: cast_nullable_to_non_nullable
-              as int,
+              as num,
       diffPercentage: null == diffPercentage
           ? _self.diffPercentage
           : diffPercentage // ignore: cast_nullable_to_non_nullable
-              as double,
+              as num,
     ));
   }
 }
@@ -666,7 +668,7 @@ class __$ComparisonDataModelCopyWithImpl<$Res>
 mixin _$MonthlyStatisticsModel {
   String get accountBookId;
   String get accountBookName;
-  int get totalAmount;
+  num get totalAmount; // BigDecimal 호환
   List<CategoryBreakdownModel> get categoryBreakdown;
   ComparisonDataModel get comparisonWithLastMonth;
 
@@ -724,7 +726,7 @@ abstract mixin class $MonthlyStatisticsModelCopyWith<$Res> {
   $Res call(
       {String accountBookId,
       String accountBookName,
-      int totalAmount,
+      num totalAmount,
       List<CategoryBreakdownModel> categoryBreakdown,
       ComparisonDataModel comparisonWithLastMonth});
 
@@ -762,7 +764,7 @@ class _$MonthlyStatisticsModelCopyWithImpl<$Res>
       totalAmount: null == totalAmount
           ? _self.totalAmount
           : totalAmount // ignore: cast_nullable_to_non_nullable
-              as int,
+              as num,
       categoryBreakdown: null == categoryBreakdown
           ? _self.categoryBreakdown
           : categoryBreakdown // ignore: cast_nullable_to_non_nullable
@@ -880,7 +882,7 @@ extension MonthlyStatisticsModelPatterns on MonthlyStatisticsModel {
     TResult Function(
             String accountBookId,
             String accountBookName,
-            int totalAmount,
+            num totalAmount,
             List<CategoryBreakdownModel> categoryBreakdown,
             ComparisonDataModel comparisonWithLastMonth)?
         $default, {
@@ -918,7 +920,7 @@ extension MonthlyStatisticsModelPatterns on MonthlyStatisticsModel {
     TResult Function(
             String accountBookId,
             String accountBookName,
-            int totalAmount,
+            num totalAmount,
             List<CategoryBreakdownModel> categoryBreakdown,
             ComparisonDataModel comparisonWithLastMonth)
         $default,
@@ -952,7 +954,7 @@ extension MonthlyStatisticsModelPatterns on MonthlyStatisticsModel {
     TResult? Function(
             String accountBookId,
             String accountBookName,
-            int totalAmount,
+            num totalAmount,
             List<CategoryBreakdownModel> categoryBreakdown,
             ComparisonDataModel comparisonWithLastMonth)?
         $default,
@@ -991,8 +993,10 @@ class _MonthlyStatisticsModel extends MonthlyStatisticsModel {
   @override
   final String accountBookName;
   @override
-  final int totalAmount;
+  final num totalAmount;
+// BigDecimal 호환
   final List<CategoryBreakdownModel> _categoryBreakdown;
+// BigDecimal 호환
   @override
   List<CategoryBreakdownModel> get categoryBreakdown {
     if (_categoryBreakdown is EqualUnmodifiableListView)
@@ -1065,7 +1069,7 @@ abstract mixin class _$MonthlyStatisticsModelCopyWith<$Res>
   $Res call(
       {String accountBookId,
       String accountBookName,
-      int totalAmount,
+      num totalAmount,
       List<CategoryBreakdownModel> categoryBreakdown,
       ComparisonDataModel comparisonWithLastMonth});
 
@@ -1104,7 +1108,7 @@ class __$MonthlyStatisticsModelCopyWithImpl<$Res>
       totalAmount: null == totalAmount
           ? _self.totalAmount
           : totalAmount // ignore: cast_nullable_to_non_nullable
-              as int,
+              as num,
       categoryBreakdown: null == categoryBreakdown
           ? _self._categoryBreakdown
           : categoryBreakdown // ignore: cast_nullable_to_non_nullable

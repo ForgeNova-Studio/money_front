@@ -9,14 +9,15 @@ part 'monthly_statistics_model.freezed.dart';
 part 'monthly_statistics_model.g.dart';
 
 /// 카테고리별 지출 모델
+/// 백엔드 BigDecimal 호환을 위해 num 타입 사용
 @freezed
 sealed class CategoryBreakdownModel with _$CategoryBreakdownModel {
   const CategoryBreakdownModel._();
 
   const factory CategoryBreakdownModel({
     required String category,
-    required int amount,
-    required int percentage,
+    required num amount, // BigDecimal 호환
+    required num percentage, // BigDecimal 호환
   }) = _CategoryBreakdownModel;
 
   factory CategoryBreakdownModel.fromJson(Map<String, dynamic> json) =>
@@ -26,8 +27,8 @@ sealed class CategoryBreakdownModel with _$CategoryBreakdownModel {
   CategoryBreakdown toEntity() {
     return CategoryBreakdown(
       category: category,
-      amount: amount,
-      percentage: percentage,
+      amount: amount.toInt(),
+      percentage: percentage.toInt(),
     );
   }
 }
@@ -38,8 +39,8 @@ sealed class ComparisonDataModel with _$ComparisonDataModel {
   const ComparisonDataModel._();
 
   const factory ComparisonDataModel({
-    required int diff,
-    required double diffPercentage,
+    required num diff, // BigDecimal 호환
+    required num diffPercentage,
   }) = _ComparisonDataModel;
 
   factory ComparisonDataModel.fromJson(Map<String, dynamic> json) =>
@@ -48,8 +49,8 @@ sealed class ComparisonDataModel with _$ComparisonDataModel {
   /// Domain으로 변환
   ComparisonData toEntity() {
     return ComparisonData(
-      diff: diff,
-      diffPercentage: diffPercentage,
+      diff: diff.toInt(),
+      diffPercentage: diffPercentage.toDouble(),
     );
   }
 }
@@ -62,7 +63,7 @@ sealed class MonthlyStatisticsModel with _$MonthlyStatisticsModel {
   const factory MonthlyStatisticsModel({
     required String accountBookId,
     required String accountBookName,
-    required int totalAmount,
+    required num totalAmount, // BigDecimal 호환
     required List<CategoryBreakdownModel> categoryBreakdown,
     required ComparisonDataModel comparisonWithLastMonth,
   }) = _MonthlyStatisticsModel;
@@ -75,7 +76,7 @@ sealed class MonthlyStatisticsModel with _$MonthlyStatisticsModel {
     return MonthlyStatistics(
       accountBookId: accountBookId,
       accountBookName: accountBookName,
-      totalAmount: totalAmount,
+      totalAmount: totalAmount.toInt(),
       categoryBreakdown: categoryBreakdown.map((e) => e.toEntity()).toList(),
       comparisonWithLastMonth: comparisonWithLastMonth.toEntity(),
     );

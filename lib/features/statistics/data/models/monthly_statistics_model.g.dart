@@ -10,8 +10,8 @@ _CategoryBreakdownModel _$CategoryBreakdownModelFromJson(
         Map<String, dynamic> json) =>
     _CategoryBreakdownModel(
       category: json['category'] as String,
-      amount: (json['amount'] as num).toInt(),
-      percentage: (json['percentage'] as num).toInt(),
+      amount: json['amount'] as num,
+      percentage: json['percentage'] as num,
     );
 
 Map<String, dynamic> _$CategoryBreakdownModelToJson(
@@ -24,8 +24,8 @@ Map<String, dynamic> _$CategoryBreakdownModelToJson(
 
 _ComparisonDataModel _$ComparisonDataModelFromJson(Map<String, dynamic> json) =>
     _ComparisonDataModel(
-      diff: (json['diff'] as num).toInt(),
-      diffPercentage: (json['diffPercentage'] as num).toDouble(),
+      diff: json['diff'] as num,
+      diffPercentage: json['diffPercentage'] as num,
     );
 
 Map<String, dynamic> _$ComparisonDataModelToJson(
@@ -40,7 +40,7 @@ _MonthlyStatisticsModel _$MonthlyStatisticsModelFromJson(
     _MonthlyStatisticsModel(
       accountBookId: json['accountBookId'] as String,
       accountBookName: json['accountBookName'] as String,
-      totalAmount: (json['totalAmount'] as num).toInt(),
+      totalAmount: json['totalAmount'] as num,
       categoryBreakdown: (json['categoryBreakdown'] as List<dynamic>)
           .map(
               (e) => CategoryBreakdownModel.fromJson(e as Map<String, dynamic>))
