@@ -58,18 +58,18 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
       _selectedMonth.year == _currentMonth.year &&
       _selectedMonth.month == _currentMonth.month;
 
-  /// 현재 월 기준 앞뒤 3개월 프리페치
+  /// 현재 월 기준 앞뒤 1개월 프리페치
   Future<void> _prefetchBudgets() async {
     final accountBookId =
         ref.read(selectedAccountBookViewModelProvider).asData?.value;
     if (accountBookId == null) {
-      setState(() => _isInitialLoading = false);
+      if (mounted) setState(() => _isInitialLoading = false);
       return;
     }
 
-    // 현재 월 기준 -3 ~ +3 개월
+    // 현재 월 기준 -1 ~ +1 개월 (총 3개월)
     final months = <DateTime>[];
-    for (int i = -3; i <= 3; i++) {
+    for (int i = -1; i <= 1; i++) {
       months.add(DateTime(_currentMonth.year, _currentMonth.month + i));
     }
 
@@ -109,11 +109,15 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     }
   }
 
-  /// 캐시에 없는 월로 이동할 경우 개별 fetch + 추가 프리페치
-  Future<void> _fetchAndCacheMonth(DateTime month) async {
+  /// 캐시에 없는 월로 이동할 경우 개별 fetch
+  Future<void> _fetchAndCacheMonth(DateTime month,
+      {required int direction}) async {
     final key = _monthKey(month);
+
+    // 이미 캐시에 있으면 값만 업데이트하고 프리페칭 시도
     if (_budgetCache.containsKey(key)) {
       _updateAmountFromCache();
+      if (mounted) _prefetchDirectional(month, direction);
       return;
     }
 
@@ -132,7 +136,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
       if (mounted) {
         _updateAmountFromCache();
         // 이동 방향으로 추가 프리페치
-        _prefetchAdjacent(month);
+        _prefetchDirectional(month, direction);
       }
     } catch (e) {
       _budgetCache[key] = null;
@@ -140,29 +144,33 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     }
   }
 
-  /// 이동한 월 기준으로 앞뒤 2개월 추가 프리페치
-  void _prefetchAdjacent(DateTime month) async {
+  /// 이동한 방향으로 1개월 추가 프리페치
+  void _prefetchDirectional(DateTime currentMonth, int direction) {
+    if (direction == 0) return;
+
     final accountBookId =
         ref.read(selectedAccountBookViewModelProvider).asData?.value;
     if (accountBookId == null) return;
 
-    for (int i = -2; i <= 2; i++) {
-      final targetMonth = DateTime(month.year, month.month + i);
-      final key = _monthKey(targetMonth);
-      if (_budgetCache.containsKey(key)) continue;
+    // direction: -1 (이전 달로 이동) -> 더 이전 달(-1) 프리페치
+    // direction: 1 (다음 달로 이동) -> 더 다음 달(+1) 프리페치
+    final targetMonth =
+        DateTime(currentMonth.year, currentMonth.month + direction);
+    final key = _monthKey(targetMonth);
 
-      ref
-          .read(getMonthlyBudgetUseCaseProvider)(
-        year: targetMonth.year,
-        month: targetMonth.month,
-        accountBookId: accountBookId,
-      )
-          .then((budget) {
-        _budgetCache[key] = budget;
-      }).catchError((_) {
-        _budgetCache[key] = null;
-      });
-    }
+    if (_budgetCache.containsKey(key)) return;
+
+    ref
+        .read(getMonthlyBudgetUseCaseProvider)(
+      year: targetMonth.year,
+      month: targetMonth.month,
+      accountBookId: accountBookId,
+    )
+        .then((budget) {
+      _budgetCache[key] = budget;
+    }).catchError((_) {
+      _budgetCache[key] = null;
+    });
   }
 
   Future<void> _saveBudget() async {
@@ -231,7 +239,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     setState(() {
       _selectedMonth = newMonth;
     });
-    _fetchAndCacheMonth(newMonth);
+    _fetchAndCacheMonth(newMonth, direction: delta);
   }
 
   void _goToCurrentMonth() {
