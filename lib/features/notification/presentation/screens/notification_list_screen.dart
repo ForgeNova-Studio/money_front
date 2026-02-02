@@ -17,13 +17,37 @@ class NotificationListScreen extends ConsumerWidget {
     final viewModel = ref.read(notificationViewModelProvider.notifier);
 
     return DefaultLayout(
-      title: '알림함',
-      titleSpacing: 0,
+      title: '알림',
+      titleSpacing: 16,
       backgroundColor: context.appColors.backgroundLight,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_new_rounded),
         onPressed: () => context.pop(),
       ),
+      // 읽지 않은 개수 뱃지
+      actions: state.unreadCount > 0
+          ? [
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(right: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: context.appColors.primary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${state.unreadCount}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ]
+          : null,
       child: _buildBody(context, state, viewModel),
     );
   }
@@ -60,31 +84,29 @@ class NotificationListScreen extends ConsumerWidget {
       return _buildEmptyState(context);
     }
 
+    // 날짜별 그룹핑
+    final grouped = _groupByDate(state.notifications);
+
     return RefreshIndicator(
       onRefresh: viewModel.refresh,
-      child: ListView.separated(
+      child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        itemCount: state.notifications.length + (state.hasMore ? 1 : 0),
-        separatorBuilder: (_, __) => Divider(
-          height: 1,
-          color: context.appColors.gray200,
-        ),
+        itemCount: grouped.length + (state.hasMore ? 1 : 0),
         itemBuilder: (context, index) {
-          if (index == state.notifications.length) {
-            // 더 로드하기
+          if (index == grouped.length) {
             viewModel.loadMore();
             return const Padding(
               padding: EdgeInsets.all(16),
               child: Center(child: CircularProgressIndicator()),
             );
           }
-          return _NotificationTile(
-            notification: state.notifications[index],
-            onTap: () => _showNotificationDetail(
-              context,
-              state.notifications[index],
-              viewModel,
-            ),
+
+          final group = grouped[index];
+          return _NotificationGroup(
+            title: group.title,
+            notifications: group.notifications,
+            onNotificationTap: (notification) =>
+                _showNotificationDetail(context, notification, viewModel),
           );
         },
       ),
@@ -114,6 +136,48 @@ class NotificationListScreen extends ConsumerWidget {
     );
   }
 
+  /// 날짜별로 알림 그룹핑
+  List<_NotificationGroupData> _groupByDate(
+      List<NotificationEntity> notifications) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final weekAgo = today.subtract(const Duration(days: 7));
+
+    final todayList = <NotificationEntity>[];
+    final thisWeekList = <NotificationEntity>[];
+    final olderList = <NotificationEntity>[];
+
+    for (final notification in notifications) {
+      final notificationDate = DateTime(
+        notification.createdAt.year,
+        notification.createdAt.month,
+        notification.createdAt.day,
+      );
+
+      if (notificationDate == today) {
+        todayList.add(notification);
+      } else if (notificationDate.isAfter(weekAgo)) {
+        thisWeekList.add(notification);
+      } else {
+        olderList.add(notification);
+      }
+    }
+
+    final groups = <_NotificationGroupData>[];
+    if (todayList.isNotEmpty) {
+      groups.add(_NotificationGroupData(title: '오늘', notifications: todayList));
+    }
+    if (thisWeekList.isNotEmpty) {
+      groups.add(
+          _NotificationGroupData(title: '이번 주', notifications: thisWeekList));
+    }
+    if (olderList.isNotEmpty) {
+      groups.add(_NotificationGroupData(title: '이전', notifications: olderList));
+    }
+
+    return groups;
+  }
+
   void _showNotificationDetail(
     BuildContext context,
     NotificationEntity notification,
@@ -134,6 +198,81 @@ class NotificationListScreen extends ConsumerWidget {
   }
 }
 
+/// 알림 그룹 데이터
+class _NotificationGroupData {
+  final String title;
+  final List<NotificationEntity> notifications;
+
+  _NotificationGroupData({required this.title, required this.notifications});
+}
+
+/// 알림 그룹 위젯
+class _NotificationGroup extends StatelessWidget {
+  final String title;
+  final List<NotificationEntity> notifications;
+  final void Function(NotificationEntity) onNotificationTap;
+
+  const _NotificationGroup({
+    required this.title,
+    required this.notifications,
+    required this.onNotificationTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 섹션 타이틀
+        Padding(
+          padding:
+              const EdgeInsets.only(left: 20, right: 16, top: 16, bottom: 12),
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: appColors.textSecondary,
+            ),
+          ),
+        ),
+        // 알림 카드들
+        Container(
+          decoration: BoxDecoration(
+            color: appColors.backgroundGray,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            children: notifications.asMap().entries.map((entry) {
+              final index = entry.key;
+              final notification = entry.value;
+              final isLast = index == notifications.length - 1;
+
+              return Column(
+                children: [
+                  _NotificationTile(
+                    notification: notification,
+                    onTap: () => onNotificationTap(notification),
+                  ),
+                  if (!isLast)
+                    Divider(
+                      height: 1,
+                      indent: 16,
+                      endIndent: 16,
+                      color: appColors.gray200,
+                    ),
+                ],
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 /// 알림 타일 위젯
 class _NotificationTile extends StatelessWidget {
   final NotificationEntity notification;
@@ -150,26 +289,25 @@ class _NotificationTile extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
       child: Container(
-        color: notification.isRead
-            ? Colors.transparent
-            : appColors.primary.withOpacity(0.05),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        height: 80, // 고정 높이
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center, // 수직 중앙 정렬
           children: [
-            // 아이콘
+            // 알림 아이콘
             Container(
               width: 40,
               height: 40,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: _getTypeColor(notification.type, appColors)
-                    .withOpacity(0.1),
+                color: _getTypeColor(notification.type).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 _getTypeIcon(notification.type),
-                color: _getTypeColor(notification.type, appColors),
+                color: _getTypeColor(notification.type),
                 size: 20,
               ),
             ),
@@ -177,6 +315,7 @@ class _NotificationTile extends StatelessWidget {
             // 내용
             Expanded(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -197,28 +336,22 @@ class _NotificationTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       color: appColors.textSecondary,
+                      height: 1.3,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    _formatDate(notification.createdAt),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: appColors.textTertiary,
-                    ),
-                  ),
                 ],
               ),
             ),
-            // 읽지 않음 표시
+            const SizedBox(width: 8),
+            // 읽지 않음 표시 (빨간 점)
             if (!notification.isRead)
               Container(
                 width: 8,
                 height: 8,
-                decoration: BoxDecoration(
-                  color: appColors.primary,
+                decoration: const BoxDecoration(
+                  color: Colors.red,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -234,19 +367,231 @@ class _NotificationTile extends StatelessWidget {
         return Icons.campaign_rounded;
       case 'PERSONAL':
         return Icons.person_rounded;
+      case 'UPDATE':
+        return Icons.system_update_rounded;
+      case 'EVENT':
+        return Icons.celebration_rounded;
       default:
         return Icons.notifications_rounded;
     }
   }
 
-  Color _getTypeColor(String type, dynamic appColors) {
+  Color _getTypeColor(String type) {
     switch (type.toUpperCase()) {
       case 'NOTICE':
         return Colors.orange;
       case 'PERSONAL':
-        return appColors.primary;
+        return Colors.blue;
+      case 'UPDATE':
+        return Colors.green;
+      case 'EVENT':
+        return Colors.purple;
       default:
-        return appColors.gray500;
+        return Colors.grey;
+    }
+  }
+}
+
+/// 알림 상세 바텀시트 (모던 디자인)
+class _NotificationDetailSheet extends StatelessWidget {
+  final NotificationEntity notification;
+
+  const _NotificationDetailSheet({required this.notification});
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    final typeColor = _getTypeColor(notification.type);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: appColors.backgroundLight,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 드래그 핸들
+          Container(
+            margin: const EdgeInsets.only(top: 12),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: appColors.gray300,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+
+          // 헤더 영역 (타입 아이콘 + 색상 배경)
+          Container(
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  typeColor.withValues(alpha: 0.15),
+                  typeColor.withValues(alpha: 0.05),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: typeColor.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 타입 뱃지 + 날짜
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: typeColor.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getTypeIcon(notification.type),
+                            size: 14,
+                            color: typeColor,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            _getTypeLabel(notification.type),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: typeColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      _formatDate(notification.createdAt),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: appColors.textTertiary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // 제목
+                Text(
+                  notification.title,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: appColors.textPrimary,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // 내용 영역
+          Padding(
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              bottom: MediaQuery.of(context).padding.bottom + 24,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  notification.message,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: appColors.textPrimary,
+                    height: 1.7,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // 닫기 버튼
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      backgroundColor: appColors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      '확인',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  IconData _getTypeIcon(String type) {
+    switch (type.toUpperCase()) {
+      case 'NOTICE':
+        return Icons.campaign_rounded;
+      case 'PERSONAL':
+        return Icons.person_rounded;
+      case 'UPDATE':
+        return Icons.system_update_rounded;
+      case 'EVENT':
+        return Icons.celebration_rounded;
+      default:
+        return Icons.notifications_rounded;
+    }
+  }
+
+  Color _getTypeColor(String type) {
+    switch (type.toUpperCase()) {
+      case 'NOTICE':
+        return Colors.orange;
+      case 'PERSONAL':
+        return Colors.blue;
+      case 'UPDATE':
+        return Colors.green;
+      case 'EVENT':
+        return Colors.purple;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String _getTypeLabel(String type) {
+    switch (type.toUpperCase()) {
+      case 'NOTICE':
+        return '공지';
+      case 'PERSONAL':
+        return '개인';
+      case 'UPDATE':
+        return '업데이트';
+      case 'EVENT':
+        return '이벤트';
+      default:
+        return '알림';
     }
   }
 
@@ -259,73 +604,5 @@ class _NotificationTile extends StatelessWidget {
     if (diff.inHours < 24) return '${diff.inHours}시간 전';
     if (diff.inDays < 7) return '${diff.inDays}일 전';
     return DateFormat('M월 d일').format(date);
-  }
-}
-
-/// 알림 상세 바텀시트
-class _NotificationDetailSheet extends StatelessWidget {
-  final NotificationEntity notification;
-
-  const _NotificationDetailSheet({required this.notification});
-
-  @override
-  Widget build(BuildContext context) {
-    final appColors = context.appColors;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: appColors.backgroundLight,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 24,
-        bottom: MediaQuery.of(context).padding.bottom + 24,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 헤더
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  notification.title,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: appColors.textPrimary,
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            DateFormat('yyyy년 M월 d일 HH:mm').format(notification.createdAt),
-            style: TextStyle(
-              fontSize: 13,
-              color: appColors.textTertiary,
-            ),
-          ),
-          const SizedBox(height: 20),
-          // 내용
-          Text(
-            notification.message,
-            style: TextStyle(
-              fontSize: 15,
-              color: appColors.textPrimary,
-              height: 1.6,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
