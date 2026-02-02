@@ -7,6 +7,7 @@ import 'package:moamoa/router/route_names.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/features/notification/presentation/viewmodels/notification_view_model.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -15,10 +16,20 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final authState = ref.watch(authViewModelProvider);
+    final notificationState = ref.watch(notificationViewModelProvider);
+    final unreadCount = notificationState.unreadCount;
 
     return DefaultLayout(
       title: '더보기',
       automaticallyImplyLeading: false,
+      actions: [
+        // 공지사항 리스트 버튼
+        _NotificationIconButton(
+          unreadCount: unreadCount,
+          onTap: () => context.push(RouteNames.notifications),
+        ),
+        const SizedBox(width: 16),
+      ],
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -377,6 +388,60 @@ class _MenuItemTile extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// 알림 아이콘 버튼 (읽지 않은 알림 뱃지 포함)
+class _NotificationIconButton extends StatelessWidget {
+  final int unreadCount;
+  final VoidCallback onTap;
+
+  const _NotificationIconButton({
+    required this.unreadCount,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return IconButton(
+      onPressed: onTap,
+      icon: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Icon(
+            Icons.notifications_outlined,
+            color: colorScheme.onSurface,
+          ),
+          if (unreadCount > 0)
+            Positioned(
+              right: -4,
+              top: -4,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+                constraints: const BoxConstraints(
+                  minWidth: 16,
+                  minHeight: 16,
+                ),
+                child: Text(
+                  unreadCount > 99 ? '99+' : '$unreadCount',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
