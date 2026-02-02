@@ -213,9 +213,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   child: HomeTransactionSheet(
                     homeState: homeState,
                     onDelete: _handleDeleteTransaction,
-                    onCameraTap: () {
-                      // TODO: Navigate to OCR screen
-                    },
                     onResetToMonthView: () {
                       _resetFabDimmed();
                       ref
