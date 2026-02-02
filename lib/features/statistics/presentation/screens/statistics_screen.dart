@@ -90,6 +90,41 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         [];
     final totalExpense = statistics?.totalAmount ?? 0;
 
+    if (expenses.isEmpty) {
+      return RefreshIndicator(
+        onRefresh: viewModel.refresh,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _MonthSelector(
+                      selectedMonth: state.selectedMonth,
+                      isCurrentMonth: state.isCurrentMonth,
+                      onPrevious: () => viewModel.changeMonth(-1),
+                      onNext: () => viewModel.changeMonth(1),
+                      onGoToCurrentMonth: viewModel.goToCurrentMonth,
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(
+                child: _buildEmptyState(context, state.selectedMonth),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return RefreshIndicator(
       onRefresh: viewModel.refresh,
       child: SingleChildScrollView(
@@ -108,33 +143,28 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             ),
             const SizedBox(height: 24),
 
-            // 데이터가 없을 경우
-            if (expenses.isEmpty) ...[
-              _buildEmptyState(context, state.selectedMonth),
-            ] else ...[
-              // 지출 내역 타이틀
-              _ExpenseHeader(
-                selectedMonth: state.selectedMonth,
-                totalExpense: totalExpense,
-                comparison: statistics?.comparisonWithLastMonth,
-              ),
-              const SizedBox(height: 24),
+            // 지출 내역 타이틀
+            _ExpenseHeader(
+              selectedMonth: state.selectedMonth,
+              totalExpense: totalExpense,
+              comparison: statistics?.comparisonWithLastMonth,
+            ),
+            const SizedBox(height: 24),
 
-              // 파이 차트
-              _ExpensePieChart(
-                expenses: expenses,
-                totalExpense: totalExpense,
-                touchedIndex: _touchedIndex,
-                onTouched: (index) => setState(() => _touchedIndex = index),
-              ),
-              const SizedBox(height: 24),
+            // 파이 차트
+            _ExpensePieChart(
+              expenses: expenses,
+              totalExpense: totalExpense,
+              touchedIndex: _touchedIndex,
+              onTouched: (index) => setState(() => _touchedIndex = index),
+            ),
+            const SizedBox(height: 24),
 
-              // 카테고리별 리스트
-              _CategoryList(
-                expenses: expenses,
-                totalExpense: totalExpense,
-              ),
-            ],
+            // 카테고리별 리스트
+            _CategoryList(
+              expenses: expenses,
+              totalExpense: totalExpense,
+            ),
           ],
         ),
       ),
@@ -145,28 +175,23 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final appColors = context.appColors;
     final monthText = DateFormat('M월').format(month);
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 80),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.pie_chart_outline,
-              size: 64,
-              color: appColors.gray300,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '$monthText 지출 내역이 없습니다',
-              style: TextStyle(
-                fontSize: 16,
-                color: appColors.gray500,
-              ),
-            ),
-          ],
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.pie_chart_outline,
+          size: 64,
+          color: appColors.gray300,
         ),
-      ),
+        const SizedBox(height: 16),
+        Text(
+          '$monthText 지출 내역이 없습니다',
+          style: TextStyle(
+            fontSize: 16,
+            color: appColors.gray500,
+          ),
+        ),
+      ],
     );
   }
 
