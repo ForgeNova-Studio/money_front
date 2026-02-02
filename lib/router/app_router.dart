@@ -23,7 +23,9 @@ import 'package:moamoa/features/home/presentation/screens/home_screen.dart';
 import 'package:moamoa/features/statistics/presentation/screens/statistics_screen.dart';
 
 // Asset Screens
+import 'package:moamoa/features/assets/domain/entities/asset.dart';
 import 'package:moamoa/features/assets/presentation/screens/asset_screen.dart';
+import 'package:moamoa/features/assets/presentation/screens/add_asset_screen.dart';
 
 // AccountBook Screens
 // AccountBook Screens
@@ -274,6 +276,16 @@ class AppRouter {
           path: RouteNames.accountBookCreate,
           name: 'accountBookCreate',
           builder: (context, state) => const AccountBookCreateScreen(),
+        ),
+
+        // ==================== Asset Routes ====================
+        GoRoute(
+          path: RouteNames.addAsset,
+          name: 'addAsset',
+          builder: (context, state) {
+            final asset = state.extra as Asset?;
+            return AddAssetScreen(asset: asset);
+          },
         ),
 
         // ==================== Budget Settings Routes ====================

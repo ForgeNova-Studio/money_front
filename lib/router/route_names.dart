@@ -70,6 +70,9 @@ class RouteNames {
   /// 자산 화면
   static const String assets = '/assets';
 
+  /// 자산 추가/수정 화면
+  static const String addAsset = '/assets/add';
+
   /// 초기 잔액 설정 화면
   static const String initialBalanceSettings = '/assets/initial-balance';
 
