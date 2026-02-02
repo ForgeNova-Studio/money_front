@@ -61,6 +61,8 @@ class BudgetRemoteDataSourceImpl implements BudgetRemoteDataSource {
         queryParameters: queryParams,
       );
 
+      /// response 바디가 비어있거나 Map이 아니면 -> 예산 없음으로 처리
+      /// 즉, 서버가 200 + empty 로 내려주면 프론트에서 null 반환
       if (response.data == null || response.data == '' || response.data is! Map<String, dynamic>) {
         return null;
       }
