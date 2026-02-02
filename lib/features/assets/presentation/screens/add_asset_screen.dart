@@ -40,7 +40,7 @@ class _AddAssetScreenState extends ConsumerState<AddAssetScreen> {
     // 수정 모드: 기존 값 세팅
     if (widget.asset != null) {
       _nameController.text = widget.asset!.name;
-      _amountController.text = widget.asset!.amount.toString();
+      _amountController.text = widget.asset!.formattedAmount;
       _memoController.text = widget.asset!.memo ?? '';
     }
 
