@@ -97,6 +97,7 @@ class ApiConstants {
   static const String notifications = '/api/notifications';
   static const String notificationsUnreadCount =
       '/api/notifications/unread-count';
+  static const String notificationsSendAll = '/api/notifications/send-all';
   // 동적 경로: /api/notifications/{notificationId}/read
   static String notificationMarkAsRead(String notificationId) =>
       '/api/notifications/$notificationId/read';

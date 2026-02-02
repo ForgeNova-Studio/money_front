@@ -18,9 +18,16 @@ abstract class NotificationRemoteDataSource {
   /// 읽지 않은 알림 개수 조회
   Future<int> getUnreadCount();
 
-  /// 알림 발송 (관리자용)
+  /// 알림 발송 (관리자용 - 특정 사용자)
   Future<NotificationModel> createNotification(
       NotificationRequestModel request);
+
+  /// 전체 사용자에게 공지 발송 (관리자용)
+  Future<void> sendNotificationToAll({
+    required String title,
+    required String message,
+    String type = 'NOTICE',
+  });
 }
 
 class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
@@ -109,6 +116,33 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       if (kDebugMode) {
         debugPrint(
             '[NotificationRemoteDataSource] createNotification error: $e');
+        debugPrint('[NotificationRemoteDataSource] Stack trace: $stackTrace');
+      }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> sendNotificationToAll({
+    required String title,
+    required String message,
+    String type = 'NOTICE',
+  }) async {
+    try {
+      await dio.post(
+        ApiConstants.notificationsSendAll,
+        data: {
+          'title': title,
+          'message': message,
+          'type': type,
+        },
+      );
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e, stackTrace) {
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationRemoteDataSource] sendNotificationToAll error: $e');
         debugPrint('[NotificationRemoteDataSource] Stack trace: $stackTrace');
       }
       rethrow;

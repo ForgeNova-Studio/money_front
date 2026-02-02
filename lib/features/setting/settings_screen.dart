@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/core/config/admin_config.dart';
 import 'package:moamoa/router/route_names.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
@@ -128,6 +129,25 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ],
             ),
+
+            // 5. 관리자 메뉴 (히든 - 관리자 계정만 표시)
+            if (AdminConfig.isAdmin(authState.user?.email))
+              Column(
+                children: [
+                  const SizedBox(height: 16),
+                  _MenuSection(
+                    title: '관리자',
+                    items: [
+                      _MenuItem(
+                        icon: Icons.admin_panel_settings,
+                        iconColor: Colors.red,
+                        label: '공지 작성',
+                        onTap: () => context.push(RouteNames.adminNotification),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             const SizedBox(height: 32),
 
             // 5. App Info

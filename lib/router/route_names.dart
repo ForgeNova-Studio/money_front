@@ -94,6 +94,9 @@ class RouteNames {
   /// 알림 목록 화면
   static const String notifications = '/notifications';
 
+  /// 관리자 공지 작성 화면 (히든 메뉴)
+  static const String adminNotification = '/admin/notification';
+
   // ==================== AccountBook Routes ====================
   /// 가계부 생성 화면
   static const String accountBookCreate = '/account-book-create';

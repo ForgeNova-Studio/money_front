@@ -59,6 +59,7 @@ import 'package:moamoa/features/budget/presentation/screens/initial_balance_sett
 
 // Notification Screens
 import 'package:moamoa/features/notification/presentation/screens/notification_list_screen.dart';
+import 'package:moamoa/features/notification/presentation/screens/admin_notification_screen.dart';
 
 /// 앱 라우트 설정 클래스
 class AppRouter {
@@ -308,6 +309,11 @@ class AppRouter {
           path: RouteNames.notifications,
           name: 'notifications',
           builder: (context, state) => const NotificationListScreen(),
+        ),
+        GoRoute(
+          path: RouteNames.adminNotification,
+          name: 'adminNotification',
+          builder: (context, state) => const AdminNotificationScreen(),
         ),
       ];
 
