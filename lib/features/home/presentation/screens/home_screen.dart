@@ -124,12 +124,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final colorScheme = Theme.of(context).colorScheme;
     final homeState = ref.watch(homeViewModelProvider);
     final calendarFormat = homeState.calendarFormat;
+    final isWeekView = calendarFormat == CalendarFormat.week;
     final accountBooksState = ref.watch(accountBooksProvider);
     final selectedAccountBookState =
         ref.watch(selectedAccountBookViewModelProvider);
     final selectedAccountBookName = _resolveSelectedAccountBookName(
       accountBooksState,
       selectedAccountBookState,
+    );
+
+    // 나중에 리팩토링 하자
+    final topSection = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        children: [
+          // 1. Budget Info Area (탭하면 새로고침)
+          GestureDetector(
+            onDoubleTap: _handleRefresh,
+            child: const HomeBudgetInfoCard(),
+          ),
+
+          // 2. Custom Calendar
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: CustomCalendar(
+              format: calendarFormat,
+              focusedDay: homeState.focusedMonth,
+              selectedDay: homeState.selectedDate,
+              monthlyData: homeState.monthlyData,
+              onFormatChanged: _handleFormatChanged,
+              onDateSelected: _handleDateSelected,
+              onPageChanged: _handlePageChanged,
+            ),
+          ),
+        ],
+      ),
     );
 
     return Stack(
@@ -180,51 +209,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           body: Listener(
             behavior: HitTestBehavior.translucent,
             onPointerDown: (_) => _collapseOverlaysIfNeeded(),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
+            child: isWeekView
+                ? Column(
                     children: [
-                      // 1. Budget Info Area (탭하면 새로고침)
-                      GestureDetector(
-                        onDoubleTap: _handleRefresh,
-                        child: const HomeBudgetInfoCard(),
-                      ),
+                      topSection,
 
-                      // 2. Custom Calendar
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: CustomCalendar(
-                          format: calendarFormat,
-                          focusedDay: homeState.focusedMonth,
-                          selectedDay: homeState.selectedDate,
-                          monthlyData: homeState.monthlyData,
-                          onFormatChanged: _handleFormatChanged,
-                          onDateSelected: _handleDateSelected,
-                          onPageChanged: _handlePageChanged,
+                      // 3. Transactions Sheet (Fills remaining space - 패딩 바깥)
+                      Expanded(
+                        child: HomeTransactionSheet(
+                          homeState: homeState,
+                          onDelete: _handleDeleteTransaction,
+                          onResetToMonthView: () {
+                            _resetFabDimmed();
+                            ref
+                                .read(homeViewModelProvider.notifier)
+                                .resetToMonthView();
+                          },
+                          onRevealActiveChanged: _handleTransactionReveal,
                         ),
                       ),
                     ],
+                  )
+                : SingleChildScrollView(
+                    child: topSection,
                   ),
-                ),
-
-                // 3. Transactions Sheet (Fills remaining space - 패딩 바깥)
-                Expanded(
-                  child: HomeTransactionSheet(
-                    homeState: homeState,
-                    onDelete: _handleDeleteTransaction,
-                    onResetToMonthView: () {
-                      _resetFabDimmed();
-                      ref
-                          .read(homeViewModelProvider.notifier)
-                          .resetToMonthView();
-                    },
-                    onRevealActiveChanged: _handleTransactionReveal,
-                  ),
-                ),
-              ],
-            ),
           ),
           floatingActionButton: AnimatedOpacity(
             opacity: _isFabDimmed ? 0 : 1,
