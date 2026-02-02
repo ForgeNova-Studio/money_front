@@ -136,6 +136,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       children: [
         Scaffold(
           backgroundColor: colorScheme.surface,
+          resizeToAvoidBottomInset: false, // 이전 화면에서 키보드가 열려 있을 때, 홈에서 오버플로우 나는 현상 해결
           appBar: AppBar(
             title: InkWell(
               borderRadius: BorderRadius.circular(8),
