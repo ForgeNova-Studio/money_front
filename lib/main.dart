@@ -37,8 +37,16 @@ void main() {
   // Push Notification 설정
   // Enable verbose logging for debugging (remove in production)
   // OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+
   // Initialize with your OneSignal App ID
+  // 빌드 시 --dart-define=ONESIGNAL_APP_ID=... 로 주입
+  // const oneSignalAppId = String.fromEnvironment('ONESIGNAL_APP_ID');
+  // if (oneSignalAppId.isNotEmpty) {
+  //   OneSignal.initialize(oneSignalAppId);
+  // }
+
   OneSignal.initialize("d4c0efab-ecfb-4bb5-a649-082b8a78957b");
+
   // Use this method to prompt for push notifications.
   // We recommend removing this method after testing and instead use In-App Messages to prompt for notification permission.
   OneSignal.Notifications.requestPermission(false);
