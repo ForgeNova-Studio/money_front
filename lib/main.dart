@@ -43,10 +43,15 @@ void main() async {
   // OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
 
   // Initialize with your OneSignal App ID
-  final oneSignalAppId = dotenv.env['ONESIGNAL_APP_ID'];
-  if (oneSignalAppId != null) {
-    OneSignal.initialize(oneSignalAppId);
+  late String oneSignalAppId;
+  if (kDebugMode) {
+    oneSignalAppId = dotenv.env['ONESIGNAL_APP_ID_DEV']!;
+    debugPrint('ONESIGNAL_APP_ID_DEV: $oneSignalAppId');
+  } else {
+    oneSignalAppId = dotenv.env['ONESIGNAL_APP_ID_REAL']!;
+    debugPrint('ONESIGNAL_APP_ID_REAL: $oneSignalAppId');
   }
+  OneSignal.initialize(oneSignalAppId);
 
   // Use this method to prompt for push notifications.
   // We recommend removing this method after testing and instead use In-App Messages to prompt for notification permission.
