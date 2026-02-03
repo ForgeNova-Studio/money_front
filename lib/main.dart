@@ -36,7 +36,7 @@ void main() {
 
   // Push Notification 설정
   // Enable verbose logging for debugging (remove in production)
-  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+  // OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
   // Initialize with your OneSignal App ID
   OneSignal.initialize("d4c0efab-ecfb-4bb5-a649-082b8a78957b");
   // Use this method to prompt for push notifications.
