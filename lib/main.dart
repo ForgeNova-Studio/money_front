@@ -25,12 +25,12 @@ void main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  // Load .env file
+  /// dotenv 파일 불러오기
+  /// - 주요 api 주소, 앱 키 등 환경 변수 설정
   await dotenv.load(fileName: ".env");
 
   // 카카오 네이티브 앱키
   KakaoSdk.init(nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY']);
-  debugPrint('KAKAO_NATIVE_APP_KEY: ${dotenv.env['KAKAO_NATIVE_APP_KEY']}');
 
   runApp(
     const ProviderScope(
@@ -43,15 +43,8 @@ void main() async {
   // OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
 
   // Initialize with your OneSignal App ID
-  // 빌드 시 --dart-define=ONESIGNAL_APP_ID=... 로 주입
-  // const oneSignalAppId = String.fromEnvironment('ONESIGNAL_APP_ID');
-  // if (oneSignalAppId.isNotEmpty) {
-  //   OneSignal.initialize(oneSignalAppId);
-  // }
-
   final oneSignalAppId = dotenv.env['ONESIGNAL_APP_ID'];
   if (oneSignalAppId != null) {
-    debugPrint('ONESIGNAL_APP_ID: $oneSignalAppId');
     OneSignal.initialize(oneSignalAppId);
   }
 
@@ -74,7 +67,7 @@ class MoneyFlowApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
-      title: 'MoneyFlowTemp',
+      title: '모아모아',
       debugShowCheckedModeBanner: false,
 
       // 테마 설정
