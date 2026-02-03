@@ -11,6 +11,7 @@ import 'package:moamoa/features/home/presentation/widgets/custom_calendar.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_account_book_dropdown.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_budget_info_card.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_fab_menu.dart';
+import 'package:moamoa/features/home/presentation/widgets/home_pending_expenses_banner.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_transaction_sheet.dart';
 import 'package:moamoa/features/home/presentation/widgets/delete_confirem_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -185,13 +186,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     children: [
-                      // 1. Budget Info Area (탭하면 새로고침)
-                      GestureDetector(
-                        onDoubleTap: _handleRefresh,
-                        child: const HomeBudgetInfoCard(),
-                      ),
+                      // 1. Budget Info Area
+                      const HomeBudgetInfoCard(),
 
-                      // 2. Custom Calendar
+                      // 2. Pending Expenses Banner
+                      const HomePendingExpensesBanner(),
+
+                      // 3. Custom Calendar
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: CustomCalendar(
