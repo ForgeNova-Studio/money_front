@@ -96,7 +96,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
       message: model.message,
       type: model.type,
       isRead: model.isRead,
-      createdAt: model.createdAt,
+      createdAt: model.createdAt ??
+          DateTime.now(), // TODO: 백엔드 saveAndFlush 배포 후 ?? 제거
       readAt: model.readAt,
     );
   }
