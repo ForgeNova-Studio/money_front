@@ -57,6 +57,12 @@ import 'package:moamoa/features/ocr/presentation/screens/ocr_test_screen.dart';
 import 'package:moamoa/features/budget/presentation/screens/budget_settings_screen.dart';
 import 'package:moamoa/features/budget/presentation/screens/initial_balance_settings_screen.dart';
 
+// SMS Import Screens
+import 'package:moamoa/features/sms_import/presentation/screens/pending_expenses_review_screen.dart';
+
+// Shortcuts Guide Screens
+import 'package:moamoa/features/shortcuts_guide/presentation/screens/shortcuts_guide_screen.dart';
+
 /// 앱 라우트 설정 클래스
 class AppRouter {
   AppRouter._();
@@ -298,6 +304,20 @@ class AppRouter {
           path: RouteNames.initialBalanceSettings,
           name: 'initialBalanceSettings',
           builder: (context, state) => const InitialBalanceSettingsScreen(),
+        ),
+
+        // ==================== SMS Import Routes ====================
+        GoRoute(
+          path: RouteNames.smsImport,
+          name: 'smsImport',
+          builder: (context, state) => const PendingExpensesReviewScreen(),
+        ),
+
+        // ==================== Shortcuts Guide Routes ====================
+        GoRoute(
+          path: RouteNames.shortcutsGuide,
+          name: 'shortcutsGuide',
+          builder: (context, state) => const ShortcutsGuideScreen(),
         ),
       ];
 
