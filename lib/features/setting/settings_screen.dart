@@ -97,6 +97,12 @@ class SettingsScreen extends ConsumerWidget {
                   label: '영수증 스캔',
                   onTap: () => context.push(RouteNames.ocrTest),
                 ),
+                _MenuItem(
+                  icon: Icons.auto_awesome_outlined,
+                  iconColor: Colors.indigo,
+                  label: '자동 가계부 (iOS)',
+                  onTap: () => context.push(RouteNames.shortcutsGuide),
+                ),
               ],
             ),
             const SizedBox(height: 16),

@@ -113,6 +113,14 @@ class RouteNames {
   /// OCR 테스트 화면
   static const String ocrTest = '/ocr-test';
 
+  // ==================== SMS Import Route ====================
+  /// SMS 문자 파싱 대기 지출 검토 화면
+  static const String smsImport = '/sms-import';
+
+  // ==================== Shortcuts Guide Route ====================
+  /// iOS 단축어 설정 가이드 화면
+  static const String shortcutsGuide = '/shortcuts-guide';
+
   // ==================== Helper Methods ====================
   /// 인증 화면 여부 확인
   static bool isAuthRoute(String location) {

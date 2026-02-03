@@ -11,6 +11,7 @@ import 'package:moamoa/features/home/presentation/widgets/custom_calendar.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_account_book_dropdown.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_budget_info_card.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_fab_menu.dart';
+import 'package:moamoa/features/home/presentation/widgets/home_pending_expenses_banner.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_transaction_sheet.dart';
 import 'package:moamoa/features/home/presentation/widgets/delete_confirem_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -144,7 +145,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             child: const HomeBudgetInfoCard(),
           ),
 
-          // 2. Custom Calendar
+          // 2. Pending Expenses Banner
+          const HomePendingExpensesBanner(),
+
+          // 3. Custom Calendar
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: CustomCalendar(
@@ -165,7 +169,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       children: [
         Scaffold(
           backgroundColor: colorScheme.surface,
-          resizeToAvoidBottomInset: false, // 이전 화면에서 키보드가 열려 있을 때, 홈에서 오버플로우 나는 현상 해결
+          resizeToAvoidBottomInset:
+              false, // 이전 화면에서 키보드가 열려 있을 때, 홈에서 오버플로우 나는 현상 해결
           appBar: AppBar(
             title: InkWell(
               borderRadius: BorderRadius.circular(8),
