@@ -33,7 +33,7 @@ Map<String, dynamic> _$NotificationModelToJson(_NotificationModel instance) =>
 _NotificationRequestModel _$NotificationRequestModelFromJson(
         Map<String, dynamic> json) =>
     _NotificationRequestModel(
-      targetUserId: json['targetUserId'] as String,
+      targetEmail: json['targetEmail'] as String,
       title: json['title'] as String,
       message: json['message'] as String,
       type: json['type'] as String? ?? 'PERSONAL',
@@ -42,7 +42,7 @@ _NotificationRequestModel _$NotificationRequestModelFromJson(
 Map<String, dynamic> _$NotificationRequestModelToJson(
         _NotificationRequestModel instance) =>
     <String, dynamic>{
-      'targetUserId': instance.targetUserId,
+      'targetEmail': instance.targetEmail,
       'title': instance.title,
       'message': instance.message,
       'type': instance.type,

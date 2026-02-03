@@ -19,7 +19,7 @@ class _AdminNotificationScreenState
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _messageController = TextEditingController();
-  final _targetUserController = TextEditingController();
+  final _targetEmailController = TextEditingController();
 
   String _selectedType = 'NOTICE';
   bool _isLoading = false;
@@ -56,7 +56,7 @@ class _AdminNotificationScreenState
   void dispose() {
     _titleController.dispose();
     _messageController.dispose();
-    _targetUserController.dispose();
+    _targetEmailController.dispose();
     super.dispose();
   }
 
@@ -327,14 +327,15 @@ class _AdminNotificationScreenState
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              '전송할 사용자의 ID 또는 이메일을 입력하세요',
+              '전송할 사용자의 이메일을 입력하세요',
               style: TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 16),
             TextField(
-              controller: _targetUserController,
+              controller: _targetEmailController,
+              keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
-                hintText: '사용자 ID 또는 이메일',
+                hintText: 'example@email.com',
                 filled: true,
                 fillColor: appColors.backgroundGray,
                 border: OutlineInputBorder(
@@ -353,7 +354,7 @@ class _AdminNotificationScreenState
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              _sendToUser(_targetUserController.text.trim());
+              _sendToEmail(_targetEmailController.text.trim());
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: appColors.primary,
@@ -407,13 +408,13 @@ class _AdminNotificationScreenState
     }
   }
 
-  /// 특정 사용자에게 전송
-  Future<void> _sendToUser(String targetUserId) async {
+  /// 특정 사용자에게 이메일로 전송
+  Future<void> _sendToEmail(String targetEmail) async {
     if (!_formKey.currentState!.validate()) return;
-    if (targetUserId.isEmpty) {
+    if (targetEmail.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('사용자 ID를 입력해주세요'),
+          content: Text('이메일을 입력해주세요'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -425,7 +426,7 @@ class _AdminNotificationScreenState
     try {
       final repository = ref.read(notificationRepositoryProvider);
       await repository.createNotification(
-        targetUserId: targetUserId,
+        targetEmail: targetEmail,
         title: _titleController.text.trim(),
         message: _messageController.text.trim(),
         type: _selectedType,
@@ -434,11 +435,11 @@ class _AdminNotificationScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('$targetUserId 님에게 알림이 전송되었습니다'),
+            content: Text('$targetEmail 님에게 알림이 전송되었습니다'),
             backgroundColor: Colors.green,
           ),
         );
-        _targetUserController.clear();
+        _targetEmailController.clear();
         context.pop();
       }
     } catch (e) {

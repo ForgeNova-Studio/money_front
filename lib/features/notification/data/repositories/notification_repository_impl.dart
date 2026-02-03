@@ -16,9 +16,9 @@ abstract class NotificationRepository {
   /// 읽지 않은 알림 개수 조회
   Future<int> getUnreadCount();
 
-  /// 알림 발송 (관리자용 - 특정 사용자)
+  /// 알림 발송 (관리자용 - 특정 사용자 이메일)
   Future<NotificationEntity> createNotification({
-    required String targetUserId,
+    required String targetEmail,
     required String title,
     required String message,
     String type = 'PERSONAL',
@@ -61,13 +61,13 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
   @override
   Future<NotificationEntity> createNotification({
-    required String targetUserId,
+    required String targetEmail,
     required String title,
     required String message,
     String type = 'PERSONAL',
   }) async {
     final request = NotificationRequestModel(
-      targetUserId: targetUserId,
+      targetEmail: targetEmail,
       title: title,
       message: message,
       type: type,

@@ -179,8 +179,6 @@ extension NotificationModelPatterns on NotificationModel {
     switch (_that) {
       case _NotificationModel():
         return $default(_that);
-      case _:
-        throw StateError('Unexpected subclass');
     }
   }
 
@@ -262,8 +260,6 @@ extension NotificationModelPatterns on NotificationModel {
       case _NotificationModel():
         return $default(_that.notificationId, _that.title, _that.message,
             _that.type, _that.isRead, _that.createdAt, _that.readAt);
-      case _:
-        throw StateError('Unexpected subclass');
     }
   }
 
@@ -441,7 +437,7 @@ class __$NotificationModelCopyWithImpl<$Res>
 
 /// @nodoc
 mixin _$NotificationRequestModel {
-  String get targetUserId;
+  String get targetEmail;
   String get title;
   String get message;
   String get type;
@@ -462,8 +458,8 @@ mixin _$NotificationRequestModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is NotificationRequestModel &&
-            (identical(other.targetUserId, targetUserId) ||
-                other.targetUserId == targetUserId) &&
+            (identical(other.targetEmail, targetEmail) ||
+                other.targetEmail == targetEmail) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.type, type) || other.type == type));
@@ -472,11 +468,11 @@ mixin _$NotificationRequestModel {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, targetUserId, title, message, type);
+      Object.hash(runtimeType, targetEmail, title, message, type);
 
   @override
   String toString() {
-    return 'NotificationRequestModel(targetUserId: $targetUserId, title: $title, message: $message, type: $type)';
+    return 'NotificationRequestModel(targetEmail: $targetEmail, title: $title, message: $message, type: $type)';
   }
 }
 
@@ -486,7 +482,7 @@ abstract mixin class $NotificationRequestModelCopyWith<$Res> {
           $Res Function(NotificationRequestModel) _then) =
       _$NotificationRequestModelCopyWithImpl;
   @useResult
-  $Res call({String targetUserId, String title, String message, String type});
+  $Res call({String targetEmail, String title, String message, String type});
 }
 
 /// @nodoc
@@ -502,15 +498,15 @@ class _$NotificationRequestModelCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? targetUserId = null,
+    Object? targetEmail = null,
     Object? title = null,
     Object? message = null,
     Object? type = null,
   }) {
     return _then(_self.copyWith(
-      targetUserId: null == targetUserId
-          ? _self.targetUserId
-          : targetUserId // ignore: cast_nullable_to_non_nullable
+      targetEmail: null == targetEmail
+          ? _self.targetEmail
+          : targetEmail // ignore: cast_nullable_to_non_nullable
               as String,
       title: null == title
           ? _self.title
@@ -577,8 +573,6 @@ extension NotificationRequestModelPatterns on NotificationRequestModel {
     switch (_that) {
       case _NotificationRequestModel():
         return $default(_that);
-      case _:
-        throw StateError('Unexpected subclass');
     }
   }
 
@@ -622,7 +616,7 @@ extension NotificationRequestModelPatterns on NotificationRequestModel {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(
-            String targetUserId, String title, String message, String type)?
+            String targetEmail, String title, String message, String type)?
         $default, {
     required TResult orElse(),
   }) {
@@ -630,7 +624,7 @@ extension NotificationRequestModelPatterns on NotificationRequestModel {
     switch (_that) {
       case _NotificationRequestModel() when $default != null:
         return $default(
-            _that.targetUserId, _that.title, _that.message, _that.type);
+            _that.targetEmail, _that.title, _that.message, _that.type);
       case _:
         return orElse();
     }
@@ -652,16 +646,14 @@ extension NotificationRequestModelPatterns on NotificationRequestModel {
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
     TResult Function(
-            String targetUserId, String title, String message, String type)
+            String targetEmail, String title, String message, String type)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _NotificationRequestModel():
         return $default(
-            _that.targetUserId, _that.title, _that.message, _that.type);
-      case _:
-        throw StateError('Unexpected subclass');
+            _that.targetEmail, _that.title, _that.message, _that.type);
     }
   }
 
@@ -680,14 +672,14 @@ extension NotificationRequestModelPatterns on NotificationRequestModel {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(
-            String targetUserId, String title, String message, String type)?
+            String targetEmail, String title, String message, String type)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _NotificationRequestModel() when $default != null:
         return $default(
-            _that.targetUserId, _that.title, _that.message, _that.type);
+            _that.targetEmail, _that.title, _that.message, _that.type);
       case _:
         return null;
     }
@@ -698,7 +690,7 @@ extension NotificationRequestModelPatterns on NotificationRequestModel {
 @JsonSerializable()
 class _NotificationRequestModel implements NotificationRequestModel {
   const _NotificationRequestModel(
-      {required this.targetUserId,
+      {required this.targetEmail,
       required this.title,
       required this.message,
       this.type = 'PERSONAL'});
@@ -706,7 +698,7 @@ class _NotificationRequestModel implements NotificationRequestModel {
       _$NotificationRequestModelFromJson(json);
 
   @override
-  final String targetUserId;
+  final String targetEmail;
   @override
   final String title;
   @override
@@ -736,8 +728,8 @@ class _NotificationRequestModel implements NotificationRequestModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _NotificationRequestModel &&
-            (identical(other.targetUserId, targetUserId) ||
-                other.targetUserId == targetUserId) &&
+            (identical(other.targetEmail, targetEmail) ||
+                other.targetEmail == targetEmail) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.type, type) || other.type == type));
@@ -746,11 +738,11 @@ class _NotificationRequestModel implements NotificationRequestModel {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, targetUserId, title, message, type);
+      Object.hash(runtimeType, targetEmail, title, message, type);
 
   @override
   String toString() {
-    return 'NotificationRequestModel(targetUserId: $targetUserId, title: $title, message: $message, type: $type)';
+    return 'NotificationRequestModel(targetEmail: $targetEmail, title: $title, message: $message, type: $type)';
   }
 }
 
@@ -762,7 +754,7 @@ abstract mixin class _$NotificationRequestModelCopyWith<$Res>
       __$NotificationRequestModelCopyWithImpl;
   @override
   @useResult
-  $Res call({String targetUserId, String title, String message, String type});
+  $Res call({String targetEmail, String title, String message, String type});
 }
 
 /// @nodoc
@@ -778,15 +770,15 @@ class __$NotificationRequestModelCopyWithImpl<$Res>
   @override
   @pragma('vm:prefer-inline')
   $Res call({
-    Object? targetUserId = null,
+    Object? targetEmail = null,
     Object? title = null,
     Object? message = null,
     Object? type = null,
   }) {
     return _then(_NotificationRequestModel(
-      targetUserId: null == targetUserId
-          ? _self.targetUserId
-          : targetUserId // ignore: cast_nullable_to_non_nullable
+      targetEmail: null == targetEmail
+          ? _self.targetEmail
+          : targetEmail // ignore: cast_nullable_to_non_nullable
               as String,
       title: null == title
           ? _self.title
@@ -919,8 +911,6 @@ extension UnreadCountModelPatterns on UnreadCountModel {
     switch (_that) {
       case _UnreadCountModel():
         return $default(_that);
-      case _:
-        throw StateError('Unexpected subclass');
     }
   }
 
@@ -996,8 +986,6 @@ extension UnreadCountModelPatterns on UnreadCountModel {
     switch (_that) {
       case _UnreadCountModel():
         return $default(_that.count);
-      case _:
-        throw StateError('Unexpected subclass');
     }
   }
 

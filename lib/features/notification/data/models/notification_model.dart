@@ -24,7 +24,7 @@ sealed class NotificationModel with _$NotificationModel {
 @freezed
 sealed class NotificationRequestModel with _$NotificationRequestModel {
   const factory NotificationRequestModel({
-    required String targetUserId,
+    required String targetEmail,
     required String title,
     required String message,
     @Default('PERSONAL') String type,
