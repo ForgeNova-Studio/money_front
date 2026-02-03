@@ -51,7 +51,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final currentLocation = state.matchedLocation;
 
-      // AppInit 로딩 중 확인
+      // AppInit 로딩 중 → 스플래시 유지
       if (appInitState.isLoading) {
         if (currentLocation != RouteNames.splash) {
           return RouteNames.splash;
@@ -59,11 +59,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         return null;
       }
 
-      // AppInit 에러 발생 시 → 로그인 화면으로 이동
+      // AppInit 에러 발생 → 로그인 화면으로 이동
       if (appInitState.hasError) {
-        if (kDebugMode) {
-          debugPrint('[GoRouter Redirect] 초기화 에러 → /login');
-        }
         if (currentLocation != RouteNames.login) {
           return RouteNames.login;
         }
