@@ -1,13 +1,13 @@
 // packages
+import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // core
 import 'package:moamoa/features/common/providers/app_init_provider.dart';
@@ -18,15 +18,19 @@ import 'package:moamoa/router/router_provider.dart';
 import 'package:moamoa/features/common/screens/splash_screen.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
-void main() {
+void main() async {
   /// Native Splash Screen 유지 (Flutter 엔진 초기화 중 표시)
   /// - 이 코드가 실행되면, 앱의 네이티브 스플래시 화면이 자동으로 사라지지 않고
   ///   필요한 모든 비동기 작업이 끝날 때까지 스플래시 화면이 유지된다.
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  // TODO: 카카오 네이티브 앱 키를 입력하세요
-  KakaoSdk.init(nativeAppKey: 'a770c13cac29a2b59c8320c87c28ee18');
+  // Load .env file
+  await dotenv.load(fileName: ".env");
+
+  // 카카오 네이티브 앱키
+  KakaoSdk.init(nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY']);
+  debugPrint('KAKAO_NATIVE_APP_KEY: ${dotenv.env['KAKAO_NATIVE_APP_KEY']}');
 
   runApp(
     const ProviderScope(
@@ -35,7 +39,7 @@ void main() {
   );
 
   // Push Notification 설정
-  // Enable verbose logging for debugging (remove in production)
+  // verbose 로깅 활성화 (프로덕션에서 제거)
   // OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
 
   // Initialize with your OneSignal App ID
@@ -45,7 +49,11 @@ void main() {
   //   OneSignal.initialize(oneSignalAppId);
   // }
 
-  OneSignal.initialize("d4c0efab-ecfb-4bb5-a649-082b8a78957b");
+  final oneSignalAppId = dotenv.env['ONESIGNAL_APP_ID'];
+  if (oneSignalAppId != null) {
+    debugPrint('ONESIGNAL_APP_ID: $oneSignalAppId');
+    OneSignal.initialize(oneSignalAppId);
+  }
 
   // Use this method to prompt for push notifications.
   // We recommend removing this method after testing and instead use In-App Messages to prompt for notification permission.

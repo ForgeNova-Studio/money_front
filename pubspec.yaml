@@ -14,6 +14,9 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  # ==================== 환경 변수 관리 ====================
+  flutter_dotenv: ^5.1.0
+
   # ==================== 상태 관리 ====================
   flutter_riverpod: ^3.0.3          # Riverpod 상태 관리 (Provider 개선판)
   riverpod_annotation: ^3.0.3       # Riverpod 코드 생성 어노테이션
@@ -140,6 +143,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - ./.env
     - assets/animation/
     - assets/data/brands.json
     - assets/images/
