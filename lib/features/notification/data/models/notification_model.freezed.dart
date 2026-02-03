@@ -19,7 +19,7 @@ mixin _$NotificationModel {
   String get message;
   String get type;
   bool get isRead;
-  DateTime get createdAt;
+  DateTime? get createdAt; // TODO: 백엔드 saveAndFlush 배포 후 required로 원복
   DateTime? get readAt;
 
   /// Create a copy of NotificationModel
@@ -72,7 +72,7 @@ abstract mixin class $NotificationModelCopyWith<$Res> {
       String message,
       String type,
       bool isRead,
-      DateTime createdAt,
+      DateTime? createdAt,
       DateTime? readAt});
 }
 
@@ -94,7 +94,7 @@ class _$NotificationModelCopyWithImpl<$Res>
     Object? message = null,
     Object? type = null,
     Object? isRead = null,
-    Object? createdAt = null,
+    Object? createdAt = freezed,
     Object? readAt = freezed,
   }) {
     return _then(_self.copyWith(
@@ -118,10 +118,10 @@ class _$NotificationModelCopyWithImpl<$Res>
           ? _self.isRead
           : isRead // ignore: cast_nullable_to_non_nullable
               as bool,
-      createdAt: null == createdAt
+      createdAt: freezed == createdAt
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as DateTime?,
       readAt: freezed == readAt
           ? _self.readAt
           : readAt // ignore: cast_nullable_to_non_nullable
@@ -222,7 +222,7 @@ extension NotificationModelPatterns on NotificationModel {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(String notificationId, String title, String message,
-            String type, bool isRead, DateTime createdAt, DateTime? readAt)?
+            String type, bool isRead, DateTime? createdAt, DateTime? readAt)?
         $default, {
     required TResult orElse(),
   }) {
@@ -252,7 +252,7 @@ extension NotificationModelPatterns on NotificationModel {
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
     TResult Function(String notificationId, String title, String message,
-            String type, bool isRead, DateTime createdAt, DateTime? readAt)
+            String type, bool isRead, DateTime? createdAt, DateTime? readAt)
         $default,
   ) {
     final _that = this;
@@ -278,7 +278,7 @@ extension NotificationModelPatterns on NotificationModel {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(String notificationId, String title, String message,
-            String type, bool isRead, DateTime createdAt, DateTime? readAt)?
+            String type, bool isRead, DateTime? createdAt, DateTime? readAt)?
         $default,
   ) {
     final _that = this;
@@ -301,7 +301,7 @@ class _NotificationModel implements NotificationModel {
       required this.message,
       required this.type,
       required this.isRead,
-      required this.createdAt,
+      this.createdAt,
       this.readAt});
   factory _NotificationModel.fromJson(Map<String, dynamic> json) =>
       _$NotificationModelFromJson(json);
@@ -317,7 +317,8 @@ class _NotificationModel implements NotificationModel {
   @override
   final bool isRead;
   @override
-  final DateTime createdAt;
+  final DateTime? createdAt;
+// TODO: 백엔드 saveAndFlush 배포 후 required로 원복
   @override
   final DateTime? readAt;
 
@@ -377,7 +378,7 @@ abstract mixin class _$NotificationModelCopyWith<$Res>
       String message,
       String type,
       bool isRead,
-      DateTime createdAt,
+      DateTime? createdAt,
       DateTime? readAt});
 }
 
@@ -399,7 +400,7 @@ class __$NotificationModelCopyWithImpl<$Res>
     Object? message = null,
     Object? type = null,
     Object? isRead = null,
-    Object? createdAt = null,
+    Object? createdAt = freezed,
     Object? readAt = freezed,
   }) {
     return _then(_NotificationModel(
@@ -423,10 +424,10 @@ class __$NotificationModelCopyWithImpl<$Res>
           ? _self.isRead
           : isRead // ignore: cast_nullable_to_non_nullable
               as bool,
-      createdAt: null == createdAt
+      createdAt: freezed == createdAt
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as DateTime?,
       readAt: freezed == readAt
           ? _self.readAt
           : readAt // ignore: cast_nullable_to_non_nullable

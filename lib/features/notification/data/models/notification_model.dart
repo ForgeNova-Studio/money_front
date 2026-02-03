@@ -12,7 +12,7 @@ sealed class NotificationModel with _$NotificationModel {
     required String message,
     required String type,
     required bool isRead,
-    required DateTime createdAt,
+    DateTime? createdAt, // TODO: 백엔드 saveAndFlush 배포 후 required로 원복
     DateTime? readAt,
   }) = _NotificationModel;
 
