@@ -1,7 +1,7 @@
 name: moamoa
 description: 스마트 가계부 앱
 publish_to: 'none'
-version: 1.0.0+11
+version: 1.0.0+12
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
