@@ -4,6 +4,7 @@ class AdminConfig {
   /// 관리자 이메일 목록
   static const List<String> adminEmails = [
     'hanwoolc95@gmail.com',
+    'th8260@naver.com'
     // 추가 관리자 이메일을 여기에 추가
   ];
 

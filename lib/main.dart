@@ -33,10 +33,11 @@ void main() async {
   // 카카오 네이티브 앱키
   KakaoSdk.init(nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY']);
 
-  // Sentry 초기화 (프로덕션 전용)
+  // Sentry 초기화 (임시: Debug 모드에서도 테스트 가능)
+  // TODO: 테스트 후 kReleaseMode 체크 원복!
   final sentryDsn = dotenv.env['SENTRY_DSN'] ?? '';
   
-  if (sentryDsn.isNotEmpty && kReleaseMode) {
+  if (sentryDsn.isNotEmpty) {  // 원래: sentryDsn.isNotEmpty && kReleaseMode
     await SentryFlutter.init(
       (options) {
         options.dsn = sentryDsn;

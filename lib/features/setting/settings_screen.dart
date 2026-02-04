@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/core/config/admin_config.dart';
 import 'package:moamoa/router/route_names.dart';
@@ -150,6 +151,12 @@ class SettingsScreen extends ConsumerWidget {
                         label: '공지 작성',
                         onTap: () => context.push(RouteNames.adminNotification),
                       ),
+                      _MenuItem(
+                        icon: Icons.bug_report,
+                        iconColor: Colors.orange,
+                        label: 'Sentry 테스트',
+                        onTap: () => _testSentry(context),
+                      ),
                     ],
                   ),
                 ],
@@ -216,6 +223,43 @@ class SettingsScreen extends ConsumerWidget {
         }
       }
     }
+  }
+
+  /// Sentry 테스트 에러 발생
+  void _testSentry(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sentry 테스트'),
+        content: const Text('테스트 에러를 Sentry에 전송합니다.\n\n(Release 모드에서만 전송됨)'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('취소'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              try {
+                throw Exception('Sentry 테스트 에러 - Flutter 앱에서 발생!');
+              } catch (e, stackTrace) {
+                // Sentry에 에러 전송
+                Sentry.captureException(e, stackTrace: stackTrace);
+                
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('테스트 에러가 Sentry에 전송되었습니다!'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.orange),
+            child: const Text('에러 전송'),
+          ),
+        ],
+      ),
+    );
   }
 }
 
