@@ -1,10 +1,17 @@
+// ==================== Flutter & Packages ====================
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+// ==================== Router ====================
 import 'package:moamoa/router/app_router.dart';
 import 'package:moamoa/router/route_names.dart';
+
+// ==================== Common ====================
 import 'package:moamoa/features/common/providers/app_init_provider.dart';
+
+// ==================== Auth ====================
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
 

@@ -1,71 +1,70 @@
+// ==================== Flutter & Packages ====================
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+// ==================== Router ====================
 import 'package:moamoa/router/route_names.dart';
+
+// ==================== Common ====================
 import 'package:moamoa/features/common/widgets/app_shell.dart';
-
-// Splash Screen
 import 'package:moamoa/features/common/screens/splash_screen.dart';
-import 'package:moamoa/features/setting/settings_screen.dart';
 
-// Auth Screens
+// ==================== Auth ====================
 import 'package:moamoa/features/auth/presentation/screens/login_screen.dart';
 import 'package:moamoa/features/auth/presentation/screens/register_screen.dart';
 import 'package:moamoa/features/auth/presentation/screens/find_password_screen.dart';
 import 'package:moamoa/features/auth/presentation/screens/reset_password_screen.dart';
 
-// Onboarding Screens
+// ==================== Onboarding ====================
 import 'package:moamoa/features/onBoarding/presentation/screens/onboarding/on_boarding_screen.dart';
 
-// Main Screens
+// ==================== Home ====================
 import 'package:moamoa/features/home/presentation/screens/home_screen.dart';
 
-// Analysis Screens
+// ==================== Statistics ====================
 import 'package:moamoa/features/statistics/presentation/screens/statistics_screen.dart';
 
-// Asset Screens
+// ==================== Assets ====================
 import 'package:moamoa/features/assets/domain/entities/asset.dart';
 import 'package:moamoa/features/assets/presentation/screens/asset_screen.dart';
 import 'package:moamoa/features/assets/presentation/screens/add_asset_screen.dart';
 
-// AccountBook Screens
-// AccountBook Screens
+// ==================== AccountBook ====================
 import 'package:moamoa/features/account_book/presentation/screens/account_book_create_screen.dart';
 import 'package:moamoa/features/account_book/presentation/screens/account_book_list_screen.dart';
 import 'package:moamoa/features/account_book/presentation/screens/account_book_detail_screen.dart';
-
 import 'package:moamoa/features/account_book/presentation/screens/account_book_edit_screen.dart';
 
-// Expense Screens
+// ==================== Expense ====================
 import 'package:moamoa/features/expense/presentation/screens/add_expense_screen.dart';
 
-// Income Screens
+// ==================== Income ====================
 import 'package:moamoa/features/income/presentation/screens/add_income_screen.dart';
 
-// Statistics Screens
-
-// Couple Screens
+// ==================== Couple ====================
 import 'package:moamoa/features/couple/presentation/screens/couple_screen.dart';
 import 'package:moamoa/features/couple/presentation/screens/couple_invite_screen.dart';
 import 'package:moamoa/features/couple/presentation/screens/couple_join_screen.dart';
 
-// Budget & Couple Screens
-
-// OCR Screens
+// ==================== OCR ====================
 import 'package:moamoa/features/ocr/presentation/screens/ocr_test_screen.dart';
 
-// Budget Screens
+// ==================== Budget ====================
 import 'package:moamoa/features/budget/presentation/screens/budget_settings_screen.dart';
 import 'package:moamoa/features/budget/presentation/screens/initial_balance_settings_screen.dart';
 
-// Notification Screens
+// ==================== Notification ====================
 import 'package:moamoa/features/notification/presentation/screens/notification_list_screen.dart';
 import 'package:moamoa/features/notification/presentation/screens/admin_notification_screen.dart';
 
-// SMS Import Screens
+// ==================== SMS Import ====================
 import 'package:moamoa/features/sms_import/presentation/screens/pending_expenses_review_screen.dart';
 
-// Shortcuts Guide Screens
+// ==================== Shortcuts Guide ====================
 import 'package:moamoa/features/shortcuts_guide/presentation/screens/shortcuts_guide_screen.dart';
+
+// ==================== Settings ====================
+import 'package:moamoa/features/setting/settings_screen.dart';
 
 /// 앱 라우트 설정 클래스
 class AppRouter {
