@@ -110,6 +110,7 @@ class AuthViewModel extends _$AuthViewModel {
 
       // OneSignal에 External User ID 등록
       OneSignal.login(result.user.userId);
+      ref.invalidate(selectedAccountBookViewModelProvider);
     }, loading: true, defaultErrorMessage: '로그인 중 오류가 발생했습니다');
   }
 
@@ -178,6 +179,7 @@ class AuthViewModel extends _$AuthViewModel {
 
       // OneSignal에 External User ID 등록
       OneSignal.login(result.user.userId);
+      ref.invalidate(selectedAccountBookViewModelProvider);
     },
         loading: true,
         rethrowError: false,
@@ -232,6 +234,7 @@ class AuthViewModel extends _$AuthViewModel {
       final result = await useCase();
       state = AuthState.authenticated(user: result.user);
       OneSignal.login(result.user.userId);
+      ref.invalidate(selectedAccountBookViewModelProvider);
     },
         loading: true,
         rethrowError: false,
@@ -254,6 +257,7 @@ class AuthViewModel extends _$AuthViewModel {
       }
       state = AuthState.authenticated(user: result.user);
       OneSignal.login(result.user.userId);
+      ref.invalidate(selectedAccountBookViewModelProvider);
     },
         loading: true,
         rethrowError: false,
@@ -276,6 +280,7 @@ class AuthViewModel extends _$AuthViewModel {
       }
       state = AuthState.authenticated(user: result.user);
       OneSignal.login(result.user.userId);
+      ref.invalidate(selectedAccountBookViewModelProvider);
     },
         loading: true,
         rethrowError: false,
