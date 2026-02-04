@@ -129,14 +129,23 @@ void _initializeApp() {
   // We recommend removing this method after testing and instead use In-App Messages to prompt for notification permission.
   OneSignal.Notifications.requestPermission(false);
 
-  // 푸시 알림 클릭 시 알림 리스트 화면으로 이동
+  // 푸시 알림 클릭 시 분기 처리
   OneSignal.Notifications.addClickListener((event) {
     debugPrint('[OneSignal] Notification clicked: ${event.notification.title}');
+
+    final additionalData = event.notification.additionalData;
+    final type = additionalData?['type']?.toString();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final context = navigatorKey.currentContext;
       if (context != null) {
-        GoRouter.of(context).push(RouteNames.notifications);
+        if (type == 'NOTICE') {
+          // 앱에서 보낸 공지 → 공지 화면으로 이동
+          GoRouter.of(context).push(RouteNames.notifications);
+        } else {
+          // OneSignal 대시보드 등 기타 푸시 → 홈 화면으로 이동
+          GoRouter.of(context).go(RouteNames.home);
+        }
       }
     });
   });
