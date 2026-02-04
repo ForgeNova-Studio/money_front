@@ -4,7 +4,7 @@ class AppConstants {
   static const String appName = '모아모아';
   static const String appSlogan = '';
   static const String appLogo = '';
-  static const String appVersion = '1.0.1';
+  static const String appVersion = '1.0.0';
 }
 
 /// MoneyFlow App Color Constants

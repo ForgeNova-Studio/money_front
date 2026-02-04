@@ -1,18 +1,23 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+part 'sentry_service.g.dart';
+
+/// Sentry 서비스 Provider
+@riverpod
+SentryService sentryService(Ref ref) {
+  return SentryService();
+}
+
 /// Sentry 에러 모니터링 서비스
-/// 
+///
 /// 무료 플랜 최적화:
 /// - 프로덕션에서만 에러 전송
 /// - 중복 에러 필터링 (5분 내 같은 에러 재전송 방지)
 /// - 사용자 컨텍스트 설정
 class SentryService {
-  static final SentryService _instance = SentryService._internal();
-  factory SentryService() => _instance;
-  SentryService._internal();
-
   // 중복 에러 필터링을 위한 캐시
   final Map<String, DateTime> _recentErrors = {};
   static const Duration _duplicateThreshold = Duration(minutes: 5);
@@ -152,7 +157,9 @@ class SentryService {
   /// 에러 fingerprint 생성
   String _generateFingerprint(dynamic exception) {
     final type = exception.runtimeType.toString();
-    final message = exception.toString().substring(0, 100.clamp(0, exception.toString().length));
+    final message = exception
+        .toString()
+        .substring(0, 100.clamp(0, exception.toString().length));
     return '$type:$message';
   }
 }
