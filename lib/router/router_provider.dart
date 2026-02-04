@@ -106,9 +106,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         return null;
       }
 
-      final hasSeenOnboarding = appInitState.requireValue.sharedPreferences
-              .getBool('has_seen_onboarding') ??
-          false;
+      /// 온보딩 완료 여부 확인
+      final hasSeenOnboarding = _getHasSeenOnboarding(appInitState);
 
       // Priority 1-1: 온보딩 완료 전에는 온보딩 화면으로 이동
       if (!hasSeenOnboarding) {
@@ -205,3 +204,21 @@ final routerProvider = Provider<GoRouter>((ref) {
     errorBuilder: AppRouter.errorBuilder,
   );
 });
+
+/// 온보딩 완료 여부를 안전하게 가져오는 헬퍼 함수
+/// 정상 - true, 로딩/에러 - false
+/// true가 아닌 false가 나오는 경우 온보딩 화면 이동
+/// (온보딩 화면을 보지 않은 것으로 간주)
+bool _getHasSeenOnboarding(AsyncValue<AppInitialization> appInitState) {
+  return appInitState.when(
+    data: (data) =>
+        data.sharedPreferences.getBool('has_seen_onboarding') ?? false,
+    loading: () => false,
+    error: (e, _) {
+      if (kDebugMode) {
+        debugPrint('[RouterProvider] 온보딩 상태 조회 실패: $e');
+      }
+      return false;
+    },
+  );
+}

@@ -44,16 +44,18 @@ final hasSeenOnboarding = appInitState.requireValue.sharedPreferences
 **해결 방안**:
 ```dart
 /// 온보딩 완료 여부를 안전하게 가져오는 헬퍼 함수
-bool _getHasSeenOnboarding(AsyncValue appInitState) {
-  try {
-    return appInitState.valueOrNull?.sharedPreferences
-            .getBool('has_seen_onboarding') ?? false;
-  } catch (e) {
-    if (kDebugMode) {
-      debugPrint('[RouterProvider] 온보딩 상태 조회 실패: $e');
-    }
-    return false;
-  }
+bool _getHasSeenOnboarding(AsyncValue<AppInitialization> appInitState) {
+  return appInitState.when(
+    data: (data) =>
+        data.sharedPreferences.getBool('has_seen_onboarding') ?? false,
+    loading: () => false,
+    error: (e, _) {
+      if (kDebugMode) {
+        debugPrint('[RouterProvider] 온보딩 상태 조회 실패: $e');
+      }
+      return false;
+    },
+  );
 }
 ```
 
