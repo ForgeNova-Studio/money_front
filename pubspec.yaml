@@ -1,7 +1,7 @@
 name: moamoa
 description: 스마트 가계부 앱
 publish_to: 'none'
-version: 1.0.0+12
+version: 1.0.0+13
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -88,6 +88,8 @@ dependencies:
 
   # ==================== 에러 모니터링 ====================
   sentry_flutter: ^8.0.0
+  flutter_hooks: ^0.21.3+1
+  hooks_riverpod: ^3.0.3
 
 
 dev_dependencies:
