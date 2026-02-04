@@ -130,6 +130,32 @@ class NotificationViewModel extends _$NotificationViewModel {
     } catch (_) {}
   }
 
+  /// 푸시 알림 수신 시 로컬 상태에 알림 추가
+  void addNotificationFromPush({
+    required String id,
+    required String title,
+    required String message,
+    String type = 'NOTICE',
+  }) {
+    final newNotification = NotificationEntity(
+      id: id,
+      title: title,
+      message: message,
+      type: type,
+      isRead: false,
+      createdAt: DateTime.now(),
+    );
+
+    // 중복 체크 후 맨 앞에 추가
+    final exists = state.notifications.any((n) => n.id == id);
+    if (!exists) {
+      state = state.copyWith(
+        notifications: [newNotification, ...state.notifications],
+        unreadCount: state.unreadCount + 1,
+      );
+    }
+  }
+
   /// 새로고침
   Future<void> refresh() async {
     await loadNotifications();

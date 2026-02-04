@@ -8,11 +8,27 @@ import 'package:moamoa/features/notification/domain/entities/notification_entity
 import 'package:moamoa/features/notification/presentation/viewmodels/notification_view_model.dart';
 
 /// 알림 목록 화면
-class NotificationListScreen extends ConsumerWidget {
+class NotificationListScreen extends ConsumerStatefulWidget {
   const NotificationListScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NotificationListScreen> createState() =>
+      _NotificationListScreenState();
+}
+
+class _NotificationListScreenState
+    extends ConsumerState<NotificationListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // 화면 진입 시 알림 목록 새로고침
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(notificationViewModelProvider.notifier).refresh();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(notificationViewModelProvider);
     final viewModel = ref.read(notificationViewModelProvider.notifier);
 

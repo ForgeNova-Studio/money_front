@@ -18,7 +18,11 @@ import 'package:go_router/go_router.dart';
 
 // features
 import 'package:moamoa/features/common/screens/splash_screen.dart';
+import 'package:moamoa/features/notification/presentation/viewmodels/notification_view_model.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+
+/// 전역 ProviderContainer (푸시 알림 등 외부에서 Provider 접근 시 사용)
+late ProviderContainer globalContainer;
 
 void main() async {
   /// Native Splash Screen 유지 (Flutter 엔진 초기화 중 표시)
@@ -37,8 +41,9 @@ void main() async {
   // Sentry 초기화 (임시: Debug 모드에서도 테스트 가능)
   // TODO: 테스트 후 kReleaseMode 체크 원복!
   final sentryDsn = dotenv.env['SENTRY_DSN'] ?? '';
-  
-  if (sentryDsn.isNotEmpty) {  // 원래: sentryDsn.isNotEmpty && kReleaseMode
+
+  if (sentryDsn.isNotEmpty) {
+    // 원래: sentryDsn.isNotEmpty && kReleaseMode
     await SentryFlutter.init(
       (options) {
         options.dsn = sentryDsn;
@@ -49,14 +54,14 @@ void main() async {
         options.sampleRate = 1.0; // 에러는 100% 캡쳐
         options.attachScreenshot = false; // 스크린샷 비활성화
         options.sendDefaultPii = false; // 민감 정보 전송 안함
-        
+
         // 불필요한 에러 필터링
         options.beforeSend = (event, hint) {
           final exception = event.throwable;
           if (exception == null) return event;
-          
+
           final message = exception.toString().toLowerCase();
-          
+
           // 네트워크 에러 무시
           if (message.contains('socketexception') ||
               message.contains('connection refused') ||
@@ -67,7 +72,7 @@ void main() async {
               message.contains('failed host lookup')) {
             return null;
           }
-          
+
           // 인증 에러 무시 (401, 403)
           if (message.contains('401') ||
               message.contains('403') ||
@@ -76,14 +81,14 @@ void main() async {
               message.contains('token') && message.contains('expired')) {
             return null;
           }
-          
+
           // 사용자가 취소한 작업 무시
           if (message.contains('cancelled') ||
               message.contains('canceled') ||
               message.contains('user denied')) {
             return null;
           }
-          
+
           return event;
         };
       },
@@ -95,9 +100,13 @@ void main() async {
 }
 
 void _initializeApp() {
+  // 전역 ProviderContainer 생성
+  globalContainer = ProviderContainer();
+
   runApp(
-    const ProviderScope(
-      child: AppBootstrap(),
+    UncontrolledProviderScope(
+      container: globalContainer,
+      child: const AppBootstrap(),
     ),
   );
 
@@ -130,6 +139,30 @@ void _initializeApp() {
         GoRouter.of(context).push(RouteNames.notifications);
       }
     });
+  });
+
+  // 푸시 알림 수신 시 (Foreground) 로컬 상태에 알림 추가
+  OneSignal.Notifications.addForegroundWillDisplayListener((event) {
+    debugPrint(
+        '[OneSignal] Foreground notification: ${event.notification.title}');
+
+    final notification = event.notification;
+    final additionalData = notification.additionalData;
+
+    // 서버에서 보낸 notificationId가 있으면 사용, 없으면 OneSignal ID 사용
+    final notificationId = additionalData?['notificationId']?.toString() ??
+        notification.notificationId;
+
+    globalContainer
+        .read(notificationViewModelProvider.notifier)
+        .addNotificationFromPush(
+          id: notificationId,
+          title: notification.title ?? '알림',
+          message: notification.body ?? '',
+          type: additionalData?['type']?.toString() ?? 'NOTICE',
+        );
+
+    // 알림은 그대로 표시 (event.preventDefault()를 호출하지 않음)
   });
 
   // Flutter 스플래시가 표시되도록 네이티브 스플래시 제거
