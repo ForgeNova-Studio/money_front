@@ -86,6 +86,9 @@ dependencies:
   # ==================== oneSignal ====================
   onesignal_flutter: ^5.1.2
 
+  # ==================== 에러 모니터링 ====================
+  sentry_flutter: ^8.0.0
+
 
 dev_dependencies:
   flutter_test:

@@ -59,37 +59,81 @@ final appInitializationProvider =
     throw StateError('Forced app initialization failure');
   }
 
+  // 전체 초기화에 30초 타임아웃 적용
+  return await Future.any([
+    _initializeApp(ref),
+    Future.delayed(const Duration(seconds: 30), () {
+      throw TimeoutException('앱 초기화 시간 초과 (30초)');
+    }),
+  ]);
+});
+
+/// 타임아웃 예외 클래스
+class TimeoutException implements Exception {
+  final String message;
+  TimeoutException(this.message);
+  @override
+  String toString() => message;
+}
+
+/// 실제 초기화 로직
+Future<AppInitialization> _initializeApp(Ref ref) async {
   final initStopwatch = Stopwatch()..start();
   final stepStopwatch = Stopwatch()..start();
 
-  await initializeDateFormatting('ko_KR', null);
-  logStartupDebug('init_date_format_ms=${stepStopwatch.elapsedMilliseconds}');
+  // ============================================================================
+  // 필수 초기화 (실패 시 앱 진행 불가)
+  // ============================================================================
+  late SharedPreferences sharedPreferences;
 
-  stepStopwatch
-    ..reset()
-    ..start();
-  final sharedPreferences = await SharedPreferences.getInstance();
-  logStartupDebug('init_shared_prefs_ms=${stepStopwatch.elapsedMilliseconds}');
+  try {
+    await initializeDateFormatting('ko_KR', null);
+    logStartupDebug('init_date_format_ms=${stepStopwatch.elapsedMilliseconds}');
 
-  stepStopwatch
-    ..reset()
-    ..start();
-  await Hive.initFlutter();
-  logStartupDebug('init_hive_ms=${stepStopwatch.elapsedMilliseconds}');
+    stepStopwatch
+      ..reset()
+      ..start();
+    sharedPreferences = await SharedPreferences.getInstance();
+    logStartupDebug(
+        'init_shared_prefs_ms=${stepStopwatch.elapsedMilliseconds}');
 
-  stepStopwatch
-    ..reset()
-    ..start();
-  final globalBrandSource = GlobalBrandSource();
-  await globalBrandSource.initialize();
-  logStartupDebug('init_global_brand_ms=${stepStopwatch.elapsedMilliseconds}');
+    stepStopwatch
+      ..reset()
+      ..start();
+    await Hive.initFlutter();
+    logStartupDebug('init_hive_ms=${stepStopwatch.elapsedMilliseconds}');
+  } catch (e) {
+    logStartupDebug('critical_init_failed: $e');
+    rethrow; // 필수 초기화 실패 → 앱 진행 불가
+  }
 
-  stepStopwatch
-    ..reset()
-    ..start();
-  final userBrandSource = UserBrandSource();
-  await userBrandSource.init();
-  logStartupDebug('init_user_brand_ms=${stepStopwatch.elapsedMilliseconds}');
+  // ============================================================================
+  // 선택적 초기화 (실패해도 앱 진행 가능 - OCR 기능만 제한)
+  // ============================================================================
+  GlobalBrandSource? globalBrandSource;
+  UserBrandSource? userBrandSource;
+
+  try {
+    stepStopwatch
+      ..reset()
+      ..start();
+    globalBrandSource = GlobalBrandSource();
+    await globalBrandSource.initialize();
+    logStartupDebug(
+        'init_global_brand_ms=${stepStopwatch.elapsedMilliseconds}');
+
+    stepStopwatch
+      ..reset()
+      ..start();
+    userBrandSource = UserBrandSource();
+    await userBrandSource.init();
+    logStartupDebug('init_user_brand_ms=${stepStopwatch.elapsedMilliseconds}');
+  } catch (e) {
+    logStartupDebug('optional_init_failed: $e');
+    // 선택적 초기화 실패 → 기본값으로 진행
+    globalBrandSource ??= GlobalBrandSource();
+    userBrandSource ??= UserBrandSource();
+  }
 
   // ============================================================================
   // Prefetch: 인증된 사용자의 홈 화면 데이터 미리 로드
@@ -163,7 +207,7 @@ final appInitializationProvider =
     userBrandSource: userBrandSource,
     homeDataPrefetched: homeDataPrefetched,
   );
-});
+}
 
 /// JWT 토큰에서 userId 추출 (간단한 파싱)
 String? _extractUserIdFromToken(String tokenJson) {

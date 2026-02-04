@@ -6,6 +6,7 @@ class AdminConfig {
     'hanwoolc95@gmail.com',
     'th82602662@gmail.com',
     'th8260@naver.com',
+    // 추가 관리자 이메일을 여기에 추가
   ];
 
   /// 해당 이메일이 관리자인지 확인

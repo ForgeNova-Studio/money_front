@@ -501,7 +501,7 @@ final class AccountBookDetailProvider extends $FunctionalProvider<
   }
 }
 
-String _$accountBookDetailHash() => r'234d6cf67868183aa0d2114512c61a030946016e';
+String _$accountBookDetailHash() => r'55679c2c18278a24820b5d49532eec91db72dd0e';
 
 final class AccountBookDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<AccountBook>, String> {
