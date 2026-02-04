@@ -28,9 +28,9 @@ class AppShell extends HookConsumerWidget {
     final isScrimActive = ref.watch(appScrimActiveProvider);
 
     // 딥링크 수신 시 SMS 파싱 후 대기 지출 검토 화면으로 이동
-    ref.listen(pendingDeepLinkProvider, (previous, next) {
+    ref.listen(deepLinkServiceProvider, (previous, next) {
       if (next != null) {
-        final data = ref.read(pendingDeepLinkProvider.notifier).consume();
+        final data = ref.read(deepLinkServiceProvider.notifier).consume();
         if (data != null) {
           if (kDebugMode) {
             debugPrint('[AppShell] 딥링크 수신: $data');
@@ -64,7 +64,7 @@ class AppShell extends HookConsumerWidget {
         if (currentPath == RouteNames.smsImport) return;
 
         final pendingLink =
-            ref.read(pendingDeepLinkProvider.notifier).consume();
+            ref.read(deepLinkServiceProvider.notifier).consume();
         if (pendingLink != null) {
           if (kDebugMode) {
             debugPrint('[AppShell] 초기 대기 딥링크 처리: $pendingLink');
