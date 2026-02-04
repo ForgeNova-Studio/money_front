@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moamoa/router/app_router.dart';
@@ -6,6 +7,9 @@ import 'package:moamoa/router/route_names.dart';
 import 'package:moamoa/features/common/providers/app_init_provider.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
+
+/// 글로벌 NavigatorKey (푸시 알림 등 외부에서 라우팅 시 사용)
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 /// GoRouter Provider
 /// AuthViewModel의 상태를 watching하여 인증 상태 변화에 따라 자동 리다이렉션
@@ -43,6 +47,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   });
 
   return GoRouter(
+    navigatorKey: navigatorKey,
     initialLocation: '/',
     debugLogDiagnostics: kDebugMode, // 디버그 로그 활성화
     refreshListenable: authStateNotifier, // authState 변화 시 라우터 새로고침
@@ -51,10 +56,18 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final currentLocation = state.matchedLocation;
 
-      // AppInit 상태 확인
-      if (appInitState.isLoading || appInitState.hasError) {
+      // AppInit 로딩 중 → 스플래시 유지
+      if (appInitState.isLoading) {
         if (currentLocation != RouteNames.splash) {
           return RouteNames.splash;
+        }
+        return null;
+      }
+
+      // AppInit 에러 발생 → 로그인 화면으로 이동
+      if (appInitState.hasError) {
+        if (currentLocation != RouteNames.login) {
+          return RouteNames.login;
         }
         return null;
       }

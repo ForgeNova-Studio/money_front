@@ -3,6 +3,7 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    id("io.sentry.android.gradle")
 }
 
 android {
@@ -41,4 +42,21 @@ android {
 
 flutter {
     source = "../.."
+}
+
+// Sentry 설정
+sentry {
+    // 릴리즈 빌드에서만 소스 맵/디버그 심볼 업로드
+    autoUploadProguardMapping.set(true)
+    uploadNativeSymbols.set(true)
+    includeNativeSources.set(false)
+    
+    // org와 project는 sentry.properties 또는 환경변수에서 읽음
+    // SENTRY_ORG, SENTRY_PROJECT 환경변수 사용 가능
+    
+    // 릴리즈 빌드에서만 활성화
+    autoUploadSourceContext.set(true)
+    
+    // telemetry 비활성화 (선택)
+    telemetry.set(false)
 }

@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/core/config/admin_config.dart';
 import 'package:moamoa/router/route_names.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/features/notification/presentation/viewmodels/notification_view_model.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -15,10 +18,20 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final authState = ref.watch(authViewModelProvider);
+    final notificationState = ref.watch(notificationViewModelProvider);
+    final unreadCount = notificationState.unreadCount;
 
     return DefaultLayout(
       title: '더보기',
       automaticallyImplyLeading: false,
+      actions: [
+        // 공지사항 리스트 버튼
+        _NotificationIconButton(
+          unreadCount: unreadCount,
+          onTap: () => context.push(RouteNames.notifications),
+        ),
+        const SizedBox(width: 16),
+      ],
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,6 +98,12 @@ class SettingsScreen extends ConsumerWidget {
                   label: '영수증 스캔',
                   onTap: () => context.push(RouteNames.ocrTest),
                 ),
+                _MenuItem(
+                  icon: Icons.auto_awesome_outlined,
+                  iconColor: Colors.indigo,
+                  label: '자동 가계부 (iOS)',
+                  onTap: () => context.push(RouteNames.shortcutsGuide),
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -117,6 +136,31 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ],
             ),
+
+            // 5. 관리자 메뉴 (히든 - 관리자 계정만 표시)
+            if (AdminConfig.isAdmin(authState.user?.email))
+              Column(
+                children: [
+                  const SizedBox(height: 16),
+                  _MenuSection(
+                    title: '관리자',
+                    items: [
+                      _MenuItem(
+                        icon: Icons.admin_panel_settings,
+                        iconColor: Colors.red,
+                        label: '공지 작성',
+                        onTap: () => context.push(RouteNames.adminNotification),
+                      ),
+                      _MenuItem(
+                        icon: Icons.bug_report,
+                        iconColor: Colors.orange,
+                        label: 'Sentry 테스트',
+                        onTap: () => _testSentry(context),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             const SizedBox(height: 32),
 
             // 5. App Info
@@ -179,6 +223,43 @@ class SettingsScreen extends ConsumerWidget {
         }
       }
     }
+  }
+
+  /// Sentry 테스트 에러 발생
+  void _testSentry(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sentry 테스트'),
+        content: const Text('테스트 에러를 Sentry에 전송합니다.\n\n(Release 모드에서만 전송됨)'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('취소'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              try {
+                throw Exception('Sentry 테스트 에러 - Flutter 앱에서 발생!');
+              } catch (e, stackTrace) {
+                // Sentry에 에러 전송
+                Sentry.captureException(e, stackTrace: stackTrace);
+                
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('테스트 에러가 Sentry에 전송되었습니다!'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.orange),
+            child: const Text('에러 전송'),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -377,6 +458,60 @@ class _MenuItemTile extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// 알림 아이콘 버튼 (읽지 않은 알림 뱃지 포함)
+class _NotificationIconButton extends StatelessWidget {
+  final int unreadCount;
+  final VoidCallback onTap;
+
+  const _NotificationIconButton({
+    required this.unreadCount,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return IconButton(
+      onPressed: onTap,
+      icon: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Icon(
+            Icons.notifications_outlined,
+            color: colorScheme.onSurface,
+          ),
+          if (unreadCount > 0)
+            Positioned(
+              right: -4,
+              top: -4,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+                constraints: const BoxConstraints(
+                  minWidth: 16,
+                  minHeight: 16,
+                ),
+                child: Text(
+                  unreadCount > 99 ? '99+' : '$unreadCount',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

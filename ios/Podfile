@@ -52,3 +52,8 @@ post_install do |installer|
     end
   end
 end
+
+# oneSignal Push Notification 설정
+target 'OneSignalNotificationServiceExtension' do
+  pod 'OneSignalXCFramework', '>= 5.0.0', '< 6.0'
+end

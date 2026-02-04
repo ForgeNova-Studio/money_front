@@ -11,6 +11,7 @@ import 'package:moamoa/features/home/presentation/widgets/custom_calendar.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_account_book_dropdown.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_budget_info_card.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_fab_menu.dart';
+import 'package:moamoa/features/home/presentation/widgets/home_pending_expenses_banner.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_transaction_sheet.dart';
 import 'package:moamoa/features/home/presentation/widgets/delete_confirem_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -124,6 +125,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final colorScheme = Theme.of(context).colorScheme;
     final homeState = ref.watch(homeViewModelProvider);
     final calendarFormat = homeState.calendarFormat;
+    final isWeekView = calendarFormat == CalendarFormat.week;
     final accountBooksState = ref.watch(accountBooksProvider);
     final selectedAccountBookState =
         ref.watch(selectedAccountBookViewModelProvider);
@@ -132,10 +134,43 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       selectedAccountBookState,
     );
 
+    // 나중에 리팩토링 하자
+    final topSection = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        children: [
+          // 1. Budget Info Area (탭하면 새로고침)
+          GestureDetector(
+            onDoubleTap: _handleRefresh,
+            child: const HomeBudgetInfoCard(),
+          ),
+
+          // 2. Pending Expenses Banner
+          const HomePendingExpensesBanner(),
+
+          // 3. Custom Calendar
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: CustomCalendar(
+              format: calendarFormat,
+              focusedDay: homeState.focusedMonth,
+              selectedDay: homeState.selectedDate,
+              monthlyData: homeState.monthlyData,
+              onFormatChanged: _handleFormatChanged,
+              onDateSelected: _handleDateSelected,
+              onPageChanged: _handlePageChanged,
+            ),
+          ),
+        ],
+      ),
+    );
+
     return Stack(
       children: [
         Scaffold(
           backgroundColor: colorScheme.surface,
+          resizeToAvoidBottomInset:
+              false, // 이전 화면에서 키보드가 열려 있을 때, 홈에서 오버플로우 나는 현상 해결
           appBar: AppBar(
             title: InkWell(
               borderRadius: BorderRadius.circular(8),
@@ -179,54 +214,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           body: Listener(
             behavior: HitTestBehavior.translucent,
             onPointerDown: (_) => _collapseOverlaysIfNeeded(),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
+            child: isWeekView
+                ? Column(
                     children: [
-                      // 1. Budget Info Area (탭하면 새로고침)
-                      GestureDetector(
-                        onDoubleTap: _handleRefresh,
-                        child: const HomeBudgetInfoCard(),
-                      ),
+                      topSection,
 
-                      // 2. Custom Calendar
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: CustomCalendar(
-                          format: calendarFormat,
-                          focusedDay: homeState.focusedMonth,
-                          selectedDay: homeState.selectedDate,
-                          monthlyData: homeState.monthlyData,
-                          onFormatChanged: _handleFormatChanged,
-                          onDateSelected: _handleDateSelected,
-                          onPageChanged: _handlePageChanged,
+                      // 3. Transactions Sheet (Fills remaining space - 패딩 바깥)
+                      Expanded(
+                        child: HomeTransactionSheet(
+                          homeState: homeState,
+                          onDelete: _handleDeleteTransaction,
+                          onResetToMonthView: () {
+                            _resetFabDimmed();
+                            ref
+                                .read(homeViewModelProvider.notifier)
+                                .resetToMonthView();
+                          },
+                          onRevealActiveChanged: _handleTransactionReveal,
                         ),
                       ),
                     ],
+                  )
+                : SingleChildScrollView(
+                    child: topSection,
                   ),
-                ),
-
-                // 3. Transactions Sheet (Fills remaining space - 패딩 바깥)
-                Expanded(
-                  child: HomeTransactionSheet(
-                    homeState: homeState,
-                    onDelete: _handleDeleteTransaction,
-                    onCameraTap: () {
-                      // TODO: Navigate to OCR screen
-                    },
-                    onResetToMonthView: () {
-                      _resetFabDimmed();
-                      ref
-                          .read(homeViewModelProvider.notifier)
-                          .resetToMonthView();
-                    },
-                    onRevealActiveChanged: _handleTransactionReveal,
-                  ),
-                ),
-              ],
-            ),
           ),
           floatingActionButton: AnimatedOpacity(
             opacity: _isFabDimmed ? 0 : 1,

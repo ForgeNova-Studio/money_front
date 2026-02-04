@@ -54,3 +54,4 @@ flutter test
 ## 기타 문서
 
 - `docs/THEME_GUIDE.md`: 색상/테마 사용 가이드
+- `docs/ENV_SETUP.md`: 환경 변수(.env) 설정 가이드

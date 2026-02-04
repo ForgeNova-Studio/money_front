@@ -8,7 +8,6 @@ import 'package:moamoa/features/home/presentation/widgets/transaction_list_secti
 class HomeTransactionSheet extends StatelessWidget {
   final HomeState homeState;
   final Future<void> Function(TransactionEntity transaction) onDelete;
-  final VoidCallback onCameraTap;
   final VoidCallback onResetToMonthView;
   final ValueChanged<bool>? onRevealActiveChanged;
 
@@ -16,7 +15,6 @@ class HomeTransactionSheet extends StatelessWidget {
     super.key,
     required this.homeState,
     required this.onDelete,
-    required this.onCameraTap,
     required this.onResetToMonthView,
     this.onRevealActiveChanged,
   });
@@ -75,7 +73,6 @@ class HomeTransactionSheet extends StatelessWidget {
                         selectedDate: homeState.selectedDate,
                         isModal: true,
                         onDelete: onDelete,
-                        onCameraTap: onCameraTap,
                         onRevealActiveChanged: onRevealActiveChanged,
                       ),
                     ),

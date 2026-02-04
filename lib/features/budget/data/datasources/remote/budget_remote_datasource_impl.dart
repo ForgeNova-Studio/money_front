@@ -61,15 +61,17 @@ class BudgetRemoteDataSourceImpl implements BudgetRemoteDataSource {
         queryParameters: queryParams,
       );
 
+      // 예산없음 noContent(204) 처리
+      if (response.statusCode == 204) {
+        return null;
+      }
+
       if (response.data == null || response.data == '' || response.data is! Map<String, dynamic>) {
         return null;
       }
 
       return BudgetResponseModel.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
-      if (e.response?.statusCode == 404) {
-        return null;
-      }
       throw ExceptionHandler.handleDioException(e);
     } catch (e, stackTrace) {
       if (kDebugMode) {

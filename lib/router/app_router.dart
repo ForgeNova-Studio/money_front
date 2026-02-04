@@ -23,7 +23,9 @@ import 'package:moamoa/features/home/presentation/screens/home_screen.dart';
 import 'package:moamoa/features/statistics/presentation/screens/statistics_screen.dart';
 
 // Asset Screens
+import 'package:moamoa/features/assets/domain/entities/asset.dart';
 import 'package:moamoa/features/assets/presentation/screens/asset_screen.dart';
+import 'package:moamoa/features/assets/presentation/screens/add_asset_screen.dart';
 
 // AccountBook Screens
 // AccountBook Screens
@@ -54,6 +56,16 @@ import 'package:moamoa/features/ocr/presentation/screens/ocr_test_screen.dart';
 // Budget Screens
 import 'package:moamoa/features/budget/presentation/screens/budget_settings_screen.dart';
 import 'package:moamoa/features/budget/presentation/screens/initial_balance_settings_screen.dart';
+
+// Notification Screens
+import 'package:moamoa/features/notification/presentation/screens/notification_list_screen.dart';
+import 'package:moamoa/features/notification/presentation/screens/admin_notification_screen.dart';
+
+// SMS Import Screens
+import 'package:moamoa/features/sms_import/presentation/screens/pending_expenses_review_screen.dart';
+
+// Shortcuts Guide Screens
+import 'package:moamoa/features/shortcuts_guide/presentation/screens/shortcuts_guide_screen.dart';
 
 /// 앱 라우트 설정 클래스
 class AppRouter {
@@ -276,6 +288,16 @@ class AppRouter {
           builder: (context, state) => const AccountBookCreateScreen(),
         ),
 
+        // ==================== Asset Routes ====================
+        GoRoute(
+          path: RouteNames.addAsset,
+          name: 'addAsset',
+          builder: (context, state) {
+            final asset = state.extra as Asset?;
+            return AddAssetScreen(asset: asset);
+          },
+        ),
+
         // ==================== Budget Settings Routes ====================
         GoRoute(
           path: RouteNames.budgetSettings,
@@ -286,6 +308,32 @@ class AppRouter {
           path: RouteNames.initialBalanceSettings,
           name: 'initialBalanceSettings',
           builder: (context, state) => const InitialBalanceSettingsScreen(),
+        ),
+
+        // ==================== SMS Import Routes ====================
+        GoRoute(
+          path: RouteNames.smsImport,
+          name: 'smsImport',
+          builder: (context, state) => const PendingExpensesReviewScreen(),
+        ),
+
+        // ==================== Shortcuts Guide Routes ====================
+        GoRoute(
+          path: RouteNames.shortcutsGuide,
+          name: 'shortcutsGuide',
+          builder: (context, state) => const ShortcutsGuideScreen(),
+        ),
+
+        // ==================== Notification Routes ====================
+        GoRoute(
+          path: RouteNames.notifications,
+          name: 'notifications',
+          builder: (context, state) => const NotificationListScreen(),
+        ),
+        GoRoute(
+          path: RouteNames.adminNotification,
+          name: 'adminNotification',
+          builder: (context, state) => const AdminNotificationScreen(),
         ),
       ];
 

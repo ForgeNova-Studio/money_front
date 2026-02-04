@@ -61,6 +61,12 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
       _isLoading = true;
       Future.microtask(_loadIncome);
     }
+
+    // 화면 진입시 키보드 올리기
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _amountFocusNode.requestFocus();
+    });
   }
 
   @override

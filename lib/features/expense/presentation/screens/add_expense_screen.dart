@@ -63,6 +63,12 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       _isLoading = true;
       Future.microtask(_loadExpense);
     }
+
+    // 화면 진입시 키보드 올리기
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _amountFocusNode.requestFocus();
+    });
   }
 
   @override

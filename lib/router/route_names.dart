@@ -70,6 +70,9 @@ class RouteNames {
   /// 자산 화면
   static const String assets = '/assets';
 
+  /// 자산 추가/수정 화면
+  static const String addAsset = '/assets/add';
+
   /// 초기 잔액 설정 화면
   static const String initialBalanceSettings = '/assets/initial-balance';
 
@@ -87,6 +90,13 @@ class RouteNames {
   /// 설정 화면
   static const String settings = '/settings';
 
+  // ==================== Notification Routes ====================
+  /// 알림 목록 화면
+  static const String notifications = '/notifications';
+
+  /// 관리자 공지 작성 화면 (히든 메뉴)
+  static const String adminNotification = '/admin/notification';
+
   // ==================== AccountBook Routes ====================
   /// 가계부 생성 화면
   static const String accountBookCreate = '/account-book-create';
@@ -102,6 +112,14 @@ class RouteNames {
   // ==================== OCR Route ====================
   /// OCR 테스트 화면
   static const String ocrTest = '/ocr-test';
+
+  // ==================== SMS Import Route ====================
+  /// SMS 문자 파싱 대기 지출 검토 화면
+  static const String smsImport = '/sms-import';
+
+  // ==================== Shortcuts Guide Route ====================
+  /// iOS 단축어 설정 가이드 화면
+  static const String shortcutsGuide = '/shortcuts-guide';
 
   // ==================== Helper Methods ====================
   /// 인증 화면 여부 확인

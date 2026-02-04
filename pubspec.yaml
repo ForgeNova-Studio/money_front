@@ -1,7 +1,7 @@
 name: moamoa
 description: 스마트 가계부 앱
 publish_to: 'none'
-version: 1.0.0+7
+version: 1.0.0+11
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -13,6 +13,9 @@ dependencies:
   # ==================== 다국어 지원 ====================
   flutter_localizations:
     sdk: flutter
+
+  # ==================== 환경 변수 관리 ====================
+  flutter_dotenv: ^5.1.0
 
   # ==================== 상태 관리 ====================
   flutter_riverpod: ^3.0.3          # Riverpod 상태 관리 (Provider 개선판)
@@ -80,6 +83,12 @@ dependencies:
   flutter_slidable: ^4.0.3
   flutter_launcher_icons: ^0.14.4
 
+  # ==================== oneSignal ====================
+  onesignal_flutter: ^5.1.2
+
+  # ==================== 에러 모니터링 ====================
+  sentry_flutter: ^8.0.0
+
 
 dev_dependencies:
   flutter_test:
@@ -137,6 +146,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - ./.env
     - assets/animation/
     - assets/data/brands.json
     - assets/images/

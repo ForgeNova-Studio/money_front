@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 // core
 import 'package:moamoa/core/exceptions/exceptions.dart';
@@ -9,6 +10,8 @@ import 'package:moamoa/core/exceptions/exceptions.dart';
 // providers/states
 import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
+import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
+import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 
 // entities
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
@@ -61,8 +64,13 @@ class AuthViewModel extends _$AuthViewModel {
         if (!ref.mounted) return; // Provider가 해제되었으면 작업 중단
 
         if (user != null) {
-          state = AuthState.authenticated(user: user.toEntity());
+          final userEntity = user.toEntity();
+          state = AuthState.authenticated(user: userEntity);
+
+          // OneSignal에 External User ID 등록 (개인 푸시 알림용)
+          OneSignal.login(userEntity.userId);
           if (kDebugMode) {
+            debugPrint('[AuthViewModel] OneSignal 로그인: ${userEntity.userId}');
             debugPrint('[AuthViewModel] 인증된 상태로 변경됨');
           }
         } else {
@@ -99,6 +107,9 @@ class AuthViewModel extends _$AuthViewModel {
       final useCase = ref.read(loginUseCaseProvider);
       final result = await useCase(email: email, password: password);
       state = AuthState.authenticated(user: result.user);
+
+      // OneSignal에 External User ID 등록
+      OneSignal.login(result.user.userId);
     }, loading: true, defaultErrorMessage: '로그인 중 오류가 발생했습니다');
   }
 
@@ -164,6 +175,9 @@ class AuthViewModel extends _$AuthViewModel {
         gender: gender,
       );
       state = AuthState.authenticated(user: result.user);
+
+      // OneSignal에 External User ID 등록
+      OneSignal.login(result.user.userId);
     },
         loading: true,
         rethrowError: false,
@@ -176,11 +190,39 @@ class AuthViewModel extends _$AuthViewModel {
       final useCase = ref.read(logoutUseCaseProvider);
       await useCase();
 
+      // OneSignal 로그아웃 (External User ID 해제)
+      OneSignal.logout();
+
+      // 🔴 중요: 모든 사용자 관련 Provider들을 무효화하여 이전 계정 데이터 완전 초기화
+      // 로그아웃 후 다른 계정 로그인 시 이전 데이터가 남지 않도록 함
+      _invalidateAllUserProviders();
+
       state = AuthState.unauthenticated();
     } catch (e) {
       state = _setErrorMessage('로그아웃 중 오류가 발생했습니다: $e');
       rethrow;
     }
+  }
+
+  /// 모든 사용자 관련 Provider 무효화
+  void _invalidateAllUserProviders() {
+    // 가계부 관련
+    ref.invalidate(accountBooksProvider);
+    ref.invalidate(selectedAccountBookViewModelProvider);
+
+    // 주석 처리한 이유는 이미 잘 처리되고 있어 명시적으로 할 필요 없기 때문
+    // 추후 필요시 명시적으로 제거 가능
+    // 홈/거래 관련 (autoDispose이지만 명시적 초기화)
+    // ref.invalidate(homeViewModelProvider); // 필요시 import 추가
+
+    // 알림 관련
+    // ref.invalidate(notificationViewModelProvider); // 필요시 import 추가
+
+    // 자산 관련
+    // ref.invalidate(assetViewModelProvider); // 필요시 import 추가
+
+    // 커플 관련
+    // ref.invalidate(coupleViewModelProvider); // 필요시 import 추가
   }
 
   /// Google 로그인
@@ -189,22 +231,11 @@ class AuthViewModel extends _$AuthViewModel {
       final useCase = ref.read(googleLoginUseCaseProvider);
       final result = await useCase();
       state = AuthState.authenticated(user: result.user);
+      OneSignal.login(result.user.userId);
     },
         loading: true,
         rethrowError: false,
         defaultErrorMessage: 'Google 로그인 중 오류가 발생했습니다');
-  }
-
-  /// Apple 로그인
-  Future<void> loginWithApple() async {
-    await _handleAuthRequest(() async {
-      final useCase = ref.read(appleLoginUseCaseProvider);
-      final result = await useCase();
-      state = AuthState.authenticated(user: result.user);
-    },
-        loading: true,
-        rethrowError: false,
-        defaultErrorMessage: 'Apple 로그인 중 오류가 발생했습니다');
   }
 
   /// Naver 로그인
@@ -222,6 +253,7 @@ class AuthViewModel extends _$AuthViewModel {
         debugPrint('[AuthViewModel] 네이버 로그인 성공: ${result.user.email}');
       }
       state = AuthState.authenticated(user: result.user);
+      OneSignal.login(result.user.userId);
     },
         loading: true,
         rethrowError: false,
@@ -243,6 +275,7 @@ class AuthViewModel extends _$AuthViewModel {
         debugPrint('[AuthViewModel] 카카오 로그인 성공: ${result.user.email}');
       }
       state = AuthState.authenticated(user: result.user);
+      OneSignal.login(result.user.userId);
     },
         loading: true,
         rethrowError: false,
