@@ -15,13 +15,13 @@
 
 ## 티켓 목록
 
-| 티켓 | 제목 | 중요도 | 예상 소요 |
-|------|------|--------|----------|
-| [ROUTER-001](#router-001) | requireValue 크래시 방지 | 🔴 Critical | 15분 |
-| [ROUTER-002](#router-002) | 로그인 후 원래 경로 복귀 기능 | 🟡 Medium | 30분 |
-| [ROUTER-003](#router-003) | Root/Splash 중복 코드 통합 | 🟢 Low | 15분 |
-| [ROUTER-004](#router-004) | 토큰 만료 시 자동 로그아웃 연동 | 🟡 Medium | 1시간 |
-| [ROUTER-005](#router-005) | 딥링크 처리 로직 추가 | 🟢 Low | 2시간 |
+| 티켓 | 제목 | 중요도 | 예상 소요 | 상태 |
+|------|------|--------|----------|------|
+| [ROUTER-001](#router-001) | requireValue 크래시 방지 | 🔴 Critical | 15분 | ✅ 완료 |
+| [ROUTER-002](#router-002) | 로그인 후 원래 경로 복귀 기능 | � Low | 30분 | 보류 |
+| [ROUTER-003](#router-003) | Root/Splash 중복 코드 통합 | 🟢 Low | 15분 | ✅ 완료 |
+| [ROUTER-004](#router-004) | 토큰 만료 시 자동 로그아웃 연동 | ✅ 이미 구현됨 | - | ✅ 완료 |
+| [ROUTER-005](#router-005) | 딥링크 처리 로직 추가 | 🟢 Low | 2시간 | 보류 |
 
 ---
 
@@ -66,11 +66,30 @@ bool _getHasSeenOnboarding(AsyncValue<AppInitialization> appInitState) {
 ### ROUTER-002
 **로그인 후 원래 경로 복귀 기능**
 
-**중요도**: 🟡 Medium
+**중요도**: � Low (우선순위 하향)
+
+> [!NOTE]
+> Refresh Token 로직이 `dio_provider.dart`에 이미 구현되어 있어 대부분의 경우 토큰이 자동 갱신됨.
+> 실제로 `/login`으로 리다이렉트 되는 경우는 Refresh Token 마저 만료된 극히 드문 경우.
 
 **문제**:
 - 미인증 사용자가 `/notifications` 접근 → `/login`으로 리다이렉트 → 로그인 성공 → `/home`으로 이동
 - 사용자가 원래 가려던 `/notifications`로 가지 않음
+
+발생 가능 시나리오
+- 1. 푸시 알림 탭 시 세션 만료
+  사용자 로그인 → 앱 백그라운드 → 시간 경과 → 토큰 만료 
+  → 푸시 알림 도착 → 알림 탭 → /notifications 이동 시도 
+  → 인증 안 됨 → /login으로 리다이렉트
+
+- 2. 앱이 메모리에서 해제된 후 푸시 탭
+사용자 로그인 → 앱 종료(kill) → 푸시 알림 도착 
+→ 알림 탭 → 앱 cold start → /notifications 이동 시도
+→ 아직 인증 상태 복원 전 → /login으로 리다이렉트
+
+- 3. 딥링크로 직접 접근(외부 링크)
+카카오톡으로 공유받은 링크: moamoa://notifications/123
+→ 앱 미설치 상태에서 설치 후 열기 → 미인증 → /login
 
 **해결 방안**:
 ```dart
@@ -143,20 +162,18 @@ if (isRootOrSplash) {
 ### ROUTER-004
 **토큰 만료 시 자동 로그아웃 연동**
 
-**중요도**: 🟡 Medium
+**중요도**: ✅ 이미 구현됨
 
-**문제**:
-- API 호출 중 401 Unauthorized 응답 시 자동으로 로그인 화면으로 이동하는 로직 없음
-- 사용자가 만료된 세션으로 계속 앱 사용 시도 가능
+> [!TIP]
+> `lib/features/common/providers/dio_provider.dart`의 `_AuthInterceptor`에서 이미 처리됨
 
-**해결 방안**:
-- Dio Interceptor에서 401 에러 감지
-- `authViewModelProvider`의 상태를 unauthenticated로 변경
-- `refreshListenable`이 자동으로 redirect 트리거
+**구현된 기능**:
+- 401 에러 발생 시 Refresh Token으로 자동 갱신 시도
+- Race Condition 방지 (`Lock()` 사용)
+- Refresh 실패 시 `forceUnauthenticated()` 호출 → 자동 로그아웃
+- `refreshListenable`이 authState 변화 감지 → 자동 redirect
 
-**영향 범위**: 
-- `router_provider.dart`
-- `dio_client.dart` 또는 API 클라이언트
+**영향 범위**: 추가 작업 불필요
 
 ---
 
@@ -191,11 +208,11 @@ if (isRootOrSplash) {
 
 ## 완료 조건
 
-- [ ] ROUTER-001: `requireValue` 를 안전한 접근 방식으로 변경
-- [ ] ROUTER-002: 로그인 후 원래 경로로 복귀 확인
-- [ ] ROUTER-003: 중복 코드 제거 및 테스트
-- [ ] ROUTER-004: 401 에러 시 자동 로그아웃 확인
-- [ ] ROUTER-005: 딥링크로 앱 진입 시 올바른 화면 표시
+- [x] ROUTER-001: `requireValue` 를 안전한 접근 방식으로 변경
+- [ ] ROUTER-002: 로그인 후 원래 경로로 복귀 확인 (보류)
+- [x] ROUTER-003: 중복 코드 제거 및 테스트
+- [x] ROUTER-004: 401 에러 시 자동 로그아웃 확인 (이미 구현됨)
+- [ ] ROUTER-005: 딥링크로 앱 진입 시 올바른 화면 표시 (보류)
 
 ---
 

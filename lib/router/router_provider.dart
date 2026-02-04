@@ -88,13 +88,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Public 화면 확인
       final isGoingToAuth = RouteNames.isAuthRoute(currentLocation);
       final isOnboarding = currentLocation == RouteNames.onboarding;
-      final isRoot = currentLocation == '/';
 
       // 디버그 로그
       if (kDebugMode) {
         debugPrint('[GoRouter Redirect] location: $currentLocation, '
             'isLoading: $isLoading, isAuthenticated: $isAuthenticated, '
-            'hasUser: $hasUser, isGoingToAuth: $isGoingToAuth, isRoot: $isRoot');
+            'hasUser: $hasUser, isGoingToAuth: $isGoingToAuth');
       }
 
       // Priority 1: 로딩 중일 때는 redirect 하지 않음
@@ -128,34 +127,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         return RouteNames.login;
       }
 
-      // Priority 2: Root 경로(/) 처리
-      if (isRoot) {
-        if (isAuthenticated && hasUser) {
-          if (kDebugMode) {
-            debugPrint('[GoRouter Redirect] Root - 인증된 사용자 → /home');
-          }
-          return RouteNames.home;
-        } else {
-          if (kDebugMode) {
-            debugPrint('[GoRouter Redirect] Root - 미인증 사용자 → /login');
-          }
-          return RouteNames.login;
+      // Priority 2: Root/Splash 경로 처리
+      final isRootOrSplash =
+          currentLocation == '/' || currentLocation == RouteNames.splash;
+      if (isRootOrSplash) {
+        if (kDebugMode) {
+          debugPrint(
+              '[GoRouter Redirect] Root/Splash - ${isAuthenticated && hasUser ? "인증된 사용자 → /home" : "미인증 사용자 → /login"}');
         }
-      }
-
-      // Priority 2-1: Splash 경로 처리
-      if (currentLocation == RouteNames.splash) {
-        if (isAuthenticated && hasUser) {
-          if (kDebugMode) {
-            debugPrint('[GoRouter Redirect] Splash - 인증된 사용자 → /home');
-          }
-          return RouteNames.home;
-        } else {
-          if (kDebugMode) {
-            debugPrint('[GoRouter Redirect] Splash - 미인증 사용자 → /login');
-          }
-          return RouteNames.login;
-        }
+        return (isAuthenticated && hasUser)
+            ? RouteNames.home
+            : RouteNames.login;
       }
 
       // Priority 3: 인증된 사용자 → public 화면 접근 시 홈으로 리다이렉션
