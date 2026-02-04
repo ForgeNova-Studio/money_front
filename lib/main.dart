@@ -1,6 +1,5 @@
 // packages
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -13,6 +12,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:moamoa/features/common/providers/app_init_provider.dart';
 import 'package:moamoa/core/theme/theme.dart';
 import 'package:moamoa/router/router_provider.dart';
+import 'package:moamoa/router/route_names.dart';
+import 'package:go_router/go_router.dart';
 
 // features
 import 'package:moamoa/features/common/screens/splash_screen.dart';
@@ -56,6 +57,18 @@ void main() async {
   // Use this method to prompt for push notifications.
   // We recommend removing this method after testing and instead use In-App Messages to prompt for notification permission.
   OneSignal.Notifications.requestPermission(false);
+
+  // 푸시 알림 클릭 시 알림 리스트 화면으로 이동
+  OneSignal.Notifications.addClickListener((event) {
+    debugPrint('[OneSignal] Notification clicked: ${event.notification.title}');
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final context = navigatorKey.currentContext;
+      if (context != null) {
+        GoRouter.of(context).push(RouteNames.notifications);
+      }
+    });
+  });
 
   // Flutter 스플래시가 표시되도록 네이티브 스플래시 제거
   WidgetsBinding.instance.addPostFrameCallback((_) {
