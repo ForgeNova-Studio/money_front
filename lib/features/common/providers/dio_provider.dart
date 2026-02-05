@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moamoa/core/constants/api_constants.dart';
+import 'package:moamoa/core/services/sentry_service.dart';
 import 'package:moamoa/features/auth/data/models/auth_token_model.dart';
 import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
@@ -93,6 +94,17 @@ class _AuthInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     final localDataSource = ref.read(authLocalDataSourceProvider);
     final statusCode = err.response?.statusCode;
+
+    // 5xx 서버 에러는 Sentry에 전송
+    if (statusCode != null && statusCode >= 500) {
+      final sentryService = ref.read(sentryServiceProvider);
+      sentryService.captureApiError(
+        url: err.requestOptions.path,
+        statusCode: statusCode,
+        method: err.requestOptions.method,
+        responseBody: err.response?.data?.toString(),
+      );
+    }
 
     if (statusCode == 404 && _isUserNotFound(err.response?.data)) {
       await localDataSource.clearAll();
