@@ -66,6 +66,9 @@ import 'package:moamoa/features/shortcuts_guide/presentation/screens/shortcuts_g
 // ==================== Settings ====================
 import 'package:moamoa/features/setting/settings_screen.dart';
 
+// Monthly Report Screens
+import 'package:moamoa/features/monthly_report/presentation/screens/monthly_report_screen.dart';
+
 /// 앱 라우트 설정 클래스
 class AppRouter {
   AppRouter._();
@@ -333,6 +336,17 @@ class AppRouter {
           path: RouteNames.adminNotification,
           name: 'adminNotification',
           builder: (context, state) => const AdminNotificationScreen(),
+        ),
+
+        // ==================== Report Routes ====================
+        GoRoute(
+          path: RouteNames.monthlyReport,
+          name: 'monthlyReport',
+          builder: (context, state) {
+            final year = int.tryParse(state.uri.queryParameters['year'] ?? '') ?? DateTime.now().year;
+            final month = int.tryParse(state.uri.queryParameters['month'] ?? '') ?? DateTime.now().month;
+            return MonthlyReportScreen(year: year, month: month);
+          },
         ),
       ];
 
