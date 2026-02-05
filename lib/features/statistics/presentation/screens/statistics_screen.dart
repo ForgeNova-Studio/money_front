@@ -18,12 +18,20 @@ class CategoryExpenseUI {
   final Color color;
   final int percentage;
 
+  // 전월 대비 데이터
+  final int? previousAmount;
+  final int? diff;
+  final double? diffPercentage;
+
   const CategoryExpenseUI({
     required this.id,
     required this.category,
     required this.amount,
     required this.color,
     required this.percentage,
+    this.previousAmount,
+    this.diff,
+    this.diffPercentage,
   });
 
   /// Domain Entity에서 변환
@@ -98,9 +106,42 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     MonthlyStatistics? statistics,
   ) {
     // 데이터 변환
-    final expenses = statistics?.categoryBreakdown
-            .map((e) => CategoryExpenseUI.fromEntity(e))
-            .toList() ??
+    final categoryComparison = state.categoryComparison.asData?.value;
+
+    // 카테고리 비교 데이터를 Map으로 변환 (O(1) lookup)
+    final comparisonMap = categoryComparison?.categories
+            .fold<Map<String, dynamic>>({}, (map, comparison) {
+          map[comparison.category] = {
+            'previousAmount': comparison.previousAmount,
+            'diff': comparison.diff,
+            'diffPercentage': comparison.diffPercentage,
+          };
+          return map;
+        }) ??
+        {};
+
+    final expenses = statistics?.categoryBreakdown.map((e) {
+          final categoryId = e.category;
+          final categoryInfo = DefaultExpenseCategories.all
+              .where((c) => c.id == categoryId)
+              .firstOrNull;
+
+          // 전월 대비 데이터 병합
+          final comparisonData = comparisonMap[categoryId];
+
+          return CategoryExpenseUI(
+            id: categoryId,
+            category: categoryInfo?.name ?? categoryId,
+            amount: e.amount,
+            color: categoryInfo != null
+                ? _hexToColor(categoryInfo.color)
+                : Colors.grey,
+            percentage: e.percentage,
+            previousAmount: comparisonData?['previousAmount'],
+            diff: comparisonData?['diff'],
+            diffPercentage: comparisonData?['diffPercentage'],
+          );
+        }).toList() ??
         [];
     final totalExpense = statistics?.totalAmount ?? 0;
 
@@ -697,24 +738,84 @@ class _CategoryListItem extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          // 금액 & 비율
+          // 금액 | 비율 & 전월 대비
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                '${formatter.format(expense.amount)}원',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${formatter.format(expense.amount)}원',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Container(
+                    width: 1,
+                    height: 10,
+                    color: appColors.gray300,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$percentage%',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: appColors.gray500,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                '$percentage%',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: appColors.gray500,
+              // 전월 대비 표시
+              if (expense.diff != null) ...[
+                const SizedBox(height: 2),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      expense.diff! > 0
+                          ? Icons.arrow_upward
+                          : expense.diff! < 0
+                              ? Icons.arrow_downward
+                              : Icons.remove,
+                      size: 10,
+                      color: expense.diff! > 0
+                          ? Colors.red
+                          : expense.diff! < 0
+                              ? Colors.green
+                              : appColors.gray500,
+                    ),
+                    const SizedBox(width: 2),
+                    Text(
+                      '${formatter.format(expense.diff!.abs())}원',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: expense.diff! > 0
+                            ? Colors.red
+                            : expense.diff! < 0
+                                ? Colors.green
+                                : appColors.gray500,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      expense.diffPercentage != null
+                          ? '(${expense.diffPercentage!.abs() >= 100 ? expense.diffPercentage!.toStringAsFixed(0) : expense.diffPercentage!.toStringAsFixed(1)}%)'
+                          : '(-)',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: expense.diff! > 0
+                            ? Colors.red
+                            : expense.diff! < 0
+                                ? Colors.green
+                                : appColors.gray500,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+              ],
             ],
           ),
         ],

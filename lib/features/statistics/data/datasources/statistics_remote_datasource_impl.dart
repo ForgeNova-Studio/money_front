@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:moamoa/core/constants/api_constants.dart';
 import 'package:moamoa/core/exceptions/exceptions.dart';
 import 'package:moamoa/features/statistics/data/datasources/statistics_remote_datasource.dart';
+import 'package:moamoa/features/statistics/data/models/category_monthly_comparison_model.dart';
 import 'package:moamoa/features/statistics/data/models/monthly_statistics_model.dart';
 
 /// 통계 Remote DataSource 구현체
@@ -32,6 +33,34 @@ class StatisticsRemoteDataSourceImpl implements StatisticsRemoteDataSource {
       );
 
       return MonthlyStatisticsModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
+  }
+
+  /// 분석 - 카테고리 별 전월 대비 현황
+  @override
+  Future<CategoryMonthlyComparisonModel> getCategoryMonthlyComparison({
+    required int year,
+    required int month,
+    String? accountBookId,
+  }) async {
+    try {
+      final queryParams = <String, dynamic>{
+        'year': year,
+        'month': month,
+      };
+
+      if (accountBookId != null) {
+        queryParams['accountBookId'] = accountBookId;
+      }
+
+      final response = await dio.get(
+        ApiConstants.statisticsCategoryComparison,
+        queryParameters: queryParams,
+      );
+
+      return CategoryMonthlyComparisonModel.fromJson(response.data);
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     }

@@ -53,6 +53,8 @@ class ApiConstants {
 
   // ========== Statistics endpoints ==========
   static const String statisticsMonthly = '/api/statistics/monthly';
+  static const String statisticsCategoryComparison =
+      '/api/statistics/monthly/category-comparison';
   static const String statisticsWeekly = '/api/statistics/weekly';
   static const String statisticsAssets = '/api/statistics/assets';
 
