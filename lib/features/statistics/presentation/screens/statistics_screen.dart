@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/core/constants/expense_categories.dart';
@@ -58,12 +59,25 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final statisticsState = ref.watch(statisticsViewModelProvider);
     final viewModel = ref.read(statisticsViewModelProvider.notifier);
 
+    // 뒤로가기 버튼이 있는지 확인 (더 보기 -> 통계로 접근했는지)
+    final canPop = ModalRoute.of(context)?.canPop ?? false;
+
     return DefaultLayout(
       title: '분석',
-      automaticallyImplyLeading: false,
+      titleSpacing: canPop ? 0 : null,
+      leading: canPop
+          ? Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: IconButton(
+                icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+                onPressed: () => context.pop(),
+              ),
+            )
+          : null,
       child: statisticsState.statistics.when(
         data: (statistics) => _buildContent(
           context,
