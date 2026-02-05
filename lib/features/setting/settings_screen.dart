@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/core/config/admin_config.dart';
 import 'package:moamoa/router/route_names.dart';
@@ -124,9 +125,7 @@ class SettingsScreen extends ConsumerWidget {
                   icon: Icons.notifications_outlined,
                   iconColor: colorScheme.onSurface,
                   label: '알림 설정',
-                  onTap: () {
-                    // TODO: 알림 설정 화면으로 이동
-                  },
+                  onTap: () => _handleNotificationSettings(context),
                 ),
                 _MenuItem(
                   icon: Icons.logout,
@@ -150,12 +149,6 @@ class SettingsScreen extends ConsumerWidget {
                         iconColor: Colors.red,
                         label: '공지 작성',
                         onTap: () => context.push(RouteNames.adminNotification),
-                      ),
-                      _MenuItem(
-                        icon: Icons.bug_report,
-                        iconColor: Colors.orange,
-                        label: 'Sentry 테스트',
-                        onTap: () => _testSentry(context),
                       ),
                     ],
                   ),
@@ -225,37 +218,62 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
-  /// Sentry 테스트 에러 발생
-  void _testSentry(BuildContext context) {
+  /// 알림 설정 처리
+  Future<void> _handleNotificationSettings(BuildContext context) async {
+    // OneSignal 권한 상태 확인
+    final permission = await OneSignal.Notifications.permission;
+
+    if (!context.mounted) return;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Sentry 테스트'),
-        content: const Text('테스트 에러를 Sentry에 전송합니다.\n\n(Release 모드에서만 전송됨)'),
+        title: const Text('알림 설정'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  permission
+                      ? Icons.notifications_active
+                      : Icons.notifications_off,
+                  color: permission ? Colors.green : Colors.grey,
+                  size: 32,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    permission ? '푸시 알림이 활성화되어 있습니다.' : '푸시 알림이 비활성화되어 있습니다.',
+                    style: TextStyle(
+                      color: permission ? Colors.green : Colors.grey,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              '알림 설정을 변경하려면 기기 설정에서 변경해주세요.',
+              style: TextStyle(fontSize: 14),
+            ),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('취소'),
+            child: const Text('닫기'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(context).pop();
-              try {
-                throw Exception('Sentry 테스트 에러 - Flutter 앱에서 발생!');
-              } catch (e, stackTrace) {
-                // Sentry에 에러 전송
-                Sentry.captureException(e, stackTrace: stackTrace);
-                
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('테스트 에러가 Sentry에 전송되었습니다!'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              }
+              // OS 설정 화면으로 이동
+              await openAppSettings();
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.orange),
-            child: const Text('에러 전송'),
+            child: const Text('설정 열기'),
           ),
         ],
       ),
