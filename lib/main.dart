@@ -125,9 +125,7 @@ void _initializeApp() {
   }
   OneSignal.initialize(oneSignalAppId);
 
-  // Use this method to prompt for push notifications.
-  // We recommend removing this method after testing and instead use In-App Messages to prompt for notification permission.
-  OneSignal.Notifications.requestPermission(false);
+  // 알림 권한 요청은 온보딩에서 처리 (main.dart에서 자동 요청 제거)
 
   // 푸시 알림 클릭 시 분기 처리
   OneSignal.Notifications.addClickListener((event) {
