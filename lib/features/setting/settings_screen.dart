@@ -270,7 +270,20 @@ class SettingsScreen extends ConsumerWidget {
           TextButton(
             onPressed: () async {
               Navigator.of(context).pop();
-              // OS 설정 화면으로 이동
+
+              // 권한이 없는 경우(Never Prompted 포함) 먼저 권한 요청을 시도
+              // Never Prompted 상태라면 시스템 팝업이 표시됨 -> OS에 앱 등록
+              if (!permission) {
+                debugPrint('권한이 없습니다.');
+                // fallbackToSettings: false로 설정하여 OneSignal 기본 다이얼로그(영어) 비활성화
+                // 거부 시 아래 openAppSettings()로 우리가 직접 제어
+                final result =
+                    await OneSignal.Notifications.requestPermission(false);
+                // 팝업에서 '허용'을 눌렀다면 굳이 설정 화면으로 보낼 필요 없음
+                if (result) return;
+              }
+
+              // '거부'했거나 이미 거부된 상태라면 OS 설정 화면으로 이동
               await openAppSettings();
             },
             child: const Text('설정 열기'),
