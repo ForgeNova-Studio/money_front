@@ -59,6 +59,10 @@ class RouteNames {
   /// 주간 통계 화면
   static const String weeklyStatistics = '/statistics/weekly';
 
+  // ==================== Report Routes ====================
+  /// 월간 리포트 화면
+  static const String monthlyReport = '/reports/monthly';
+
   // ==================== Budget Route ====================
   /// 예산 설정 화면
   static const String budget = '/budget';

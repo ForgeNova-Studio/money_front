@@ -79,6 +79,22 @@ class SettingsScreen extends ConsumerWidget {
                   label: '통계',
                   onTap: () => context.push(RouteNames.statistics),
                 ),
+                _MenuItem(
+                  icon: Icons.auto_awesome,
+                  iconColor: Colors.amber,
+                  label: '월간 리포트',
+                  onTap: () {
+                    final now = DateTime.now();
+                    // 이번 달 1일 이전이면 전월 리포트, 아니면 이번 달 리포트
+                    final reportMonth = now.day <= 7 
+                        ? (now.month == 1 ? 12 : now.month - 1)
+                        : now.month;
+                    final reportYear = now.day <= 7 && now.month == 1
+                        ? now.year - 1
+                        : now.year;
+                    context.push('${RouteNames.monthlyReport}?year=$reportYear&month=$reportMonth');
+                  },
+                ),
               ],
             ),
             const SizedBox(height: 16),

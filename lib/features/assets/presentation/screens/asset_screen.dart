@@ -9,6 +9,7 @@ import 'package:moamoa/features/assets/presentation/widgets/asset_total_card.dar
 import 'package:moamoa/features/assets/presentation/widgets/asset_bar_chart.dart';
 import 'package:moamoa/features/assets/presentation/widgets/asset_category_list.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/features/monthly_report/presentation/widgets/monthly_report_banner.dart';
 import 'package:moamoa/router/route_names.dart';
 
 /// 자산 화면
@@ -187,6 +188,9 @@ class AssetScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // 월간 리포트 배너
+            const MonthlyReportBanner(),
+            
             // 총 자산 카드
             if (summary != null) AssetTotalCard(summary: summary),
             const SizedBox(height: 24),
