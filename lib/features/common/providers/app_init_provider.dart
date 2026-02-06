@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -102,6 +104,16 @@ Future<AppInitialization> _initializeApp(Ref ref) async {
       ..start();
     await Hive.initFlutter();
     logStartupDebug('init_hive_ms=${stepStopwatch.elapsedMilliseconds}');
+
+    // Google Fonts 사전 로드 (FOUT 방지 - 온보딩→로그인 전환 시 텍스트 스케일링 현상 방지)
+    stepStopwatch
+      ..reset()
+      ..start();
+    await GoogleFonts.pendingFonts([
+      GoogleFonts.roboto(fontWeight: FontWeight.w500),
+    ]);
+    logStartupDebug(
+        'init_google_fonts_ms=${stepStopwatch.elapsedMilliseconds}');
   } catch (e) {
     logStartupDebug('critical_init_failed: $e');
     rethrow; // 필수 초기화 실패 → 앱 진행 불가
