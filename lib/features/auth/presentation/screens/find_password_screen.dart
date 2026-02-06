@@ -225,7 +225,8 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.primary,
                           foregroundColor: colorScheme.onPrimary,
-                          disabledBackgroundColor: colorScheme.surfaceVariant,
+                          disabledBackgroundColor:
+                              colorScheme.surfaceContainerHighest,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -271,7 +272,8 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: colorScheme.inverseSurface,
                             foregroundColor: colorScheme.onInverseSurface,
-                            disabledBackgroundColor: colorScheme.surfaceVariant,
+                            disabledBackgroundColor:
+                                colorScheme.surfaceContainerHighest,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),

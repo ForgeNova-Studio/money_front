@@ -67,7 +67,7 @@ class MonthlyReportBanner extends ConsumerWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -78,7 +78,8 @@ class MonthlyReportBanner extends ConsumerWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
-            context.push('${RouteNames.monthlyReport}?year=$reportYear&month=$reportMonth');
+            context.push(
+                '${RouteNames.monthlyReport}?year=$reportYear&month=$reportMonth');
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -94,7 +95,7 @@ class MonthlyReportBanner extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${reportMonth}월 리포트 도착!',
+                        '$reportMonth월 리포트 도착!',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,

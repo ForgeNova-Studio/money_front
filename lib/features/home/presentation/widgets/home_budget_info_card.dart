@@ -76,7 +76,7 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: context.appColors.shadow.withOpacity(0.05),
+              color: context.appColors.shadow.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),

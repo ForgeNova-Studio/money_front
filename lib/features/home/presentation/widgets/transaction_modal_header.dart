@@ -87,7 +87,7 @@ class TransactionModalHeader extends StatelessWidget {
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
                                     color: context.appColors.success
-                                        .withOpacity(0.1),
+                                        .withValues(alpha: 0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
@@ -124,8 +124,8 @@ class TransactionModalHeader extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                  color:
-                                      context.appColors.error.withOpacity(0.1),
+                                  color: context.appColors.error
+                                      .withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(

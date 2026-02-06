@@ -55,12 +55,14 @@ class PendingExpensesReviewScreen extends ConsumerWidget {
           : Column(
               children: [
                 // 요약 헤더
-                _buildSummaryHeader(context, state.count, state.totalAmount, numberFormat),
-                
+                _buildSummaryHeader(
+                    context, state.count, state.totalAmount, numberFormat),
+
                 // 대기 목록
                 Expanded(
                   child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     itemCount: state.pendingExpenses.length,
                     itemBuilder: (context, index) {
                       final expense = state.pendingExpenses[index];
@@ -174,7 +176,7 @@ class PendingExpensesReviewScreen extends ConsumerWidget {
                   '총 $count건',
                   style: TextStyle(
                     fontSize: 14,
-                    color: context.appColors.textPrimary.withOpacity(0.8),
+                    color: context.appColors.textPrimary.withValues(alpha: 0.8),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -192,7 +194,7 @@ class PendingExpensesReviewScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.6),
+              color: Colors.white.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -233,7 +235,7 @@ class PendingExpensesReviewScreen extends ConsumerWidget {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: context.appColors.shadow.withOpacity(0.1),
+              color: context.appColors.shadow.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, -4),
             ),
@@ -246,15 +248,16 @@ class PendingExpensesReviewScreen extends ConsumerWidget {
             onPressed: isSaving
                 ? null
                 : () async {
-                    final viewModel = ref.read(pendingExpensesViewModelProvider.notifier);
+                    final viewModel =
+                        ref.read(pendingExpensesViewModelProvider.notifier);
                     await viewModel.saveAllPendingExpenses();
 
                     if (context.mounted) {
                       // 저장 후 홈 데이터 갱신
                       ref.read(homeViewModelProvider.notifier).fetchMonthlyData(
-                        DateTime.now(),
-                        forceRefresh: true,
-                      );
+                            DateTime.now(),
+                            forceRefresh: true,
+                          );
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -297,7 +300,8 @@ class PendingExpensesReviewScreen extends ConsumerWidget {
     );
   }
 
-  void _showClearAllDialog(BuildContext context, PendingExpensesViewModel viewModel) {
+  void _showClearAllDialog(
+      BuildContext context, PendingExpensesViewModel viewModel) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

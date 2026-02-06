@@ -86,13 +86,14 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () {
                     final now = DateTime.now();
                     // 이번 달 1일 이전이면 전월 리포트, 아니면 이번 달 리포트
-                    final reportMonth = now.day <= 7 
+                    final reportMonth = now.day <= 7
                         ? (now.month == 1 ? 12 : now.month - 1)
                         : now.month;
                     final reportYear = now.day <= 7 && now.month == 1
                         ? now.year - 1
                         : now.year;
-                    context.push('${RouteNames.monthlyReport}?year=$reportYear&month=$reportMonth');
+                    context.push(
+                        '${RouteNames.monthlyReport}?year=$reportYear&month=$reportMonth');
                   },
                 ),
               ],
@@ -179,12 +180,12 @@ class SettingsScreen extends ConsumerWidget {
                 builder: (context, snapshot) {
                   final info = snapshot.data;
                   final label = info == null
-                      ? '${AppConstants.appName}'
+                      ? AppConstants.appName
                       : '${info.appName} v${info.version}';
                   return Text(
                     label,
                     style: TextStyle(
-                      color: colorScheme.onSurface.withOpacity(0.4),
+                      color: colorScheme.onSurface.withValues(alpha: 0.4),
                       fontSize: 12,
                     ),
                   );
@@ -237,7 +238,7 @@ class SettingsScreen extends ConsumerWidget {
   /// 알림 설정 처리
   Future<void> _handleNotificationSettings(BuildContext context) async {
     // OneSignal 권한 상태 확인
-    final permission = await OneSignal.Notifications.permission;
+    final permission = OneSignal.Notifications.permission;
 
     if (!context.mounted) return;
 
@@ -325,7 +326,7 @@ class _ProfileCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -335,7 +336,7 @@ class _ProfileCard extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: colorScheme.primary.withOpacity(0.2),
+              color: colorScheme.primary.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -363,7 +364,7 @@ class _ProfileCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.2),
+                    color: Colors.orange.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Text(
@@ -381,7 +382,7 @@ class _ProfileCard extends StatelessWidget {
           // Arrow
           Icon(
             Icons.chevron_right,
-            color: colorScheme.onSurface.withOpacity(0.5),
+            color: colorScheme.onSurface.withValues(alpha: 0.5),
           ),
         ],
       ),
@@ -421,7 +422,7 @@ class _MenuSection extends StatelessWidget {
               ),
               Icon(
                 Icons.chevron_right,
-                color: colorScheme.onSurface.withOpacity(0.4),
+                color: colorScheme.onSurface.withValues(alpha: 0.4),
                 size: 20,
               ),
             ],
@@ -432,7 +433,7 @@ class _MenuSection extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -480,7 +481,7 @@ class _MenuItemTile extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: item.iconColor.withOpacity(0.15),
+                color: item.iconColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -500,7 +501,7 @@ class _MenuItemTile extends StatelessWidget {
             const Spacer(),
             Icon(
               Icons.chevron_right,
-              color: colorScheme.onSurface.withOpacity(0.3),
+              color: colorScheme.onSurface.withValues(alpha: 0.3),
               size: 20,
             ),
           ],

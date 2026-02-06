@@ -52,8 +52,9 @@ class NaverLoginService {
   /// 현재 네이버 로그인 상태 확인
   Future<bool> isLoggedIn() async {
     try {
-      final NaverToken token = await FlutterNaverLogin.refreshAccessTokenWithRefreshToken();
-      return token.accessToken?.isNotEmpty ?? false;
+      final NaverToken token =
+          await FlutterNaverLogin.refreshAccessTokenWithRefreshToken();
+      return token.accessToken.isNotEmpty;
     } catch (e) {
       _logger.e('네이버 로그인 상태 확인 에러', error: e);
       return false;
@@ -63,7 +64,8 @@ class NaverLoginService {
   /// 현재 액세스 토큰 가져오기
   Future<NaverToken?> getCurrentAccessToken() async {
     try {
-      final NaverToken token = await FlutterNaverLogin.refreshAccessTokenWithRefreshToken();
+      final NaverToken token =
+          await FlutterNaverLogin.refreshAccessTokenWithRefreshToken();
       return token;
     } catch (e) {
       _logger.e('네이버 액세스 토큰 조회 에러', error: e);
@@ -71,4 +73,3 @@ class NaverLoginService {
     }
   }
 }
-

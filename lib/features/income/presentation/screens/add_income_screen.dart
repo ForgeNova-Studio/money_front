@@ -352,7 +352,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                               context,
                                               backgroundColor: isSelected
                                                   ? source.color
-                                                      .withOpacity(0.12)
+                                                      .withValues(alpha: 0.12)
                                                   : Colors.white,
                                             ),
                                             child: Column(
@@ -364,7 +364,8 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                                     color: isSelected
                                                         ? source.color
                                                         : source.color
-                                                            .withOpacity(0.12),
+                                                            .withValues(
+                                                                alpha: 0.12),
                                                     shape: BoxShape.circle,
                                                   ),
                                                   child: Icon(

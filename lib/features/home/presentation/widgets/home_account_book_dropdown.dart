@@ -27,11 +27,13 @@ class HomeAccountBookDropdown extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceVariant,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color:
-                  Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4),
+              color: Theme.of(context)
+                  .colorScheme
+                  .outlineVariant
+                  .withValues(alpha: 0.4),
               width: 1.2,
             ),
           ),
@@ -112,16 +114,16 @@ class _AccountBookMenuItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
             color: isSelected
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.12)
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.12)
                 : Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected
-                  ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)
                   : Theme.of(context)
                       .colorScheme
                       .outlineVariant
-                      .withOpacity(0.4),
+                      .withValues(alpha: 0.4),
             ),
           ),
           child: Row(

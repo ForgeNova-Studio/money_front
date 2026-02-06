@@ -47,9 +47,7 @@ class SentryService {
         stackTrace: stackTrace,
         withScope: (scope) {
           if (extras != null) {
-            extras.forEach((key, value) {
-              scope.setExtra(key, value);
-            });
+            scope.setContexts('additional_data', extras);
           }
         },
       );
@@ -72,9 +70,7 @@ class SentryService {
         level: level,
         withScope: (scope) {
           if (extras != null) {
-            extras.forEach((key, value) {
-              scope.setExtra(key, value);
-            });
+            scope.setContexts('additional_data', extras);
           }
         },
       );

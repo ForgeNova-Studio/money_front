@@ -37,7 +37,7 @@ class ReportSummaryCard extends StatelessWidget {
             style: TextStyle(fontSize: 48),
           ),
           const SizedBox(height: 16),
-          
+
           const Text(
             '이번 달 총 정리',
             style: TextStyle(
@@ -47,19 +47,21 @@ class ReportSummaryCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
-          
+
           // 지출
-          _buildAmountRow('지출', report.totalExpense, AppColors.error, formatter),
+          _buildAmountRow(
+              '지출', report.totalExpense, AppColors.error, formatter),
           const SizedBox(height: 16),
-          
+
           // 수입
-          _buildAmountRow('수입', report.totalIncome, AppColors.success, formatter),
-          
+          _buildAmountRow(
+              '수입', report.totalIncome, AppColors.success, formatter),
+
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 16),
             child: Divider(color: AppColors.divider),
           ),
-          
+
           // 순수익
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -77,32 +79,37 @@ class ReportSummaryCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
-                  color: report.netIncome >= 0 ? AppColors.success : AppColors.error,
+                  color: report.netIncome >= 0
+                      ? AppColors.success
+                      : AppColors.error,
                 ),
                 prefix: report.netIncome >= 0 ? '+₩' : '₩',
               ),
             ],
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // 전월 대비
           if (report.changePercent != null)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: isPositiveChange 
-                    ? AppColors.success.withOpacity(0.1)
-                    : AppColors.error.withOpacity(0.1),
+                color: isPositiveChange
+                    ? AppColors.success.withValues(alpha: 0.1)
+                    : AppColors.error.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    isPositiveChange ? Icons.arrow_downward : Icons.arrow_upward,
+                    isPositiveChange
+                        ? Icons.arrow_downward
+                        : Icons.arrow_upward,
                     size: 16,
-                    color: isPositiveChange ? AppColors.success : AppColors.error,
+                    color:
+                        isPositiveChange ? AppColors.success : AppColors.error,
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -112,7 +119,9 @@ class ReportSummaryCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: isPositiveChange ? AppColors.success : AppColors.error,
+                      color: isPositiveChange
+                          ? AppColors.success
+                          : AppColors.error,
                     ),
                   ),
                 ],
@@ -123,7 +132,8 @@ class ReportSummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAmountRow(String label, int amount, Color color, NumberFormat formatter) {
+  Widget _buildAmountRow(
+      String label, int amount, Color color, NumberFormat formatter) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

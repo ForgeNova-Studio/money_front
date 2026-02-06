@@ -36,26 +36,18 @@ class NaverLoginUseCase {
   /// - [ServerException] 서버 오류
   /// - [UserCancelledException] 사용자가 로그인 취소
   Future<AuthResult> call() async {
-    print('[NaverLoginUseCase] 네이버 로그인 시작');
-
     // 1. Naver Login 실행
     NaverLoginResult result;
     try {
-      print('[NaverLoginUseCase] FlutterNaverLogin.logIn() 호출');
 
       // 타임아웃 설정 (30초)
       result = await FlutterNaverLogin.logIn().timeout(
         const Duration(seconds: 30),
         onTimeout: () {
-          print('[NaverLoginUseCase] 타임아웃! 네이버 로그인이 30초 내에 완료되지 않았습니다.');
           throw TimeoutException('네이버 로그인 시간 초과');
         },
       );
-
-      print('[NaverLoginUseCase] FlutterNaverLogin.logIn() 완료: status=${result.status}');
-    } catch (e, stackTrace) {
-      print('[NaverLoginUseCase] FlutterNaverLogin.logIn() 에러: $e');
-      print('[NaverLoginUseCase] StackTrace: $stackTrace');
+    } catch (e) {
       throw NetworkException('네이버 로그인 중 오류가 발생했습니다: $e');
     }
 
@@ -72,9 +64,7 @@ class NaverLoginUseCase {
     NaverToken token;
     try {
       token = await FlutterNaverLogin.getCurrentAccessToken();
-      print('[NaverLoginUseCase] Access Token 획득 완료');
     } catch (e) {
-      print('[NaverLoginUseCase] Access Token 획득 실패: $e');
       throw UnauthorizedException('네이버 Access Token을 가져올 수 없습니다');
     }
 
@@ -89,8 +79,6 @@ class NaverLoginUseCase {
     final String? nickname = (account?.name?.isNotEmpty == true)
         ? account!.name 
         : account?.nickname;
-
-    print('[NaverLoginUseCase] 사용자 정보: email=$email, nickname=$nickname');
 
     // 5. Repository를 통해 백엔드로 Access Token 전송
     return await _repository.loginWithNaver(

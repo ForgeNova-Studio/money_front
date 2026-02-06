@@ -39,7 +39,7 @@ class ReportIntroCard extends StatelessWidget {
           
           // 메인 타이틀
           Text(
-            '${month}월이 끝났어요!',
+            '$month월이 끝났어요!',
             style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w700,
@@ -50,7 +50,7 @@ class ReportIntroCard extends StatelessWidget {
           
           // 서브 타이틀
           Text(
-            '${year}년 ${month}월\n소비 리포트',
+            '$year년 $month월\n소비 리포트',
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 20,

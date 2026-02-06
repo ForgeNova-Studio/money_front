@@ -96,7 +96,8 @@ class ReportTopExpensesCard extends StatelessWidget {
     required NumberFormat formatter,
     required DateFormat dateFormatter,
   }) {
-    final categoryName = resolveExpenseCategoryLabel(expense.category ?? 'UNCATEGORIZED');
+    final categoryName =
+        resolveExpenseCategoryLabel(expense.category ?? 'UNCATEGORIZED');
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -141,9 +142,10 @@ class ReportTopExpensesCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
+                        color: AppColors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(

@@ -242,7 +242,7 @@ class AppBootstrap extends ConsumerWidget {
         debugShowCheckedModeBanner: false,
         theme: theme,
         home: Scaffold(
-          backgroundColor: theme.colorScheme.background,
+          backgroundColor: theme.colorScheme.surface,
           body: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,

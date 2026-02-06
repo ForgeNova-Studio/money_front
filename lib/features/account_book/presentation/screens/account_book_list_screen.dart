@@ -56,13 +56,13 @@ class AccountBookListScreen extends ConsumerWidget {
                   Icon(
                     Icons.book_outlined,
                     size: 64,
-                    color: colorScheme.onSurface.withOpacity(0.3),
+                    color: colorScheme.onSurface.withValues(alpha: 0.3),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     '가계부가 없습니다.',
                     style: TextStyle(
-                      color: colorScheme.onSurface.withOpacity(0.5),
+                      color: colorScheme.onSurface.withValues(alpha: 0.5),
                       fontSize: 16,
                     ),
                   ),
@@ -96,8 +96,9 @@ class AccountBookListScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? colorScheme.primary.withOpacity(0.05)
-                        : colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                        ? colorScheme.primary.withValues(alpha: 0.05)
+                        : colorScheme.surfaceContainerHighest
+                            .withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(16),
                     border: isSelected
                         ? Border.all(color: colorScheme.primary, width: 1.5)
@@ -109,8 +110,8 @@ class AccountBookListScreen extends ConsumerWidget {
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? colorScheme.primary.withOpacity(0.1)
-                              : Colors.grey.withOpacity(0.1),
+                              ? colorScheme.primary.withValues(alpha: 0.1)
+                              : Colors.grey.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
@@ -139,7 +140,8 @@ class AccountBookListScreen extends ConsumerWidget {
                                 book.description!,
                                 style: TextStyle(
                                   fontSize: 13,
-                                  color: colorScheme.onSurface.withOpacity(0.6),
+                                  color: colorScheme.onSurface
+                                      .withValues(alpha: 0.6),
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,

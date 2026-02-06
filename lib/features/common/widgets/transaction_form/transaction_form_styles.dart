@@ -12,7 +12,7 @@ BoxDecoration transactionFormCardDecoration(
     borderRadius: BorderRadius.circular(borderRadius),
     boxShadow: [
       BoxShadow(
-        color: context.appColors.shadow.withOpacity(0.08),
+        color: context.appColors.shadow.withValues(alpha: 0.08),
         blurRadius: 20,
         offset: const Offset(0, 8),
       ),

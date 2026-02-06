@@ -374,7 +374,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                                 transactionFormCardDecoration(
                                               context,
                                               backgroundColor: isSelected
-                                                  ? color.withOpacity(0.12)
+                                                  ? color.withValues(
+                                                      alpha: 0.12)
                                                   : Colors.white,
                                             ),
                                             child: Column(
@@ -385,8 +386,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                                                   decoration: BoxDecoration(
                                                     color: isSelected
                                                         ? color
-                                                        : color
-                                                            .withOpacity(0.12),
+                                                        : color.withValues(
+                                                            alpha: 0.12),
                                                     shape: BoxShape.circle,
                                                   ),
                                                   child: Icon(

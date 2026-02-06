@@ -71,8 +71,10 @@ class ReportCategoryCard extends StatelessWidget {
               itemBuilder: (context, index) {
                 final category = categories[index];
                 final color = _vibrantColors[index % _vibrantColors.length];
-                final categoryName = resolveExpenseCategoryLabel(category.category);
-                final categoryIcon = resolveExpenseCategoryIcon(category.category);
+                final categoryName =
+                    resolveExpenseCategoryLabel(category.category);
+                final categoryIcon =
+                    resolveExpenseCategoryIcon(category.category);
 
                 return _buildCategoryItem(
                   rank: index + 1,
@@ -115,7 +117,7 @@ class ReportCategoryCard extends StatelessWidget {
                   width: 24,
                   height: 24,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.2),
+                    color: color.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   alignment: Alignment.center,
@@ -129,7 +131,7 @@ class ReportCategoryCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                
+
                 // 아이콘 + 이름
                 Icon(icon, size: 18, color: color),
                 const SizedBox(width: 6),
@@ -141,9 +143,9 @@ class ReportCategoryCard extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                
+
                 const Spacer(),
-                
+
                 // 금액
                 Text(
                   '₩${formatter.format(amount)}',
@@ -154,7 +156,7 @@ class ReportCategoryCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                
+
                 // 퍼센트
                 Text(
                   '($percentage%)',
@@ -166,14 +168,14 @@ class ReportCategoryCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            
+
             // 프로그레스 바
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
                 value: value,
                 minHeight: 8,
-                backgroundColor: color.withOpacity(0.15),
+                backgroundColor: color.withValues(alpha: 0.15),
                 valueColor: AlwaysStoppedAnimation(color),
               ),
             ),

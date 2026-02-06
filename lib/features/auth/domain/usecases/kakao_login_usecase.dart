@@ -32,45 +32,32 @@ class KakaoLoginUseCase {
   /// - [ServerException] 서버 오류
   /// - [UserCancelledException] 사용자가 로그인 취소
   Future<AuthResult> call() async {
-    print('[KakaoLoginUseCase] 카카오 로그인 시작');
-
     // 1. 카카오톡 설치 여부 확인 후 로그인 방식 결정
     OAuthToken token;
     try {
-      print('[KakaoLoginUseCase] 카카오톡 설치 여부 확인');
       final isInstalled = await isKakaoTalkInstalled();
       
       if (isInstalled) {
-        print('[KakaoLoginUseCase] 카카오톡으로 로그인 시도');
         token = await UserApi.instance.loginWithKakaoTalk().timeout(
           const Duration(seconds: 30),
           onTimeout: () {
-            print('[KakaoLoginUseCase] 타임아웃! 카카오톡 로그인이 30초 내에 완료되지 않았습니다.');
             throw TimeoutException('카카오 로그인 시간 초과');
           },
         );
       } else {
-        print('[KakaoLoginUseCase] 카카오 계정으로 로그인 시도');
         token = await UserApi.instance.loginWithKakaoAccount().timeout(
           const Duration(seconds: 30),
           onTimeout: () {
-            print('[KakaoLoginUseCase] 타임아웃! 카카오 계정 로그인이 30초 내에 완료되지 않았습니다.');
             throw TimeoutException('카카오 로그인 시간 초과');
           },
         );
       }
-      
-      print('[KakaoLoginUseCase] 카카오 로그인 완료: accessToken=${token.accessToken.substring(0, 10)}...');
     } on KakaoAuthException catch (e) {
-      print('[KakaoLoginUseCase] 카카오 인증 에러: ${e.error}');
       if (e.error == AuthErrorCause.accessDenied) {
         throw UserCancelledException();
       }
       throw UnauthorizedException('카카오 로그인에 실패했습니다: ${e.message}');
-    } catch (e, stackTrace) {
-      print('[KakaoLoginUseCase] 카카오 로그인 에러: $e');
-      print('[KakaoLoginUseCase] StackTrace: $stackTrace');
-      
+    } catch (e) {
       // 사용자 취소 케이스 처리
       if (e.toString().contains('cancelled') || 
           e.toString().contains('CANCELED') ||
@@ -94,9 +81,7 @@ class KakaoLoginUseCase {
       final user = await UserApi.instance.me();
       email = user.kakaoAccount?.email;
       nickname = user.kakaoAccount?.profile?.nickname;
-      print('[KakaoLoginUseCase] 사용자 정보: email=$email, nickname=$nickname');
     } catch (e) {
-      print('[KakaoLoginUseCase] 사용자 정보 가져오기 실패 (무시): $e');
       // 사용자 정보 가져오기 실패해도 로그인은 진행
     }
 

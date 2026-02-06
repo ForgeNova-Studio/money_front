@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 // cores
 import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/core/exceptions/auth_exceptions.dart';
 import 'package:moamoa/features/auth/presentation/widgets/google_login_button.dart';
 import 'package:moamoa/features/auth/presentation/widgets/kakao_login_button.dart';
 import 'package:moamoa/features/auth/presentation/widgets/naver_login_button.dart';
@@ -56,29 +57,21 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
   // ViewModel의 loginWithNaver 메서드 호출
   Future<void> _handleNaverLogin() async {
-    print('[LoginScreen] 네이버 로그인 버튼 클릭됨');
     FocusManager.instance.primaryFocus?.unfocus();
     try {
-      print('[LoginScreen] loginWithNaver 호출 시작');
       await ref.read(authViewModelProvider.notifier).loginWithNaver();
-      print('[LoginScreen] loginWithNaver 호출 완료');
-    } catch (e, stackTrace) {
-      print('[LoginScreen] 네이버 로그인 에러: $e');
-      print('[LoginScreen] StackTrace: $stackTrace');
+    } catch (e) {
+      throw NetworkException('네이버 로그인 중 오류가 발생했습니다: $e');
     }
   }
 
   // ViewModel의 loginWithKakao 메서드 호출
   Future<void> _handleKakaoLogin() async {
-    print('[LoginScreen] 카카오 로그인 버튼 클릭됨');
     FocusManager.instance.primaryFocus?.unfocus();
     try {
-      print('[LoginScreen] loginWithKakao 호출 시작');
       await ref.read(authViewModelProvider.notifier).loginWithKakao();
-      print('[LoginScreen] loginWithKakao 호출 완료');
-    } catch (e, stackTrace) {
-      print('[LoginScreen] 카카오 로그인 에러: $e');
-      print('[LoginScreen] StackTrace: $stackTrace');
+    } catch (e) {
+      throw NetworkException('카카오 로그인 중 오류가 발생했습니다: $e');
     }
   }
 

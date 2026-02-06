@@ -92,13 +92,13 @@ class _Page5State extends State<Page5> with SingleTickerProviderStateMixin {
                             end: Alignment.bottomRight,
                             colors: [
                               colorScheme.primary,
-                              colorScheme.primary.withOpacity(0.7),
+                              colorScheme.primary.withValues(alpha: 0.7),
                             ],
                           ),
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: colorScheme.primary.withOpacity(0.3),
+                              color: colorScheme.primary.withValues(alpha: 0.3),
                               blurRadius: 30,
                               spreadRadius: 5,
                             ),

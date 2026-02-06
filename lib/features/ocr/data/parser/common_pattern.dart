@@ -8,7 +8,7 @@ import 'package:moamoa/features/ocr/domain/entities/receipt_data.dart';
 import 'package:moamoa/features/ocr/domain/patterns/receipt_pattern.dart';
 
 class CommonPattern implements ReceiptPattern {
-  final _logger = Logger(level: kDebugMode ? Level.debug : Level.nothing);
+  final _logger = Logger(level: kDebugMode ? Level.debug : Level.off);
 
   @override
   String get name => 'CommonPattern (Dual Date Regex)';
@@ -124,8 +124,9 @@ class CommonPattern implements ReceiptPattern {
 
       rawTexts.sort((a, b) {
         double dy = (a.boundingBox.top - b.boundingBox.top).abs();
-        if (dy < h * 0.5)
+        if (dy < h * 0.5) {
           return a.boundingBox.left.compareTo(b.boundingBox.left);
+        }
         return a.boundingBox.top.compareTo(b.boundingBox.top);
       });
 

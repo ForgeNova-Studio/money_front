@@ -26,7 +26,7 @@ class AssetTotalCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: context.appColors.primary.withOpacity(0.3),
+            color: context.appColors.primary.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -40,7 +40,7 @@ class AssetTotalCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.account_balance_wallet,
-                color: context.appColors.textPrimary.withOpacity(0.7),
+                color: context.appColors.textPrimary.withValues(alpha: 0.7),
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -49,7 +49,7 @@ class AssetTotalCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: context.appColors.textPrimary.withOpacity(0.7),
+                  color: context.appColors.textPrimary.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -72,7 +72,7 @@ class AssetTotalCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.white.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -81,8 +81,8 @@ class AssetTotalCard extends StatelessWidget {
                 Icon(
                   isPositive ? Icons.arrow_upward : Icons.arrow_downward,
                   size: 14,
-                  color: isPositive 
-                      ? context.appColors.success 
+                  color: isPositive
+                      ? context.appColors.success
                       : context.appColors.error,
                 ),
                 const SizedBox(width: 4),
@@ -91,8 +91,8 @@ class AssetTotalCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: isPositive 
-                        ? context.appColors.success 
+                    color: isPositive
+                        ? context.appColors.success
                         : context.appColors.error,
                   ),
                 ),

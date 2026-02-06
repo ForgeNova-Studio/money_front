@@ -44,9 +44,9 @@ class _ReportOutroCardState extends ConsumerState<ReportOutroCard> {
               style: TextStyle(fontSize: 48),
             ),
             const SizedBox(height: 12),
-            
+
             Text(
-              '${nextMonth}월도 화이팅!',
+              '$nextMonth월도 화이팅!',
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
@@ -54,7 +54,7 @@ class _ReportOutroCardState extends ConsumerState<ReportOutroCard> {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // 가장 많이 간 곳
             if (widget.report.topMerchant != null)
               Container(
@@ -95,15 +95,15 @@ class _ReportOutroCardState extends ConsumerState<ReportOutroCard> {
                   ],
                 ),
               ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 팁
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.info.withOpacity(0.1),
+                color: AppColors.info.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -126,9 +126,9 @@ class _ReportOutroCardState extends ConsumerState<ReportOutroCard> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // 해시태그
             Text(
               '#나의소비리포트 #${widget.report.month}월결산 #모아모아',
@@ -137,9 +137,9 @@ class _ReportOutroCardState extends ConsumerState<ReportOutroCard> {
                 color: AppColors.textTertiary,
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // 더 이상 보지 않기 체크박스
             GestureDetector(
               onTap: () {
@@ -151,7 +151,8 @@ class _ReportOutroCardState extends ConsumerState<ReportOutroCard> {
                 });
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
                   color: AppColors.gray50,
                   borderRadius: BorderRadius.circular(12),
@@ -160,12 +161,12 @@ class _ReportOutroCardState extends ConsumerState<ReportOutroCard> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      _isDontShowAgain 
-                          ? Icons.check_box 
+                      _isDontShowAgain
+                          ? Icons.check_box
                           : Icons.check_box_outline_blank,
                       size: 20,
-                      color: _isDontShowAgain 
-                          ? AppColors.primary 
+                      color: _isDontShowAgain
+                          ? AppColors.primary
                           : AppColors.gray400,
                     ),
                     const SizedBox(width: 8),
@@ -193,8 +194,9 @@ class _ReportOutroCardState extends ConsumerState<ReportOutroCard> {
 
     final topCategory = report.categoryBreakdown.first;
     final savingAmount = (topCategory.amount * 0.1).round();
-    
-    if (topCategory.category == 'FOOD' || topCategory.category == 'CAFE_SNACK') {
+
+    if (topCategory.category == 'FOOD' ||
+        topCategory.category == 'CAFE_SNACK') {
       return '${_getCategoryName(topCategory.category)} 지출 10% 줄이면 월 ₩${_formatNumber(savingAmount)} 절약!';
     } else if (topCategory.category == 'SHOPPING') {
       return '충동구매 줄이면 월 ₩${_formatNumber(savingAmount)} 절약 가능해요!';

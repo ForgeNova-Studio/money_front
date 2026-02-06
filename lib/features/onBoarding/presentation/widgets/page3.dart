@@ -211,8 +211,8 @@ class RingChartPainter extends CustomPainter {
           endAngle: 5 * math.pi / 2,
           tileMode: TileMode.clamp,
           colors: [
-            rightColor.withOpacity(fadeOpacity),
-            leftColor.withOpacity(fadeOpacity),
+            rightColor.withValues(alpha: fadeOpacity),
+            leftColor.withValues(alpha: fadeOpacity),
           ],
         );
 

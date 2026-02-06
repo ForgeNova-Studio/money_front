@@ -37,7 +37,7 @@ class EmailVerificationRow extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: colorScheme.primary,
               foregroundColor: colorScheme.onPrimary,
-              disabledBackgroundColor: colorScheme.surfaceVariant,
+              disabledBackgroundColor: colorScheme.surfaceContainerHighest,
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),

@@ -32,9 +32,8 @@ class TransactionListItem extends StatelessWidget {
     final memo = transaction.memo;
 
     // title: 설명이 있으면 사용자 입력, 없으면 카테고리 한글 라벨
-    final displayTitle = transaction.hasDescription
-        ? transaction.title
-        : categoryLabel;
+    final displayTitle =
+        transaction.hasDescription ? transaction.title : categoryLabel;
 
     // subtitle: 카테고리 + memo 조합 (시간 제거, 중복 방지)
     String? subtitle;
@@ -96,7 +95,7 @@ class _DeleteButton extends StatelessWidget {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: context.appColors.error.withOpacity(0.3),
+              color: context.appColors.error.withValues(alpha: 0.3),
               blurRadius: 8,
               spreadRadius: 1,
             ),

@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -120,7 +119,7 @@ class AppShell extends HookConsumerWidget {
                 duration: const Duration(milliseconds: 160),
                 curve: Curves.easeOut,
                 child: Container(
-                  color: colorScheme.scrim.withOpacity(0.06),
+                  color: colorScheme.scrim.withValues(alpha: 0.06),
                 ),
               ),
             ),

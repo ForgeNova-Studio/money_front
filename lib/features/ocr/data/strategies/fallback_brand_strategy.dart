@@ -27,7 +27,7 @@ import '../utils/keyword_classifier.dart';
 class FallbackBrandStrategy implements BrandMatchStrategy {
   final UserBrandSource _userSource;
   final GlobalBrandSource _globalSource;
-  final _logger = Logger(level: kDebugMode ? Level.debug : Level.nothing);
+  final _logger = Logger(level: kDebugMode ? Level.debug : Level.off);
 
   FallbackBrandStrategy({
     required UserBrandSource userSource,

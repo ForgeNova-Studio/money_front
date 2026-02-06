@@ -166,7 +166,7 @@ class _Page6State extends State<Page6> with SingleTickerProviderStateMixin {
         border: Border.all(color: context.appColors.gray100, width: 2),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 30,
             offset: const Offset(0, 10),
           ),
@@ -215,7 +215,7 @@ class _Page6State extends State<Page6> with SingleTickerProviderStateMixin {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: context.appColors.info.withOpacity(0.6),
+                    color: context.appColors.info.withValues(alpha: 0.6),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
@@ -267,7 +267,7 @@ class _Page6State extends State<Page6> with SingleTickerProviderStateMixin {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: color.withOpacity(0.3),
+                  color: color.withValues(alpha: 0.3),
                   blurRadius: 10,
                   offset: Offset(0, 4),
                 ),

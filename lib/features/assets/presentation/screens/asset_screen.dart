@@ -25,17 +25,6 @@ class AssetScreen extends ConsumerWidget {
       title: '자산',
       centerTitle: false,
       automaticallyImplyLeading: false,
-      actions: [
-        IconButton(
-          icon: Icon(
-            Icons.settings_outlined,
-            color: colorScheme.onSurface,
-          ),
-          onPressed: () {
-            // TODO: Navigate to asset settings
-          },
-        ),
-      ],
       floatingActionButton: SizedBox(
         width: 80,
         height: 35,
@@ -137,7 +126,7 @@ class AssetScreen extends ConsumerWidget {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: context.appColors.error.withOpacity(0.1),
+                color: context.appColors.error.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -190,7 +179,7 @@ class AssetScreen extends ConsumerWidget {
           children: [
             // 월간 리포트 배너
             const MonthlyReportBanner(),
-            
+
             // 총 자산 카드
             if (summary != null) AssetTotalCard(summary: summary),
             const SizedBox(height: 24),
@@ -245,6 +234,9 @@ class AssetScreen extends ConsumerWidget {
                 await ref
                     .read(assetViewModelProvider.notifier)
                     .deleteAsset(assetId);
+
+                if (!context.mounted) return;
+
                 messenger.showSnackBar(
                   SnackBar(
                     content: const Text('자산이 삭제되었습니다'),
@@ -252,6 +244,8 @@ class AssetScreen extends ConsumerWidget {
                   ),
                 );
               } catch (e) {
+                if (!context.mounted) return;
+
                 final message = e is Exception
                     ? ExceptionHandler.getErrorMessage(e)
                     : '오류가 발생했습니다';

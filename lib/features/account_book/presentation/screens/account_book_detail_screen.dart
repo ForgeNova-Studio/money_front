@@ -81,7 +81,7 @@ class AccountBookDetailScreen extends ConsumerWidget {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: colorScheme.primary.withOpacity(0.1),
+                    color: colorScheme.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -106,7 +106,7 @@ class AccountBookDetailScreen extends ConsumerWidget {
                     accountBook.description!,
                     style: TextStyle(
                       fontSize: 14,
-                      color: colorScheme.onSurface.withOpacity(0.6),
+                      color: colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -167,7 +167,7 @@ class AccountBookDetailScreen extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(children: children),
@@ -188,7 +188,7 @@ class AccountBookDetailScreen extends ConsumerWidget {
             label,
             style: TextStyle(
               fontSize: 14,
-              color: colorScheme.onSurface.withOpacity(0.6),
+              color: colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           if (isBadge)
@@ -254,7 +254,8 @@ class AccountBookDetailScreen extends ConsumerWidget {
               backgroundColor: colorScheme.primary,
               foregroundColor: colorScheme.onPrimary,
               disabledBackgroundColor: colorScheme.surfaceContainerHighest,
-              disabledForegroundColor: colorScheme.onSurface.withOpacity(0.3),
+              disabledForegroundColor:
+                  colorScheme.onSurface.withValues(alpha: 0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),

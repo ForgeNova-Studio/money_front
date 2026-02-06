@@ -176,7 +176,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               borderRadius: BorderRadius.circular(8),
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
-              overlayColor: MaterialStateProperty.all(Colors.transparent),
+              overlayColor: WidgetStateProperty.all(Colors.transparent),
               onTap: _toggleAccountBookMenu,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -279,7 +279,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 behavior: HitTestBehavior.translucent,
                 onTap: _collapseOverlaysIfNeeded,
                 child: Container(
-                  color: colorScheme.scrim.withOpacity(0.06),
+                  color: colorScheme.scrim.withValues(alpha: 0.06),
                 ),
               ),
             ),

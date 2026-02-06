@@ -70,7 +70,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 10,
                               spreadRadius: 2,
                             ),
@@ -100,7 +100,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 10,
                               spreadRadius: 2,
                             ),
@@ -126,7 +126,8 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: context.appColors.primary.withOpacity(0.4),
+                              color: context.appColors.primary
+                                  .withValues(alpha: 0.4),
                               blurRadius: 10,
                               spreadRadius: 2,
                             ),

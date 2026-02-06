@@ -38,7 +38,7 @@ class ReportBudgetCard extends StatelessWidget {
             style: const TextStyle(fontSize: 48),
           ),
           const SizedBox(height: 16),
-          
+
           Text(
             isOverBudget ? '예산 초과!' : '예산 달성 현황',
             style: TextStyle(
@@ -48,26 +48,28 @@ class ReportBudgetCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
-          
+
           // 목표/지출/남은 금액
-          _buildAmountRow('목표', budget.targetAmount, AppColors.textSecondary, formatter),
+          _buildAmountRow(
+              '목표', budget.targetAmount, AppColors.textSecondary, formatter),
           const SizedBox(height: 12),
-          _buildAmountRow('지출', budget.currentSpending, AppColors.error, formatter),
-          
+          _buildAmountRow(
+              '지출', budget.currentSpending, AppColors.error, formatter),
+
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 12),
             child: Divider(color: AppColors.divider),
           ),
-          
+
           _buildAmountRow(
             isOverBudget ? '초과' : '남은 금액',
             remaining.abs(),
             isOverBudget ? AppColors.error : AppColors.success,
             formatter,
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // 프로그레스 바
           TweenAnimationBuilder<double>(
             tween: Tween(begin: 0.0, end: (percentage / 100).clamp(0.0, 1.0)),
@@ -100,14 +102,14 @@ class ReportBudgetCard extends StatelessWidget {
               );
             },
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // 멘트
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: BoxDecoration(
-              color: _getProgressColor(percentage).withOpacity(0.1),
+              color: _getProgressColor(percentage).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -124,7 +126,8 @@ class ReportBudgetCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAmountRow(String label, int amount, Color color, NumberFormat formatter) {
+  Widget _buildAmountRow(
+      String label, int amount, Color color, NumberFormat formatter) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
