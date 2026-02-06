@@ -68,9 +68,9 @@ class AuthViewModel extends _$AuthViewModel {
           state = AuthState.authenticated(user: userEntity);
 
           // OneSignal에 External User ID 등록 (개인 푸시 알림용)
-          OneSignal.login(userEntity.userId);
+          OneSignal.login(userEntity.email);
           if (kDebugMode) {
-            debugPrint('[AuthViewModel] OneSignal 로그인: ${userEntity.userId}');
+            debugPrint('[AuthViewModel] OneSignal 로그인: ${userEntity.email}');
             debugPrint('[AuthViewModel] 인증된 상태로 변경됨');
           }
         } else {
@@ -109,7 +109,7 @@ class AuthViewModel extends _$AuthViewModel {
       state = AuthState.authenticated(user: result.user);
 
       // OneSignal에 External User ID 등록
-      OneSignal.login(result.user.userId);
+      OneSignal.login(result.user.email);
       ref.invalidate(selectedAccountBookViewModelProvider);
     }, loading: true, defaultErrorMessage: '로그인 중 오류가 발생했습니다');
   }
@@ -178,7 +178,7 @@ class AuthViewModel extends _$AuthViewModel {
       state = AuthState.authenticated(user: result.user);
 
       // OneSignal에 External User ID 등록
-      OneSignal.login(result.user.userId);
+      OneSignal.login(result.user.email);
       ref.invalidate(selectedAccountBookViewModelProvider);
     },
         loading: true,
@@ -233,7 +233,7 @@ class AuthViewModel extends _$AuthViewModel {
       final useCase = ref.read(googleLoginUseCaseProvider);
       final result = await useCase();
       state = AuthState.authenticated(user: result.user);
-      OneSignal.login(result.user.userId);
+      OneSignal.login(result.user.email);
       ref.invalidate(selectedAccountBookViewModelProvider);
     },
         loading: true,
@@ -256,7 +256,7 @@ class AuthViewModel extends _$AuthViewModel {
         debugPrint('[AuthViewModel] 네이버 로그인 성공: ${result.user.email}');
       }
       state = AuthState.authenticated(user: result.user);
-      OneSignal.login(result.user.userId);
+      OneSignal.login(result.user.email);
       ref.invalidate(selectedAccountBookViewModelProvider);
     },
         loading: true,
@@ -279,7 +279,7 @@ class AuthViewModel extends _$AuthViewModel {
         debugPrint('[AuthViewModel] 카카오 로그인 성공: ${result.user.email}');
       }
       state = AuthState.authenticated(user: result.user);
-      OneSignal.login(result.user.userId);
+      OneSignal.login(result.user.email);
       ref.invalidate(selectedAccountBookViewModelProvider);
     },
         loading: true,
