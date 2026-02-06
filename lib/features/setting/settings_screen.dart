@@ -52,17 +52,6 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () => context.push(RouteNames.accountBookList),
                 ),
                 _MenuItem(
-                  icon: Icons.calculate_outlined,
-                  iconColor: Colors.orange,
-                  label: 'N빵 정산',
-                  onTap: () {
-                    // TODO: 정산 화면으로 이동
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('정산 기능 준비 중입니다.')),
-                    );
-                  },
-                ),
-                _MenuItem(
                   icon: Icons.calendar_month_outlined,
                   iconColor: Colors.green,
                   label: '고정비 관리',
@@ -409,23 +398,13 @@ class _MenuSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  color: colorScheme.onSurface,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: colorScheme.onSurface.withValues(alpha: 0.4),
-                size: 20,
-              ),
-            ],
+          child: Text(
+            title,
+            style: TextStyle(
+              color: colorScheme.onSurface,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         const SizedBox(height: 12),
