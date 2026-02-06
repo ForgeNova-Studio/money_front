@@ -11,6 +11,7 @@ import 'package:moamoa/features/monthly_report/presentation/widgets/report_intro
 import 'package:moamoa/features/monthly_report/presentation/widgets/report_outro_card.dart';
 import 'package:moamoa/features/monthly_report/presentation/widgets/report_summary_card.dart';
 import 'package:moamoa/features/monthly_report/presentation/widgets/report_top_expenses_card.dart';
+import 'package:moamoa/features/common/widgets/error_state_widget.dart';
 
 /// 월간 리포트 화면
 class MonthlyReportScreen extends ConsumerStatefulWidget {
@@ -24,7 +25,8 @@ class MonthlyReportScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<MonthlyReportScreen> createState() => _MonthlyReportScreenState();
+  ConsumerState<MonthlyReportScreen> createState() =>
+      _MonthlyReportScreenState();
 }
 
 class _MonthlyReportScreenState extends ConsumerState<MonthlyReportScreen> {
@@ -39,7 +41,8 @@ class _MonthlyReportScreenState extends ConsumerState<MonthlyReportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedAccountBookState = ref.watch(selectedAccountBookViewModelProvider);
+    final selectedAccountBookState =
+        ref.watch(selectedAccountBookViewModelProvider);
     final accountBookId = selectedAccountBookState.asData?.value;
 
     if (accountBookId == null) {
@@ -63,23 +66,14 @@ class _MonthlyReportScreenState extends ConsumerState<MonthlyReportScreen> {
           loading: () => const Center(
             child: CircularProgressIndicator(color: AppColors.primary),
           ),
-          error: (error, stack) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('리포트를 불러올 수 없습니다', style: TextStyle(color: AppColors.textSecondary)),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => ref.invalidate(
-                    monthlyReportProvider(
-                      accountBookId: accountBookId,
-                      year: widget.year,
-                      month: widget.month,
-                    ),
-                  ),
-                  child: const Text('다시 시도'),
-                ),
-              ],
+          error: (error, stack) => ErrorStateWidget(
+            error: error,
+            onRetry: () => ref.invalidate(
+              monthlyReportProvider(
+                accountBookId: accountBookId,
+                year: widget.year,
+                month: widget.month,
+              ),
             ),
           ),
           data: (report) => _buildReportContent(report),
@@ -141,7 +135,6 @@ class _MonthlyReportScreenState extends ConsumerState<MonthlyReportScreen> {
                 )
               else
                 const SizedBox(width: 80),
-              
               if (_currentPage < cards.length - 1)
                 ElevatedButton(
                   onPressed: () => _pageController.nextPage(

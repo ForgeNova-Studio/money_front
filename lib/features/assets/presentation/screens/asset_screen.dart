@@ -9,6 +9,7 @@ import 'package:moamoa/features/assets/presentation/widgets/asset_total_card.dar
 import 'package:moamoa/features/assets/presentation/widgets/asset_bar_chart.dart';
 import 'package:moamoa/features/assets/presentation/widgets/asset_category_list.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/features/common/widgets/error_state_widget.dart';
 import 'package:moamoa/features/monthly_report/presentation/widgets/monthly_report_banner.dart';
 import 'package:moamoa/router/route_names.dart';
 
@@ -48,7 +49,11 @@ class AssetScreen extends ConsumerWidget {
       child: state.isLoading
           ? _buildLoadingState(context)
           : state.error != null
-              ? _buildErrorState(context, state.error!, ref)
+              ? ErrorStateWidget(
+                  message: state.error,
+                  onRetry: () =>
+                      ref.read(assetViewModelProvider.notifier).refresh(),
+                )
               : state.assets.isEmpty
                   ? _buildEmptyState(context)
                   : _buildContent(context, state, ref),
@@ -111,52 +116,6 @@ class AssetScreen extends ConsumerWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildErrorState(BuildContext context, String error, WidgetRef ref) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: context.appColors.error.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.error_outline,
-                size: 32,
-                color: context.appColors.error,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              error,
-              style: TextStyle(
-                fontSize: 15,
-                color: context.appColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                ref.read(assetViewModelProvider.notifier).refresh();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: context.appColors.primary,
-                foregroundColor: context.appColors.textPrimary,
-              ),
-              child: const Text('다시 시도'),
-            ),
-          ],
-        ),
       ),
     );
   }

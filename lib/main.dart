@@ -1,6 +1,5 @@
 // packages
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 // core
+import 'package:moamoa/core/exceptions/exception_handler.dart';
 import 'package:moamoa/features/common/providers/app_init_provider.dart';
 import 'package:moamoa/core/theme/theme.dart';
 import 'package:moamoa/router/router_provider.dart';
@@ -215,16 +215,7 @@ class AppBootstrap extends ConsumerWidget {
   static bool _firstFrameLogged = false;
 
   String _resolveInitErrorMessage(Object error) {
-    if (error is TimeoutException) {
-      return '네트워크가 지연되고 있습니다. 다시 시도해주세요.';
-    }
-    if (error is SocketException) {
-      return '네트워크 연결을 확인해주세요.';
-    }
-    if (kDebugMode) {
-      return error.toString();
-    }
-    return '잠시 후 다시 시도해주세요.';
+    return ExceptionHandler.getUserFriendlyMessage(error);
   }
 
   @override

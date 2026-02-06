@@ -12,6 +12,7 @@ import 'package:moamoa/features/account_book/presentation/viewmodels/selected_ac
 
 // widgets
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/features/common/widgets/error_state_widget.dart';
 
 class AccountBookListScreen extends ConsumerWidget {
   const AccountBookListScreen({super.key});
@@ -163,8 +164,9 @@ class AccountBookListScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Text('가계부 목록을 불러오는데 실패했습니다: $error'),
+        error: (error, stack) => ErrorStateWidget(
+          error: error,
+          onRetry: () => ref.invalidate(accountBooksProvider),
         ),
       ),
     );

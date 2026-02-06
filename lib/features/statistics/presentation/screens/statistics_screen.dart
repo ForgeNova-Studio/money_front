@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/core/constants/expense_categories.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/features/common/widgets/error_state_widget.dart';
 import 'package:moamoa/features/statistics/domain/entities/category_breakdown.dart';
 import 'package:moamoa/features/statistics/domain/entities/monthly_statistics.dart';
 import 'package:moamoa/features/statistics/presentation/viewmodels/statistics_view_model.dart';
@@ -94,7 +95,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           statistics,
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => _buildError(context, viewModel, error),
+        error: (error, stackTrace) => ErrorStateWidget(
+          error: error,
+          onRetry: viewModel.refresh,
+        ),
       ),
     );
   }
@@ -247,53 +251,6 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildError(
-    BuildContext context,
-    StatisticsViewModel viewModel,
-    Object error,
-  ) {
-    final appColors = context.appColors;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 48,
-              color: appColors.error,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '데이터를 불러올 수 없습니다',
-              style: TextStyle(
-                fontSize: 16,
-                color: appColors.gray700,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              error.toString(),
-              style: TextStyle(
-                fontSize: 12,
-                color: appColors.gray500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: viewModel.refresh,
-              icon: const Icon(Icons.refresh),
-              label: const Text('다시 시도'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
