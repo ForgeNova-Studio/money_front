@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
-import 'package:moamoa/core/utils/format_utils.dart';
 import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:moamoa/features/home/presentation/widgets/custom_month_picker.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -268,26 +267,57 @@ class _CustomCalendarState extends State<CustomCalendar> {
             if (hasIncome)
               Padding(
                 padding: EdgeInsets.only(bottom: 1.0),
+                // TODO: 논의 후 결정 - 기존 축약형 vs 새 전체 숫자
+                // 기존 코드 (축약형: 10만)
+                // child: Text(
+                //   '+${formatMoneyCompact(summary.totalIncome)}',
+                //   style: TextStyle(
+                //     color: context.appColors.success,
+                //     fontSize: 9,
+                //     fontWeight: FontWeight.w500,
+                //     letterSpacing: -0.5,
+                //     height: 1.0,
+                //   ),
+                // ),
+                // 새 코드 (전체 숫자 + 자동 스케일링)
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    '+${NumberFormat('#,###').format(summary.totalIncome)}',
+                    style: TextStyle(
+                      color: context.appColors.success,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: -0.5,
+                      height: 1.0,
+                    ),
+                  ),
+                ),
+              ),
+            if (hasExpense)
+              // 기존 코드 (축약형: 10만)
+              // Text(
+              //   '-${formatMoneyCompact(summary.totalExpense)}',
+              //   style: TextStyle(
+              //     color: context.appColors.error,
+              //     fontSize: 9,
+              //     fontWeight: FontWeight.w500,
+              //     letterSpacing: -0.5,
+              //     height: 1.0,
+              //   ),
+              // ),
+              // 새 코드 (전체 숫자 + 자동 스케일링)
+              FittedBox(
+                fit: BoxFit.scaleDown,
                 child: Text(
-                  '+${formatMoneyCompact(summary.totalIncome)}',
+                  '-${NumberFormat('#,###').format(summary.totalExpense)}',
                   style: TextStyle(
-                    color: context.appColors.success,
+                    color: context.appColors.error,
                     fontSize: 9,
                     fontWeight: FontWeight.w500,
                     letterSpacing: -0.5,
                     height: 1.0,
                   ),
-                ),
-              ),
-            if (hasExpense)
-              Text(
-                '-${formatMoneyCompact(summary.totalExpense)}',
-                style: TextStyle(
-                  color: context.appColors.error,
-                  fontSize: 9,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: -0.5,
-                  height: 1.0,
                 ),
               ),
           ],
