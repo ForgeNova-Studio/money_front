@@ -170,7 +170,7 @@ class SettingsScreen extends ConsumerWidget {
                   final info = snapshot.data;
                   final label = info == null
                       ? AppConstants.appName
-                      : '${info.appName} v${info.version}';
+                      : '${info.appName} v${info.version} (${info.buildNumber})';
                   return Text(
                     label,
                     style: TextStyle(
