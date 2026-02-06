@@ -107,14 +107,48 @@ class _NotificationListScreenState
       onRefresh: viewModel.refresh,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        itemCount: grouped.length + (state.hasMore ? 1 : 0),
+        // 로딩 중이거나, 로딩이 끝났으면 안내 메시지를 위해 +1
+        itemCount: grouped.length + 1,
         itemBuilder: (context, index) {
+          // 마지막 아이템 (로딩 인디케이터 또는 안내 메시지)
           if (index == grouped.length) {
-            viewModel.loadMore();
-            return const Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(child: CircularProgressIndicator()),
-            );
+            if (state.hasMore) {
+              viewModel.loadMore();
+              return const Padding(
+                padding: EdgeInsets.all(16),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            } else {
+              // 더 이상 불러올 데이터가 없으면 안내 메시지 표시
+              return Container(
+                margin: const EdgeInsets.fromLTRB(16, 24, 16, 40),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: context.appColors.backgroundGray,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.info_outline_rounded,
+                      size: 16,
+                      color: context.appColors.textTertiary,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '공지는 최대 30일동안 보관되며 이후 사라집니다.',
+                      style: TextStyle(
+                        color: context.appColors.textTertiary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
           }
 
           final group = grouped[index];

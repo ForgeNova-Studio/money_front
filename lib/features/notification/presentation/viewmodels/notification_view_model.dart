@@ -57,6 +57,18 @@ class NotificationViewModel extends _$NotificationViewModel {
     return const NotificationState(isLoading: true);
   }
 
+  /// 30일 지난 공지사항(NOTICE) 필터링
+  List<NotificationEntity> _filterNotifications(
+      List<NotificationEntity> notifications) {
+    final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
+    return notifications.where((n) {
+      if (n.type == 'NOTICE') {
+        return n.createdAt.isAfter(thirtyDaysAgo);
+      }
+      return true;
+    }).toList();
+  }
+
   /// 알림 목록 조회
   Future<void> loadNotifications() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
@@ -64,8 +76,12 @@ class NotificationViewModel extends _$NotificationViewModel {
     try {
       final repository = ref.read(notificationRepositoryProvider);
       final notifications = await repository.getNotifications(page: 0);
+
+      // 필터링 적용
+      final filteredList = _filterNotifications(notifications);
+
       state = state.copyWith(
-        notifications: notifications,
+        notifications: filteredList,
         isLoading: false,
         currentPage: 0,
         hasMore: notifications.length >= 20,
@@ -89,8 +105,12 @@ class NotificationViewModel extends _$NotificationViewModel {
       final nextPage = state.currentPage + 1;
       final moreNotifications =
           await repository.getNotifications(page: nextPage);
+
+      // 필터링 적용
+      final filteredMore = _filterNotifications(moreNotifications);
+
       state = state.copyWith(
-        notifications: [...state.notifications, ...moreNotifications],
+        notifications: [...state.notifications, ...filteredMore],
         isLoadingMore: false,
         currentPage: nextPage,
         hasMore: moreNotifications.length >= 20,
