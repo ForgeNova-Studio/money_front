@@ -33,7 +33,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen>
     with WidgetsBindingObserver {
-  bool _isFabExpanded = false;
   bool _isAccountBookMenuOpen = false;
   bool _isFabDimmed = false;
   ProviderSubscription<String?>? _refreshErrorSub;
@@ -124,6 +123,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final homeState = ref.watch(homeViewModelProvider);
+    final isFabExpanded = ref.watch(isHomeFabExpandedProvider);
     final calendarFormat = homeState.calendarFormat;
     final isWeekView = calendarFormat == CalendarFormat.week;
     final accountBooksState = ref.watch(accountBooksProvider);
@@ -246,22 +246,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             child: IgnorePointer(
               ignoring: _isFabDimmed,
               child: HomeFabMenu(
-                isExpanded: _isFabExpanded,
+                isExpanded: isFabExpanded,
                 onToggle: () {
-                  setState(() => _isFabExpanded = !_isFabExpanded);
+                  ref.read(isHomeFabExpandedProvider.notifier).toggle();
                 },
                 onAddIncome: () {
-                  setState(() => _isFabExpanded = false);
+                  ref.read(isHomeFabExpandedProvider.notifier).set(false);
                   context.push(RouteNames.addIncome,
                       extra: homeState.selectedDate);
                 },
                 onAddExpense: () {
-                  setState(() => _isFabExpanded = false);
+                  ref.read(isHomeFabExpandedProvider.notifier).set(false);
                   context.push(RouteNames.addExpense,
                       extra: homeState.selectedDate);
                 },
                 onScanReceipt: () {
-                  setState(() => _isFabExpanded = false);
+                  ref.read(isHomeFabExpandedProvider.notifier).set(false);
                   context.push(RouteNames.ocrTest);
                 },
               ),
@@ -366,9 +366,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   void _collapseOverlaysIfNeeded() {
-    if (_isFabExpanded || _isAccountBookMenuOpen) {
+    final isFabExpanded = ref.read(isHomeFabExpandedProvider);
+    if (isFabExpanded || _isAccountBookMenuOpen) {
+      if (isFabExpanded) {
+        ref.read(isHomeFabExpandedProvider.notifier).set(false);
+      }
       setState(() {
-        _isFabExpanded = false;
         _isAccountBookMenuOpen = false;
       });
       ref.read(appScrimActiveProvider.notifier).setActive(false);
@@ -377,16 +380,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   void _toggleAccountBookMenu() {
     final nextState = !_isAccountBookMenuOpen;
+    ref.read(isHomeFabExpandedProvider.notifier).set(false);
     setState(() {
-      _isFabExpanded = false;
       _isAccountBookMenuOpen = nextState;
     });
     ref.read(appScrimActiveProvider.notifier).setActive(nextState);
   }
 
   void _setAccountBookMenuOpen(bool isOpen) {
+    ref.read(isHomeFabExpandedProvider.notifier).set(false);
     setState(() {
-      _isFabExpanded = false;
       _isAccountBookMenuOpen = isOpen;
     });
     ref.read(appScrimActiveProvider.notifier).setActive(isOpen);
@@ -398,10 +401,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     }
     setState(() {
       _isFabDimmed = isActive;
-      if (isActive) {
-        _isFabExpanded = false;
-      }
     });
+    if (isActive) {
+      ref.read(isHomeFabExpandedProvider.notifier).set(false);
+    }
   }
 
   void _resetFabDimmed() {

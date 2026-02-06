@@ -8,23 +8,25 @@ import 'package:moamoa/features/common/providers/ui_overlay_providers.dart';
 import 'package:moamoa/features/sms_import/data/services/deep_link_service.dart';
 import 'package:moamoa/features/sms_import/presentation/viewmodels/sms_import_view_model.dart';
 import 'package:moamoa/router/route_names.dart';
+import 'package:moamoa/features/home/presentation/providers/home_providers.dart';
 
 class AppShell extends HookConsumerWidget {
   const AppShell({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
-  void _onTap(int index) {
-    navigationShell.goBranch(
-      index,
-      initialLocation: index == navigationShell.currentIndex,
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final isScrimActive = ref.watch(appScrimActiveProvider);
+
+    void onTap(int index) {
+      ref.read(isHomeFabExpandedProvider.notifier).set(false);
+      navigationShell.goBranch(
+        index,
+        initialLocation: index == navigationShell.currentIndex,
+      );
+    }
 
     // 딥링크 수신 시 SMS 파싱 후 대기 지출 검토 화면으로 이동
     ref.listen(deepLinkServiceProvider, (previous, next) {
@@ -86,7 +88,7 @@ class AppShell extends HookConsumerWidget {
         children: [
           BottomNavigationBar(
             currentIndex: navigationShell.currentIndex,
-            onTap: _onTap,
+            onTap: onTap,
             type: BottomNavigationBarType.fixed,
             selectedItemColor: colorScheme.primary,
             unselectedItemColor: colorScheme.onSurfaceVariant,

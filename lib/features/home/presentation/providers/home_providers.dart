@@ -63,3 +63,18 @@ HomeRepository homeRepository(Ref ref) {
 GetHomeMonthlyDataUseCase getHomeMonthlyDataUseCase(Ref ref) {
   return GetHomeMonthlyDataUseCase(ref.read(homeRepositoryProvider));
 }
+
+// ============================================================================
+// UI State Providers (FAB)
+// ============================================================================
+final isHomeFabExpandedProvider =
+    flutter_riverpod.NotifierProvider<IsHomeFabExpandedNotifier, bool>(
+        IsHomeFabExpandedNotifier.new);
+
+class IsHomeFabExpandedNotifier extends flutter_riverpod.Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void set(bool value) => state = value;
+  void toggle() => state = !state;
+}
