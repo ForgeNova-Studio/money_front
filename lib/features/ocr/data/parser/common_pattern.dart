@@ -35,8 +35,14 @@ class CommonPattern implements ReceiptPattern {
       r'(일시불|할부|적립|이용|내역|' // 기존 노이즈
       r'예정|시불|익월|출금|청구|' // 카드사 용어
       r'결제완료|승인|취소|' // 상태
+      r'적립예정|분할결제|신청하기|' // 추가 카드사 UI 텍스트
+      r'ZERO\s*ED2?|ED2|할인형|기본|할인|' // 카드 상품명 패턴 (긴 패턴 먼저)
       r'\d{1,2}\s?\([^)]*\))' // "23 ()" 같은 패턴
       );
+
+  // 할인 정보 패턴 (예: "0.7%할인 -185원", "1.5%_생활필수영역 -150원")
+  static final RegExp _discountInfoRegex = RegExp(
+      r'\d+(\.\d+)?%\s*(할인|_[^\s]+)?\s*-?\d+원?');
 
   static const List<String> _dropKeywords = [
     '합계', '총액', '결제금액', '청구금액', '출금예정', '이번달', '명세서', '결제예정', '잔액', '포인트',
@@ -248,12 +254,26 @@ class CommonPattern implements ReceiptPattern {
 
   String _cleanStoreName(String text) {
     String clean = text;
+    
+    // 1. 할인 정보 패턴 제거 (예: "0.7%할인 -185원", "1.5%_생활필수영역 -150원")
+    clean = clean.replaceAll(_discountInfoRegex, '');
+    
+    // 2. 금액 패턴 제거 (상호명에 섞인 할인 금액 등)
+    clean = clean.replaceAll(RegExp(r'-?\d+원'), '');
+    
+    // 3. 기존 노이즈 패턴 제거
     clean = clean.replaceAll(_noiseRegex, '');
+    
+    // 4. 특수문자 제거 (괄호는 유지)
     clean = clean.replaceAll(RegExp(r'[^\w가-힣\(\)\s]'), '');
+    
+    // 5. 1자리 영숫자 단어 제거
     List<String> words = clean.split(' ');
     words.removeWhere(
         (w) => w.length <= 1 && RegExp(r'[A-Za-z0-9]').hasMatch(w));
-    return words.join(' ').trim();
+    
+    // 6. 연속 공백 정리
+    return words.join(' ').replaceAll(RegExp(r'\s+'), ' ').trim();
   }
 
   int _parseAmountInt(String text) {
