@@ -2,27 +2,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 // core
 import 'package:moamoa/router/route_names.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
 
 // features
+import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
+import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
+import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+import 'package:moamoa/features/common/providers/ui_overlay_providers.dart';
+import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
+import 'package:moamoa/features/home/presentation/providers/home_providers.dart';
+import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/features/home/presentation/widgets/custom_calendar.dart';
+import 'package:moamoa/features/home/presentation/widgets/delete_confirem_dialog.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_account_book_dropdown.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_budget_info_card.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_fab_menu.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_pending_expenses_banner.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_transaction_sheet.dart';
-import 'package:moamoa/features/home/presentation/widgets/delete_confirem_dialog.dart';
-import 'package:table_calendar/table_calendar.dart';
-
-import 'package:moamoa/features/home/presentation/providers/home_providers.dart';
-import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
-import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
-import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
-import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
-import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
-import 'package:moamoa/features/common/providers/ui_overlay_providers.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -33,10 +33,15 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen>
     with WidgetsBindingObserver {
+  /// 홈스크린 State
+  /// _isAccountBookMenuOpen : 가계부 메뉴 열림 여부
+  /// _isFabDimmed : FAB 활성화 여부
+  /// _refreshErrorSub : 데이터 새로고침 에러 구독
   bool _isAccountBookMenuOpen = false;
   bool _isFabDimmed = false;
   ProviderSubscription<String?>? _refreshErrorSub;
 
+  // Lifecycle Methods
   @override
   void initState() {
     super.initState();
@@ -72,13 +77,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     }
   }
 
-  /// Pull-to-refresh 핸들러
-  Future<void> _handleRefresh() async {
-    await ref.read(homeViewModelProvider.notifier).refresh();
-  }
-
   // 수입/지출 삭제
   Future<void> _handleDeleteTransaction(TransactionEntity transaction) async {
+    // id가 비어있다면 삭제할 수 없다.
     if (transaction.id.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -88,9 +89,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       return;
     }
 
+    // 삭제 확인 다이얼로그
     final shouldDelete = await showDialog<bool>(
       context: context,
-      barrierColor: Colors.black54,
+      barrierColor: AppColors.black54,
       builder: (context) => DeleteConfirmDialog(
         title: transaction.title,
       ),
@@ -100,6 +102,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       return;
     }
 
+    // 삭제 확인
     try {
       await ref
           .read(homeViewModelProvider.notifier)
@@ -119,6 +122,105 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     }
   }
 
+  // Calendar Format 변경(월간/주간)
+  void _handleFormatChanged(CalendarFormat format) {
+    _collapseOverlaysIfNeeded();
+    _resetFabDimmed();
+    ref.read(homeViewModelProvider.notifier).setCalendarFormat(format);
+  }
+
+  // Calendar 날짜 선택
+  void _handleDateSelected(DateTime selected, DateTime focused) {
+    _collapseOverlaysIfNeeded();
+    _resetFabDimmed();
+    ref.read(homeViewModelProvider.notifier).selectDate(selected);
+  }
+
+  // Calendar 페이지 변경(월/주 변경)
+  void _handlePageChanged(DateTime focused) {
+    _collapseOverlaysIfNeeded();
+    _resetFabDimmed();
+    ref.read(homeViewModelProvider.notifier).changeMonth(focused);
+  }
+
+  // 가계부 메뉴 토글
+  void _toggleAccountBookMenu() {
+    final nextState = !_isAccountBookMenuOpen;
+    ref.read(isHomeFabExpandedProvider.notifier).set(false);
+    setState(() {
+      _isAccountBookMenuOpen = nextState;
+    });
+    ref.read(appScrimActiveProvider.notifier).setActive(nextState);
+  }
+
+  // 가계부 선택
+  void _setAccountBookMenuOpen(bool isOpen) {
+    ref.read(isHomeFabExpandedProvider.notifier).set(false);
+    setState(() {
+      _isAccountBookMenuOpen = isOpen;
+    });
+    ref.read(appScrimActiveProvider.notifier).setActive(isOpen);
+  }
+
+  // FAB 투명도 변경
+  void _handleTransactionReveal(bool isActive) {
+    if (_isFabDimmed == isActive) {
+      return;
+    }
+    setState(() {
+      _isFabDimmed = isActive;
+    });
+    if (isActive) {
+      ref.read(isHomeFabExpandedProvider.notifier).set(false);
+    }
+  }
+
+  // 화면에 열러 있는 오버레이들(FAB, 가계부 선택 메뉴)을 닫아주는 헬퍼 메서드
+  void _collapseOverlaysIfNeeded() {
+    final isFabExpanded = ref.read(isHomeFabExpandedProvider);
+    if (isFabExpanded || _isAccountBookMenuOpen) {
+      if (isFabExpanded) {
+        ref.read(isHomeFabExpandedProvider.notifier).set(false);
+      }
+      setState(() {
+        _isAccountBookMenuOpen = false;
+      });
+      ref.read(appScrimActiveProvider.notifier).setActive(false);
+    }
+  }
+
+  // FAB 버튼 투명도 초기화
+  void _resetFabDimmed() {
+    if (_isFabDimmed) {
+      setState(() => _isFabDimmed = false);
+    }
+  }
+
+  String _resolveSelectedAccountBookName(
+    AsyncValue<List<AccountBook>> accountBooksState,
+    AsyncValue<String?> selectedAccountBookState,
+  ) {
+    final selectedId = selectedAccountBookState.asData?.value;
+    return accountBooksState.when(
+      data: (books) {
+        if (books.isEmpty) {
+          return '가계부 선택';
+        }
+        if (selectedId == null) {
+          return books.first.name;
+        }
+        final selectedBook = books.firstWhere(
+          (book) => book.accountBookId == selectedId,
+          orElse: () => books.first,
+        );
+        return selectedBook.name;
+      },
+      error: (_, __) => '가계부 선택',
+      loading: () => '가계부 불러오는 중',
+    );
+  }
+
+  // UI Construction
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -140,12 +242,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       child: Column(
         children: [
           // 1. Budget Info Area (탭하면 새로고침)
-          GestureDetector(
-            onDoubleTap: _handleRefresh,
-            child: const HomeBudgetInfoCard(),
-          ),
+          const HomeBudgetInfoCard(),
 
-          // 2. Pending Expenses Banner
+          // 2. 대기중인 지출 내역
           const HomePendingExpensesBanner(),
 
           // 3. Custom Calendar
@@ -174,9 +273,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           appBar: AppBar(
             title: InkWell(
               borderRadius: BorderRadius.circular(8),
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              overlayColor: WidgetStateProperty.all(Colors.transparent),
+              splashColor: AppColors.transparent,
+              highlightColor: AppColors.transparent,
+              overlayColor: WidgetStateProperty.all(AppColors.transparent),
               onTap: _toggleAccountBookMenu,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -219,7 +318,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     children: [
                       topSection,
 
-                      // 3. Transactions Sheet (Fills remaining space - 패딩 바깥)
+                      // 4. Transactions Sheet (Fills remaining space - 패딩 바깥)
                       Expanded(
                         child: HomeTransactionSheet(
                           homeState: homeState,
@@ -341,99 +440,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ),
         ),
       ],
-    );
-  }
-
-  // Calendar Format 변경(월간/주간)
-  void _handleFormatChanged(CalendarFormat format) {
-    _collapseOverlaysIfNeeded();
-    _resetFabDimmed();
-    ref.read(homeViewModelProvider.notifier).setCalendarFormat(format);
-  }
-
-  // Calendar 날짜 선택
-  void _handleDateSelected(DateTime selected, DateTime focused) {
-    _collapseOverlaysIfNeeded();
-    _resetFabDimmed();
-    ref.read(homeViewModelProvider.notifier).selectDate(selected);
-  }
-
-  // Calendar 페이지 변경(월/주 변경)
-  void _handlePageChanged(DateTime focused) {
-    _collapseOverlaysIfNeeded();
-    _resetFabDimmed();
-    ref.read(homeViewModelProvider.notifier).changeMonth(focused);
-  }
-
-  void _collapseOverlaysIfNeeded() {
-    final isFabExpanded = ref.read(isHomeFabExpandedProvider);
-    if (isFabExpanded || _isAccountBookMenuOpen) {
-      if (isFabExpanded) {
-        ref.read(isHomeFabExpandedProvider.notifier).set(false);
-      }
-      setState(() {
-        _isAccountBookMenuOpen = false;
-      });
-      ref.read(appScrimActiveProvider.notifier).setActive(false);
-    }
-  }
-
-  void _toggleAccountBookMenu() {
-    final nextState = !_isAccountBookMenuOpen;
-    ref.read(isHomeFabExpandedProvider.notifier).set(false);
-    setState(() {
-      _isAccountBookMenuOpen = nextState;
-    });
-    ref.read(appScrimActiveProvider.notifier).setActive(nextState);
-  }
-
-  void _setAccountBookMenuOpen(bool isOpen) {
-    ref.read(isHomeFabExpandedProvider.notifier).set(false);
-    setState(() {
-      _isAccountBookMenuOpen = isOpen;
-    });
-    ref.read(appScrimActiveProvider.notifier).setActive(isOpen);
-  }
-
-  void _handleTransactionReveal(bool isActive) {
-    if (_isFabDimmed == isActive) {
-      return;
-    }
-    setState(() {
-      _isFabDimmed = isActive;
-    });
-    if (isActive) {
-      ref.read(isHomeFabExpandedProvider.notifier).set(false);
-    }
-  }
-
-  void _resetFabDimmed() {
-    if (_isFabDimmed) {
-      setState(() => _isFabDimmed = false);
-    }
-  }
-
-  String _resolveSelectedAccountBookName(
-    AsyncValue<List<AccountBook>> accountBooksState,
-    AsyncValue<String?> selectedAccountBookState,
-  ) {
-    final selectedId = selectedAccountBookState.asData?.value;
-    return accountBooksState.when(
-      data: (books) {
-        if (books.isEmpty) {
-          return '가계부 선택';
-        }
-        if (selectedId == null) {
-          return books.first.name;
-        }
-        final selectedBook = books.firstWhere(
-          (book) => book.accountBookId == selectedId,
-          orElse: () => books.first,
-        );
-        return selectedBook.name;
-      },
-      error: (_, __) => '가계부 선택',
-      loading: () => '가계부 불러오는 중',
     );
   }
 }
