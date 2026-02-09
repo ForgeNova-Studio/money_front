@@ -57,16 +57,13 @@ class NotificationViewModel extends _$NotificationViewModel {
     return const NotificationState(isLoading: true);
   }
 
-  /// 30일 지난 공지사항(NOTICE) 필터링
+  /// 30일 지난 알림 필터링 (타입 무관)
   List<NotificationEntity> _filterNotifications(
       List<NotificationEntity> notifications) {
     final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
-    return notifications.where((n) {
-      if (n.type == 'NOTICE') {
-        return n.createdAt.isAfter(thirtyDaysAgo);
-      }
-      return true;
-    }).toList();
+    return notifications
+        .where((n) => n.createdAt.isAfter(thirtyDaysAgo))
+        .toList();
   }
 
   /// 알림 목록 조회
