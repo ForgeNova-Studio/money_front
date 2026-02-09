@@ -1,59 +1,12 @@
 import 'package:hive/hive.dart';
+import 'package:moamoa/features/home/data/datasources/local/home_local_data_source.dart';
 import 'package:moamoa/features/home/data/models/home_monthly_response_model.dart';
-
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 
-class HomeMonthlyCacheEntry {
-  final DateTime cachedAt;
-  final Map<String, DailyTransactionSummaryModel> data;
-
-  HomeMonthlyCacheEntry({
-    required this.cachedAt,
-    required this.data,
-  });
-}
-
-class BudgetCacheEntry {
-  final DateTime cachedAt;
-  final BudgetEntity? data;
-
-  BudgetCacheEntry({
-    required this.cachedAt,
-    required this.data,
-  });
-}
-
-class AssetCacheEntry {
-  final DateTime cachedAt;
-  final AssetEntity data;
-
-  AssetCacheEntry({
-    required this.cachedAt,
-    required this.data,
-  });
-}
-
-abstract class HomeLocalDataSource {
-  Future<HomeMonthlyCacheEntry?> getMonthlyData({required String cacheKey});
-  Future<void> saveMonthlyData({
-    required String cacheKey,
-    required Map<String, DailyTransactionSummaryModel> data,
-  });
-  Future<void> deleteMonthlyData({required String cacheKey});
-
-  Future<BudgetCacheEntry?> getBudgetCache({required String cacheKey});
-  Future<void> saveBudgetCache({
-    required String cacheKey,
-    required BudgetEntity? data,
-  });
-
-  Future<AssetCacheEntry?> getAssetCache({required String cacheKey});
-  Future<void> saveAssetCache({
-    required String cacheKey,
-    required AssetEntity data,
-  });
-}
-
+/// 로컬 데이터 소스 구현체
+///
+/// Hive Box(`home_monthly_cache`)를 사용하여 데이터를 영구 저장합니다.
+/// 데이터는 JSON 형태로 직렬화되어 저장됩니다.
 class HomeLocalDataSourceImpl implements HomeLocalDataSource {
   static const String boxName = 'home_monthly_cache';
 

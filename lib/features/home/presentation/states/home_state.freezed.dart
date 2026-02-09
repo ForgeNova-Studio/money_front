@@ -14,22 +14,11 @@ T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$HomeState {
-  /// 월별 데이터 (날짜 문자열 Key: "yyyy-MM-dd")
   AsyncValue<Map<String, DailyTransactionSummary>> get monthlyData;
-
-  /// 현재 달력에서 보고 있는 달의 기준 날짜
   DateTime get focusedMonth;
-
-  /// 사용자가 선택한 구체적인 날짜
   DateTime get selectedDate;
-
-  /// 달력 표시 형식
   CalendarFormat get calendarFormat;
-
-  /// 이번 달 예산 정보 (null이면 예산 미설정)
   BudgetEntity? get budgetInfo;
-
-  /// 총 자산 정보
   AssetEntity? get assetInfo;
 
   /// Create a copy of HomeState
@@ -333,29 +322,18 @@ class _HomeState implements HomeState {
       this.budgetInfo,
       this.assetInfo});
 
-  /// 월별 데이터 (날짜 문자열 Key: "yyyy-MM-dd")
   @override
   @JsonKey()
   final AsyncValue<Map<String, DailyTransactionSummary>> monthlyData;
-
-  /// 현재 달력에서 보고 있는 달의 기준 날짜
   @override
   final DateTime focusedMonth;
-
-  /// 사용자가 선택한 구체적인 날짜
   @override
   final DateTime selectedDate;
-
-  /// 달력 표시 형식
   @override
   @JsonKey()
   final CalendarFormat calendarFormat;
-
-  /// 이번 달 예산 정보 (null이면 예산 미설정)
   @override
   final BudgetEntity? budgetInfo;
-
-  /// 총 자산 정보
   @override
   final AssetEntity? assetInfo;
 

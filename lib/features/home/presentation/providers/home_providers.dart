@@ -6,8 +6,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:moamoa/features/common/providers/core_providers.dart';
 
 // dataSource
-import 'package:moamoa/features/home/data/datasources/home_local_data_source.dart';
-import 'package:moamoa/features/home/data/datasources/home_remote_data_source.dart';
+import 'package:moamoa/features/home/data/datasources/local/home_local_data_source.dart';
+import 'package:moamoa/features/home/data/datasources/local/home_local_data_source_impl.dart';
+import 'package:moamoa/features/home/data/datasources/remote/home_remote_data_source.dart';
+import 'package:moamoa/features/home/data/datasources/remote/home_remote_data_source_impl.dart';
 
 // repository
 import 'package:moamoa/features/home/data/repositories/home_repository_impl.dart';

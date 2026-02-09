@@ -23,6 +23,32 @@ import 'package:moamoa/features/home/presentation/widgets/home_header_title.dart
 import 'package:moamoa/features/home/presentation/widgets/home_top_section.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_transaction_sheet.dart';
 
+/// 앱의 메인 홈 화면 위젯
+///
+/// 예산/자산 정보, 캘린더, 거래 내역을 통합하여 표시하는 홈 화면입니다.
+/// 월간/주간 캘린더 뷰 전환과 가계부 선택 기능을 제공합니다.
+///
+/// 주요 기능:
+/// - 가계부 선택 드롭다운 (AppBar)
+/// - 예산/자산 정보 카드 ([HomeBudgetInfoCard])
+/// - 대기중인 지출 배너 ([HomePendingExpensesBanner])
+/// - 월간/주간 캘린더 ([CustomCalendar])
+/// - 거래 내역 리스트 (주간 뷰에서 모달로 표시)
+/// - FAB 메뉴 (수입/지출 추가, 영수증 스캔)
+///
+/// 상태 관리:
+/// - [homeViewModelProvider]: 홈 화면 상태
+/// - [selectedAccountBookViewModelProvider]: 선택된 가계부
+/// - [accountBooksProvider]: 가계부 목록
+///
+/// 사용 예시:
+/// ```dart
+/// // 라우터에서 사용
+/// GoRoute(
+///   path: '/home',
+///   builder: (context, state) => const HomeScreen(),
+/// )
+/// ```
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 

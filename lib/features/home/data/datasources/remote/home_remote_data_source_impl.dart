@@ -2,12 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:moamoa/core/constants/api_constants.dart';
 import 'package:moamoa/core/exceptions/exceptions.dart';
+import 'package:moamoa/features/home/data/datasources/remote/home_remote_data_source.dart';
 import 'package:moamoa/features/home/data/models/home_monthly_response_model.dart';
-
-abstract class HomeRemoteDataSource {
-  Future<Map<String, DailyTransactionSummaryModel>> getMonthlyData(
-      {required String yearMonth, required String accountBookId});
-}
 
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   final Dio dio;
