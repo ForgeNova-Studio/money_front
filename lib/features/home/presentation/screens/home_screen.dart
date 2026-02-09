@@ -22,6 +22,7 @@ import 'package:moamoa/features/home/presentation/widgets/home_fab_menu.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_header_title.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_top_section.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_transaction_sheet.dart';
+import 'package:moamoa/features/notification/presentation/viewmodels/notification_view_model.dart';
 
 /// 앱의 메인 홈 화면 위젯
 ///
@@ -262,6 +263,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       accountBooksState,
       selectedAccountBookState,
     );
+    final notificationState = ref.watch(notificationViewModelProvider);
+    final unreadCount = notificationState.unreadCount;
 
     // 홈 상단 위젯(예산/자산 정보, 대기중인 지출 내역, Calendar)
     final topSection = HomeTopSection(
@@ -298,6 +301,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             elevation: 0,
             centerTitle: false,
             automaticallyImplyLeading: false,
+            actions: [
+              // 알림 아이콘 버튼
+              _NotificationIconButton(
+                unreadCount: unreadCount,
+                onTap: () => context.push(RouteNames.notifications),
+              ),
+              const SizedBox(width: 8),
+            ],
           ),
           body: Listener(
             behavior: HitTestBehavior.translucent,
@@ -436,6 +447,60 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ),
         ),
       ],
+    );
+  }
+}
+
+/// 알림 아이콘 버튼 (읽지 않은 알림 뱃지 포함)
+class _NotificationIconButton extends StatelessWidget {
+  final int unreadCount;
+  final VoidCallback onTap;
+
+  const _NotificationIconButton({
+    required this.unreadCount,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return IconButton(
+      onPressed: onTap,
+      icon: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Icon(
+            Icons.notifications_outlined,
+            color: colorScheme.onSurface,
+          ),
+          if (unreadCount > 0)
+            Positioned(
+              right: -4,
+              top: -4,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+                constraints: const BoxConstraints(
+                  minWidth: 16,
+                  minHeight: 16,
+                ),
+                child: Text(
+                  unreadCount > 99 ? '99+' : '$unreadCount',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

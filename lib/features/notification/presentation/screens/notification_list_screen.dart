@@ -18,6 +18,8 @@ class NotificationListScreen extends ConsumerStatefulWidget {
 
 class _NotificationListScreenState
     extends ConsumerState<NotificationListScreen> {
+  String? _selectedType; // null = 전체
+
   @override
   void initState() {
     super.initState();
@@ -64,7 +66,81 @@ class _NotificationListScreenState
               ),
             ]
           : null,
-      child: _buildBody(context, state, viewModel),
+      child: Column(
+        children: [
+          _buildFilterTabs(context),
+          Expanded(child: _buildBody(context, state, viewModel)),
+        ],
+      ),
+    );
+  }
+
+  /// 필터 탭 버튼들
+  Widget _buildFilterTabs(BuildContext context) {
+    final appColors = context.appColors;
+    final filterTypes = [
+      (null, '전체', appColors.primary),
+      ('NOTICE', '공지', Colors.orange),
+      ('PERSONAL', '개인', Colors.blue),
+      ('UPDATE', '업데이트', Colors.green),
+      ('EVENT', '이벤트', Colors.purple),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: filterTypes.map((filter) {
+            final isSelected = _selectedType == filter.$1;
+            final typeColor = filter.$3;
+
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: GestureDetector(
+                onTap: () => setState(() => _selectedType = filter.$1),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                  decoration: BoxDecoration(
+                    // 선택 시: 솔리드 컬러 배경, 미선택 시: 아주 옅은 배경
+                    color: isSelected
+                        ? typeColor
+                        : typeColor.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color:
+                          typeColor.withValues(alpha: isSelected ? 1.0 : 0.3),
+                      width: 1.5,
+                    ),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: typeColor.withValues(alpha: 0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Text(
+                    filter.$2,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w600,
+                      color: isSelected ? Colors.white : typeColor,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
     );
   }
 
@@ -100,8 +176,19 @@ class _NotificationListScreenState
       return _buildEmptyState(context);
     }
 
+    // 타입 필터링 적용
+    final filteredNotifications = _selectedType == null
+        ? state.notifications
+        : state.notifications
+            .where((n) => n.type.toUpperCase() == _selectedType)
+            .toList();
+
+    if (filteredNotifications.isEmpty) {
+      return _buildEmptyState(context);
+    }
+
     // 날짜별 그룹핑
-    final grouped = _groupByDate(state.notifications);
+    final grouped = _groupByDate(filteredNotifications);
 
     return RefreshIndicator(
       onRefresh: viewModel.refresh,
