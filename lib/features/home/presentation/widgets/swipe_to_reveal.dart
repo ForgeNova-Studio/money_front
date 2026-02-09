@@ -1,6 +1,39 @@
 import 'package:flutter/material.dart';
 
-/// 스와이프하면 뒤에 숨겨진 액션 버튼이 나타나는 위젯
+/// 스와이프하여 숨겨진 액션 버튼을 드러내는 위젯
+///
+/// 왼쪽으로 스와이프하면 오른쪽에서 액션 버튼이 나타나며,
+/// 스와이프 정도에 따라 버튼이 스케일/페이드 애니메이션으로 등장합니다.
+///
+/// 주요 기능:
+/// - 수평 스와이프 제스처 감지
+/// - 스냅 애니메이션 (절반 이상 스와이프 시 완전히 열림)
+/// - 빠른 스와이프(Fling) 감지
+/// - 외부에서 `reset()` 호출하여 닫기 가능 (GlobalKey 사용)
+///
+/// 파라미터:
+/// - [child]: 메인 콘텐츠 위젯
+/// - [actionButton]: 스와이프 시 드러나는 액션 버튼 위젯
+/// - [enabled]: 스와이프 활성화 여부 (기본값: true)
+/// - [revealDistance]: 최대 스와이프 거리 (기본값: 92)
+/// - [onRevealActiveChanged]: 스와이프 상태 변경 콜백
+///
+/// 사용 예시:
+/// ```dart
+/// final _swipeKey = GlobalKey<SwipeToRevealState>();
+///
+/// SwipeToReveal(
+///   key: _swipeKey,
+///   actionButton: IconButton(
+///     icon: Icon(Icons.delete),
+///     onPressed: () => handleDelete(),
+///   ),
+///   child: ListTile(title: Text('Item')),
+/// )
+///
+/// // 외부에서 닫기
+/// _swipeKey.currentState?.reset();
+/// ```
 class SwipeToReveal extends StatefulWidget {
   const SwipeToReveal({
     super.key,

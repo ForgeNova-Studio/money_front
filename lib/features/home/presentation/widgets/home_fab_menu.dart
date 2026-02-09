@@ -1,5 +1,33 @@
 import 'package:flutter/material.dart';
 
+/// 홈 화면 우측 하단에 위치하는 확장형 FAB(Floating Action Button) 메뉴 위젯
+///
+/// 탭하면 수입/지출/영수증 스캔 메뉴가 확장되어 나타나며,
+/// 다시 탭하면 메뉴가 접힙니다.
+///
+/// 주요 기능:
+/// - 확장/축소 토글 애니메이션
+/// - 수입 추가 (`onAddIncome`)
+/// - 지출 추가 (`onAddExpense`)
+/// - 영수증 스캔 (`onScanReceipt`)
+///
+/// 파라미터:
+/// - [isExpanded]: 메뉴 확장 여부. 부모 위젯에서 상태 관리
+/// - [onToggle]: FAB 버튼 클릭 시 호출되는 확장/축소 토글 콜백
+/// - [onAddIncome]: "수입" 메뉴 선택 시 호출
+/// - [onAddExpense]: "지출" 메뉴 선택 시 호출
+/// - [onScanReceipt]: "영수증 스캔" 메뉴 선택 시 호출
+///
+/// 사용 예시:
+/// ```dart
+/// HomeFabMenu(
+///   isExpanded: _isFabExpanded,
+///   onToggle: () => setState(() => _isFabExpanded = !_isFabExpanded),
+///   onAddIncome: () => context.push('/income/add'),
+///   onAddExpense: () => context.push('/expense/add'),
+///   onScanReceipt: () => context.push('/receipt/scan'),
+/// )
+/// ```
 class HomeFabMenu extends StatelessWidget {
   final bool isExpanded;
   final VoidCallback onToggle;

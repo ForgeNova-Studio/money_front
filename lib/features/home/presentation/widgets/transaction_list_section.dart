@@ -11,6 +11,33 @@ import 'package:moamoa/features/home/presentation/widgets/transaction_list_item.
 import 'package:moamoa/features/home/presentation/widgets/transaction_modal_header.dart';
 import 'package:moamoa/router/route_names.dart';
 
+/// 선택된 날짜의 거래 내역을 리스트로 표시하는 섹션 위젯
+///
+/// 월간 데이터에서 선택된 날짜의 거래 내역을 추출하여 표시하며,
+/// 모달/일반 모드에 따라 다른 헤더를 렌더링합니다.
+///
+/// 주요 기능:
+/// - 선택 날짜의 수입/지출 내역 리스트 표시
+/// - 모달/일반 모드에 따른 헤더 분기
+/// - 로딩/에러/빈 상태 처리
+/// - 스와이프 삭제 지원
+///
+/// 파라미터:
+/// - [monthlyData]: 월간 거래 데이터 (AsyncValue)
+/// - [selectedDate]: 현재 선택된 날짜
+/// - [isModal]: 모달 표시 여부 (기본값: false)
+/// - [onDelete]: 삭제 콜백 (true 반환 시 삭제, false 시 스와이프 원복)
+/// - [onRevealActiveChanged]: 스와이프 상태 변경 콜백
+///
+/// 사용 예시:
+/// ```dart
+/// TransactionListSection(
+///   monthlyData: monthlyDataAsync,
+///   selectedDate: DateTime.now(),
+///   isModal: false,
+///   onDelete: (tx) async => await handleDelete(tx),
+/// )
+/// ```
 class TransactionListSection extends StatelessWidget {
   const TransactionListSection({
     super.key,
@@ -151,6 +178,9 @@ class TransactionListSection extends StatelessWidget {
   }
 }
 
+/// 중앙 정렬된 로딩 인디케이터 위젯
+///
+/// 화면 높이의 30%를 차지하는 영역에 원형 프로그레스 인디케이터를 표시합니다.
 class _CenteredLoadingIndicator extends StatelessWidget {
   const _CenteredLoadingIndicator();
 

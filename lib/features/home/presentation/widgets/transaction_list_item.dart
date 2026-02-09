@@ -6,6 +6,30 @@ import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 import 'package:moamoa/features/home/presentation/widgets/swipe_to_reveal.dart';
 import 'package:moamoa/features/income/presentation/utils/income_category_utils.dart';
 
+/// 수입/지출 거래 내역을 표시하는 리스트 아이템 위젯
+///
+/// [SwipeToReveal]을 사용하여 스와이프 삭제 기능을 제공하며,
+/// 거래 타입(수입/지출)에 따라 색상과 아이콘이 다르게 표시됩니다.
+///
+/// 주요 기능:
+/// - 카테고리 아이콘, 제목, 메모, 금액 표시
+/// - 스와이프하여 삭제 버튼 표시
+/// - 삭제 취소 시 스와이프 자동 원복
+///
+/// 파라미터:
+/// - [transaction]: 표시할 거래 엔티티
+/// - [onTap]: 아이템 탭 콜백 (수정 화면 이동 등)
+/// - [onDelete]: 삭제 콜백 (true 반환 시 삭제, false 시 스와이프 원복)
+/// - [onRevealActiveChanged]: 스와이프 상태 변경 콜백
+///
+/// 사용 예시:
+/// ```dart
+/// TransactionListItem(
+///   transaction: transaction,
+///   onTap: () => navigateToEdit(transaction),
+///   onDelete: () async => await showDeleteConfirm(),
+/// )
+/// ```
 class TransactionListItem extends StatefulWidget {
   const TransactionListItem({
     super.key,
@@ -98,6 +122,9 @@ class _TransactionListItemState extends State<TransactionListItem> {
   }
 }
 
+/// 스와이프 시 나타나는 원형 삭제 버튼 위젯
+///
+/// 빨간색 원형 배경에 휴지통 아이콘을 표시합니다.
 class _DeleteButton extends StatelessWidget {
   const _DeleteButton({required this.onTap});
 
@@ -131,6 +158,9 @@ class _DeleteButton extends StatelessWidget {
   }
 }
 
+/// 거래 내역 카드 UI를 구성하는 위젯
+///
+/// 카테고리 아이콘, 제목, 부제목, 금액을 한 행에 표시합니다.
 class _TransactionCard extends StatelessWidget {
   const _TransactionCard({
     required this.onTap,
