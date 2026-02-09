@@ -16,12 +16,11 @@ import 'package:moamoa/features/common/providers/ui_overlay_providers.dart';
 import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 import 'package:moamoa/features/home/presentation/providers/home_providers.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
-import 'package:moamoa/features/home/presentation/widgets/custom_calendar.dart';
 import 'package:moamoa/features/home/presentation/widgets/delete_confirem_dialog.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_account_book_dropdown.dart';
-import 'package:moamoa/features/home/presentation/widgets/home_budget_info_card.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_fab_menu.dart';
-import 'package:moamoa/features/home/presentation/widgets/home_pending_expenses_banner.dart';
+import 'package:moamoa/features/home/presentation/widgets/home_header_title.dart';
+import 'package:moamoa/features/home/presentation/widgets/home_top_section.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_transaction_sheet.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -236,32 +235,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       selectedAccountBookState,
     );
 
-    // 나중에 리팩토링 하자
-    final topSection = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        children: [
-          // 1. Budget Info Area (탭하면 새로고침)
-          const HomeBudgetInfoCard(),
-
-          // 2. 대기중인 지출 내역
-          const HomePendingExpensesBanner(),
-
-          // 3. Custom Calendar
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: CustomCalendar(
-              format: calendarFormat,
-              focusedDay: homeState.focusedMonth,
-              selectedDay: homeState.selectedDate,
-              monthlyData: homeState.monthlyData,
-              onFormatChanged: _handleFormatChanged,
-              onDateSelected: _handleDateSelected,
-              onPageChanged: _handlePageChanged,
-            ),
-          ),
-        ],
-      ),
+    // 홈 상단 위젯(예산/자산 정보, 대기중인 지출 내역, Calendar)
+    final topSection = HomeTopSection(
+      calendarFormat: calendarFormat,
+      focusedDay: homeState.focusedMonth,
+      selectedDay: homeState.selectedDate,
+      monthlyData: homeState.monthlyData,
+      onFormatChanged: _handleFormatChanged,
+      onDateSelected: _handleDateSelected,
+      onPageChanged: _handlePageChanged,
     );
 
     return Stack(
@@ -271,35 +253,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           resizeToAvoidBottomInset:
               false, // 이전 화면에서 키보드가 열려 있을 때, 홈에서 오버플로우 나는 현상 해결
           appBar: AppBar(
-            title: InkWell(
-              borderRadius: BorderRadius.circular(8),
-              splashColor: AppColors.transparent,
-              highlightColor: AppColors.transparent,
-              overlayColor: WidgetStateProperty.all(AppColors.transparent),
+            title: HomeHeaderTitle(
+              selectedAccountBookName: selectedAccountBookName,
+              isMenuOpen: _isAccountBookMenuOpen,
               onTap: _toggleAccountBookMenu,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(
-                    child: Text(
-                      selectedAccountBookName,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Icon(
-                    _isAccountBookMenuOpen
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    color: colorScheme.onSurface,
-                  ),
-                ],
-              ),
             ),
+            /// AppBar 배경 공간의 위치하는 위젯
+            /// - 역할 : Listener을 통해 터치 감지하여 오버레이를 닫는다.
             flexibleSpace: Listener(
               behavior: HitTestBehavior.translucent,
               onPointerDown: (_) => _collapseOverlaysIfNeeded(),
@@ -313,12 +273,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           body: Listener(
             behavior: HitTestBehavior.translucent,
             onPointerDown: (_) => _collapseOverlaysIfNeeded(),
+            // 주간/월간 달력 뷰에 따라 화면 구성 다르게 설정
             child: isWeekView
                 ? Column(
                     children: [
                       topSection,
 
-                      // 4. Transactions Sheet (Fills remaining space - 패딩 바깥)
+                      // 4. 수입/지출 내역 리스트
                       Expanded(
                         child: HomeTransactionSheet(
                           homeState: homeState,
@@ -367,13 +328,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ),
           ),
         ),
+        /// 가계부 선택 메뉴 오버레이의 배경 처리 담당
         Positioned.fill(
           child: IgnorePointer(
+            // 메뉴가 열렸을 때만 터치를 감지하도록 설정
             ignoring: !_isAccountBookMenuOpen,
             child: AnimatedOpacity(
+              // 메뉴 열리면 배경을 어둡게, 닫히면 투명하게
               opacity: _isAccountBookMenuOpen ? 1 : 0,
               duration: const Duration(milliseconds: 160),
               curve: Curves.easeOut,
+              // 배경을 터치하면 가계부 메뉴 오버레이 닫음
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: _collapseOverlaysIfNeeded,
@@ -384,6 +349,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ),
           ),
         ),
+        // 가계부 메뉴 선택 오버레이
         Positioned(
           top: 0,
           left: 0,
