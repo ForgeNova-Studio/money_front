@@ -6,7 +6,7 @@ import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 import 'package:moamoa/features/home/presentation/widgets/swipe_to_reveal.dart';
 import 'package:moamoa/features/income/presentation/utils/income_category_utils.dart';
 
-class TransactionListItem extends StatelessWidget {
+class TransactionListItem extends StatefulWidget {
   const TransactionListItem({
     super.key,
     required this.transaction,
@@ -17,11 +17,28 @@ class TransactionListItem extends StatelessWidget {
 
   final TransactionEntity transaction;
   final VoidCallback? onTap;
-  final Future<void> Function()? onDelete;
+
+  /// 삭제 확인 콜백. true 반환 시 삭제 진행, false 반환 시 스와이프 원복
+  final Future<bool> Function()? onDelete;
   final ValueChanged<bool>? onRevealActiveChanged;
 
   @override
+  State<TransactionListItem> createState() => _TransactionListItemState();
+}
+
+class _TransactionListItemState extends State<TransactionListItem> {
+  final _swipeKey = GlobalKey<SwipeToRevealState>();
+
+  Future<void> _handleDelete() async {
+    final confirmed = await widget.onDelete?.call() ?? false;
+    if (!confirmed) {
+      _swipeKey.currentState?.reset();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final transaction = widget.transaction;
     final isExpense = transaction.type == TransactionType.expense;
     final color =
         isExpense ? context.appColors.error : context.appColors.success;
@@ -46,13 +63,14 @@ class TransactionListItem extends StatelessWidget {
     }
 
     return SwipeToReveal(
-      enabled: onDelete != null,
-      onRevealActiveChanged: onRevealActiveChanged,
+      key: _swipeKey,
+      enabled: widget.onDelete != null,
+      onRevealActiveChanged: widget.onRevealActiveChanged,
       actionButton: _DeleteButton(
-        onTap: () => onDelete?.call(),
+        onTap: _handleDelete,
       ),
       child: _TransactionCard(
-        onTap: onTap,
+        onTap: widget.onTap,
         categoryIcon: categoryIcon,
         isExpense: isExpense,
         title: displayTitle,
@@ -64,6 +82,7 @@ class TransactionListItem extends StatelessWidget {
   }
 
   String _resolveCategoryLabel(bool isExpense) {
+    final transaction = widget.transaction;
     if (isExpense) {
       return resolveExpenseCategoryLabel(transaction.category);
     }
@@ -71,6 +90,7 @@ class TransactionListItem extends StatelessWidget {
   }
 
   IconData _resolveCategoryIcon(bool isExpense) {
+    final transaction = widget.transaction;
     if (isExpense) {
       return resolveExpenseCategoryIcon(transaction.category);
     }

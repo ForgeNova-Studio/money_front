@@ -26,7 +26,7 @@ class TransactionListSection extends StatelessWidget {
   final DateTime selectedDate;
   final bool isModal;
   final VoidCallback? onCameraTap;
-  final Future<void> Function(TransactionEntity transaction)? onDelete;
+  final Future<bool> Function(TransactionEntity transaction)? onDelete;
   final ValueChanged<bool>? onRevealActiveChanged;
 
   @override
@@ -141,8 +141,9 @@ class TransactionListSection extends StatelessWidget {
                     context.push(RouteNames.editIncome(tx.id));
                   }
                 },
-          onDelete:
-              tx.id.isEmpty || onDelete == null ? null : () => onDelete!(tx),
+          onDelete: tx.id.isEmpty || onDelete == null
+              ? null
+              : () async => await onDelete!(tx),
           onRevealActiveChanged: onRevealActiveChanged,
         );
       },

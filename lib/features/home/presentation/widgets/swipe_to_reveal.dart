@@ -18,10 +18,10 @@ class SwipeToReveal extends StatefulWidget {
   final ValueChanged<bool>? onRevealActiveChanged;
 
   @override
-  State<SwipeToReveal> createState() => _SwipeToRevealState();
+  State<SwipeToReveal> createState() => SwipeToRevealState();
 }
 
-class _SwipeToRevealState extends State<SwipeToReveal>
+class SwipeToRevealState extends State<SwipeToReveal>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -43,6 +43,11 @@ class _SwipeToRevealState extends State<SwipeToReveal>
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  /// 스와이프 상태를 원래 위치로 리셋
+  void reset() {
+    _animateTo(0);
   }
 
   void _handleDragStart(DragStartDetails details) {

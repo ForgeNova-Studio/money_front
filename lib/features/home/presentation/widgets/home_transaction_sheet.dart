@@ -7,7 +7,7 @@ import 'package:moamoa/features/home/presentation/widgets/transaction_list_secti
 
 class HomeTransactionSheet extends StatelessWidget {
   final HomeState homeState;
-  final Future<void> Function(TransactionEntity transaction) onDelete;
+  final Future<bool> Function(TransactionEntity transaction) onDelete;
   final VoidCallback onResetToMonthView;
   final ValueChanged<bool>? onRevealActiveChanged;
 

@@ -77,7 +77,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   // 수입/지출 삭제
-  Future<void> _handleDeleteTransaction(TransactionEntity transaction) async {
+  Future<bool> _handleDeleteTransaction(TransactionEntity transaction) async {
     // id가 비어있다면 삭제할 수 없다.
     if (transaction.id.isEmpty) {
       if (mounted) {
@@ -85,7 +85,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           const SnackBar(content: Text('삭제할 수 없는 항목입니다.')),
         );
       }
-      return;
+      return false;
     }
 
     // 삭제 확인 다이얼로그
@@ -98,7 +98,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
 
     if (shouldDelete != true || !mounted) {
-      return;
+      return false;
     }
 
     // 삭제 확인
@@ -112,12 +112,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           SnackBar(content: Text('삭제되었습니다.')),
         );
       }
+      return true;
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('삭제 실패: $e')),
         );
       }
+      return false;
     }
   }
 
@@ -258,6 +260,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               isMenuOpen: _isAccountBookMenuOpen,
               onTap: _toggleAccountBookMenu,
             ),
+
             /// AppBar 배경 공간의 위치하는 위젯
             /// - 역할 : Listener을 통해 터치 감지하여 오버레이를 닫는다.
             flexibleSpace: Listener(
@@ -328,6 +331,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ),
           ),
         ),
+
         /// 가계부 선택 메뉴 오버레이의 배경 처리 담당
         Positioned.fill(
           child: IgnorePointer(
