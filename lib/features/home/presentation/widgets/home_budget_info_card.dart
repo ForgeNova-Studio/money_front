@@ -8,7 +8,6 @@ import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/features/home/presentation/widgets/animated_amount_text.dart';
 import 'package:moamoa/router/route_names.dart';
-import 'package:path/path.dart';
 
 class HomeBudgetInfoCard extends ConsumerStatefulWidget {
   const HomeBudgetInfoCard({super.key});

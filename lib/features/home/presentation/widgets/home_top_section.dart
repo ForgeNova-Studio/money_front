@@ -6,7 +6,12 @@ import 'package:moamoa/features/home/presentation/widgets/custom_calendar.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_budget_info_card.dart';
 import 'package:moamoa/features/home/presentation/widgets/home_pending_expenses_banner.dart';
 
-/// 홈 화면 상단 위젯(예산/자산 정보, 대기중인 지출 내역, Calendar)
+/// 홈 화면 상단 영역을 구성하는 복합 위젯
+///
+/// 다음 3가지 주요 요소를 수직으로 배치하여 표시합니다:
+/// 1. [HomeBudgetInfoCard]: 이번 달 예산/자산 현황 및 지출 가능 금액
+/// 2. [HomePendingExpensesBanner]: 승인 대기 중인 지출 내역 (OCR/SMS 등)
+/// 3. [CustomCalendar]: 월간/주간 수입 지출 내역을 시각화하는 캘린더
 class HomeTopSection extends StatelessWidget {
   final CalendarFormat calendarFormat;
   final DateTime focusedDay;

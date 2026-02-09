@@ -6,6 +6,20 @@ import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.d
 import 'package:moamoa/features/home/presentation/widgets/custom_month_picker.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+/// 홈 화면에서 사용되는 커스텀 달력 위젯 (월간/주간 뷰 지원)
+///
+/// [TableCalendar] 라이브러리를 기반으로 구현되었으며, 날짜별 수입/지출 요약을 표시합니다.
+///
+/// 주요 기능:
+/// - 월간(Month) / 주간(Week) 뷰 전환 지원
+/// - 날짜별 수입(Income) / 지출(Expense) 요약 정보 표시
+/// - 커스텀 헤더 및 날짜 셀 스타일링
+/// - 월 선택기(Month Picker) 연동
+///
+/// 파라미터:
+/// - [monthlyData]: 날짜별 수입/지출 데이터를 담은 Map (AsyncValue)
+/// - [format]: 달력 표시 형식 (CalendarFormat.month 또는 week)
+/// - [eventLoader]: 특정 날짜의 이벤트를 로드하는 함수 (현재는 미사용)
 class CustomCalendar extends StatefulWidget {
   final DateTime focusedDay;
   final DateTime selectedDay;
@@ -149,6 +163,8 @@ class _CustomCalendarState extends State<CustomCalendar> {
         widget.onDateSelected?.call(selectedDay, focusedDay);
       },
 
+      // 달력 날짜 및 헤더(연도/월)
+      // - CustomeMonthPicker 연결
       calendarBuilders: CalendarBuilders(
         headerTitleBuilder: (context, day) {
           return GestureDetector(
@@ -224,7 +240,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
       alignment: Alignment.topCenter,
       decoration: isSelected
           ? BoxDecoration(
-              color: Colors.transparent,
+              color: AppColors.transparent,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: context.appColors.primary,
