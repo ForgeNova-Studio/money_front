@@ -8,6 +8,7 @@ import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/features/home/presentation/widgets/animated_amount_text.dart';
 import 'package:moamoa/router/route_names.dart';
+import 'package:path/path.dart';
 
 class HomeBudgetInfoCard extends ConsumerStatefulWidget {
   const HomeBudgetInfoCard({super.key});
@@ -182,23 +183,19 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
               amount: remainingAmount.abs(),
               showSign: false,
               suffix: '',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: isOverBudget
-                    ? context.appColors.error
-                    : context.appColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                    color: isOverBudget
+                        ? context.appColors.error
+                        : context.appColors.textPrimary,
+                  ),
             ),
             Text(
               isOverBudget ? '원 초과' : '원 남음',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: isOverBudget
-                    ? context.appColors.error
-                    : context.appColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                    color: isOverBudget
+                        ? context.appColors.error
+                        : context.appColors.textPrimary,
+                  ),
             ),
           ],
         ),
