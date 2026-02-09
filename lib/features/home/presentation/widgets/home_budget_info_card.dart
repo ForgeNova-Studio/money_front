@@ -78,7 +78,8 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
               currentMonth: currentMonth,
               pageIndicator: _buildPageIndicator(context),
             ),
-            onTap: () => context.push(RouteNames.budgetSettings),
+            onTap: () => context.push(RouteNames.budgetSettings,
+                extra: homeState.focusedMonth),
           ),
           // 카드 2: 총 자산
           _buildCard(

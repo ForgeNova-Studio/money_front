@@ -304,7 +304,12 @@ class AppRouter {
         GoRoute(
           path: RouteNames.budgetSettings,
           name: 'budgetSettings',
-          builder: (context, state) => const BudgetSettingsScreen(),
+          builder: (context, state) {
+            final initialDate = state.extra as DateTime?;
+            return BudgetSettingsScreen(
+              initialDate: initialDate,
+            );
+          },
         ),
         GoRoute(
           path: RouteNames.initialBalanceSettings,
@@ -343,8 +348,12 @@ class AppRouter {
           path: RouteNames.monthlyReport,
           name: 'monthlyReport',
           builder: (context, state) {
-            final year = int.tryParse(state.uri.queryParameters['year'] ?? '') ?? DateTime.now().year;
-            final month = int.tryParse(state.uri.queryParameters['month'] ?? '') ?? DateTime.now().month;
+            final year =
+                int.tryParse(state.uri.queryParameters['year'] ?? '') ??
+                    DateTime.now().year;
+            final month =
+                int.tryParse(state.uri.queryParameters['month'] ?? '') ??
+                    DateTime.now().month;
             return MonthlyReportScreen(year: year, month: month);
           },
         ),

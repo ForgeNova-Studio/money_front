@@ -14,7 +14,12 @@ import 'package:moamoa/features/common/widgets/transaction_form/thousands_separa
 
 /// 예산 설정 화면
 class BudgetSettingsScreen extends ConsumerStatefulWidget {
-  const BudgetSettingsScreen({super.key});
+  final DateTime? initialDate;
+
+  const BudgetSettingsScreen({
+    super.key,
+    this.initialDate,
+  });
 
   @override
   ConsumerState<BudgetSettingsScreen> createState() =>
@@ -41,7 +46,13 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     super.initState();
     final now = DateTime.now();
     _currentMonth = DateTime(now.year, now.month);
-    _selectedMonth = _currentMonth;
+    // initialDate가 있으면 해당 월로, 없으면 현재 월로 설정
+    if (widget.initialDate != null) {
+      _selectedMonth =
+          DateTime(widget.initialDate!.year, widget.initialDate!.month);
+    } else {
+      _selectedMonth = _currentMonth;
+    }
     _prefetchBudgets();
   }
 
