@@ -9,6 +9,23 @@ import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dar
 import 'package:moamoa/features/home/presentation/widgets/animated_amount_text.dart';
 import 'package:moamoa/router/route_names.dart';
 
+/// 홈 화면의 예산 및 자산 정보를 표시하는 카드 위젯
+///
+/// [PageView]를 사용하여 예산 정보와 자산 정보를 스와이프로 전환하며 보여줍니다.
+///
+/// 주요 기능:
+/// 1. 이번 달 예산 카드:
+///    - 설정된 예산 대비 남은 금액 표시
+///    - 지출 진행률 프로그레스 바 제공
+///    - 예산 초과 시 붉은색 경고 표시
+/// 2. 총 자산 카드:
+///    - 현재 총 자산 금액 표시
+///    - 이번 달 수입/지출 합계 요약 표시 (낙관적 업데이트 반영)
+///
+/// 사용 예시:
+/// ```dart
+/// const HomeBudgetInfoCard()
+/// ```
 class HomeBudgetInfoCard extends ConsumerStatefulWidget {
   const HomeBudgetInfoCard({super.key});
 
@@ -33,6 +50,15 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
     final assetInfo = homeState.assetInfo;
     final currentMonth = homeState.focusedMonth.month;
 
+    // 수입/지출 합계 계산 (monthlyData에서)
+    final monthlyData = homeState.monthlyData.asData?.value ?? {};
+    double periodIncome = 0;
+    double periodExpense = 0;
+    for (final summary in monthlyData.values) {
+      periodIncome += summary.totalIncome;
+      periodExpense += summary.totalExpense;
+    }
+
     return SizedBox(
       height: 140,
       child: PageView(
@@ -47,13 +73,22 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
           // 카드 1: 이번 달 예산
           _buildCard(
             context,
-            child: _buildBudgetContent(context, budgetInfo, currentMonth),
+            child: _BudgetCardContent(
+              budgetInfo: budgetInfo,
+              currentMonth: currentMonth,
+              pageIndicator: _buildPageIndicator(context),
+            ),
             onTap: () => context.push(RouteNames.budgetSettings),
           ),
           // 카드 2: 총 자산
           _buildCard(
             context,
-            child: _buildAssetContent(context, assetInfo),
+            child: _AssetCardContent(
+              assetInfo: assetInfo,
+              periodIncome: periodIncome,
+              periodExpense: periodExpense,
+              pageIndicator: _buildPageIndicator(context),
+            ),
             onTap: () => context.push(RouteNames.initialBalanceSettings),
           ),
         ],
@@ -72,7 +107,7 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
         margin: const EdgeInsets.symmetric(horizontal: 16),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -106,73 +141,34 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
       }),
     );
   }
+}
 
-  Widget _buildBudgetContent(
-    BuildContext context,
-    BudgetEntity? budgetInfo,
-    int currentMonth,
-  ) {
+/// 예산 카드 컨텐츠 위젯
+class _BudgetCardContent extends StatelessWidget {
+  final BudgetEntity? budgetInfo;
+  final int currentMonth;
+  final Widget pageIndicator;
+
+  const _BudgetCardContent({
+    required this.budgetInfo,
+    required this.currentMonth,
+    required this.pageIndicator,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     if (budgetInfo == null) {
-      // 예산 미설정 상태
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '$currentMonth월 예산',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: context.appColors.textSecondary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              _buildPageIndicator(context),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '예산 미설정',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: context.appColors.textTertiary,
-            ),
-          ),
-          const Spacer(),
-          Text(
-            '탭하여 예산 설정하기',
-            style: TextStyle(
-              fontSize: 12,
-              color: context.appColors.primary,
-            ),
-          ),
-        ],
-      );
+      return _buildEmptyState(context);
     }
 
-    final remainingAmount = budgetInfo.remainingAmount;
-    final progress = budgetInfo.usagePercentage / 100;
+    final remainingAmount = budgetInfo!.remainingAmount;
+    final progress = budgetInfo!.usagePercentage / 100;
     final isOverBudget = remainingAmount < 0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '$currentMonth월 예산',
-              style: TextStyle(
-                fontSize: 16,
-                color: context.appColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            _buildPageIndicator(context),
-          ],
-        ),
+        _buildHeader(context),
         const SizedBox(height: 8),
         Row(
           crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -199,116 +195,124 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
           ],
         ),
         const Spacer(),
-        TweenAnimationBuilder<double>(
-          tween: Tween<double>(begin: 0, end: progress.clamp(0.0, 1.0)),
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeOutCubic,
-          builder: (context, animatedProgress, child) {
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: LinearProgressIndicator(
-                value: animatedProgress,
-                backgroundColor: context.appColors.gray100,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  isOverBudget
-                      ? context.appColors.error
-                      : context.appColors.primary,
-                ),
-                minHeight: 8,
-              ),
-            );
-          },
-        ),
+        _buildProgressBar(context, progress, isOverBudget),
         const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '지출 ${NumberFormat('#,###').format(budgetInfo.currentSpending.toInt())}원',
-              style: TextStyle(
-                  fontSize: 12, color: context.appColors.textTertiary),
-            ),
-            Text(
-              '예산 ${NumberFormat('#,###').format(budgetInfo.targetAmount.toInt())}원',
-              style: TextStyle(
-                  fontSize: 12, color: context.appColors.textTertiary),
-            ),
-          ],
+        _buildFooter(context),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildHeader(context),
+        const SizedBox(height: 8),
+        Text(
+          '예산 미설정',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: context.appColors.textTertiary,
+          ),
+        ),
+        const Spacer(),
+        Text(
+          '탭하여 예산 설정하기',
+          style: TextStyle(
+            fontSize: 12,
+            color: context.appColors.primary,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildAssetContent(BuildContext context, AssetEntity? assetInfo) {
-    // 현재 월의 수입/지출 합계를 monthlyData에서 계산 (낙관적 업데이트 반영)
-    final homeState = ref.watch(homeViewModelProvider);
-    final monthlyData = homeState.monthlyData.asData?.value ?? {};
-    double periodIncome = 0;
-    double periodExpense = 0;
-    for (final summary in monthlyData.values) {
-      periodIncome += summary.totalIncome;
-      periodExpense += summary.totalExpense;
-    }
+  Widget _buildHeader(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          '$currentMonth월 예산',
+          style: TextStyle(
+            fontSize: 16,
+            color: context.appColors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        pageIndicator,
+      ],
+    );
+  }
 
+  Widget _buildProgressBar(
+      BuildContext context, double progress, bool isOverBudget) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0, end: progress.clamp(0.0, 1.0)),
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutCubic,
+      builder: (context, animatedProgress, child) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: LinearProgressIndicator(
+            value: animatedProgress,
+            backgroundColor: context.appColors.gray100,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              isOverBudget
+                  ? context.appColors.error
+                  : context.appColors.primary,
+            ),
+            minHeight: 8,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildFooter(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          '지출 ${NumberFormat('#,###').format(budgetInfo!.currentSpending.toInt())}원',
+          style: TextStyle(fontSize: 12, color: context.appColors.textTertiary),
+        ),
+        Text(
+          '예산 ${NumberFormat('#,###').format(budgetInfo!.targetAmount.toInt())}원',
+          style: TextStyle(fontSize: 12, color: context.appColors.textTertiary),
+        ),
+      ],
+    );
+  }
+}
+
+/// 자산 카드 컨텐츠 위젯
+class _AssetCardContent extends StatelessWidget {
+  final AssetEntity? assetInfo;
+  final double periodIncome;
+  final double periodExpense;
+  final Widget pageIndicator;
+
+  const _AssetCardContent({
+    required this.assetInfo,
+    required this.periodIncome,
+    required this.periodExpense,
+    required this.pageIndicator,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     if (assetInfo == null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '총 자산',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: context.appColors.textSecondary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              _buildPageIndicator(context),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '-',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: context.appColors.textTertiary,
-            ),
-          ),
-          const Spacer(),
-          Text(
-            '탭하여 초기 잔액 설정하기',
-            style: TextStyle(
-              fontSize: 12,
-              color: context.appColors.primary,
-            ),
-          ),
-        ],
-      );
+      return _buildEmptyState(context);
     }
 
-    final totalAssets = assetInfo.currentTotalAssets;
+    final totalAssets = assetInfo!.currentTotalAssets;
     final isNegative = totalAssets < 0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '총 자산',
-              style: TextStyle(
-                fontSize: 16,
-                color: context.appColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            _buildPageIndicator(context),
-          ],
-        ),
+        _buildHeader(context),
         const SizedBox(height: 8),
         Row(
           crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -348,25 +352,71 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
           ],
         ),
         const Spacer(),
-        // 수입/지출 요약 (monthlyData에서 계산한 값 사용)
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '수입 ${NumberFormat('#,###').format(periodIncome.toInt())}원',
-              style: TextStyle(
-                fontSize: 12,
-                color: context.appColors.success,
-              ),
-            ),
-            Text(
-              '지출 ${NumberFormat('#,###').format(periodExpense.toInt())}원',
-              style: TextStyle(
-                fontSize: 12,
-                color: context.appColors.error,
-              ),
-            ),
-          ],
+        _buildFooter(context),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildHeader(context),
+        const SizedBox(height: 8),
+        Text(
+          '-',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: context.appColors.textTertiary,
+          ),
+        ),
+        const Spacer(),
+        Text(
+          '탭하여 초기 잔액 설정하기',
+          style: TextStyle(
+            fontSize: 12,
+            color: context.appColors.primary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          '총 자산',
+          style: TextStyle(
+            fontSize: 16,
+            color: context.appColors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        pageIndicator,
+      ],
+    );
+  }
+
+  Widget _buildFooter(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          '수입 ${NumberFormat('#,###').format(periodIncome.toInt())}원',
+          style: TextStyle(
+            fontSize: 12,
+            color: context.appColors.success,
+          ),
+        ),
+        Text(
+          '지출 ${NumberFormat('#,###').format(periodExpense.toInt())}원',
+          style: TextStyle(
+            fontSize: 12,
+            color: context.appColors.error,
+          ),
         ),
       ],
     );
