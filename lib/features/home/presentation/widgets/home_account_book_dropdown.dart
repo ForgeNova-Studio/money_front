@@ -3,6 +3,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
 
+/// 홈 화면에서 가계부를 선택할 수 있는 드롭다운 메뉴 위젯
+///
+/// 사용자가 보유한 가계부 목록을 표시하고, 선택하여 전환할 수 있습니다.
+/// 또한 '새로운 가계부 만들기' 버튼을 통해 가계부 생성 화면으로 이동할 수 있습니다.
+///
+/// 주요 기능:
+/// - 가계부 목록 표시 (활성화된 가계부만 표시)
+/// - 현재 선택된 가계부 강조 표시 (체크 아이콘)
+/// - 새로운 가계부 생성 버튼 제공
+/// - 로딩/에러 상태 처리
+///
+/// 파라미터:
+/// - [accountBooksState]: 전체 가계부 목록 상태 (AsyncValue)
+/// - [selectedAccountBookState]: 현재 선택된 가계부 ID 상태 (AsyncValue)
+/// - [onCreateAccountBook]: 가계부 생성 버튼 탭 콜백
+/// - [onSelectAccountBook]: 가계부 선택 시 콜백 (ID 반환)
 class HomeAccountBookDropdown extends StatelessWidget {
   final AsyncValue<List<AccountBook>> accountBooksState;
   final AsyncValue<String?> selectedAccountBookState;

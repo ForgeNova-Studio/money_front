@@ -1,6 +1,29 @@
 // 삭제 확인 다이얼로그
 import 'package:flutter/material.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
 
+/// 지출/수입 내역 삭제 확인을 위한 커스텀 다이얼로그 위젯
+///
+/// 사용자의 실수를 방지하기 위해 삭제 전 확인 절차를 제공합니다.
+/// 삭제 아이콘, 경고 메시지, 취소/삭제 버튼으로 구성되어 있습니다.
+///
+/// 주요 기능:
+/// - 삭제할 항목의 타이틀([title])을 포함한 경고 메시지 표시
+/// - 직관적인 삭제 아이콘 및 붉은색 테마 적용
+/// - [Navigator.pop]을 통해 결과값(bool) 반환 (삭제: true, 취소: false)
+///
+/// 사용 예시:
+/// ```dart
+/// final shouldDelete = await showDialog<bool>(
+///   context: context,
+///   builder: (context) => DeleteConfirmDialog(
+///     title: '커피 구매',
+///   ),
+/// );
+/// if (shouldDelete == true) {
+///   // 삭제 로직 실행
+/// }
+/// ```
 class DeleteConfirmDialog extends StatelessWidget {
   const DeleteConfirmDialog({
     super.key,
@@ -15,7 +38,7 @@ class DeleteConfirmDialog extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Dialog(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       child: Container(
         width: 320,
         padding: const EdgeInsets.all(24),
