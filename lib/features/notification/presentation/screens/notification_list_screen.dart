@@ -362,17 +362,48 @@ class _NotificationGroup extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 섹션 타이틀
+        // 섹션 타이틀 (강조 바 + 타이틀 + 디바이더 조합)
         Padding(
           padding:
-              const EdgeInsets.only(left: 20, right: 16, top: 16, bottom: 12),
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: appColors.textSecondary,
-            ),
+              const EdgeInsets.only(left: 16, right: 16, top: 24, bottom: 12),
+          child: Row(
+            children: [
+              // 강조 바 (Accent Bar)
+              Container(
+                width: 4,
+                height: 14,
+                decoration: BoxDecoration(
+                  color: appColors.primary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 8),
+              // 타이틀
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: appColors.textPrimary,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              const SizedBox(width: 12),
+              // 구분선 (Right Divider)
+              Expanded(
+                child: Container(
+                  height: 1,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        appColors.gray200,
+                        appColors.gray200.withValues(alpha: 0),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         // 알림 카드들
