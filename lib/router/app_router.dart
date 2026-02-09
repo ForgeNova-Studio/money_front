@@ -47,7 +47,7 @@ import 'package:moamoa/features/couple/presentation/screens/couple_invite_screen
 import 'package:moamoa/features/couple/presentation/screens/couple_join_screen.dart';
 
 // ==================== OCR ====================
-import 'package:moamoa/features/ocr/presentation/screens/ocr_test_screen.dart';
+import 'package:moamoa/features/ocr/presentation/screens/ocr_scan_screen.dart';
 
 // ==================== Budget ====================
 import 'package:moamoa/features/budget/presentation/screens/budget_settings_screen.dart';
@@ -259,7 +259,7 @@ class AppRouter {
         GoRoute(
           path: RouteNames.ocrTest,
           name: 'ocrTest',
-          builder: (context, state) => const OcrTestScreen(),
+          builder: (context, state) => const OcrScanScreen(),
         ),
 
         // ==================== AccountBook Routes ====================

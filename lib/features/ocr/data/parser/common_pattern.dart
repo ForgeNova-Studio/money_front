@@ -35,12 +35,21 @@ class CommonPattern implements ReceiptPattern {
       r'(일시불|할부|적립|이용|내역|' // 기존 노이즈
       r'예정|시불|익월|출금|청구|' // 카드사 용어
       r'결제완료|승인|취소|' // 상태
-      r'\d{1,2}\s?\([^)]*\))' // "23 ()" 같은 패턴
+      r'적립예정|분할결제|신청하기|' // 추가 카드사 UI 텍스트
+      r'ZERO\s*ED2?|ED2|할인형|기본|할인|' // 카드 상품명 패턴 (긴 패턴 먼저)
+      r'\d{1,2}\s?\([^)]*\)|' // "23 ()" 같은 패턴
+      r'\([월화수목금토일]\)|' // 요일 패턴 (월), (화), ...
+      r'현대카드\w*|신한카드\w*|삼성카드\w*|KB카드\w*|롯데카드\w*|우리카드\w*|하나카드\w*|' // 카드사명
+      r'\|?Pay|카카오페이|네이버페이|삼성페이|애플페이)' // 결제수단
       );
+
+  // 할인 정보 패턴 (예: "0.7%할인 -185원", "1.5%_생활필수영역 -150원")
+  static final RegExp _discountInfoRegex = RegExp(
+      r'\d+(\.\d+)?%\s*(할인|_[^\s]+)?\s*-?\d+원?');
 
   static const List<String> _dropKeywords = [
     '합계', '총액', '결제금액', '청구금액', '출금예정', '이번달', '명세서', '결제예정', '잔액', '포인트',
-    '최신순', // UI 요소 필터링
+    '최신순', '고액순', // UI 요소 필터링
   ];
 
   // 요약 라인 감지 정규식: "총 N건", "N건" 등
@@ -59,6 +68,19 @@ class CommonPattern implements ReceiptPattern {
     for (var block in text.blocks) {
       allLines.addAll(block.lines);
     }
+    
+    // [DEBUG] 모든 OCR 라인 출력 (날짜 인식 문제 디버깅용)
+    _logger.d('━━━ OCR 인식된 전체 라인 (${allLines.length}개) ━━━');
+    for (var i = 0; i < allLines.length; i++) {
+      final line = allLines[i];
+      final hasDate = _dateFullRegex.hasMatch(line.text);
+      final hasMoney = _moneyRegex.hasMatch(line.text);
+      String markers = '';
+      if (hasDate) markers += '📅';
+      if (hasMoney) markers += '💰';
+      _logger.d('  [$i] $markers "${line.text}"');
+    }
+    _logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     var moneyLines = allLines.where((line) {
       // 날짜 형식이 포함된 라인은 금액 라인이 아님 (오인 방지)
@@ -81,6 +103,9 @@ class CommonPattern implements ReceiptPattern {
 
     _logger.d(' 발견된 금액 라인: ${moneyLines.length}개');
     _logger.d(' 발견된 날짜 헤더: ${dateHeaderLines.length}개');
+    for (var header in dateHeaderLines) {
+      _logger.d('   📅 날짜 헤더: "${header.text}" (top: ${header.boundingBox.top.toStringAsFixed(0)})');
+    }
 
     // 날짜 컨텍스트 추적 변수
     DateTime? lastKnownDate;
@@ -130,17 +155,21 @@ class CommonPattern implements ReceiptPattern {
         return a.boundingBox.top.compareTo(b.boundingBox.top);
       });
 
+      // fullText에 금액 라인 텍스트도 포함 (날짜가 금액과 같은 라인에 있을 수 있음)
       String fullText = rawTexts.map((e) => e.text).join(' ');
+      String fullTextWithMoneyLine = '$fullText ${moneyLine.text}';
 
       //  OCR 원본 텍스트 로그
       _logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       _logger.d('📝 OCR 원본 텍스트: "$fullText"');
-      _logger.d('   금액 라인: "${moneyLine.text}" ($amount원)');
+      _logger.d('   금액 라인 원본: "${moneyLine.text}"');
+      _logger.d('   금액+날짜 검색 텍스트: "$fullTextWithMoneyLine"');
+      _logger.d('   금액: $amount원');
 
       if (_hasDropKeyword(fullText)) continue;
 
-      //  스마트 날짜 추출 (모든 후보 찾기 → 점수화 → 최적 선택)
-      final dateResult = _extractBestDate(fullText);
+      //  스마트 날짜 추출 (금액 라인 텍스트도 포함하여 검색)
+      final dateResult = _extractBestDate(fullTextWithMoneyLine);
       String? dateStr = dateResult.dateStr;
       bool isShortDate = dateResult.isShort;
 
@@ -166,11 +195,18 @@ class CommonPattern implements ReceiptPattern {
         linesSinceLastDate++;
 
         // 현재 금액 라인 위에 있는 가장 가까운 날짜 헤더 찾기
+        // (Y 좌표가 가장 가까운 것을 선택)
         TextLine? closestDateHeader;
-        for (var headerLine in dateHeaderLines.reversed) {
-          if (headerLine.boundingBox.top < moneyLine.boundingBox.top) {
-            closestDateHeader = headerLine;
-            break;
+        double minDistance = double.infinity;
+        
+        for (var headerLine in dateHeaderLines) {
+          // 날짜 헤더는 금액 라인 위에 있어야 함
+          if (headerLine.boundingBox.bottom < moneyLine.boundingBox.top) {
+            final distance = moneyLine.boundingBox.top - headerLine.boundingBox.bottom;
+            if (distance < minDistance) {
+              minDistance = distance;
+              closestDateHeader = headerLine;
+            }
           }
         }
 
@@ -186,11 +222,53 @@ class CommonPattern implements ReceiptPattern {
             _logger.d(
                 '    날짜 헤더에서 컨텍스트 적용: ${closestDateHeader.text} → $parsedDate');
           }
-        } else if (lastKnownDate != null &&
-            linesSinceLastDate <= maxDateContextDistance) {
-          // 날짜 헤더도 없으면 마지막 알려진 날짜 사용 (거리 제한 내)
-          parsedDate = lastKnownDate;
-          _logger.d('    이전 컨텍스트 날짜 적용: $parsedDate ($linesSinceLastDate라인 전)');
+        } else {
+          // 날짜 헤더를 못 찾으면, smart zone 내 모든 라인에서 날짜가 포함된 가장 가까운 라인 검색
+          // (날짜가 금액 라인 위 또는 아래에 있을 수 있음 - CU 등)
+          TextLine? closestDateLine;
+          double minDist = double.infinity;
+          
+          for (var line in allLines) {
+            if (_dateFullRegex.hasMatch(line.text) && line != moneyLine) {
+              // smart zone 범위 내에서만 검색 (위로 2.5줄, 아래로 1.5줄)
+              final anchor = moneyLine.boundingBox;
+              final h = anchor.height;
+              final searchZone = Rect.fromLTRB(
+                0, anchor.top - (h * 3), 
+                double.infinity, anchor.bottom + (h * 2)
+              );
+              
+              if (_isOverlapping(line.boundingBox, searchZone)) {
+                // 금액 라인과의 수직 거리 계산
+                double dist;
+                if (line.boundingBox.bottom <= anchor.top) {
+                  dist = anchor.top - line.boundingBox.bottom; // 위에 있는 경우
+                } else {
+                  dist = line.boundingBox.top - anchor.bottom; // 아래에 있는 경우
+                }
+                
+                if (dist < minDist) {
+                  minDist = dist;
+                  closestDateLine = line;
+                }
+              }
+            }
+          }
+          
+          if (closestDateLine != null) {
+            final lineDate = _extractBestDate(closestDateLine.text);
+            final parsed = _parseDateObj(lineDate.dateStr, lineDate.isShort);
+            if (parsed != null) {
+              parsedDate = parsed;
+              lastKnownDate = parsed;
+              _logger.d('    모든 라인에서 날짜 검색: ${closestDateLine.text} → $parsedDate');
+            }
+          } else if (lastKnownDate != null &&
+              linesSinceLastDate <= maxDateContextDistance) {
+            // 날짜 라인도 없으면 마지막 알려진 날짜 사용 (거리 제한 내)
+            parsedDate = lastKnownDate;
+            _logger.d('    이전 컨텍스트 날짜 적용: $parsedDate ($linesSinceLastDate라인 전)');
+          }
         }
       }
 
@@ -249,12 +327,26 @@ class CommonPattern implements ReceiptPattern {
 
   String _cleanStoreName(String text) {
     String clean = text;
+    
+    // 1. 할인 정보 패턴 제거 (예: "0.7%할인 -185원", "1.5%_생활필수영역 -150원")
+    clean = clean.replaceAll(_discountInfoRegex, '');
+    
+    // 2. 금액 패턴 제거 (상호명에 섞인 할인 금액 등)
+    clean = clean.replaceAll(RegExp(r'-?\d+원'), '');
+    
+    // 3. 기존 노이즈 패턴 제거
     clean = clean.replaceAll(_noiseRegex, '');
+    
+    // 4. 특수문자 제거 (괄호는 유지)
     clean = clean.replaceAll(RegExp(r'[^\w가-힣\(\)\s]'), '');
+    
+    // 5. 1자리 영숫자 단어 제거
     List<String> words = clean.split(' ');
     words.removeWhere(
         (w) => w.length <= 1 && RegExp(r'[A-Za-z0-9]').hasMatch(w));
-    return words.join(' ').trim();
+    
+    // 6. 연속 공백 정리
+    return words.join(' ').replaceAll(RegExp(r'\s+'), ' ').trim();
   }
 
   int _parseAmountInt(String text) {
