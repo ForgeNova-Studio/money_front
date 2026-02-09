@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/core/constants/expense_categories.dart';
+import 'package:moamoa/features/common/widgets/custom_pull_to_refresh.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
 import 'package:moamoa/features/common/widgets/error_state_widget.dart';
 import 'package:moamoa/features/statistics/domain/entities/category_breakdown.dart';
@@ -94,7 +95,18 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           statisticsState,
           statistics,
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () {
+          // 이미 데이터가 있으면 로딩 인디케이터 표시 안 함 (Pull-to-Refresh 사용)
+          if (statisticsState.statistics.value != null) {
+            return _buildContent(
+              context,
+              viewModel,
+              statisticsState,
+              statisticsState.statistics.value,
+            );
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
         error: (error, stackTrace) => ErrorStateWidget(
           error: error,
           onRetry: viewModel.refresh,
@@ -150,7 +162,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final totalExpense = statistics?.totalAmount ?? 0;
 
     if (expenses.isEmpty) {
-      return RefreshIndicator(
+      return CustomPullToRefresh(
         onRefresh: viewModel.refresh,
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -184,7 +196,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       );
     }
 
-    return RefreshIndicator(
+    return CustomPullToRefresh(
       onRefresh: viewModel.refresh,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),

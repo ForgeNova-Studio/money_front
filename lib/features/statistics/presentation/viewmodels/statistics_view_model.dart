@@ -114,11 +114,13 @@ class StatisticsViewModel extends _$StatisticsViewModel {
       return;
     }
 
-    // 로딩 상태
-    state = state.copyWith(
-      statistics: const AsyncValue.loading(),
-      categoryComparison: const AsyncValue.loading(),
-    );
+    // 데이터가 없는 경우에만 로딩 상태로 변경 (리프레시 시 깜빡임 방지)
+    if (state.statistics.value == null) {
+      state = state.copyWith(
+        statistics: const AsyncValue.loading(),
+        categoryComparison: const AsyncValue.loading(),
+      );
+    }
 
     // API 호출
     final accountBookId =

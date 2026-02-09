@@ -8,6 +8,7 @@ import 'package:moamoa/features/assets/presentation/viewmodels/asset_view_model.
 import 'package:moamoa/features/assets/presentation/widgets/asset_total_card.dart';
 import 'package:moamoa/features/assets/presentation/widgets/asset_bar_chart.dart';
 import 'package:moamoa/features/assets/presentation/widgets/asset_category_list.dart';
+import 'package:moamoa/features/common/widgets/custom_pull_to_refresh.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
 import 'package:moamoa/features/common/widgets/error_state_widget.dart';
 import 'package:moamoa/features/monthly_report/presentation/widgets/monthly_report_banner.dart';
@@ -46,7 +47,7 @@ class AssetScreen extends ConsumerWidget {
           child: const Icon(Icons.add),
         ),
       ),
-      child: state.isLoading
+      child: state.isLoading && state.assets.isEmpty
           ? _buildLoadingState(context)
           : state.error != null
               ? ErrorStateWidget(
@@ -127,7 +128,7 @@ class AssetScreen extends ConsumerWidget {
   ) {
     final summary = state.summary as AssetSummary?;
 
-    return RefreshIndicator(
+    return CustomPullToRefresh(
       onRefresh: () => ref.read(assetViewModelProvider.notifier).refresh(),
       color: context.appColors.primary,
       child: SingleChildScrollView(
