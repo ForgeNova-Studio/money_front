@@ -7,7 +7,7 @@ class CategoryBreakdown {
   final int amount;
 
   /// 전체 지출 대비 비율 (0-100)
-  final int percentage;
+  final double percentage;
 
   const CategoryBreakdown({
     required this.category,

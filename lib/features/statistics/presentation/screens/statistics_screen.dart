@@ -19,7 +19,7 @@ class CategoryExpenseUI {
   final String category;
   final int amount;
   final Color color;
-  final int percentage;
+  final double percentage; // double로 변경
 
   // 전월 대비 데이터
   final int? previousAmount;
@@ -67,8 +67,6 @@ class StatisticsScreen extends ConsumerStatefulWidget {
 }
 
 class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
-  int _touchedIndex = -1;
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -224,12 +222,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             ),
             const SizedBox(height: 24),
 
-            // 파이 차트
+            // 도넛 차트
             _ExpensePieChart(
               expenses: expenses,
-              totalExpense: totalExpense,
-              touchedIndex: _touchedIndex,
-              onTouched: (index) => setState(() => _touchedIndex = index),
             ),
             const SizedBox(height: 24),
 
@@ -440,28 +435,86 @@ class _ExpenseHeader extends StatelessWidget {
   }
 }
 
-/// 파이 차트
-class _ExpensePieChart extends StatelessWidget {
+/// 도넛 차트 (모던 리디자인)
+/// - 상위 5개 카테고리 + "기타" 그룹핑
+/// - 우측 범례 + "기타" 서브 팔레트
+class _ExpensePieChart extends StatefulWidget {
   final List<CategoryExpenseUI> expenses;
-  final int totalExpense;
-  final int touchedIndex;
-  final ValueChanged<int> onTouched;
 
   const _ExpensePieChart({
     required this.expenses,
-    required this.totalExpense,
-    required this.touchedIndex,
-    required this.onTouched,
   });
 
   @override
-  Widget build(BuildContext context) {
-    // 금액순 정렬
-    final sortedExpenses = List<CategoryExpenseUI>.from(expenses)
+  State<_ExpensePieChart> createState() => _ExpensePieChartState();
+}
+
+class _ExpensePieChartState extends State<_ExpensePieChart> {
+  /// 개별 표시할 최대 슬라이스 수
+  static const int _maxSlices = 5;
+
+  /// 라벨을 표시할 최소 비율 (%)
+  static const int _minLabelPercentage = 5;
+
+  /// 기타 카테고리 확장 여부
+  bool _isExpanded = false;
+
+  /// 상위 N개 + "기타" 그룹핑
+  List<_ChartSlice> _buildSlices() {
+    final sorted = List<CategoryExpenseUI>.from(widget.expenses)
       ..sort((a, b) => b.amount.compareTo(a.amount));
 
+    // 전체 합계 계산 (비율 재계산을 위해)
+    final total = widget.expenses.fold<int>(0, (sum, e) => sum + e.amount);
+
+    if (sorted.length <= _maxSlices) {
+      return sorted.map((e) {
+        return _ChartSlice(
+          category: e.category,
+          percentage: e.percentage,
+          color: e.color,
+          amount: e.amount,
+        );
+      }).toList();
+    }
+
+    final top = sorted.take(_maxSlices).toList();
+    final rest = sorted.skip(_maxSlices).toList();
+    final otherAmount = rest.fold<int>(0, (sum, e) => sum + e.amount);
+    final otherPercent = total == 0 ? 0.0 : (otherAmount / total * 100);
+
+    return [
+      ...top.map((e) {
+        return _ChartSlice(
+          category: e.category,
+          percentage: e.percentage,
+          color: e.color,
+          amount: e.amount,
+        );
+      }),
+      _ChartSlice(
+        category: '기타',
+        percentage: otherPercent,
+        color: const Color(0xFFBDBDBD),
+        amount: otherAmount,
+        subCategories: rest.map((e) {
+          return _SubCategory(
+            name: e.category,
+            color: e.color,
+            percentage: e.percentage,
+          );
+        }).toList(),
+      ),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    final slices = _buildSlices();
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
@@ -483,76 +536,220 @@ class _ExpensePieChart extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 12),
-          AspectRatio(
-            aspectRatio: 1.5,
-            child: Row(
-              children: [
-                // 파이차트
-                Expanded(
-                  flex: 3,
+          const SizedBox(height: 20),
+          // 도넛 차트 + 우측 범례
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 도넛 차트
+              Expanded(
+                flex: 3,
+                child: SizedBox(
+                  height: 200,
                   child: PieChart(
                     PieChartData(
-                      pieTouchData: PieTouchData(
-                        touchCallback: (event, response) {
-                          if (!event.isInterestedForInteractions ||
-                              response == null ||
-                              response.touchedSection == null) {
-                            onTouched(-1);
-                            return;
-                          }
-                          onTouched(
-                              response.touchedSection!.touchedSectionIndex);
-                        },
-                      ),
                       startDegreeOffset: 270,
                       sectionsSpace: 2,
-                      centerSpaceRadius: 0,
-                      sections: sortedExpenses.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final expense = entry.value;
-                        final isTouched = index == touchedIndex;
-                        final radius = isTouched ? 95.0 : 80.0;
+                      centerSpaceRadius: 45,
+                      sections: slices.map((slice) {
+                        final showLabel =
+                            slice.percentage >= _minLabelPercentage;
 
                         return PieChartSectionData(
-                          color: expense.color,
-                          value: expense.amount.toDouble(),
-                          title: '${expense.percentage}%',
-                          radius: radius,
-                          titleStyle: TextStyle(
-                            fontSize: isTouched ? 16 : 12,
-                            fontWeight: FontWeight.bold,
+                          color: slice.color,
+                          value: slice.amount.toDouble(),
+                          title: showLabel
+                              ? (slice.percentage % 1 == 0
+                                  ? '${slice.percentage.toInt()}%'
+                                  : '${slice.percentage.toStringAsFixed(1)}%')
+                              : '',
+                          radius: 55,
+                          titleStyle: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
                             color: Colors.white,
-                            shadows: const [
+                            shadows: [
                               Shadow(
                                 color: Colors.black26,
-                                blurRadius: 2,
+                                blurRadius: 4,
                               ),
                             ],
                           ),
-                          titlePositionPercentageOffset: 0.6,
+                          titlePositionPercentageOffset: 0.55,
                         );
                       }).toList(),
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
-                // 범례
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: sortedExpenses.take(6).map((expense) {
-                      return _Indicator(
-                        color: expense.color,
-                        text: expense.category,
-                        isSquare: true,
-                      );
-                    }).toList(),
+              ),
+              const SizedBox(width: 16),
+              // 우측 범례 + 기타 서브 팔레트
+              Expanded(
+                flex: 2,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: slices.map((slice) {
+                    final isOther = slice.subCategories != null;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 메인 범례 항목
+                        InkWell(
+                          onTap: isOther
+                              ? () {
+                                  setState(() {
+                                    _isExpanded = !_isExpanded;
+                                  });
+                                }
+                              : null,
+                          borderRadius: BorderRadius.circular(4),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2),
+                            child: _LegendItem(
+                              color: slice.color,
+                              label: slice.category,
+                              percentage: slice.percentage,
+                              appColors: appColors,
+                              isExpandable: isOther,
+                              isExpanded: isOther ? _isExpanded : false,
+                            ),
+                          ),
+                        ),
+                        // "기타" 서브 팔레트 (애니메이션 적용)
+                        if (isOther)
+                          AnimatedSize(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            alignment: Alignment.topCenter,
+                            child: _isExpanded
+                                ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: slice.subCategories!
+                                        .map((sub) => Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 1),
+                                              child: _LegendItem(
+                                                color: sub.color,
+                                                label: sub.name,
+                                                percentage: sub.percentage,
+                                                appColors: appColors,
+                                                isSubItem: true,
+                                              ),
+                                            ))
+                                        .toList(),
+                                  )
+                                : const SizedBox(width: double.infinity),
+                          ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 범례 항목
+class _LegendItem extends StatelessWidget {
+  final Color color;
+  final String label;
+  final double percentage;
+  final AppThemeColors appColors;
+  final bool isSubItem;
+  final bool isExpandable;
+  final bool isExpanded;
+
+  const _LegendItem({
+    required this.color,
+    required this.label,
+    required this.percentage,
+    required this.appColors,
+    this.isSubItem = false,
+    this.isExpandable = false,
+    this.isExpanded = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // 1% 미만이지만 0보다 큰 경우 '< 1%' 표시
+    String percentText;
+    if (percentage > 0 && percentage < 1) {
+      percentText = '< 1%';
+    } else {
+      if (percentage % 1 == 0) {
+        percentText = '${percentage.toInt()}%';
+      } else {
+        percentText = '${percentage.toStringAsFixed(1)}%';
+      }
+    }
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: isSubItem ? 16 : 0,
+        bottom: 4,
+        top: isSubItem ? 0 : 2,
+      ),
+      child: Row(
+        children: [
+          // 색상 팔레트 (항상 표시)
+          Container(
+            width: isSubItem ? 6 : 10,
+            height: isSubItem ? 6 : 10,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 6),
+
+          // 라벨 및 확장 아이콘
+          Expanded(
+            child: Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: isSubItem ? 10 : 12,
+                      fontWeight: isSubItem ? FontWeight.w400 : FontWeight.w500,
+                      color: isSubItem ? appColors.gray400 : appColors.gray600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                // 확장 가능 아이콘 (라벨 우측)
+                if (isExpandable)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 2),
+                    child: AnimatedRotation(
+                      turns: isExpanded ? 0.25 : 0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Icon(
+                        Icons.chevron_right_rounded,
+                        size: 18, // 아이콘 크기 증가
+                        color: appColors.gray500,
+                      ),
+                    ),
+                  ),
               ],
+            ),
+          ),
+
+          // 퍼센트
+          Text(
+            percentText,
+            style: TextStyle(
+              fontSize: isSubItem ? 10 : 11,
+              fontWeight: FontWeight.w500,
+              color: isSubItem ? appColors.gray400 : appColors.gray500,
             ),
           ),
         ],
@@ -561,48 +758,34 @@ class _ExpensePieChart extends StatelessWidget {
   }
 }
 
-/// 범례 인디케이터
-class _Indicator extends StatelessWidget {
+/// 도넛 차트 슬라이스 데이터
+class _ChartSlice {
+  final String category;
+  final double percentage; // double로 변경
   final Color color;
-  final String text;
-  final bool isSquare;
+  final int amount;
+  final List<_SubCategory>? subCategories;
 
-  static const double _size = 14;
-
-  const _Indicator({
+  const _ChartSlice({
+    required this.category,
+    required this.percentage,
     required this.color,
-    required this.text,
-    this.isSquare = false,
+    required this.amount,
+    this.subCategories,
   });
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: _size,
-            height: _size,
-            decoration: BoxDecoration(
-              shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
-              borderRadius: isSquare ? BorderRadius.circular(2) : null,
-              color: color,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            text,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+/// 기타 내 서브 카테고리
+class _SubCategory {
+  final String name;
+  final Color color;
+  final double percentage; // double로 변경
+
+  const _SubCategory({
+    required this.name,
+    required this.color,
+    required this.percentage,
+  });
 }
 
 /// 카테고리별 리스트
@@ -651,11 +834,76 @@ class _CategoryListItem extends StatelessWidget {
     required this.totalExpense,
   });
 
+  IconData _getCategoryIcon(String categoryId) {
+    return resolveExpenseCategoryIcon(categoryId);
+  }
+
+  Widget _buildDiffText(
+      BuildContext context, int? diff, double? diffPercentage) {
+    if (diff == null) return const SizedBox.shrink();
+
+    final appColors = context.appColors;
+    final formatter = NumberFormat('#,###');
+    final isIncrease = diff > 0;
+    final isDecrease = diff < 0;
+    final color = isIncrease
+        ? Colors.red
+        : isDecrease
+            ? Colors.green
+            : appColors.gray500;
+    final icon = isIncrease
+        ? Icons.arrow_drop_up_rounded
+        : isDecrease
+            ? Icons.arrow_drop_down_rounded
+            : Icons.remove;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: color),
+        Text(
+          '${formatter.format(diff.abs())}원',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: color,
+          ),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          diffPercentage != null
+              ? '(${diffPercentage.abs() >= 100 ? diffPercentage.toStringAsFixed(0) : diffPercentage.toStringAsFixed(1)}%)'
+              : '(-)',
+          style: TextStyle(
+            fontSize: 12,
+            color: color,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
     final formatter = NumberFormat('#,###');
-    final percentage = expense.percentage;
+
+    // 1. 퍼센트 계산 (0.0 ~ 100.0)
+    final double percent = expense.percentage;
+
+    // 2. 텍스트 포맷팅 (소수점 1자리)
+    // 예: 12.5%, 12.0% -> 12%
+    String percentText;
+    if (percent > 0 && percent < 1) {
+      percentText = '< 1%';
+    } else {
+      // 소수점 1자리까지 표시하되, .0인 경우 정수만 표시
+      if (percent % 1 == 0) {
+        percentText = '${percent.toInt()}%';
+      } else {
+        percentText = '${percent.toStringAsFixed(1)}%';
+      }
+    }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -669,11 +917,10 @@ class _CategoryListItem extends StatelessWidget {
         children: [
           // 카테고리 아이콘
           Container(
-            width: 40,
-            height: 40,
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: expense.color.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(10),
+              color: expense.color.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
             ),
             child: Icon(
               _getCategoryIcon(expense.id),
@@ -682,119 +929,84 @@ class _CategoryListItem extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          // 카테고리 이름
+          // 카테고리 정보 & 진행률
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  expense.category,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      expense.category,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: appColors.textPrimary,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          percentText,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: appColors.gray600,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 1,
+                          height: 12,
+                          color: appColors.gray300,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${formatter.format(expense.amount)}원',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 4),
                 // 진행 바
                 ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
-                    value: percentage / 100,
+                    value: percent / 100,
                     backgroundColor: appColors.gray100,
                     valueColor: AlwaysStoppedAnimation<Color>(expense.color),
                     minHeight: 6,
                   ),
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          // 금액 | 비율 & 전월 대비
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${formatter.format(expense.amount)}원',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Container(
-                    width: 1,
-                    height: 10,
-                    color: appColors.gray300,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '$percentage%',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: appColors.gray500,
-                    ),
+                // 전월 대비 표시
+                if (expense.diff != null) ...[
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        '전월 대비 ',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: appColors.gray500,
+                        ),
+                      ),
+                      _buildDiffText(
+                          context, expense.diff, expense.diffPercentage),
+                    ],
                   ),
                 ],
-              ),
-              // 전월 대비 표시
-              if (expense.diff != null) ...[
-                const SizedBox(height: 2),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      expense.diff! > 0
-                          ? Icons.arrow_upward
-                          : expense.diff! < 0
-                              ? Icons.arrow_downward
-                              : Icons.remove,
-                      size: 10,
-                      color: expense.diff! > 0
-                          ? Colors.red
-                          : expense.diff! < 0
-                              ? Colors.green
-                              : appColors.gray500,
-                    ),
-                    const SizedBox(width: 2),
-                    Text(
-                      '${formatter.format(expense.diff!.abs())}원',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: expense.diff! > 0
-                            ? Colors.red
-                            : expense.diff! < 0
-                                ? Colors.green
-                                : appColors.gray500,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      expense.diffPercentage != null
-                          ? '(${expense.diffPercentage!.abs() >= 100 ? expense.diffPercentage!.toStringAsFixed(0) : expense.diffPercentage!.toStringAsFixed(1)}%)'
-                          : '(-)',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: expense.diff! > 0
-                            ? Colors.red
-                            : expense.diff! < 0
-                                ? Colors.green
-                                : appColors.gray500,
-                      ),
-                    ),
-                  ],
-                ),
               ],
-            ],
+            ),
           ),
         ],
       ),
     );
-  }
-
-  IconData _getCategoryIcon(String categoryId) {
-    return resolveExpenseCategoryIcon(categoryId);
   }
 }
