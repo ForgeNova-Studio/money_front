@@ -8,6 +8,7 @@ abstract class NotificationRepository {
   Future<List<NotificationEntity>> getNotifications({
     int page = 0,
     int size = 20,
+    int? days,
   });
 
   /// 알림 읽음 처리
@@ -41,10 +42,12 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Future<List<NotificationEntity>> getNotifications({
     int page = 0,
     int size = 20,
+    int? days,
   }) async {
     final models = await _remoteDataSource.getNotifications(
       page: page,
       size: size,
+      days: days,
     );
     return models.map(_toEntity).toList();
   }

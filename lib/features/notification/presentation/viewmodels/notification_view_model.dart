@@ -57,14 +57,8 @@ class NotificationViewModel extends _$NotificationViewModel {
     return const NotificationState(isLoading: true);
   }
 
-  /// 30일 지난 알림 필터링 (타입 무관)
-  List<NotificationEntity> _filterNotifications(
-      List<NotificationEntity> notifications) {
-    final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
-    return notifications
-        .where((n) => n.createdAt.isAfter(thirtyDaysAgo))
-        .toList();
-  }
+  /// 알림 조회 시 최근 N일 (서버에서 필터링)
+  static const int _defaultDays = 30;
 
   /// 알림 목록 조회
   Future<void> loadNotifications() async {
@@ -72,13 +66,13 @@ class NotificationViewModel extends _$NotificationViewModel {
 
     try {
       final repository = ref.read(notificationRepositoryProvider);
-      final notifications = await repository.getNotifications(page: 0);
-
-      // 필터링 적용
-      final filteredList = _filterNotifications(notifications);
+      final notifications = await repository.getNotifications(
+        page: 0,
+        days: _defaultDays,
+      );
 
       state = state.copyWith(
-        notifications: filteredList,
+        notifications: notifications,
         isLoading: false,
         currentPage: 0,
         hasMore: notifications.length >= 20,
@@ -100,14 +94,13 @@ class NotificationViewModel extends _$NotificationViewModel {
     try {
       final repository = ref.read(notificationRepositoryProvider);
       final nextPage = state.currentPage + 1;
-      final moreNotifications =
-          await repository.getNotifications(page: nextPage);
-
-      // 필터링 적용
-      final filteredMore = _filterNotifications(moreNotifications);
+      final moreNotifications = await repository.getNotifications(
+        page: nextPage,
+        days: _defaultDays,
+      );
 
       state = state.copyWith(
-        notifications: [...state.notifications, ...filteredMore],
+        notifications: [...state.notifications, ...moreNotifications],
         isLoadingMore: false,
         currentPage: nextPage,
         hasMore: moreNotifications.length >= 20,
