@@ -11,6 +11,7 @@ import 'package:moamoa/features/common/widgets/error_state_widget.dart';
 import 'package:moamoa/features/statistics/domain/entities/category_breakdown.dart';
 import 'package:moamoa/features/statistics/domain/entities/monthly_statistics.dart';
 import 'package:moamoa/features/statistics/presentation/viewmodels/statistics_view_model.dart';
+import 'package:moamoa/features/expense/presentation/utils/expense_category_utils.dart';
 
 /// 카테고리별 지출 데이터 (UI용)
 class CategoryExpenseUI {
@@ -54,7 +55,8 @@ class CategoryExpenseUI {
 }
 
 Color _hexToColor(String hex) {
-  return Color(int.parse('FF$hex', radix: 16));
+  final value = int.parse(hex, radix: 16);
+  return Color(0xFF000000 | value);
 }
 
 class StatisticsScreen extends ConsumerStatefulWidget {
@@ -793,42 +795,6 @@ class _CategoryListItem extends StatelessWidget {
   }
 
   IconData _getCategoryIcon(String categoryId) {
-    // 카테고리 ID로 카테고리 정보 찾기
-    final category = DefaultExpenseCategories.all
-        .where((c) => c.id == categoryId)
-        .firstOrNull;
-    if (category == null) return Icons.category;
-
-    // 카테고리 아이콘 매핑
-    switch (categoryId) {
-      case 'FOOD':
-        return Icons.restaurant;
-      case 'CAFE_SNACK':
-        return Icons.local_cafe;
-      case 'TRANSPORT':
-        return Icons.directions_car;
-      case 'HOUSING':
-        return Icons.home;
-      case 'COMMUNICATION':
-        return Icons.phone;
-      case 'SHOPPING':
-        return Icons.shopping_bag;
-      case 'HEALTH':
-        return Icons.favorite;
-      case 'CULTURE':
-        return Icons.movie;
-      case 'LIVING':
-        return Icons.weekend;
-      case 'EDUCATION':
-        return Icons.school;
-      case 'ALCOHOL':
-        return Icons.sports_bar;
-      case 'TRAVEL':
-        return Icons.flight;
-      case 'OTHER':
-        return Icons.more_horiz;
-      default:
-        return Icons.category;
-    }
+    return resolveExpenseCategoryIcon(categoryId);
   }
 }
