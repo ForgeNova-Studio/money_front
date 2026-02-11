@@ -192,7 +192,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                         enabled: !formState.isVerificationCodeSent,
                       ),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     SizedBox(
                       height: 56,
                       child: ElevatedButton(
@@ -239,7 +239,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                           enabled: !formState.isEmailVerified,
                         ),
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       SizedBox(
                         height: 56,
                         child: ElevatedButton(
@@ -269,7 +269,9 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 8),
+
+                  const SizedBox(height: 8),
+
                   // 인증번호 유효 시간 안내
                   Padding(
                     padding: EdgeInsets.only(left: 4),
@@ -284,7 +286,8 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
                   ),
                 ],
 
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
+
                 SizedBox(
                   width: double.infinity,
                   height: 56,
@@ -332,7 +335,7 @@ Widget _buildTitle(BuildContext context) {
           height: 1.3,
         ),
       ),
-      SizedBox(height: 12),
+      const SizedBox(height: 12),
       Text(
         '가입하신 이메일을 입력하고\n인증번호를 확인해주세요.',
         style: TextStyle(
