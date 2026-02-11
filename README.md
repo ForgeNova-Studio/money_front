@@ -1,4 +1,4 @@
-# MoneyFlow
+# 모아모아
 
 생활비를 쉽고 빠르게 기록하고, 월별 흐름을 한눈에 확인할 수 있는 개인 가계부 앱입니다.
 
@@ -11,9 +11,20 @@
 
 ## 기술 스택
 
+### Frontend
 - Flutter (Material 3)
 - Riverpod
 - GoRouter
+
+### Backend
+- Java 17
+- Spring Boot 3.2.0
+- Spring Security + JWT
+- PostgreSQL
+- Spring Data JPA
+- Flyway
+- Swagger (SpringDoc)
+- Sentry
 
 ## 개발 환경
 
