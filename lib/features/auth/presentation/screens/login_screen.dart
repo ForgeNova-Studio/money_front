@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 // cores
-import 'package:moamoa/core/constants/app_constants.dart';
 
 import 'package:moamoa/features/auth/presentation/widgets/google_login_button.dart';
 import 'package:moamoa/features/auth/presentation/widgets/kakao_login_button.dart';
@@ -17,6 +16,8 @@ import 'package:moamoa/features/auth/presentation/widgets/login_title.dart';
 import 'package:moamoa/features/auth/presentation/widgets/login_divider.dart';
 import 'package:moamoa/features/auth/presentation/widgets/last_login_hint.dart';
 import 'package:moamoa/features/auth/presentation/widgets/login_method_alert_dialog.dart';
+import 'package:moamoa/features/auth/presentation/widgets/link_find_password.dart';
+import 'package:moamoa/features/auth/presentation/widgets/link_register.dart';
 
 // viewmodels and providers
 import 'package:moamoa/core/utils/toast_utils.dart';
@@ -75,22 +76,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     debugPrint('[LoginScreen] 초기 에러 확인: ${authState.errorMessage}');
 
     if (authState.errorMessage != null) {
-      if (authState.errorMessage!.contains('로그인으로 가입되어 있습니다')) {
-        debugPrint('[LoginScreen] 초기 에러로 AlertDialog 표시');
-        showLoginMethodAlert(
-          context,
-          message: authState.errorMessage!,
-          onNaverLogin: _handleNaverLogin,
-          onGoogleLogin: _handleGoogleLogin,
-          onKakaoLogin: _handleKakaoLogin,
-        );
-        Future.delayed(Duration(milliseconds: 100), () {
-          if (mounted) {
-            ref.read(authViewModelProvider.notifier).clearError();
-          }
-        });
+      _handleError(authState.errorMessage!);
+    }
+  }
+
+  /// 에러 처리 (Alert Dialog 또는 Toast)
+  void _handleError(String message) {
+    if (message.contains('로그인으로 가입되어 있습니다')) {
+      debugPrint('[LoginScreen] 에러로 AlertDialog 표시');
+      showLoginMethodAlert(
+        context,
+        message: message,
+        onNaverLogin: _handleNaverLogin,
+        onGoogleLogin: _handleGoogleLogin,
+        onKakaoLogin: _handleKakaoLogin,
+      );
+    } else {
+      if (mounted) {
+        context.showErrorToast(message);
       }
     }
+
+    // 에러 표시 후 상태 초기화 (메시지 중복 표시 방지)
+    Future.delayed(Duration(milliseconds: 100), () {
+      if (mounted) {
+        ref.read(authViewModelProvider.notifier).clearError();
+      }
+    });
   }
 
   // ViewModel의 login 메서드 호출
@@ -150,37 +162,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (next.errorMessage != null &&
           next.errorMessage != previous?.errorMessage) {
         debugPrint('[LoginScreen] 에러 메시지: ${next.errorMessage}');
-        // 다른 로그인 방법으로 가입된 경우 AlertDialog 표시
-        if (next.errorMessage!.contains('로그인으로 가입되어 있습니다')) {
-          debugPrint('[LoginScreen] AlertDialog 표시 시도');
-          showLoginMethodAlert(
-            context,
-            message: next.errorMessage!,
-            onNaverLogin: _handleNaverLogin,
-            onGoogleLogin: _handleGoogleLogin,
-            onKakaoLogin: _handleKakaoLogin,
-          );
-          Future.delayed(Duration(milliseconds: 100), () {
-            if (mounted) {
-              ref.read(authViewModelProvider.notifier).clearError();
-            }
-          });
-          return;
-        }
-
-        if (mounted) {
-          context.showErrorToast(next.errorMessage!);
-        }
-
-        // 에러 메시지 표시 후 초기화
-        Future.delayed(Duration(milliseconds: 100), () {
-          if (mounted) {
-            ref.read(authViewModelProvider.notifier).clearError();
-          }
-        });
+        _handleError(next.errorMessage!);
       }
     });
 
+    /// 화면 구성
     return GestureDetector(
       onTap: () =>
           FocusScope.of(context).unfocus(), // 키보드 닫기!! (홈 화면에서 오버플로우 발생 방지)
@@ -225,30 +211,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 SizedBox(height: 12),
 
                 // 비밀번호 찾기 링크
-                Align(
-                  alignment: Alignment.center,
-                  child: TextButton(
-                    onPressed: _handleForgotPassword,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: context.appColors.textSecondary,
-                            width: 1.0,
-                          ),
-                        ),
-                      ),
-                      child: Text(
-                        '비밀번호를 잊으셨나요?',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: context.appColors.textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                LinkFindPassword(onTap: _handleForgotPassword),
 
                 SizedBox(height: 12),
 
@@ -313,36 +276,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 SizedBox(height: 32),
 
                 // 회원가입 링크
-                Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '모아모아가 처음이신가요? ',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: context.appColors.textSecondary,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: _handleSignUp,
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: Text(
-                          '회원가입',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                LinkRegister(onTap: _handleSignUp),
 
                 SizedBox(height: 40),
               ],
