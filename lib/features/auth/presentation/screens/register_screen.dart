@@ -9,13 +9,13 @@ import 'package:moamoa/router/route_names.dart';
 
 // widgets
 import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
-import 'package:moamoa/features/auth/presentation/widgets/email_verification_row.dart';
-import 'package:moamoa/features/auth/presentation/widgets/gender_selector_row.dart';
+import 'package:moamoa/features/auth/presentation/widgets/register/email_verification_row.dart';
+import 'package:moamoa/features/auth/presentation/widgets/register/gender_selector_row.dart';
 import 'package:moamoa/features/auth/presentation/widgets/password_rule_checklist.dart';
-import 'package:moamoa/features/auth/presentation/widgets/register_submit_button.dart';
-import 'package:moamoa/features/auth/presentation/widgets/register_title.dart';
-import 'package:moamoa/features/auth/presentation/widgets/terms_agreement_row.dart';
-import 'package:moamoa/features/auth/presentation/widgets/verification_code_section.dart';
+import 'package:moamoa/features/auth/presentation/widgets/register/register_submit_button.dart';
+import 'package:moamoa/features/auth/presentation/widgets/register/register_title.dart';
+import 'package:moamoa/features/auth/presentation/widgets/register/terms_agreement_row.dart';
+import 'package:moamoa/features/auth/presentation/widgets/register/verification_code_section.dart';
 
 // viewmodels
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
@@ -44,9 +44,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     super.initState();
     // 화면 진입 시 이전 화면의 SnackBar 제거
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      }
+      context.hideToast();
     });
   }
 
@@ -247,7 +245,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   icon: Icons.person_outline,
                 ),
 
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // 성별 선택
                 GenderSelectorRow(
@@ -270,7 +268,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                 if (formState.isVerificationCodeSent &&
                     !formState.isEmailVerified) ...[
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   VerificationCodeSection(
                     controller: _verificationCodeController,
                     focusNode: _verificationCodeFocusNode,
@@ -326,7 +324,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   },
                 ),
 
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
 
                 // 약관 동의 체크박스
                 TermsAgreementRow(
@@ -340,7 +338,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   onPrivacyTap: _handlePrivacyClick,
                 ),
 
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
 
                 // 회원가입 버튼
                 RegisterSubmitButton(
