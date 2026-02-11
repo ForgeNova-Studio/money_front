@@ -18,6 +18,7 @@ import 'package:moamoa/features/auth/presentation/widgets/last_login_hint.dart';
 import 'package:moamoa/features/auth/presentation/widgets/login_method_alert_dialog.dart';
 import 'package:moamoa/features/auth/presentation/widgets/link_find_password.dart';
 import 'package:moamoa/features/auth/presentation/widgets/link_register.dart';
+import 'package:moamoa/features/auth/presentation/widgets/login_button.dart';
 
 // viewmodels and providers
 import 'package:moamoa/core/utils/toast_utils.dart';
@@ -216,29 +217,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 SizedBox(height: 12),
 
                 // 로그인 버튼
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    // 로딩 중이면 버튼 비활성화
-                    onPressed: authState.isLoading ? null : _handleLogin,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
-                      disabledBackgroundColor: colorScheme.primaryContainer,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      '로그인',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                LoginButton(
+                  onPressed: _handleLogin,
+                  isLoading: authState.isLoading,
                 ),
 
                 SizedBox(height: 24),
