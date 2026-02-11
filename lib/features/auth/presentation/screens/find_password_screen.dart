@@ -11,6 +11,7 @@ import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart
 // viewmodels
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/find_password_view_model.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 // screens
 import 'package:moamoa/features/auth/presentation/screens/reset_password_screen.dart';
@@ -49,14 +50,10 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
   // 인증번호 전송
   Future<void> _handleSendVerificationCode() async {
     if (_emailController.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text('이메일을 입력해주세요.'),
-            backgroundColor: context.appColors.warning,
-          ),
-        );
+      context.showErrorToast(
+        '이메일을 입력해주세요.',
+        duration: const Duration(seconds: 2),
+      );
       return;
     }
 
@@ -102,12 +99,10 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
   // 인증번호 검증
   void _handleVerifyCode() async {
     if (_verificationCodeController.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(
-          content: Text('인증번호를 입력해주세요.'),
-          backgroundColor: context.appColors.warning,
-        ));
+      context.showErrorToast(
+        '인증번호를 입력해주세요.',
+        duration: const Duration(seconds: 2),
+      );
 
       return;
     }
@@ -119,11 +114,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
           .verifyCode(code: _verificationCodeController.text);
 
       if (mounted && isVerified) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(content: Text('인증번호가 확인되었습니다.')),
-          );
+        context.showToast('인증번호가 확인되었습니다.');
       }
     } catch (e) {
       // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
@@ -133,14 +124,10 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
 
   void _handleContinue() {
     if (_verificationCodeController.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text('인증번호를 입력해주세요.'),
-            backgroundColor: context.appColors.warning,
-          ),
-        );
+      context.showErrorToast(
+        '인증번호를 입력해주세요.',
+        duration: const Duration(seconds: 2),
+      );
       return;
     }
 
@@ -163,14 +150,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
     ref.listen(authViewModelProvider, (previous, next) {
       // 에러 발생 시
       if (next.errorMessage != null && !next.isLoading) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(
-              content: Text(next.errorMessage!),
-              backgroundColor: Colors.red,
-            ),
-          );
+        context.showErrorToast(next.errorMessage!);
         // 에러 메시지 표시 후 초기화
         Future.delayed(Duration(milliseconds: 100), () {
           if (mounted) {

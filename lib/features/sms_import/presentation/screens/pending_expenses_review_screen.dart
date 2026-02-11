@@ -7,6 +7,7 @@ import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dar
 import 'package:moamoa/features/sms_import/presentation/viewmodels/pending_expenses_view_model.dart';
 import 'package:moamoa/features/sms_import/presentation/widgets/pending_expense_list_item.dart';
 import 'package:moamoa/router/route_names.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 /// 대기 중인 지출 검토 화면
 class PendingExpensesReviewScreen extends ConsumerWidget {
@@ -259,11 +260,9 @@ class PendingExpensesReviewScreen extends ConsumerWidget {
                             forceRefresh: true,
                           );
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('$count건의 지출이 저장되었습니다'),
-                          backgroundColor: context.appColors.success,
-                        ),
+                      context.showToast(
+                        '$count건의 지출이 저장되었습니다',
+                        duration: const Duration(seconds: 2),
                       );
                       context.go(RouteNames.home);
                     }

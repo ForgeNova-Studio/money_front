@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 // core
-import 'package:moamoa/core/constants/app_constants.dart';
+
 import 'package:moamoa/router/route_names.dart';
 
 // widgets
@@ -20,6 +20,7 @@ import 'package:moamoa/features/auth/presentation/widgets/verification_code_sect
 // viewmodels
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/register_view_model.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 /// 회원가입 화면
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -70,14 +71,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             );
 
     if (errorMessage != null) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: context.appColors.warning,
-          ),
-        );
+      context.showErrorToast(errorMessage);
       return;
     }
 
@@ -102,32 +96,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   void _handleTermsClick() {
     // TODO: 이용약관 페이지 이동
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(content: Text('이용약관 상세 페이지로 이동 구현 예정')),
-      );
+    context.showToast('이용약관 상세 페이지로 이동 구현 예정');
   }
 
   void _handlePrivacyClick() {
     // TODO: 개인정보 이용동의 페이지 이동
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(content: Text('개인정보 이용동의 상세 페이지로 이동 구현 예정')),
-      );
+    context.showToast('개인정보 이용동의 상세 페이지로 이동 구현 예정');
   }
 
   Future<void> _handleSendVerificationCode() async {
     if (_emailController.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text('이메일을 입력해주세요.'),
-            backgroundColor: context.appColors.warning,
-          ),
-        );
+      context.showErrorToast(
+        '이메일을 입력해주세요.',
+        duration: const Duration(seconds: 2),
+      );
       return;
     }
 
@@ -174,14 +156,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _handleVerifyCode() async {
     if (_verificationCodeController.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text('인증번호를 입력해주세요.'),
-            backgroundColor: context.appColors.warning,
-          ),
-        );
+      context.showErrorToast(
+        '인증번호를 입력해주세요.',
+        duration: const Duration(seconds: 2),
+      );
       return;
     }
 
@@ -194,11 +172,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               );
 
       if (mounted && isVerified) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            const SnackBar(content: Text('이메일 인증이 완료되었습니다.')),
-          );
+        context.showToast('이메일 인증이 완료되었습니다.');
         // 인증 완료 후 포커싱 처리
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
@@ -231,14 +205,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
       // 에러 발생 시
       if (next.errorMessage != null && !next.isLoading) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(
-              content: Text(next.errorMessage!),
-              backgroundColor: Colors.red,
-            ),
-          );
+        context.showErrorToast(next.errorMessage!);
         // 에러 메시지 표시 후 초기화
         Future.delayed(Duration(milliseconds: 100), () {
           if (mounted) {

@@ -12,6 +12,7 @@ import 'package:moamoa/features/account_book/presentation/providers/account_book
 // widgets
 import 'package:moamoa/features/account_book/presentation/widgets/account_book_create_widgets.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 class AccountBookEditScreen extends ConsumerStatefulWidget {
   final String accountBookId;
@@ -96,8 +97,9 @@ class _AccountBookEditScreenState extends ConsumerState<AccountBookEditScreen> {
   Future<void> _showBookTypeSheet() async {
     // 기본 가계부는 유형 변경 불가
     if (_selectedBookType == BookType.def) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('기본 가계부의 유형은 변경할 수 없습니다.')),
+      context.showToast(
+        '기본 가계부의 유형은 변경할 수 없습니다.',
+        duration: const Duration(seconds: 2),
       );
       return;
     }
@@ -208,8 +210,9 @@ class _AccountBookEditScreenState extends ConsumerState<AccountBookEditScreen> {
 
     if (_startDate != null && _endDate != null) {
       if (_endDate!.isBefore(_startDate!)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('종료일은 시작일보다 빠를 수 없습니다.')),
+        context.showErrorToast(
+          '종료일은 시작일보다 빠를 수 없습니다.',
+          duration: const Duration(seconds: 2),
         );
         return;
       }
@@ -245,15 +248,11 @@ class _AccountBookEditScreenState extends ConsumerState<AccountBookEditScreen> {
       ref.invalidate(accountBookDetailProvider(widget.accountBookId));
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('가계부가 수정되었습니다.')),
-      );
+      context.showToast('가계부가 수정되었습니다.');
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('가계부 수정 실패: $e')),
-      );
+      context.showToast('가계부 수정 실패: $e');
     } finally {
       if (mounted) {
         setState(() => _isSubmitting = false);

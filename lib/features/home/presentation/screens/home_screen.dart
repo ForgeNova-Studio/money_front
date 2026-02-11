@@ -24,6 +24,7 @@ import 'package:moamoa/features/home/presentation/widgets/home_top_section.dart'
 import 'package:moamoa/features/home/presentation/widgets/home_transaction_sheet.dart';
 import 'package:moamoa/features/notification/presentation/viewmodels/notification_view_model.dart';
 import 'package:moamoa/features/notification/presentation/widgets/notification_icon_button.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 /// 앱의 메인 홈 화면 위젯
 ///
@@ -80,9 +81,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         if (message.isEmpty || !mounted) {
           return;
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
+        context.showToast(message);
         ref.read(homeRefreshErrorProvider.notifier).clear();
       },
     );
@@ -146,9 +145,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     // id가 비어있다면 삭제할 수 없다.
     if (transaction.id.isEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('삭제할 수 없는 항목입니다.')),
-        );
+        context.showToast('삭제할 수 없는 항목입니다.');
       }
       return false;
     }
@@ -173,16 +170,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           .deleteTransaction(transaction);
       _resetFabDimmed();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('삭제되었습니다.')),
-        );
+        context.showToast('삭제되었습니다.');
       }
       return true;
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('삭제 실패: $e')),
-        );
+        context.showToast('삭제 실패: $e');
       }
       return false;
     }

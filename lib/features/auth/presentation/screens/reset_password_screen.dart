@@ -15,6 +15,7 @@ import 'package:moamoa/features/auth/presentation/widgets/password_rule_checklis
 // viewmodels
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/find_password_view_model.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -57,14 +58,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final confirmPassword = _confirmPasswordController.text;
 
     if (password.isEmpty || confirmPassword.isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text('비밀번호를 입력해주세요.'),
-            backgroundColor: context.appColors.warning,
-          ),
-        );
+      context.showErrorToast(
+        '비밀번호를 입력해주세요.',
+        duration: const Duration(seconds: 2),
+      );
       return;
     }
 
@@ -74,26 +71,18 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       requireSpecialChar: true,
     );
     if (passwordError.isNotEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text(passwordError),
-            backgroundColor: context.appColors.warning,
-          ),
-        );
+      context.showErrorToast(
+        passwordError,
+        duration: const Duration(seconds: 2),
+      );
       return;
     }
 
     if (password != confirmPassword) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text('비밀번호가 일치하지 않습니다.'),
-            backgroundColor: context.appColors.warning,
-          ),
-        );
+      context.showErrorToast(
+        '비밀번호가 일치하지 않습니다.',
+        duration: const Duration(seconds: 2),
+      );
       return;
     }
 
@@ -108,14 +97,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           );
 
       if (mounted) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(
-              content: Text('비밀번호가 성공적으로 변경되었습니다.'),
-              backgroundColor: context.appColors.success,
-            ),
-          );
+        context.showToast('비밀번호가 성공적으로 변경되었습니다.');
 
         // 로그인 화면으로 이동 (스택 초기화)
         context.go(RouteNames.login);
@@ -176,14 +158,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     ref.listen(authViewModelProvider, (previous, next) {
       // 에러 발생 시
       if (next.errorMessage != null && !next.isLoading) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(
-              content: Text(next.errorMessage!),
-              backgroundColor: Colors.red,
-            ),
-          );
+        context.showErrorToast(next.errorMessage!);
         // 에러 메시지 표시 후 초기화
         Future.delayed(Duration(milliseconds: 100), () {
           if (mounted) {

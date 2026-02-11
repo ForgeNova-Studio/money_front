@@ -14,6 +14,7 @@ import 'package:moamoa/features/account_book/presentation/viewmodels/selected_ac
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/router/route_names.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 class AccountBookDetailScreen extends ConsumerWidget {
   final String accountBookId;
@@ -244,9 +245,7 @@ class AccountBookDetailScreen extends ConsumerWidget {
                         .fetchMonthlyData(DateTime.now(), forceRefresh: true);
 
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('가계부가 전환되었습니다.')),
-                      );
+                      context.showToast('가계부가 전환되었습니다.');
                       context.pop(); // 목록으로 돌아가기 (또는 리스트에서 갱신됨)
                     }
                   },

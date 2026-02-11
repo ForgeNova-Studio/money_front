@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
 import 'package:moamoa/features/notification/presentation/providers/notification_providers.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 /// 관리자 공지 작성 화면
 class AdminNotificationScreen extends ConsumerStatefulWidget {
@@ -384,22 +385,12 @@ class _AdminNotificationScreenState
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('전체 사용자에게 공지가 전송되었습니다'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        context.showToast('전체 사용자에게 공지가 전송되었습니다');
         context.pop();
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('전송 실패: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        context.showToast('전송 실패: $e');
       }
     } finally {
       if (mounted) {
@@ -412,12 +403,7 @@ class _AdminNotificationScreenState
   Future<void> _sendToEmail(String targetEmail) async {
     if (!_formKey.currentState!.validate()) return;
     if (targetEmail.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('이메일을 입력해주세요'),
-          backgroundColor: Colors.orange,
-        ),
-      );
+      context.showToast('이메일을 입력해주세요');
       return;
     }
 
@@ -433,23 +419,13 @@ class _AdminNotificationScreenState
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$targetEmail 님에게 알림이 전송되었습니다'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        context.showToast('$targetEmail 님에게 알림이 전송되었습니다');
         _targetEmailController.clear();
         context.pop();
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('전송 실패: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        context.showToast('전송 실패: $e');
       }
     } finally {
       if (mounted) {

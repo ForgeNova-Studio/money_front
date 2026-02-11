@@ -8,6 +8,7 @@ import 'package:moamoa/features/couple/presentation/viewmodels/couple_view_model
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/router/route_names.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 class CoupleJoinScreen extends ConsumerStatefulWidget {
   const CoupleJoinScreen({super.key});
@@ -36,12 +37,7 @@ class _CoupleJoinScreenState extends ConsumerState<CoupleJoinScreen> {
     // 에러 메시지 표시
     ref.listen<CoupleState>(coupleViewModelProvider, (previous, next) {
       if (next.errorMessage != null && previous?.errorMessage == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(next.errorMessage!),
-            backgroundColor: Colors.red,
-          ),
-        );
+        context.showErrorToast(next.errorMessage!);
         ref.read(coupleViewModelProvider.notifier).clearError();
       }
     });
@@ -263,11 +259,9 @@ class _CoupleJoinScreenState extends ConsumerState<CoupleJoinScreen> {
       ref.read(homeViewModelProvider.notifier).refresh();
 
       // 성공 시 커플 화면으로 이동
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('커플 연동이 완료되었습니다!\n"우리의 생활비" 가계부가 생성되었어요.'),
-          backgroundColor: Colors.green,
-        ),
+      context.showToast(
+        '커플 연동이 완료되었습니다!\n"우리의 생활비" 가계부가 생성되었어요.',
+        duration: const Duration(seconds: 3),
       );
       // 뒤로 두 번 가서 설정 화면으로
       if (context.canPop()) context.pop();

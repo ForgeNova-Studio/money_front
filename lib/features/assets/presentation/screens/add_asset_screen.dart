@@ -11,6 +11,7 @@ import 'package:moamoa/features/common/widgets/transaction_form/amount_input_car
 import 'package:moamoa/features/common/widgets/transaction_form/form_submit_button.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_card.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_text_field.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 class AddAssetScreen extends ConsumerStatefulWidget {
   final Asset? asset;
@@ -66,14 +67,10 @@ class _AddAssetScreenState extends ConsumerState<AddAssetScreen> {
 
   String? _validateAmount(String? value) {
     if (value == null || value.isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: const Text('금액을 입력하세요'),
-            backgroundColor: context.appColors.error,
-          ),
-        );
+      context.showErrorToast(
+        '금액을 입력하세요',
+        duration: const Duration(seconds: 2),
+      );
       return '';
     }
     final amount = int.tryParse(value.replaceAll(',', ''));
@@ -81,14 +78,10 @@ class _AddAssetScreenState extends ConsumerState<AddAssetScreen> {
       return '올바른 금액을 입력하세요';
     }
     if (amount >= 10000000000000) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: const Text('금액은 1조 미만이어야 합니다'),
-            backgroundColor: context.appColors.error,
-          ),
-        );
+      context.showErrorToast(
+        '금액은 1조 미만이어야 합니다',
+        duration: const Duration(seconds: 2),
+      );
       return '';
     }
     return null;
@@ -99,14 +92,10 @@ class _AddAssetScreenState extends ConsumerState<AddAssetScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: const Text('자산명을 입력해주세요'),
-            backgroundColor: context.appColors.error,
-          ),
-        );
+      context.showErrorToast(
+        '자산명을 입력해주세요',
+        duration: const Duration(seconds: 2),
+      );
       return;
     }
 
@@ -133,25 +122,17 @@ class _AddAssetScreenState extends ConsumerState<AddAssetScreen> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isEditing
-                  ? '${asset.name} 자산이 수정되었습니다'
-                  : '${asset.name} 자산이 추가되었습니다',
-            ),
-            backgroundColor: context.appColors.success,
-          ),
+        context.showToast(
+          isEditing ? '${asset.name} 자산이 수정되었습니다' : '${asset.name} 자산이 추가되었습니다',
+          duration: const Duration(seconds: 2),
         );
         Navigator.of(context).pop(true);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('오류가 발생했습니다'),
-            backgroundColor: context.appColors.error,
-          ),
+        context.showErrorToast(
+          '오류가 발생했습니다',
+          duration: const Duration(seconds: 2),
         );
       }
     }
@@ -235,51 +216,40 @@ class _AddAssetScreenState extends ConsumerState<AddAssetScreen> {
                       const SizedBox(height: 12),
                       LayoutBuilder(
                         builder: (context, constraints) {
-                          final itemWidth =
-                              (constraints.maxWidth - 24) / 3;
+                          final itemWidth = (constraints.maxWidth - 24) / 3;
                           return Wrap(
                             spacing: 12,
                             runSpacing: 12,
-                            children:
-                                AssetCategory.values.map((category) {
-                              final isSelected =
-                                  formState.category == category;
+                            children: AssetCategory.values.map((category) {
+                              final isSelected = formState.category == category;
                               final color = category.color;
                               return SizedBox(
                                 width: itemWidth,
                                 child: Material(
                                   color: Colors.transparent,
                                   child: InkWell(
-                                    borderRadius:
-                                        BorderRadius.circular(20),
+                                    borderRadius: BorderRadius.circular(20),
                                     onTap: () {
                                       ref
-                                          .read(
-                                              assetFormViewModelProvider
-                                                  .notifier)
+                                          .read(assetFormViewModelProvider
+                                              .notifier)
                                           .updateCategory(category);
                                     },
                                     child: AnimatedContainer(
-                                      duration: const Duration(
-                                          milliseconds: 200),
-                                      padding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                              vertical: 14),
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 14),
                                       decoration: BoxDecoration(
                                         color: isSelected
-                                            ? color.withValues(
-                                                alpha: 0.12)
+                                            ? color.withValues(alpha: 0.12)
                                             : colorScheme.surface,
-                                        borderRadius:
-                                            BorderRadius.circular(20),
+                                        borderRadius: BorderRadius.circular(20),
                                         border: Border.all(
                                           color: isSelected
                                               ? color
-                                              : context
-                                                  .appColors.divider,
-                                          width:
-                                              isSelected ? 1.5 : 0.5,
+                                              : context.appColors.divider,
+                                          width: isSelected ? 1.5 : 0.5,
                                         ),
                                       ),
                                       child: Column(
@@ -305,14 +275,13 @@ class _AddAssetScreenState extends ConsumerState<AddAssetScreen> {
                                           const SizedBox(height: 8),
                                           Text(
                                             category.label,
-                                            textAlign:
-                                                TextAlign.center,
+                                            textAlign: TextAlign.center,
                                             style: TextStyle(
                                               fontSize: 12,
                                               color: isSelected
                                                   ? color
-                                                  : context.appColors
-                                                      .textSecondary,
+                                                  : context
+                                                      .appColors.textSecondary,
                                               fontWeight: isSelected
                                                   ? FontWeight.w700
                                                   : FontWeight.w600,

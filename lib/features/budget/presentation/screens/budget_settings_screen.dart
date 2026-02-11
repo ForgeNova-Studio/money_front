@@ -11,6 +11,7 @@ import 'package:moamoa/features/budget/presentation/providers/budget_providers.d
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/thousands_separator_input_formatter.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 /// 예산 설정 화면
 class BudgetSettingsScreen extends ConsumerStatefulWidget {
@@ -233,12 +234,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
       await ref.read(homeViewModelProvider.notifier).refresh();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('예산이 저장되었습니다.'),
-            backgroundColor: context.appColors.success,
-          ),
-        );
+        context.showToast('예산이 저장되었습니다.');
         context.pop();
       }
     } catch (e) {
@@ -249,11 +245,9 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: context.appColors.error,
-      ),
+    context.showErrorToast(
+      message,
+      duration: const Duration(seconds: 2),
     );
   }
 

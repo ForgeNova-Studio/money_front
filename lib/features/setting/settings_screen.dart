@@ -10,6 +10,7 @@ import 'package:moamoa/router/route_names.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -46,9 +47,7 @@ class SettingsScreen extends ConsumerWidget {
                   label: '고정비 관리',
                   onTap: () {
                     // TODO: 고정비 관리 화면으로 이동
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('고정비 관리 기능 준비 중입니다.')),
-                    );
+                    context.showToast('고정비 관리 기능 준비 중입니다.');
                   },
                 ),
                 _MenuItem(
@@ -205,9 +204,7 @@ class SettingsScreen extends ConsumerWidget {
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('로그아웃 실패: $e')),
-          );
+          context.showToast('로그아웃 실패: $e');
         }
       }
     }

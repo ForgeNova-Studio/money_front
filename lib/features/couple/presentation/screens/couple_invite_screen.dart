@@ -7,6 +7,7 @@ import 'package:moamoa/features/couple/presentation/viewmodels/couple_view_model
 import 'package:moamoa/router/route_names.dart';
 import 'package:share_plus/share_plus.dart' show ShareParams, SharePlus;
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 class CoupleInviteScreen extends ConsumerStatefulWidget {
   const CoupleInviteScreen({super.key});
@@ -267,11 +268,9 @@ class _InviteCodeView extends StatelessWidget {
 
   void _copyCode(BuildContext context, String code) {
     Clipboard.setData(ClipboardData(text: code));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('초대 코드가 복사되었습니다'),
-        duration: Duration(seconds: 2),
-      ),
+    context.showToast(
+      '초대 코드가 복사되었습니다',
+      duration: const Duration(seconds: 2),
     );
   }
 

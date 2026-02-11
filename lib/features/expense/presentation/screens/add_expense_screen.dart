@@ -15,6 +15,7 @@ import 'package:moamoa/features/expense/presentation/providers/expense_providers
 // viewmodels
 import 'package:moamoa/features/expense/presentation/viewmodels/expense_view_model.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 // constants
 import 'package:moamoa/core/constants/app_constants.dart';
@@ -124,14 +125,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
   String? _validateAmount(String? value) {
     if (value == null || value.isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text('금액을 입력하세요'),
-            backgroundColor: context.appColors.error,
-          ),
-        );
+      context.showErrorToast(
+        '금액을 입력하세요',
+        duration: const Duration(seconds: 2),
+      );
       return '';
     }
     final amount = int.tryParse(value.replaceAll(',', ''));
@@ -234,13 +231,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       homeViewModel.refreshBudgetAndAsset();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              widget.expenseId == null ? '지출이 등록되었습니다' : '지출이 수정되었습니다',
-            ),
-            backgroundColor: context.appColors.success,
-          ),
+        context.showToast(
+          widget.expenseId == null ? '지출이 등록되었습니다' : '지출이 수정되었습니다',
+          duration: const Duration(seconds: 2),
         );
         Navigator.of(context).pop(true);
       }

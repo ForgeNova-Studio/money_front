@@ -20,6 +20,7 @@ import 'package:moamoa/features/common/widgets/default_layout.dart';
 // features
 import 'package:moamoa/features/income/presentation/viewmodels/income_view_model.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 // entities
 import 'package:moamoa/features/income/domain/entities/income.dart';
@@ -121,14 +122,10 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   // 금액 유효성 검사
   String? _validateAmount(String? value) {
     if (value == null || value.isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text('금액을 입력하세요'),
-            backgroundColor: context.appColors.error,
-          ),
-        );
+      context.showErrorToast(
+        '금액을 입력하세요',
+        duration: const Duration(seconds: 2),
+      );
       return '';
     }
     final amount = int.tryParse(value.replaceAll(',', ''));
@@ -220,13 +217,9 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
       homeViewModel.refreshBudgetAndAsset();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              widget.incomeId == null ? '수입이 등록되었습니다' : '수입이 수정되었습니다',
-            ),
-            backgroundColor: context.appColors.success,
-          ),
+        context.showToast(
+          widget.incomeId == null ? '수입이 등록되었습니다' : '수입이 수정되었습니다',
+          duration: const Duration(seconds: 2),
         );
         Navigator.of(context).pop(true);
       }

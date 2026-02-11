@@ -8,6 +8,7 @@ import 'package:moamoa/features/account_book/presentation/providers/account_book
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moamoa/features/account_book/presentation/widgets/account_book_create_widgets.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 class AccountBookCreateScreen extends ConsumerStatefulWidget {
   const AccountBookCreateScreen({super.key});
@@ -186,8 +187,9 @@ class _AccountBookCreateScreenState
 
     if (_startDate != null && _endDate != null) {
       if (_endDate!.isBefore(_startDate!)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('종료일은 시작일보다 빠를 수 없습니다.')),
+        context.showErrorToast(
+          '종료일은 시작일보다 빠를 수 없습니다.',
+          duration: const Duration(seconds: 2),
         );
         return;
       }
@@ -227,15 +229,11 @@ class _AccountBookCreateScreenState
       }
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('가계부가 생성되었습니다.')),
-      );
+      context.showToast('가계부가 생성되었습니다.');
       Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('가계부 생성 실패: $e')),
-      );
+      context.showToast('가계부 생성 실패: $e');
     } finally {
       if (mounted) {
         setState(() => _isSubmitting = false);

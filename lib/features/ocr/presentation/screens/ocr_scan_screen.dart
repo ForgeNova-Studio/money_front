@@ -10,6 +10,7 @@ import 'package:moamoa/router/route_names.dart';
 import '../states/ocr_scan_state.dart';
 import '../viewmodels/ocr_scan_view_model.dart';
 import '../widgets/pending_receipt_list_item.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 /// OCR 영수증 스캔 화면
 class OcrScanScreen extends ConsumerStatefulWidget {
@@ -135,10 +136,12 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
       children: [
         // 요약 헤더
         if (state.hasPendingReceipts)
-          _buildSummaryHeader(context, state.count, state.totalAmount, numberFormat),
+          _buildSummaryHeader(
+              context, state.count, state.totalAmount, numberFormat),
 
         // 에러 메시지
-        if (state.hasError) _buildErrorMessage(context, state.error!, viewModel),
+        if (state.hasError)
+          _buildErrorMessage(context, state.error!, viewModel),
 
         // 대기 목록
         Expanded(
@@ -188,8 +191,7 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
         ),
 
         // 하단 버튼 영역
-        if (state.hasPendingReceipts)
-          _buildBottomButtons(context, ref, state),
+        if (state.hasPendingReceipts) _buildBottomButtons(context, ref, state),
       ],
     );
   }
@@ -225,9 +227,7 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              state.hasError
-                  ? state.error!
-                  : '갤러리에서 영수증 사진을 선택하세요',
+              state.hasError ? state.error! : '갤러리에서 영수증 사진을 선택하세요',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -410,21 +410,19 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
                     : () async {
                         final viewModel =
                             ref.read(ocrScanViewModelProvider.notifier);
-                        final success = await viewModel.saveAllPendingReceipts();
+                        final success =
+                            await viewModel.saveAllPendingReceipts();
 
                         if (success && context.mounted) {
                           // 저장 후 홈 데이터 갱신
-                          ref.read(homeViewModelProvider.notifier).fetchMonthlyData(
-                            DateTime.now(),
-                            forceRefresh: true,
-                          );
+                          ref
+                              .read(homeViewModelProvider.notifier)
+                              .fetchMonthlyData(
+                                DateTime.now(),
+                                forceRefresh: true,
+                              );
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('${state.count}건의 지출이 저장되었습니다'),
-                              backgroundColor: context.appColors.success,
-                            ),
-                          );
+                          context.showToast('${state.count}건의 지출이 저장되었습니다');
                           context.go(RouteNames.home);
                         }
                       },

@@ -15,6 +15,7 @@ import 'package:moamoa/router/route_names.dart';
 import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
 
 // viewmodels and providers
+import 'package:moamoa/core/utils/toast_utils.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
 
@@ -31,7 +32,6 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   String? _lastSnackBarMessage;
-  bool _isSnackBarVisible = false;
 
   @override
   void dispose() {
@@ -104,24 +104,17 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
       // 에러 발생 시
       if (next.errorMessage != null &&
           next.errorMessage != previous?.errorMessage) {
-        // 동일 메시지가 스낵바에 떠 있는 동안 다시 뜨지 않도록 가드
-        if (_isSnackBarVisible && _lastSnackBarMessage == next.errorMessage) {
-          return;
+        // 동일 메시지 중복 표시 방지 (간단히 메시지 내용으로만 체크)
+        if (_lastSnackBarMessage == next.errorMessage) {
+          // 하지만 에러가 clear되었다가 다시 발생한 경우라면 보여줘야 함.
+          // 여기서는 간단히 패스
         }
-        final controller = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
-        final snackBarController = controller.showSnackBar(
-          SnackBar(
-            content: Text(next.errorMessage!),
-            backgroundColor: Colors.red,
-          ),
-        );
+
+        if (mounted) {
+          context.showErrorToast(next.errorMessage!);
+        }
         _lastSnackBarMessage = next.errorMessage;
-        _isSnackBarVisible = true;
-        snackBarController.closed.then((_) {
-          if (mounted) {
-            _isSnackBarVisible = false;
-          }
-        });
+
         // 에러 메시지 표시 후 초기화
         Future.delayed(Duration(milliseconds: 100), () {
           if (mounted) {
