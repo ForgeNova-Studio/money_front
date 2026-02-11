@@ -195,11 +195,14 @@ class AuthViewModel extends _$AuthViewModel {
       // OneSignal 로그아웃 (External User ID 해제)
       OneSignal.logout();
 
+      // 먼저 인증 상태를 변경하여 화면 전환(→ 로그인)을 유도하고,
+      // 기존 화면의 Provider watcher를 제거한 후 invalidate 실행.
+      // (순서가 반대면 invalidate 시 watcher가 남아있어 불필요한 API 재요청 발생)
+      state = AuthState.unauthenticated();
+
       // 🔴 중요: 모든 사용자 관련 Provider들을 무효화하여 이전 계정 데이터 완전 초기화
       // 로그아웃 후 다른 계정 로그인 시 이전 데이터가 남지 않도록 함
       _invalidateAllUserProviders();
-
-      state = AuthState.unauthenticated();
     } catch (e) {
       state = _setErrorMessage('로그아웃 중 오류가 발생했습니다: $e');
       rethrow;
