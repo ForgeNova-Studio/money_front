@@ -39,7 +39,7 @@ extension ToastUtils on BuildContext {
   /// 에러 메시지용 토스트 (필요 시 스타일 변경 가능)
   void showErrorToast(
     String message, {
-    Duration duration = const Duration(seconds: 3),
+    Duration duration = const Duration(seconds: 2),
   }) {
     if (!mounted) return;
 
@@ -53,5 +53,11 @@ extension ToastUtils on BuildContext {
           behavior: SnackBarBehavior.floating,
         ),
       );
+  }
+
+  /// 토스트 숨기기
+  void hideToast() {
+    if (!mounted) return;
+    ScaffoldMessenger.of(this).hideCurrentSnackBar();
   }
 }

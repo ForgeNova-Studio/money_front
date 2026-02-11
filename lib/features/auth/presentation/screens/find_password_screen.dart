@@ -33,9 +33,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
     super.initState();
     // 화면 진입 시 이전 화면의 SnackBar 제거
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      }
+      context.hideToast();
     });
   }
 
