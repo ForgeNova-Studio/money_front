@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 // cores
 import 'package:moamoa/core/constants/app_constants.dart';
-import 'package:moamoa/core/exceptions/auth_exceptions.dart';
+
 import 'package:moamoa/features/auth/presentation/widgets/google_login_button.dart';
 import 'package:moamoa/features/auth/presentation/widgets/kakao_login_button.dart';
 import 'package:moamoa/features/auth/presentation/widgets/naver_login_button.dart';
@@ -24,10 +24,10 @@ class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenSampleState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
@@ -90,21 +90,13 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
   // ViewModel의 loginWithNaver 메서드 호출
   Future<void> _handleNaverLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
-    try {
-      await ref.read(authViewModelProvider.notifier).loginWithNaver();
-    } catch (e) {
-      throw NetworkException('네이버 로그인 중 오류가 발생했습니다: $e');
-    }
+    await ref.read(authViewModelProvider.notifier).loginWithNaver();
   }
 
   // ViewModel의 loginWithKakao 메서드 호출
   Future<void> _handleKakaoLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
-    try {
-      await ref.read(authViewModelProvider.notifier).loginWithKakao();
-    } catch (e) {
-      throw NetworkException('카카오 로그인 중 오류가 발생했습니다: $e');
-    }
+    await ref.read(authViewModelProvider.notifier).loginWithKakao();
   }
 
   // 비밀번호 찾기 화면으로 이동
@@ -190,7 +182,8 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     ref.listen(authViewModelProvider, (previous, next) {
       // 다른 화면으로 이동할 때는 리스너를 건너뜀
       final isCurrent = ModalRoute.of(context)?.isCurrent ?? true;
-      debugPrint('[LoginScreen] listener - isCurrent: $isCurrent, errorMessage: ${next.errorMessage}');
+      debugPrint(
+          '[LoginScreen] listener - isCurrent: $isCurrent, errorMessage: ${next.errorMessage}');
       if (!isCurrent) {
         return;
       }
@@ -372,8 +365,7 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
 
                 // 네이버 로그인 버튼 (공식 디자인 가이드라인 적용)
                 NaverLoginButton(
-                  onPressed:
-                      authState.isLoading ? null : () => _handleNaverLogin(),
+                  onPressed: authState.isLoading ? null : _handleNaverLogin,
                   isLoading: false,
                 ),
 
@@ -432,29 +424,6 @@ Widget _buildLoginTitle(BuildContext context) {
           size: 80,
           color: Colors.black,
         ),
-        // Text(
-        //   '모아모아',
-        //   textAlign: TextAlign.center,
-        //   style: TextStyle(
-        //     fontSize: 32,
-        //     fontWeight: FontWeight.bold,
-        //     color: context.appColors.textPrimary,
-        //     height: 1.2,
-        //   ),
-        // ),
-
-        // SizedBox(height: 6),
-
-        // 서브타이틀
-        // Text(
-        //   '돈을 모아, 희망을 모아',
-        //   textAlign: TextAlign.center,
-        //   style: TextStyle(
-        //     fontSize: 16,
-        //     color: context.appColors.textSecondary,
-        //     height: 1.5,
-        //   ),
-        // )
       ],
     ),
   );
