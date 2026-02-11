@@ -12,13 +12,13 @@ import 'package:moamoa/router/route_names.dart';
 
 // widgets
 import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
-import 'package:moamoa/features/auth/presentation/widgets/login_title.dart';
-import 'package:moamoa/features/auth/presentation/widgets/login_divider.dart';
-import 'package:moamoa/features/auth/presentation/widgets/last_login_hint.dart';
-import 'package:moamoa/features/auth/presentation/widgets/login_method_alert_dialog.dart';
-import 'package:moamoa/features/auth/presentation/widgets/link_find_password.dart';
-import 'package:moamoa/features/auth/presentation/widgets/link_register.dart';
-import 'package:moamoa/features/auth/presentation/widgets/login_button.dart';
+import 'package:moamoa/features/auth/presentation/widgets/login/login_title.dart';
+import 'package:moamoa/features/auth/presentation/widgets/login/login_divider.dart';
+import 'package:moamoa/features/auth/presentation/widgets/login/last_login_hint.dart';
+import 'package:moamoa/features/auth/presentation/widgets/login/login_method_alert_dialog.dart';
+import 'package:moamoa/features/auth/presentation/widgets/login/link_find_password.dart';
+import 'package:moamoa/features/auth/presentation/widgets/login/link_register.dart';
+import 'package:moamoa/features/auth/presentation/widgets/login/login_button.dart';
 
 // viewmodels and providers
 import 'package:moamoa/core/utils/toast_utils.dart';

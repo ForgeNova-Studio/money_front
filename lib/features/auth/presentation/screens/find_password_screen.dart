@@ -3,10 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // core
-import 'package:moamoa/core/constants/app_constants.dart';
-
-// widgets
-import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
 
 // viewmodels
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
@@ -15,6 +11,8 @@ import 'package:moamoa/core/utils/toast_utils.dart';
 
 // screens
 import 'package:moamoa/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:moamoa/features/auth/presentation/widgets/find_password/find_password_title.dart';
+import 'package:moamoa/features/auth/presentation/widgets/find_password/email_verification_form.dart';
 
 class FindPasswordScreen extends ConsumerStatefulWidget {
   const FindPasswordScreen({super.key});
@@ -140,10 +138,6 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    // ViewModel 상태 구독
-    final authState = ref.watch(authViewModelProvider);
-    final formState = ref.watch(findPasswordViewModelProvider);
-
     // ViewModel 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
       // 에러 발생 시
@@ -177,141 +171,17 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 24),
-                _buildTitle(context),
+                const FindPasswordTitle(),
                 const SizedBox(height: 40),
 
-                // 이메일 입력 필드
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: CustomTextField(
-                        controller: _emailController,
-                        hintText: '이메일',
-                        keyboardType: TextInputType.emailAddress,
-                        enabled: !formState.isVerificationCodeSent,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    SizedBox(
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: formState.isVerificationCodeSent ||
-                                authState.isLoading
-                            ? null
-                            : _handleSendVerificationCode,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: colorScheme.primary,
-                          foregroundColor: colorScheme.onPrimary,
-                          disabledBackgroundColor:
-                              colorScheme.surfaceContainerHighest,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                        ),
-                        child: Text(
-                          formState.isVerificationCodeSent ? '전송완료' : '인증요청',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                if (formState.isVerificationCodeSent) ...[
-                  const SizedBox(height: 12),
-                  // 인증번호 입력 필드
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: CustomTextField(
-                          controller: _verificationCodeController,
-                          focusNode: _verificationCodeFocusNode,
-                          hintText: '인증번호',
-                          icon: Icons.lock_outline,
-                          keyboardType: TextInputType.number,
-                          enabled: !formState.isEmailVerified,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      SizedBox(
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed:
-                              formState.isEmailVerified || authState.isLoading
-                                  ? null
-                                  : _handleVerifyCode,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colorScheme.inverseSurface,
-                            foregroundColor: colorScheme.onInverseSurface,
-                            disabledBackgroundColor:
-                                colorScheme.surfaceContainerHighest,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                          ),
-                          child: Text(
-                            formState.isEmailVerified ? '인증완료' : '인증확인',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // 인증번호 유효 시간 안내
-                  Padding(
-                    padding: EdgeInsets.only(left: 4),
-                    child: Text(
-                      '※ 인증번호는 10분간 유효합니다.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: context.appColors.textSecondary,
-                        height: 1.4,
-                      ),
-                    ),
-                  ),
-                ],
-
-                const SizedBox(height: 24),
-
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: formState.canContinue && !authState.isLoading
-                        ? _handleContinue
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
-                      disabledBackgroundColor: colorScheme.primaryContainer,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      '계속하기',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                // 이메일 입력 및 인증 폼
+                EmailVerificationForm(
+                  emailController: _emailController,
+                  verificationCodeController: _verificationCodeController,
+                  verificationCodeFocusNode: _verificationCodeFocusNode,
+                  onSendVerificationCode: _handleSendVerificationCode,
+                  onVerifyCode: _handleVerifyCode,
+                  onContinue: _handleContinue,
                 ),
               ],
             ),
@@ -320,30 +190,4 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
       ),
     );
   }
-}
-
-Widget _buildTitle(BuildContext context) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        '계정을 찾아볼까요?',
-        style: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: context.appColors.textPrimary,
-          height: 1.3,
-        ),
-      ),
-      const SizedBox(height: 12),
-      Text(
-        '가입하신 이메일을 입력하고\n인증번호를 확인해주세요.',
-        style: TextStyle(
-          fontSize: 16,
-          color: context.appColors.textSecondary,
-          height: 1.5,
-        ),
-      ),
-    ],
-  );
 }
