@@ -133,15 +133,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String provider,
     required String idToken,
     required String nickname,
+    String? email,
   }) async {
     try {
+      final data = {
+        'provider': provider,
+        'idToken': idToken,
+        'nickname': nickname,
+      };
+      // 이메일이 있으면 추가 (카카오 등 SDK에서 받은 이메일 전달)
+      if (email != null && email.isNotEmpty) {
+        data['email'] = email;
+      }
+
       final response = await dio.post(
         ApiConstants.socialLogin,
-        data: {
-          'provider': provider,
-          'idToken': idToken,
-          'nickname': nickname,
-        },
+        data: data,
       );
 
       return AuthResponseModel.fromJson(response.data);

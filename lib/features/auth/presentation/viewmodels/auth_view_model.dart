@@ -274,7 +274,14 @@ class AuthViewModel extends _$AuthViewModel {
         debugPrint('[AuthViewModel] KakaoLoginUseCase 호출');
       }
       final useCase = ref.read(kakaoLoginUseCaseProvider);
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] useCase 객체: $useCase');
+        debugPrint('[AuthViewModel] useCase.call() 호출 직전...');
+      }
       final result = await useCase();
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] useCase.call() 완료!');
+      }
       if (kDebugMode) {
         debugPrint('[AuthViewModel] 카카오 로그인 성공: ${result.user.email}');
       }
@@ -391,24 +398,40 @@ class AuthViewModel extends _$AuthViewModel {
     try {
       return await request();
     } on ValidationException catch (e) {
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] ValidationException: ${e.message}');
+      }
       state = _setErrorMessage(e.message);
       if (rethrowError) rethrow;
-    } on UserCancelledException {
+    } on UserCancelledException catch (e) {
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] UserCancelledException: $e');
+      }
       state = _setLoading(false);
     } on UnauthorizedException catch (e) {
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] UnauthorizedException: ${e.message}');
+      }
       state = _setErrorMessage(e.message);
       if (rethrowError) rethrow;
     } on NetworkException catch (e) {
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] NetworkException: ${e.message}');
+      }
       state = _setErrorMessage(e.message);
       if (rethrowError) rethrow;
     } on ServerException catch (e) {
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] ServerException: ${e.message}');
+      }
       state = _setErrorMessage(e.message);
       if (rethrowError) rethrow;
-    } catch (e) {
-      state = _setErrorMessage(defaultErrorMessage);
+    } catch (e, stackTrace) {
       if (kDebugMode) {
-        debugPrint('$defaultErrorMessage: $e');
+        debugPrint('[AuthViewModel] 알 수 없는 에러: $e');
+        debugPrint('[AuthViewModel] StackTrace: $stackTrace');
       }
+      state = _setErrorMessage(defaultErrorMessage);
       if (rethrowError) rethrow;
     }
     // rethrowError가 false이고 에러가 발생한 경우,

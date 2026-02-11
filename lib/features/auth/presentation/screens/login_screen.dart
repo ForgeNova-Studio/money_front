@@ -32,6 +32,38 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   String? _lastSnackBarMessage;
+  bool _isSnackBarVisible = false;
+  bool _hasCheckedInitialError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // 화면 로드 후 첫 프레임에서 기존 에러 메시지 확인
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkInitialError();
+    });
+  }
+
+  /// 화면 로드 시 이미 존재하는 에러 메시지 확인
+  void _checkInitialError() {
+    if (_hasCheckedInitialError) return;
+    _hasCheckedInitialError = true;
+
+    final authState = ref.read(authViewModelProvider);
+    debugPrint('[LoginScreen] 초기 에러 확인: ${authState.errorMessage}');
+
+    if (authState.errorMessage != null) {
+      if (authState.errorMessage!.contains('로그인으로 가입되어 있습니다')) {
+        debugPrint('[LoginScreen] 초기 에러로 AlertDialog 표시');
+        _showLoginMethodAlert(context, authState.errorMessage!);
+        Future.delayed(Duration(milliseconds: 100), () {
+          if (mounted) {
+            ref.read(authViewModelProvider.notifier).clearError();
+          }
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -85,6 +117,71 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     context.push(RouteNames.register);
   }
 
+  // 다른 로그인 방법 안내 AlertDialog
+  void _showLoginMethodAlert(BuildContext context, String message) {
+    // 메시지에서 provider 추출 (예: "NAVER", "GOOGLE" 등)
+    String providerName = '';
+    if (message.contains('NAVER')) {
+      providerName = '네이버';
+    } else if (message.contains('GOOGLE')) {
+      providerName = '구글';
+    } else if (message.contains('KAKAO')) {
+      providerName = '카카오';
+    } else if (message.contains('EMAIL')) {
+      providerName = '이메일';
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Icon(
+              Icons.info_outline,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            const Text('로그인 안내'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '이 이메일은 이미 가입되어 있어요.',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '$providerName 로그인을 이용해주세요.',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('확인'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -92,7 +189,9 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
     // ViewModel 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
       // 다른 화면으로 이동할 때는 리스너를 건너뜀
-      if (!(ModalRoute.of(context)?.isCurrent ?? true)) {
+      final isCurrent = ModalRoute.of(context)?.isCurrent ?? true;
+      debugPrint('[LoginScreen] listener - isCurrent: $isCurrent, errorMessage: ${next.errorMessage}');
+      if (!isCurrent) {
         return;
       }
       // 로그인 성공 시 홈 화면으로 이동
@@ -104,6 +203,30 @@ class _LoginScreenSampleState extends ConsumerState<LoginScreen> {
       // 에러 발생 시
       if (next.errorMessage != null &&
           next.errorMessage != previous?.errorMessage) {
+        debugPrint('[LoginScreen] 에러 메시지: ${next.errorMessage}');
+        // 다른 로그인 방법으로 가입된 경우 AlertDialog 표시
+        if (next.errorMessage!.contains('로그인으로 가입되어 있습니다')) {
+          debugPrint('[LoginScreen] AlertDialog 표시 시도');
+          _showLoginMethodAlert(context, next.errorMessage!);
+          Future.delayed(Duration(milliseconds: 100), () {
+            if (mounted) {
+              ref.read(authViewModelProvider.notifier).clearError();
+            }
+          });
+          return;
+        }
+
+        // 동일 메시지가 스낵바에 떠 있는 동안 다시 뜨지 않도록 가드
+        if (_isSnackBarVisible && _lastSnackBarMessage == next.errorMessage) {
+          return;
+        }
+        final controller = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
+        final snackBarController = controller.showSnackBar(
+          SnackBar(
+            content: Text(next.errorMessage!),
+            backgroundColor: Colors.red,
+          ),
+        );
         // 동일 메시지 중복 표시 방지 (간단히 메시지 내용으로만 체크)
         if (_lastSnackBarMessage == next.errorMessage) {
           // 하지만 에러가 clear되었다가 다시 발생한 경우라면 보여줘야 함.
