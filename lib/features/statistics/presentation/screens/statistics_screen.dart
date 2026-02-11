@@ -450,25 +450,36 @@ class _ExpensePieChart extends StatefulWidget {
 }
 
 class _ExpensePieChartState extends State<_ExpensePieChart> {
-  /// 개별 표시할 최대 슬라이스 수
-  static const int _maxSlices = 5;
-
   /// 라벨을 표시할 최소 비율 (%)
   static const int _minLabelPercentage = 5;
 
   /// 기타 카테고리 확장 여부
   bool _isExpanded = false;
 
-  /// 상위 N개 + "기타" 그룹핑
+  /// 5% 미만인 항목들을 "기타" 그룹핑
   List<_ChartSlice> _buildSlices() {
     final sorted = List<CategoryExpenseUI>.from(widget.expenses)
       ..sort((a, b) => b.amount.compareTo(a.amount));
 
     // 전체 합계 계산 (비율 재계산을 위해)
     final total = widget.expenses.fold<int>(0, (sum, e) => sum + e.amount);
+    if (total == 0) return [];
 
-    if (sorted.length <= _maxSlices) {
-      return sorted.map((e) {
+    // 5% 기준 분리
+    final mainSlices = <CategoryExpenseUI>[];
+    final otherSlices = <CategoryExpenseUI>[];
+
+    for (var expense in sorted) {
+      if (expense.percentage >= 5.0) {
+        mainSlices.add(expense);
+      } else {
+        otherSlices.add(expense);
+      }
+    }
+
+    // 기타 항목이 없으면 그대로 반환
+    if (otherSlices.isEmpty) {
+      return mainSlices.map((e) {
         return _ChartSlice(
           category: e.category,
           percentage: e.percentage,
@@ -478,13 +489,12 @@ class _ExpensePieChartState extends State<_ExpensePieChart> {
       }).toList();
     }
 
-    final top = sorted.take(_maxSlices).toList();
-    final rest = sorted.skip(_maxSlices).toList();
-    final otherAmount = rest.fold<int>(0, (sum, e) => sum + e.amount);
-    final otherPercent = total == 0 ? 0.0 : (otherAmount / total * 100);
+    // 기타 항목 합계
+    final otherAmount = otherSlices.fold<int>(0, (sum, e) => sum + e.amount);
+    final otherPercent = (otherAmount / total * 100);
 
     return [
-      ...top.map((e) {
+      ...mainSlices.map((e) {
         return _ChartSlice(
           category: e.category,
           percentage: e.percentage,
@@ -497,7 +507,7 @@ class _ExpensePieChartState extends State<_ExpensePieChart> {
         percentage: otherPercent,
         color: const Color(0xFFBDBDBD),
         amount: otherAmount,
-        subCategories: rest.map((e) {
+        subCategories: otherSlices.map((e) {
           return _SubCategory(
             name: e.category,
             color: e.color,
@@ -513,32 +523,31 @@ class _ExpensePieChartState extends State<_ExpensePieChart> {
     final appColors = context.appColors;
     final slices = _buildSlices();
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '카테고리별 지출',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            '카테고리별 지출',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          const SizedBox(height: 20),
-          // 도넛 차트 + 우측 범례
-          Row(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 도넛 차트
@@ -651,8 +660,8 @@ class _ExpensePieChartState extends State<_ExpensePieChart> {
               ),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
