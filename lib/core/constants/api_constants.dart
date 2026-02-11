@@ -1,3 +1,21 @@
+/// API 엔드포인트 상수를 관리하는 클래스.
+///
+/// 애플리케이션 전체에서 사용되는 모든 백엔드 API 경로를 중앙집중식으로 정의합니다.
+/// 기본 URL(Base URL)과 각 도메인별(인증, 사용자, 지출, 수입 등) 엔드포인트를 제공합니다.
+///
+/// **주요 기능:**
+/// - **Base URL 관리**: `API_BASE_URL` 환경 변수를 통해 빌드 시점 또는 실행 시점에 베이스 URL 주입 가능.
+/// - **정적 엔드포인트**: 로그인, 회원가입 등 고정된 API 경로 상수 제공.
+/// - **동적 경로 생성**: ID 등을 인자로 받아 동적인 API 경로를 생성하는 헬퍼 메서드 제공.
+///
+/// **사용 예시:**
+/// ```dart
+/// // 기본 로그인 URL 사용
+/// final loginUrl = ApiConstants.baseUrl + ApiConstants.login;
+///
+/// // ID를 포함한 동적 경로 사용
+/// final detailUrl = ApiConstants.baseUrl + ApiConstants.expenseById('123');
+/// ```
 class ApiConstants {
   // Base URL
   // 빌드 시 --dart-define=API_BASE_URL=... 로 주입
