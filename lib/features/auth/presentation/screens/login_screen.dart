@@ -22,7 +22,21 @@ import 'package:moamoa/features/auth/presentation/widgets/login_method_alert_dia
 import 'package:moamoa/core/utils/toast_utils.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 
-/// 로그인 화면
+/// 이메일 및 소셜 로그인을 제공하는 인증 메인 화면입니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 이메일/비밀번호 입력 및 로그인 (`_handleLogin`)
+/// - 소셜 로그인 버튼 제공 (Google, Naver, Kakao)
+/// - 로그인 에러 발생 시 사용자 친화적인 안내 다이얼로그 표시 (`showLoginMethodAlert`)
+/// - 마지막 로그인 방법 힌트 제공 (`LastLoginHint` 위젯)
+/// - 회원가입 및 비밀번호 찾기 화면으로의 네비게이션
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// context.go(RouteNames.login);
+/// // or
+/// const LoginScreen();
+/// ```
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -119,16 +133,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    // 인증 상태 관리
     final authState = ref.watch(authViewModelProvider);
+    
     // ViewModel 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
       // 다른 화면으로 이동할 때는 리스너를 건너뜀
       final isCurrent = ModalRoute.of(context)?.isCurrent ?? true;
-      debugPrint(
-          '[LoginScreen] listener - isCurrent: $isCurrent, errorMessage: ${next.errorMessage}');
-      if (!isCurrent) {
-        return;
-      }
+      debugPrint('[LoginScreen] listener - isCurrent: $isCurrent, errorMessage: ${next.errorMessage}');
+
+      if (!isCurrent) return;
       // 로그인 성공 시 홈 화면으로 이동
       if (next.isAuthenticated && next.user != null) {
         // 명시적으로 홈 화면으로 이동 (redirect 로직도 백업으로 유지됨)
