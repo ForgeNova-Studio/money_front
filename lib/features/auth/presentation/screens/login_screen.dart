@@ -31,8 +31,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
-  String? _lastSnackBarMessage;
-  bool _isSnackBarVisible = false;
   bool _hasCheckedInitialError = false;
 
   @override
@@ -209,27 +207,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           return;
         }
 
-        // 동일 메시지가 스낵바에 떠 있는 동안 다시 뜨지 않도록 가드
-        if (_isSnackBarVisible && _lastSnackBarMessage == next.errorMessage) {
-          return;
-        }
-        final controller = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
-        final snackBarController = controller.showSnackBar(
-          SnackBar(
-            content: Text(next.errorMessage!),
-            backgroundColor: Colors.red,
-          ),
-        );
-        // 동일 메시지 중복 표시 방지 (간단히 메시지 내용으로만 체크)
-        if (_lastSnackBarMessage == next.errorMessage) {
-          // 하지만 에러가 clear되었다가 다시 발생한 경우라면 보여줘야 함.
-          // 여기서는 간단히 패스
-        }
-
         if (mounted) {
           context.showErrorToast(next.errorMessage!);
         }
-        _lastSnackBarMessage = next.errorMessage;
 
         // 에러 메시지 표시 후 초기화
         Future.delayed(Duration(milliseconds: 100), () {
