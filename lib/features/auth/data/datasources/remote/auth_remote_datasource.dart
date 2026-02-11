@@ -105,6 +105,7 @@ abstract class AuthRemoteDataSource {
     required String provider,
     required String idToken,
     required String nickname,
+    String? email,
   });
 
   /// 비밀번호 재설정 인증번호 전송

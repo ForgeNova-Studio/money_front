@@ -235,6 +235,7 @@ class AuthRepositoryImpl implements AuthRepository {
       provider: 'KAKAO',
       idToken: accessToken, // Kakao는 accessToken을 idToken으로 사용
       nickname: nickname ?? 'Kakao 사용자',
+      email: email, // SDK에서 받은 이메일 전달
     );
   }
 
@@ -243,12 +244,14 @@ class AuthRepositoryImpl implements AuthRepository {
     required String provider,
     required String idToken,
     required String nickname,
+    String? email,
   }) async {
     // 1. Remote API 호출 (통합 엔드포인트)
     final response = await remoteDataSource.socialLogin(
       provider: provider,
       idToken: idToken,
       nickname: nickname,
+      email: email,
     );
 
     // 2. Local Storage에 저장
