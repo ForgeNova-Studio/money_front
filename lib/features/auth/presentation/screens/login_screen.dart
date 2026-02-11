@@ -83,15 +83,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   /// 에러 처리 (Alert Dialog 또는 Toast)
   void _handleError(String message) {
+    // 이미 가입된 계정일 경우
     if (message.contains('로그인으로 가입되어 있습니다')) {
       debugPrint('[LoginScreen] 에러로 AlertDialog 표시');
       showLoginMethodAlert(
         context,
         message: message,
-        onNaverLogin: _handleNaverLogin,
-        onGoogleLogin: _handleGoogleLogin,
-        onKakaoLogin: _handleKakaoLogin,
+        onNaverLogin: () async {
+          FocusManager.instance.primaryFocus?.unfocus();
+          await ref.read(authViewModelProvider.notifier).loginWithNaver();
+        },
+        onGoogleLogin: () async {
+          FocusManager.instance.primaryFocus?.unfocus();
+          await ref.read(authViewModelProvider.notifier).loginWithGoogle();
+        },
+        onKakaoLogin: () async {
+          FocusManager.instance.primaryFocus?.unfocus();
+          await ref.read(authViewModelProvider.notifier).loginWithKakao();
+        },
       );
+
+      // 일반적인 오류가 발생했을 경우
     } else {
       if (mounted) {
         context.showErrorToast(message);
@@ -104,43 +116,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ref.read(authViewModelProvider.notifier).clearError();
       }
     });
-  }
-
-  // ViewModel의 login 메서드 호출
-  Future<void> _handleLogin() async {
-    FocusManager.instance.primaryFocus?.unfocus();
-    await ref.read(authViewModelProvider.notifier).login(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
-  }
-
-  // ViewModel의 loginWithGoogle 메서드 호출
-  Future<void> _handleGoogleLogin() async {
-    FocusManager.instance.primaryFocus?.unfocus();
-    await ref.read(authViewModelProvider.notifier).loginWithGoogle();
-  }
-
-  // ViewModel의 loginWithNaver 메서드 호출
-  Future<void> _handleNaverLogin() async {
-    FocusManager.instance.primaryFocus?.unfocus();
-    await ref.read(authViewModelProvider.notifier).loginWithNaver();
-  }
-
-  // ViewModel의 loginWithKakao 메서드 호출
-  Future<void> _handleKakaoLogin() async {
-    FocusManager.instance.primaryFocus?.unfocus();
-    await ref.read(authViewModelProvider.notifier).loginWithKakao();
-  }
-
-  // 비밀번호 찾기 화면으로 이동
-  void _handleForgotPassword() {
-    context.push(RouteNames.findPassword);
-  }
-
-  // 회원가입 화면으로 이동
-  void _handleSignUp() {
-    context.push(RouteNames.register);
   }
 
   @override
@@ -209,40 +184,62 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   },
                 ),
 
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
 
                 // 비밀번호 찾기 링크
-                LinkFindPassword(onTap: _handleForgotPassword),
+                LinkFindPassword(
+                  onTap: () => context.push(RouteNames.findPassword),
+                ),
 
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
 
                 // 로그인 버튼
                 LoginButton(
-                  onPressed: _handleLogin,
+                  onPressed: () async {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    await ref.read(authViewModelProvider.notifier).login(
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                        );
+                  },
                   isLoading: authState.isLoading,
                 ),
 
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
 
                 // 구분선 (or)
                 const LoginDivider(),
 
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
 
                 // 마지막 로그인 방법 힌트
                 const LastLoginHint(),
 
                 // Google 로그인 버튼 (공식 브랜드 가이드라인 적용)
                 GoogleLoginButton(
-                  onPressed: authState.isLoading ? null : _handleGoogleLogin,
+                  onPressed: authState.isLoading
+                      ? null
+                      : () async {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          await ref
+                              .read(authViewModelProvider.notifier)
+                              .loginWithGoogle();
+                        },
                   isLoading: false,
                 ),
 
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // 카카오 로그인 버튼 (공식 디자인 가이드라인 적용)
                 KakaoLoginButton(
-                  onPressed: authState.isLoading ? null : _handleKakaoLogin,
+                  onPressed: authState.isLoading
+                      ? null
+                      : () async {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          await ref
+                              .read(authViewModelProvider.notifier)
+                              .loginWithKakao();
+                        },
                   isLoading: false,
                 ),
 
@@ -250,16 +247,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // 네이버 로그인 버튼 (공식 디자인 가이드라인 적용)
                 NaverLoginButton(
-                  onPressed: authState.isLoading ? null : _handleNaverLogin,
+                  onPressed: authState.isLoading
+                      ? null
+                      : () async {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          await ref
+                              .read(authViewModelProvider.notifier)
+                              .loginWithNaver();
+                        },
                   isLoading: false,
                 ),
 
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
 
                 // 회원가입 링크
-                LinkRegister(onTap: _handleSignUp),
+                // 회원가입 링크
+                LinkRegister(
+                  onTap: () => context.push(RouteNames.register),
+                ),
 
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
               ],
             ),
           ),
