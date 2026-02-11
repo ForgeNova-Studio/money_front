@@ -136,19 +136,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     // 인증 상태 관리
     final authState = ref.watch(authViewModelProvider);
-    
+
     // ViewModel 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
       // 다른 화면으로 이동할 때는 리스너를 건너뜀
       final isCurrent = ModalRoute.of(context)?.isCurrent ?? true;
-      debugPrint('[LoginScreen] listener - isCurrent: $isCurrent, errorMessage: ${next.errorMessage}');
+      debugPrint(
+          '[LoginScreen] listener - isCurrent: $isCurrent, errorMessage: ${next.errorMessage}');
 
       if (!isCurrent) return;
-      // 로그인 성공 시 홈 화면으로 이동
-      if (next.isAuthenticated && next.user != null) {
-        // 명시적으로 홈 화면으로 이동 (redirect 로직도 백업으로 유지됨)
-        context.go(RouteNames.home);
-      }
 
       // 에러 발생 시
       if (next.errorMessage != null &&
