@@ -154,6 +154,16 @@ class _AuthInterceptor extends Interceptor {
         return handler.next(err);
       }
 
+      // 3-1. 이미 로그아웃된 상태(토큰 삭제됨)에서의 401은 조용히 에러 전달
+      // (로그아웃 후 Provider invalidate로 인한 불필요한 API 호출 방지)
+      final currentToken = await localDataSource.getToken();
+      if (currentToken == null || currentToken.refreshToken.isEmpty) {
+        if (kDebugMode) {
+          debugPrint('[AuthInterceptor] 401 발생했으나 토큰이 이미 삭제됨 → 갱신 생략');
+        }
+        return handler.next(err);
+      }
+
       // 4. 토큰 갱신 시도
       try {
         if (kDebugMode) {
