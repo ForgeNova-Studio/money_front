@@ -4,13 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 // core
-import 'package:moamoa/core/constants/app_constants.dart';
+
 import 'package:moamoa/core/validators/input_validator.dart';
 import 'package:moamoa/router/route_names.dart';
 
 // widgets
-import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
-import 'package:moamoa/features/auth/presentation/widgets/password_rule_checklist.dart';
+import 'package:moamoa/features/auth/presentation/widgets/reset_password/reset_password_title.dart';
+import 'package:moamoa/features/auth/presentation/widgets/reset_password/reset_password_form.dart';
 
 // viewmodels
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
@@ -29,8 +29,6 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
   String _password = '';
   String _confirmPassword = '';
   String? _confirmError;
@@ -40,9 +38,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     super.initState();
     // 화면 진입 시 이전 화면의 SnackBar 제거
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      }
+      context.hideToast();
     });
   }
 
@@ -186,90 +182,18 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 24),
-                  Text(
-                    '비밀번호 재설정',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: context.appColors.textPrimary,
-                      height: 1.3,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    '새로운 비밀번호를 입력해주세요.',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: context.appColors.textSecondary,
-                      height: 1.5,
-                    ),
-                  ),
+                  const ResetPasswordTitle(),
                   const SizedBox(height: 40),
-                  CustomTextField(
-                    controller: _passwordController,
-                    hintText: '새 비밀번호',
-                    isPassword: true,
-                    isPasswordVisible: _isPasswordVisible,
-                    onChanged: _updatePassword,
-                    onVisibilityToggle: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    controller: _confirmPasswordController,
-                    hintText: '새 비밀번호 확인',
-                    isPassword: true,
-                    isPasswordVisible: _isConfirmPasswordVisible,
-                    errorText: _confirmError,
-                    onChanged: _updateConfirmPassword,
-                    onVisibilityToggle: () {
-                      setState(() {
-                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  PasswordRuleChecklist(
+                  ResetPasswordForm(
+                    passwordController: _passwordController,
+                    confirmPasswordController: _confirmPasswordController,
                     password: _password,
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed:
-                          authState.isLoading ? null : _handleResetPassword,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: colorScheme.onPrimary,
-                        disabledBackgroundColor: colorScheme.primaryContainer,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: authState.isLoading
-                          ? SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  colorScheme.onPrimary,
-                                ),
-                              ),
-                            )
-                          : const Text(
-                              '비밀번호 변경',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                    ),
+                    confirmPassword: _confirmPassword,
+                    confirmError: _confirmError,
+                    onPasswordChanged: _updatePassword,
+                    onConfirmPasswordChanged: _updateConfirmPassword,
+                    onSubmit: _handleResetPassword,
+                    isLoading: authState.isLoading,
                   ),
                 ],
               ),
