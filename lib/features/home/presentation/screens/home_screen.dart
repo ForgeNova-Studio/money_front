@@ -10,6 +10,8 @@ import 'package:moamoa/core/constants/app_constants.dart';
 
 // features
 import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
+import 'package:moamoa/features/expense/presentation/utils/expense_category_utils.dart';
+import 'package:moamoa/features/income/presentation/utils/income_category_utils.dart';
 import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moamoa/features/common/providers/ui_overlay_providers.dart';
@@ -151,11 +153,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     }
 
     // 삭제 확인 다이얼로그
+    final isExpense = transaction.type == TransactionType.expense;
+    String displayTitle = transaction.title;
+
+    // 타이틀이 카테고리 ID와 같다면(사용자 입력 설명이 없다면) 한글명으로 변환
+    if (!transaction.hasDescription) {
+      displayTitle = isExpense
+          ? resolveExpenseCategoryLabel(transaction.category)
+          : resolveIncomeCategoryLabel(transaction.category);
+    }
+
     final shouldDelete = await showDialog<bool>(
       context: context,
       barrierColor: AppColors.black54,
       builder: (context) => DeleteConfirmDialog(
-        title: transaction.title,
+        title: displayTitle,
       ),
     );
 
