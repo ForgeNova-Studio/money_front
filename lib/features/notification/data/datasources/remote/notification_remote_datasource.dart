@@ -10,6 +10,7 @@ abstract class NotificationRemoteDataSource {
   Future<List<NotificationModel>> getNotifications({
     int page = 0,
     int size = 20,
+    int? days,
   });
 
   /// 알림 읽음 처리
@@ -39,14 +40,20 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   Future<List<NotificationModel>> getNotifications({
     int page = 0,
     int size = 20,
+    int? days,
   }) async {
     try {
+      final queryParams = <String, dynamic>{
+        'page': page,
+        'size': size,
+      };
+      if (days != null) {
+        queryParams['days'] = days;
+      }
+
       final response = await dio.get(
         ApiConstants.notifications,
-        queryParameters: {
-          'page': page,
-          'size': size,
-        },
+        queryParameters: queryParams,
       );
 
       // Spring Page 응답에서 content 추출
