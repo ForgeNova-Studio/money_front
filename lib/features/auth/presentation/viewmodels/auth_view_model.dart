@@ -320,22 +320,6 @@ class AuthViewModel extends _$AuthViewModel {
     state = AuthState.unauthenticated(errorMessage: errorMessage);
   }
 
-  /// 현재 사용자 정보 새로고침
-  Future<void> refreshUser() async {
-    try {
-      final useCase = ref.read(getCurrentUserUseCaseProvider);
-      final user = await useCase();
-
-      if (user != null) {
-        state = AuthState.authenticated(user: user);
-      } else {
-        state = AuthState.unauthenticated();
-      }
-    } catch (e) {
-      // 에러 발생 시 현재 상태 유지
-    }
-  }
-
   /// 비밀번호 재설정 인증번호 전송
   Future<void> sendPasswordResetCode(String email) async {
     await _handleAuthRequest(() async {

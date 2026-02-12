@@ -9,7 +9,7 @@ import 'package:moamoa/features/auth/data/repositories/auth_repository_impl.dart
 import 'package:moamoa/features/auth/domain/repositories/auth_repository.dart';
 
 // usecases
-import 'package:moamoa/features/auth/domain/usecases/get_current_user_usecase.dart';
+
 import 'package:moamoa/features/auth/domain/usecases/google_login_usecase.dart';
 import 'package:moamoa/features/auth/domain/usecases/login_usecase.dart';
 import 'package:moamoa/features/auth/domain/usecases/logout_usecase.dart';
@@ -19,7 +19,7 @@ import 'package:moamoa/features/auth/domain/usecases/register_usecase.dart';
 import 'package:moamoa/features/auth/domain/usecases/reset_password_usecase.dart';
 import 'package:moamoa/features/auth/domain/usecases/send_password_reset_code_usecase.dart';
 import 'package:moamoa/features/auth/domain/usecases/send_signup_code_usecase.dart';
-import 'package:moamoa/features/auth/domain/usecases/verifiy_find_password_code_usecase.dart';
+import 'package:moamoa/features/auth/domain/usecases/verify_find_password_code_usecase.dart';
 import 'package:moamoa/features/auth/domain/usecases/verify_signup_code_usecase.dart';
 
 // providers/states
@@ -90,12 +90,6 @@ LogoutUseCase logoutUseCase(Ref ref) {
   return LogoutUseCase(ref.read(authRepositoryProvider));
 }
 
-/// Get Current User UseCase Provider
-@riverpod
-GetCurrentUserUseCase getCurrentUserUseCase(Ref ref) {
-  return GetCurrentUserUseCase(ref.read(authRepositoryProvider));
-}
-
 /// Google Login UseCase Provider
 @riverpod
 GoogleLoginUseCase googleLoginUseCase(Ref ref) {
@@ -134,8 +128,8 @@ SendPasswordResetCodeUseCase sendPasswordResetCodeUseCase(Ref ref) {
 
 /// Verify Password Code UseCase Provider
 @riverpod
-VerifiyFindPasswordCodeUsecase verifyFindPasswordCodeUseCase(Ref ref) {
-  return VerifiyFindPasswordCodeUsecase(ref.read(authRepositoryProvider));
+VerifyFindPasswordCodeUseCase verifyFindPasswordCodeUseCase(Ref ref) {
+  return VerifyFindPasswordCodeUseCase(ref.read(authRepositoryProvider));
 }
 
 /// Reset Password UseCase Provider

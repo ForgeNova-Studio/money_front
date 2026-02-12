@@ -10,10 +10,10 @@ import 'package:moamoa/core/validators/input_validator.dart';
 /// 이메일로 전송된 인증번호를 검증
 /// - 인증번호 형식 검증 (6자리 숫자)
 /// - Repository를 통한 백엔드 검증
-class VerifiyFindPasswordCodeUsecase {
+class VerifyFindPasswordCodeUseCase {
   final AuthRepository _repository;
 
-  VerifiyFindPasswordCodeUsecase(this._repository);
+  VerifyFindPasswordCodeUseCase(this._repository);
 
   /// 인증번호 검증 실행
   ///
