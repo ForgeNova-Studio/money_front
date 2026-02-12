@@ -71,6 +71,7 @@ class ExpenseViewModel extends _$ExpenseViewModel {
     if (existingExpense != null && expenseId != null) {
       // === 수정 ===
       final updated = existingExpense.copyWith(
+        expenseId: expenseId,
         amount: amount,
         date: date,
         category: category,
@@ -79,11 +80,7 @@ class ExpenseViewModel extends _$ExpenseViewModel {
         paymentMethod: paymentMethod,
       );
 
-      final updateUseCase = ref.read(updateExpenseUseCaseProvider);
-      await updateUseCase(
-        expenseId: existingExpense.expenseId ?? expenseId,
-        expense: updated,
-      );
+      await updateExpense(expense: updated);
     } else {
       // === 신규 등록 ===
       final expense = Expense(
@@ -116,6 +113,14 @@ class ExpenseViewModel extends _$ExpenseViewModel {
     final request = expense.copyWith(accountBookId: selectedAccountBookId);
 
     await createUseCase(request);
+  }
+
+  /// 지출 수정
+  Future<void> updateExpense({
+    required Expense expense,
+  }) async {
+    final updateUseCase = ref.read(updateExpenseUseCaseProvider);
+    await updateUseCase(expenseId: expense.expenseId!, expense: expense);
   }
 
   /// 총 금액 계산

@@ -8,12 +8,81 @@ part of 'income_view_model.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// 수입 기능의 비즈니스 로직을 관리하는 ViewModel
+///
+/// 수입 목록 조회, 상세 조회, 등록/수정을 처리하며,
+/// 성공 시 [HomeViewModel] 데이터를 자동으로 갱신합니다.
+///
+/// **주요 기능:**
+/// - 월간 수입 목록 조회 및 정렬 ([loadIncome])
+/// - 수입 상세 조회 ([getIncomeDetail])
+/// - 수입 등록/수정 통합 처리 ([submitIncome])
+/// - 수입 생성 시 가계부 ID 자동 주입 ([createIncome])
+///
+/// **사용 예시:**
+/// ```dart
+/// // 목록 조회
+/// ref.read(incomeViewModelProvider.notifier).loadIncome();
+///
+/// // 등록
+/// ref.read(incomeViewModelProvider.notifier).submitIncome(
+///   amount: 3000000,
+///   date: DateTime.now(),
+///   source: 'SALARY',
+/// );
+/// ```
 
 @ProviderFor(IncomeViewModel)
 const incomeViewModelProvider = IncomeViewModelProvider._();
 
+/// 수입 기능의 비즈니스 로직을 관리하는 ViewModel
+///
+/// 수입 목록 조회, 상세 조회, 등록/수정을 처리하며,
+/// 성공 시 [HomeViewModel] 데이터를 자동으로 갱신합니다.
+///
+/// **주요 기능:**
+/// - 월간 수입 목록 조회 및 정렬 ([loadIncome])
+/// - 수입 상세 조회 ([getIncomeDetail])
+/// - 수입 등록/수정 통합 처리 ([submitIncome])
+/// - 수입 생성 시 가계부 ID 자동 주입 ([createIncome])
+///
+/// **사용 예시:**
+/// ```dart
+/// // 목록 조회
+/// ref.read(incomeViewModelProvider.notifier).loadIncome();
+///
+/// // 등록
+/// ref.read(incomeViewModelProvider.notifier).submitIncome(
+///   amount: 3000000,
+///   date: DateTime.now(),
+///   source: 'SALARY',
+/// );
+/// ```
 final class IncomeViewModelProvider
     extends $NotifierProvider<IncomeViewModel, IncomeState> {
+  /// 수입 기능의 비즈니스 로직을 관리하는 ViewModel
+  ///
+  /// 수입 목록 조회, 상세 조회, 등록/수정을 처리하며,
+  /// 성공 시 [HomeViewModel] 데이터를 자동으로 갱신합니다.
+  ///
+  /// **주요 기능:**
+  /// - 월간 수입 목록 조회 및 정렬 ([loadIncome])
+  /// - 수입 상세 조회 ([getIncomeDetail])
+  /// - 수입 등록/수정 통합 처리 ([submitIncome])
+  /// - 수입 생성 시 가계부 ID 자동 주입 ([createIncome])
+  ///
+  /// **사용 예시:**
+  /// ```dart
+  /// // 목록 조회
+  /// ref.read(incomeViewModelProvider.notifier).loadIncome();
+  ///
+  /// // 등록
+  /// ref.read(incomeViewModelProvider.notifier).submitIncome(
+  ///   amount: 3000000,
+  ///   date: DateTime.now(),
+  ///   source: 'SALARY',
+  /// );
+  /// ```
   const IncomeViewModelProvider._()
       : super(
           from: null,
@@ -41,7 +110,31 @@ final class IncomeViewModelProvider
   }
 }
 
-String _$incomeViewModelHash() => r'4b5fc7ccedb951ce6d07e17e396b495fd3ef5fc0';
+String _$incomeViewModelHash() => r'48ccd9815a6caea7295df7bb68dee74eaaf4b9d9';
+
+/// 수입 기능의 비즈니스 로직을 관리하는 ViewModel
+///
+/// 수입 목록 조회, 상세 조회, 등록/수정을 처리하며,
+/// 성공 시 [HomeViewModel] 데이터를 자동으로 갱신합니다.
+///
+/// **주요 기능:**
+/// - 월간 수입 목록 조회 및 정렬 ([loadIncome])
+/// - 수입 상세 조회 ([getIncomeDetail])
+/// - 수입 등록/수정 통합 처리 ([submitIncome])
+/// - 수입 생성 시 가계부 ID 자동 주입 ([createIncome])
+///
+/// **사용 예시:**
+/// ```dart
+/// // 목록 조회
+/// ref.read(incomeViewModelProvider.notifier).loadIncome();
+///
+/// // 등록
+/// ref.read(incomeViewModelProvider.notifier).submitIncome(
+///   amount: 3000000,
+///   date: DateTime.now(),
+///   source: 'SALARY',
+/// );
+/// ```
 
 abstract class _$IncomeViewModel extends $Notifier<IncomeState> {
   IncomeState build();

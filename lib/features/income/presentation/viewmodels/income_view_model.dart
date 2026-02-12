@@ -9,6 +9,29 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'income_view_model.g.dart';
 
+/// 수입 기능의 비즈니스 로직을 관리하는 ViewModel
+///
+/// 수입 목록 조회, 상세 조회, 등록/수정을 처리하며,
+/// 성공 시 [HomeViewModel] 데이터를 자동으로 갱신합니다.
+///
+/// **주요 기능:**
+/// - 월간 수입 목록 조회 및 정렬 ([loadIncome])
+/// - 수입 상세 조회 ([getIncomeDetail])
+/// - 수입 등록/수정 통합 처리 ([submitIncome])
+/// - 수입 생성 시 가계부 ID 자동 주입 ([createIncome])
+///
+/// **사용 예시:**
+/// ```dart
+/// // 목록 조회
+/// ref.read(incomeViewModelProvider.notifier).loadIncome();
+///
+/// // 등록
+/// ref.read(incomeViewModelProvider.notifier).submitIncome(
+///   amount: 3000000,
+///   date: DateTime.now(),
+///   source: 'SALARY',
+/// );
+/// ```
 @riverpod
 class IncomeViewModel extends _$IncomeViewModel {
   @override
@@ -69,17 +92,14 @@ class IncomeViewModel extends _$IncomeViewModel {
     if (existingIncome != null && incomeId != null) {
       // === 수정 ===
       final updated = existingIncome.copyWith(
+        incomeId: incomeId,
         amount: amount,
         date: date,
         source: source,
         description: description,
       );
 
-      final updateUseCase = ref.read(updateIncomeUsecaseProvider);
-      await updateUseCase(
-        incomeId: existingIncome.incomeId ?? incomeId,
-        income: updated,
-      );
+      await updateIncome(income: updated);
     } else {
       // === 신규 등록 ===
       final income = Income(
@@ -110,6 +130,14 @@ class IncomeViewModel extends _$IncomeViewModel {
     final request = income.copyWith(accountBookId: selectedAccountBookId);
 
     await createUseCase(income: request);
+  }
+
+  /// 수입 수정
+  Future<void> updateIncome({
+    required Income income,
+  }) async {
+    final updateUseCase = ref.read(updateIncomeUsecaseProvider);
+    await updateUseCase(incomeId: income.incomeId!, income: income);
   }
 
   /// 총 금액 계산
