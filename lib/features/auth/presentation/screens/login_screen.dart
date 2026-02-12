@@ -5,9 +5,9 @@ import 'package:go_router/go_router.dart';
 
 // cores
 
-import 'package:moamoa/features/auth/presentation/widgets/google_login_button.dart';
-import 'package:moamoa/features/auth/presentation/widgets/kakao_login_button.dart';
-import 'package:moamoa/features/auth/presentation/widgets/naver_login_button.dart';
+import 'package:moamoa/features/auth/presentation/widgets/social_login_widgets/google_login_button.dart';
+import 'package:moamoa/features/auth/presentation/widgets/social_login_widgets/kakao_login_button.dart';
+import 'package:moamoa/features/auth/presentation/widgets/social_login_widgets/naver_login_button.dart';
 import 'package:moamoa/router/route_names.dart';
 
 // widgets
