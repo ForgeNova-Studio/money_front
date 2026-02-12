@@ -25,8 +25,7 @@ class IncomeSourceEntry extends StatelessWidget {
           FocusManager.instance.primaryFocus?.unfocus();
           onTap();
         },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+        child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           decoration: transactionFormCardDecoration(
             context,
@@ -53,6 +52,7 @@ class IncomeSourceEntry extends StatelessWidget {
                     height: 20,
                     fit: BoxFit.contain,
                     color: isSelected ? Colors.white : source.color,
+                    gaplessPlayback: true,
                   ),
                 ),
               ),

@@ -63,10 +63,10 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     }
 
     // 화면 진입시 키보드 올리기
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _amountFocusNode.requestFocus();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (!mounted) return;
+    //   _amountFocusNode.requestFocus();
+    // });
   }
 
   @override
@@ -266,7 +266,8 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
+
                             // 1. 금액 입력 필드
                             AmountInputCard(
                               controller: _amountController,
@@ -276,6 +277,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                               unitColor: context.appColors.textPrimary,
                               maxDigits: 12, // 입력 허용 최대 자릿수
                             ),
+
                             const SizedBox(height: 24),
 
                             // 2. 날짜 선택 필드
@@ -283,6 +285,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                               selectedDate: _selectedDate,
                               onTap: () => _selectDate(context),
                             ),
+
                             const SizedBox(height: 28),
 
                             // 3. 메모 필드
@@ -296,6 +299,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                 multiline: true,
                               ),
                             ),
+
                             const SizedBox(height: 28),
 
                             // 4. Source Selection
@@ -307,9 +311,6 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                 });
                               },
                             ),
-                            const SizedBox(height: 28),
-
-                            const SizedBox(height: 48),
                           ],
                         ),
                       ),

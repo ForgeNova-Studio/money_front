@@ -36,6 +36,19 @@ class IncomeSourceItem {
     required this.imagePath,
     required this.color,
   });
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is IncomeSourceItem &&
+        other.code == code &&
+        other.name == name &&
+        other.icon == icon &&
+        other.imagePath == imagePath &&
+        other.color == color;
+  }
+
+  @override
+  int get hashCode => Object.hash(code, name, icon, imagePath, color);
 }
 
 /// 사용 가능한 수입원 목록을 생성하여 반환하는 함수.
