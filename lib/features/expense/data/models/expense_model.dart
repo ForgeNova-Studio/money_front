@@ -8,6 +8,24 @@ part 'expense_model.freezed.dart';
 part 'expense_model.g.dart';
 
 @freezed
+
+/// 지출 데이터 모델 (DTO)
+///
+/// API 통신 시 사용되는 데이터 전송 객체입니다.
+/// JSON 직렬화/역직렬화를 지원하며, Domain Entity와의 변환 메서드를 제공합니다.
+///
+/// **주요 기능:**
+/// - JSON <-> Model 변환
+/// - Model <-> Entity 변환 ([toEntity], [fromEntity])
+///
+/// **주요 속성:**
+/// - [expenseId], [amount], [date] 등 지출 데이터 필드
+///
+/// **사용 예시:**
+/// ```dart
+/// final model = ExpenseModel.fromJson(json);
+/// final entity = model.toEntity();
+/// ```
 sealed class ExpenseModel with _$ExpenseModel {
   const ExpenseModel._();
 

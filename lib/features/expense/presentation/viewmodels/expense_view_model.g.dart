@@ -8,12 +8,84 @@ part of 'expense_view_model.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// 지출 기능의 비즈니스 로직을 관리하는 ViewModel
+///
+/// 지출 목록 조회, 상세 조회, 등록, 수정을 처리하며,
+/// 성공 시 [HomeViewModel] 데이터를 자동으로 갱신합니다.
+///
+/// **주요 기능:**
+/// - 월간 지출 목록 조회 및 정렬 ([loadExpenses])
+/// - 지출 상세 조회 ([getExpenseDetail])
+/// - 지출 등록/수정 통합 처리 ([submitExpense])
+/// - 지출 생성 시 가계부 ID 자동 주입 ([createExpense])
+///
+/// **사용 예시:**
+/// ```dart
+/// // 목록 조회
+/// ref.read(expenseViewModelProvider.notifier).loadExpenses();
+///
+/// // 등록
+/// ref.read(expenseViewModelProvider.notifier).submitExpense(
+///   amount: 15000,
+///   date: DateTime.now(),
+///   category: 'FOOD',
+///   paymentMethod: 'CARD',
+/// );
+/// ```
 
 @ProviderFor(ExpenseViewModel)
 const expenseViewModelProvider = ExpenseViewModelProvider._();
 
+/// 지출 기능의 비즈니스 로직을 관리하는 ViewModel
+///
+/// 지출 목록 조회, 상세 조회, 등록, 수정을 처리하며,
+/// 성공 시 [HomeViewModel] 데이터를 자동으로 갱신합니다.
+///
+/// **주요 기능:**
+/// - 월간 지출 목록 조회 및 정렬 ([loadExpenses])
+/// - 지출 상세 조회 ([getExpenseDetail])
+/// - 지출 등록/수정 통합 처리 ([submitExpense])
+/// - 지출 생성 시 가계부 ID 자동 주입 ([createExpense])
+///
+/// **사용 예시:**
+/// ```dart
+/// // 목록 조회
+/// ref.read(expenseViewModelProvider.notifier).loadExpenses();
+///
+/// // 등록
+/// ref.read(expenseViewModelProvider.notifier).submitExpense(
+///   amount: 15000,
+///   date: DateTime.now(),
+///   category: 'FOOD',
+///   paymentMethod: 'CARD',
+/// );
+/// ```
 final class ExpenseViewModelProvider
     extends $NotifierProvider<ExpenseViewModel, ExpenseState> {
+  /// 지출 기능의 비즈니스 로직을 관리하는 ViewModel
+  ///
+  /// 지출 목록 조회, 상세 조회, 등록, 수정을 처리하며,
+  /// 성공 시 [HomeViewModel] 데이터를 자동으로 갱신합니다.
+  ///
+  /// **주요 기능:**
+  /// - 월간 지출 목록 조회 및 정렬 ([loadExpenses])
+  /// - 지출 상세 조회 ([getExpenseDetail])
+  /// - 지출 등록/수정 통합 처리 ([submitExpense])
+  /// - 지출 생성 시 가계부 ID 자동 주입 ([createExpense])
+  ///
+  /// **사용 예시:**
+  /// ```dart
+  /// // 목록 조회
+  /// ref.read(expenseViewModelProvider.notifier).loadExpenses();
+  ///
+  /// // 등록
+  /// ref.read(expenseViewModelProvider.notifier).submitExpense(
+  ///   amount: 15000,
+  ///   date: DateTime.now(),
+  ///   category: 'FOOD',
+  ///   paymentMethod: 'CARD',
+  /// );
+  /// ```
   const ExpenseViewModelProvider._()
       : super(
           from: null,
@@ -42,6 +114,31 @@ final class ExpenseViewModelProvider
 }
 
 String _$expenseViewModelHash() => r'a5ad6c3c93470ddf187391423c2cc0979d4c7b44';
+
+/// 지출 기능의 비즈니스 로직을 관리하는 ViewModel
+///
+/// 지출 목록 조회, 상세 조회, 등록, 수정을 처리하며,
+/// 성공 시 [HomeViewModel] 데이터를 자동으로 갱신합니다.
+///
+/// **주요 기능:**
+/// - 월간 지출 목록 조회 및 정렬 ([loadExpenses])
+/// - 지출 상세 조회 ([getExpenseDetail])
+/// - 지출 등록/수정 통합 처리 ([submitExpense])
+/// - 지출 생성 시 가계부 ID 자동 주입 ([createExpense])
+///
+/// **사용 예시:**
+/// ```dart
+/// // 목록 조회
+/// ref.read(expenseViewModelProvider.notifier).loadExpenses();
+///
+/// // 등록
+/// ref.read(expenseViewModelProvider.notifier).submitExpense(
+///   amount: 15000,
+///   date: DateTime.now(),
+///   category: 'FOOD',
+///   paymentMethod: 'CARD',
+/// );
+/// ```
 
 abstract class _$ExpenseViewModel extends $Notifier<ExpenseState> {
   ExpenseState build();

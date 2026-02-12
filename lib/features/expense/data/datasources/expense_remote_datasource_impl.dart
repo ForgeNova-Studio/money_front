@@ -5,6 +5,20 @@ import 'package:moamoa/features/expense/data/datasources/expense_remote_datasour
 import 'package:moamoa/features/expense/data/models/expense_list_response_model.dart';
 import 'package:moamoa/features/expense/data/models/expense_model.dart';
 
+/// Expense Remote DataSource 구현체
+///
+/// [Dio]를 사용하여 실제 백엔드 API와 통신합니다.
+///
+/// **주요 기능:**
+/// - [ExpenseRemoteDataSource] 인터페이스 구현
+/// - API 요청 구성 및 전송
+/// - 응답 데이터(JSON)를 [ExpenseModel]로 변환하여 반환
+/// - [DioException] 발생 시 [ExceptionHandler]를 통한 예외 처리
+///
+/// **사용 예시:**
+/// ```dart
+/// final dataSource = ExpenseRemoteDataSourceImpl(dio: dioInstance);
+/// ```
 class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
   final Dio dio;
 

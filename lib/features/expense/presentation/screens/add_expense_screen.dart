@@ -25,6 +25,30 @@ import 'package:moamoa/features/common/widgets/transaction_form/transaction_form
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_text_field.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
 
+/// 지출 등록/수정 화면
+///
+/// 지출 금액, 날짜, 카테고리, 메모, 결제 수단을 입력받아 지출을 등록하거나 수정합니다.
+/// [expenseId]가 전달되면 수정 모드로 동작하며, 기존 데이터를 불러와 폼에 채웁니다.
+///
+/// **주요 기능:**
+/// - 금액 입력 (콤마 포맷팅, 최대 12자리)
+/// - 날짜 선택 (DatePicker)
+/// - 지출 카테고리 선택 ([ExpenseCategoryGrid])
+/// - 결제 수단 선택 (현금/카드)
+/// - [ExpenseViewModel]을 통한 등록/수정 처리
+///
+/// **주요 파라미터:**
+/// - [initialDate]: 홈 화면에서 선택된 날짜 (기본값: 오늘)
+/// - [expenseId]: 수정할 지출의 ID (null이면 신규 등록)
+///
+/// **사용 예시:**
+/// ```dart
+/// // 신규 등록
+/// AddExpenseScreen(initialDate: DateTime.now());
+///
+/// // 수정
+/// AddExpenseScreen(expenseId: 'exp123');
+/// ```
 class AddExpenseScreen extends ConsumerStatefulWidget {
   final DateTime? initialDate;
   final String? expenseId;
@@ -39,6 +63,17 @@ class AddExpenseScreen extends ConsumerStatefulWidget {
   ConsumerState<AddExpenseScreen> createState() => _AddExpenseScreenState();
 }
 
+/// [AddExpenseScreen]의 상태 관리 클래스
+///
+/// 폼 컨트롤러, 날짜/카테고리 선택 상태를 관리하며,
+/// 비즈니스 로직은 [ExpenseViewModel]에 위임합니다.
+///
+/// **주요 책임:**
+/// - UI 상태 관리 (폼 컨트롤러, 포커스 노드, 날짜/카테고리 선택)
+/// - 수정 모드 시 기존 데이터 로드 및 폼 초기화 ([_loadExpense])
+/// - 금액 유효성 검사 ([_validateAmount])
+/// - 날짜 선택 다이얼로그 표시 ([_selectDate])
+/// - 폼 제출 시 ViewModel 호출 및 결과 피드백 ([_handleSubmit])
 class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();

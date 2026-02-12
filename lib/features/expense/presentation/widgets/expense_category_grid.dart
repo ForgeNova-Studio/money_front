@@ -3,6 +3,29 @@ import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/core/constants/expense_categories.dart';
 import 'package:moamoa/features/expense/presentation/widgets/expense_category_entry.dart';
 
+/// 지출 카테고리 선택 그리드 위젯
+///
+/// 사용자가 지출 카테고리를 선택할 수 있도록 그리드 형태로 카테고리 목록을 표시합니다.
+/// [DefaultExpenseCategories]에 정의된 모든 카테고리를 렌더링합니다.
+///
+/// **주요 기능:**
+/// - '카테고리' 섹션 타이틀 표시
+/// - 반응형 그리드 레이아웃 (한 줄에 3개씩 배치)
+/// - 각 카테고리 항목([ExpenseCategoryEntry]) 생성 및 상태 전달
+///
+/// **주요 파라미터:**
+/// - [selectedCategoryId]: 현재 선택된 카테고리의 ID
+/// - [onCategorySelected]: 카테고리 선택 시 호출되는 콜백 (선택된 ID 전달)
+///
+/// **사용 예시:**
+/// ```dart
+/// ExpenseCategoryGrid(
+///   selectedCategoryId: 'FOOD',
+///   onCategorySelected: (id) {
+///     print('Selected category: $id');
+///   },
+/// );
+/// ```
 class ExpenseCategoryGrid extends StatelessWidget {
   final String selectedCategoryId;
   final ValueChanged<String> onCategorySelected;

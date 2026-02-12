@@ -1,4 +1,26 @@
 /// 지출 엔티티
+///
+/// 사용자의 개별 지출 내역을 표현하는 핵심 도메인 객체입니다.
+/// 가계부 ID, 금액, 날짜, 카테고리 등 지출에 필요한 모든 정보를 포함하며 불변(Immutable) 객체로 설계되었습니다.
+///
+/// **주요 속성:**
+/// - [expenseId]: 지출 고유 식별자 (DB PK)
+/// - [amount]: 지출 금액 (원 단위)
+/// - [date]: 지출 일시
+/// - [category]: 지출 카테고리 코드 (예: FOOD, TRANSPORT)
+/// - [paymentMethod]: 결제 수단 (CARD, CASH)
+/// - [isAutoCategorized]: 자동 분류 여부
+///
+/// **사용 예시:**
+/// ```dart
+/// final expense = Expense(
+///   amount: 15000,
+///   date: DateTime.now(),
+///   category: 'FOOD',
+///   merchant: '김밥천국',
+///   paymentMethod: 'CARD',
+/// );
+/// ```
 class Expense {
   final String? expenseId;
   final String? userId;
