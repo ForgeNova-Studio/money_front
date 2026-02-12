@@ -26,12 +26,14 @@ class IncomeSourceItem {
   final String code;
   final String name;
   final IconData icon;
+  final String imagePath;
   final Color color;
 
   const IncomeSourceItem({
     required this.code,
     required this.name,
     required this.icon,
+    required this.imagePath,
     required this.color,
   });
 }
@@ -53,46 +55,56 @@ class IncomeSourceItem {
 /// ```
 class IncomeSourceDefinition {
   final String name;
-  final IconData icon;
+  final IconData
+      icon; // Keep icon as fallback or for places where image cannot be used
+  final String imagePath;
   final Color color;
 
   const IncomeSourceDefinition({
     required this.name,
     required this.icon,
+    required this.imagePath,
     required this.color,
   });
 }
+
+const String _basePath = 'assets/images/income';
 
 const Map<String, IncomeSourceDefinition> _incomeDefinitions = {
   IncomeSource.salary: IncomeSourceDefinition(
     name: '급여',
     icon: Icons.attach_money,
-    color: Color(
-        0xFF4CAF50), // Default green (will be overridden by context.appColors.income if needed)
+    imagePath: '$_basePath/icon_income_money.png',
+    color: Color(0xFF4CAF50),
   ),
   IncomeSource.sideIncome: IncomeSourceDefinition(
     name: '부수입',
     icon: Icons.work,
+    imagePath: '$_basePath/icon_income_coins.png',
     color: Color(0xFF2E7D32),
   ),
   IncomeSource.allowance: IncomeSourceDefinition(
     name: '용돈',
     icon: Icons.account_balance_wallet,
-    color: Color(0xFF8D6E63), // Brown tone example, adjusted below
+    imagePath: '$_basePath/icon_income_allowance.png',
+    color: Color(0xFF8D6E63),
   ),
   IncomeSource.bonus: IncomeSourceDefinition(
     name: '상여금',
     icon: Icons.card_giftcard,
+    imagePath: '$_basePath/icon_income_bonus.png',
     color: Color(0xFFF57C00),
   ),
   IncomeSource.investment: IncomeSourceDefinition(
     name: '투자수익',
     icon: Icons.trending_up,
+    imagePath: '$_basePath/icon_income_invest.png',
     color: Color(0xFF1565C0),
   ),
   IncomeSource.other: IncomeSourceDefinition(
     name: '기타',
     icon: Icons.more_horiz,
+    imagePath: '$_basePath/icon_elipsis.png',
     color: Color(0xFF6D4C41),
   ),
 };
@@ -106,7 +118,7 @@ List<IncomeSourceItem> buildIncomeSources(BuildContext context) {
   return [
     IncomeSource.salary,
     IncomeSource.sideIncome,
-    IncomeSource.allowance, // Added allowance here
+    IncomeSource.allowance,
     IncomeSource.bonus,
     IncomeSource.investment,
     IncomeSource.other,
@@ -120,6 +132,7 @@ List<IncomeSourceItem> buildIncomeSources(BuildContext context) {
       code: code,
       name: def.name,
       icon: def.icon,
+      imagePath: def.imagePath,
       color: color,
     );
   }).toList();
@@ -131,4 +144,8 @@ String resolveIncomeCategoryLabel(String source) {
 
 IconData resolveIncomeCategoryIcon(String source) {
   return getIncomeSourceDefinition(source)?.icon ?? Icons.attach_money;
+}
+
+String? resolveIncomeCategoryImage(String source) {
+  return getIncomeSourceDefinition(source)?.imagePath;
 }

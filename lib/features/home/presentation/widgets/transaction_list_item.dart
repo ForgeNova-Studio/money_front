@@ -70,6 +70,8 @@ class _TransactionListItemState extends State<TransactionListItem> {
     final amountStr = NumberFormat('#,###').format(transaction.amount);
     final categoryLabel = _resolveCategoryLabel(isExpense);
     final categoryIcon = _resolveCategoryIcon(isExpense);
+    final categoryImage =
+        isExpense ? null : resolveIncomeCategoryImage(transaction.category);
     final memo = transaction.memo;
 
     // title: 설명이 있으면 사용자 입력, 없으면 카테고리 한글 라벨
@@ -96,6 +98,7 @@ class _TransactionListItemState extends State<TransactionListItem> {
       child: _TransactionCard(
         onTap: widget.onTap,
         categoryIcon: categoryIcon,
+        categoryImage: categoryImage,
         isExpense: isExpense,
         title: displayTitle,
         subtitle: subtitle,
@@ -165,6 +168,7 @@ class _TransactionCard extends StatelessWidget {
   const _TransactionCard({
     required this.onTap,
     required this.categoryIcon,
+    this.categoryImage,
     required this.isExpense,
     required this.title,
     required this.subtitle,
@@ -174,6 +178,7 @@ class _TransactionCard extends StatelessWidget {
 
   final VoidCallback? onTap;
   final IconData categoryIcon;
+  final String? categoryImage;
   final bool isExpense;
   final String title;
   final String? subtitle;
@@ -201,13 +206,21 @@ class _TransactionCard extends StatelessWidget {
                   color: context.appColors.gray50,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  categoryIcon,
-                  color: isExpense
-                      ? context.appColors.textSecondary
-                      : context.appColors.success,
-                  size: 22,
-                ),
+                child: categoryImage != null
+                    ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.asset(
+                          categoryImage!,
+                          fit: BoxFit.contain,
+                        ),
+                      )
+                    : Icon(
+                        categoryIcon,
+                        color: isExpense
+                            ? context.appColors.textSecondary
+                            : context.appColors.success,
+                        size: 22,
+                      ),
               ),
               const SizedBox(width: 14),
               Expanded(

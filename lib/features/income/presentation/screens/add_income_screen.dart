@@ -78,15 +78,16 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     super.dispose();
   }
 
+  /// 수정일 경우, 수입 정보를 가져옴
   Future<void> _loadIncome() async {
     final incomeId = widget.incomeId;
-    if (incomeId == null) {
-      return;
-    }
+    if (incomeId == null) return;
+
     try {
       final income = await ref
           .read(getIncomeDetailUsecaseProvider)
           .call(incomeId: incomeId);
+
       if (!mounted) return;
       setState(() {
         _originalIncome = income;
@@ -361,12 +362,19 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                                                                 alpha: 0.12),
                                                     shape: BoxShape.circle,
                                                   ),
-                                                  child: Icon(
-                                                    source.icon,
-                                                    color: isSelected
-                                                        ? Colors.white
-                                                        : source.color,
-                                                    size: 18,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Image.asset(
+                                                      source.imagePath,
+                                                      width: 20,
+                                                      height: 20,
+                                                      fit: BoxFit.contain,
+                                                      color: isSelected
+                                                          ? Colors.white
+                                                          : source.color,
+                                                    ),
                                                   ),
                                                 ),
                                                 const SizedBox(height: 8),
