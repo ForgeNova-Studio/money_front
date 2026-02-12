@@ -81,6 +81,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   String _selectedSource = IncomeSource.salary;
   Income? _originalIncome;
   bool _isLoading = false;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -165,10 +166,13 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
 
   // 등록
   Future<void> _handleSubmit() async {
+    if (_isSubmitting) return;
     FocusManager.instance.primaryFocus?.unfocus();
     if (!_formKey.currentState!.validate()) {
       return;
     }
+
+    setState(() => _isSubmitting = true);
 
     final amount = int.parse(_amountController.text.replaceAll(',', ''));
     final description = _descriptionController.text.trim().isEmpty
@@ -192,6 +196,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
       }
     } catch (e) {
       if (mounted) {
+        setState(() => _isSubmitting = false);
         context.showErrorToast(
           widget.incomeId == null ? '수입 등록에 실패했습니다' : '수입 수정에 실패했습니다',
         );
@@ -293,7 +298,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                 FormSubmitButton(
                   isVisible: MediaQuery.of(context).viewInsets.bottom == 0,
                   label: isEditing ? '수정하기' : '등록하기',
-                  onPressed: _handleSubmit,
+                  onPressed: _isSubmitting ? null : _handleSubmit,
                 ),
               ],
             ),

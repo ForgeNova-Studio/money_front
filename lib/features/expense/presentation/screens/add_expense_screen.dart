@@ -51,6 +51,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   PaymentMethod _selectedPaymentMethod = PaymentMethod.cash;
   Expense? _originalExpense;
   bool _isLoading = false;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -137,10 +138,13 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   }
 
   Future<void> _handleSubmit() async {
+    if (_isSubmitting) return;
     FocusManager.instance.primaryFocus?.unfocus();
     if (!_formKey.currentState!.validate()) {
       return;
     }
+
+    setState(() => _isSubmitting = true);
 
     final amount = int.parse(_amountController.text.replaceAll(',', ''));
     final merchant = _merchantController.text.trim().isEmpty
@@ -171,6 +175,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       }
     } catch (e) {
       if (mounted) {
+        setState(() => _isSubmitting = false);
         context.showErrorToast(
           widget.expenseId == null ? '지출 등록에 실패했습니다' : '지출 수정에 실패했습니다',
         );
@@ -329,7 +334,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                 FormSubmitButton(
                   isVisible: MediaQuery.of(context).viewInsets.bottom == 0,
                   label: isEditing ? '수정하기' : '등록하기',
-                  onPressed: _handleSubmit,
+                  onPressed: _isSubmitting ? null : _handleSubmit,
                 ),
               ],
             ),
