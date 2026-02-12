@@ -169,6 +169,45 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
   }
 
+  void _handleEmailNotReceived() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('메일이 오지 않나요?',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('다음 사항을 확인해주세요:'),
+            const SizedBox(height: 12),
+            _buildCheckItem('스팸 메일함을 확인해주세요.'),
+            const SizedBox(height: 8),
+            _buildCheckItem('입력하신 이메일 주소가 정확한지 확인해주세요.'),
+            const SizedBox(height: 24),
+            const Text('여전히 메일이 오지 않는다면 재전송을 시도해주세요.'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('닫기', style: TextStyle(color: Colors.grey)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCheckItem(String text) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('• ', style: TextStyle(fontWeight: FontWeight.bold)),
+        Expanded(child: Text(text)),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -257,6 +296,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     controller: _verificationCodeController,
                     focusNode: _verificationCodeFocusNode,
                     onVerify: _handleVerifyCode,
+                    onEmailNotReceived: _handleEmailNotReceived,
                   ),
                 ],
 

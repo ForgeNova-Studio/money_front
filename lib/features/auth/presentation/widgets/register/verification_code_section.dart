@@ -13,7 +13,10 @@ class VerificationCodeSection extends StatelessWidget {
     required this.controller,
     required this.focusNode,
     required this.onVerify,
+    this.onEmailNotReceived,
   });
+
+  final VoidCallback? onEmailNotReceived;
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +73,33 @@ class VerificationCodeSection extends StatelessWidget {
             ),
           ),
         ),
+        if (onEmailNotReceived != null) ...[
+          const SizedBox(height: 8),
+          GestureDetector(
+            onTap: onEmailNotReceived,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: context.appColors.textSecondary,
+                      width: 1.0,
+                    ),
+                  ),
+                ),
+                child: Text(
+                  '메일이 오지 않나요?',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: context.appColors.textSecondary,
+                    height: 1.2,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
