@@ -117,27 +117,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           .read(registerViewModelProvider.notifier)
           .sendVerificationCode(_emailController.text);
 
-      if (mounted) {
-        // ScaffoldMessenger.of(context)
-        //   ..hideCurrentSnackBar()
-        //   ..showSnackBar(
-        //     SnackBar(content: Text('인증번호가 전송되었습니다.')),
-        //   );
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('인증번호 안내'),
-            content: const Text(
-              '이메일 발송 서비스 준비 중입니다.\n\n인증번호: 000000\n\n위 인증번호를 입력해주세요.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('확인'),
-              ),
-            ],
-          ),
-        );
+      // 성공 여부 확인 (에러가 있으면 isVerificationCodeSent가 false)
+      final formState = ref.read(registerViewModelProvider);
+      if (mounted && formState.isVerificationCodeSent) {
+        context.showToast('인증번호가 이메일로 전송되었습니다.');
         // 인증번호 전송 후 포커싱 처리
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
@@ -145,9 +128,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           }
         });
       }
+      // 에러가 있으면 ref.listen에서 에러 메시지가 표시됨
     } catch (e) {
       // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
-      // 174행에서 ref.listen으로 에러를 감지하여 처리
+      // ref.listen(authViewModelProvider)에서 에러를 감지하여 처리
       // try-catch는 UnhandledException 방지용
     }
   }

@@ -78,6 +78,12 @@ class RegisterViewModel extends _$RegisterViewModel {
       // AuthViewModel의 sendSignupCode 호출
       await ref.read(authViewModelProvider.notifier).sendSignupCode(email);
 
+      // 에러가 발생했는지 확인 (에러가 있으면 인증번호 전송 상태 업데이트 안 함)
+      final authState = ref.read(authViewModelProvider);
+      if (authState.errorMessage != null) {
+        return; // 에러가 있으면 여기서 종료
+      }
+
       // 성공 시 인증번호 전송 상태 업데이트
       state = state.copyWith(isVerificationCodeSent: true);
     } catch (e) {
