@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:moamoa/features/income/domain/entities/income.dart';
 import 'package:moamoa/features/income/presentation/providers/income_providers.dart';
 import 'package:moamoa/features/income/presentation/states/income_state.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
+import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'income_view_model.g.dart';
@@ -45,6 +49,87 @@ class IncomeViewModel extends _$IncomeViewModel {
     }
   }
 
+  /// 수입 상세 조회
+  Future<Income> getIncomeDetail(String incomeId) async {
+    final useCase = ref.read(getIncomeDetailUsecaseProvider);
+    return await useCase(incomeId: incomeId);
+  }
+
+  /// 수입 등록/수정 통합 메서드
+  ///
+  /// [existingIncome]이 null이면 신규 등록, 아니면 수정.
+  /// Optimistic Update → API 호출 → HomeViewModel 갱신을 일괄 처리합니다.
+  Future<void> submitIncome({
+    required int amount,
+    required DateTime date,
+    required String source,
+    String? description,
+    String? incomeId,
+    Income? existingIncome,
+  }) async {
+    final homeViewModel = ref.read(homeViewModelProvider.notifier);
+
+    if (existingIncome != null && incomeId != null) {
+      // === 수정 ===
+      final updated = existingIncome.copyWith(
+        amount: amount,
+        date: date,
+        source: source,
+        description: description,
+      );
+
+      // 1. Optimistic Update
+      final oldTransaction = TransactionEntity.fromIncome(existingIncome);
+      final newTransaction = TransactionEntity.fromIncome(
+        updated.copyWith(incomeId: existingIncome.incomeId ?? incomeId),
+      );
+      homeViewModel.updateTransactionOptimistically(
+        oldTransaction: oldTransaction,
+        newTransaction: newTransaction,
+      );
+
+      // 2. API 호출
+      final updateUseCase = ref.read(updateIncomeUsecaseProvider);
+      await updateUseCase(
+        incomeId: existingIncome.incomeId ?? incomeId,
+        income: updated,
+      );
+    } else {
+      // === 신규 등록 ===
+      final income = Income(
+        amount: amount,
+        date: date,
+        source: source,
+        description: description,
+      );
+
+      // 1. Optimistic Update
+      final optimisticTransaction = TransactionEntity(
+        id: '',
+        amount: amount,
+        date: date,
+        title: description ?? source,
+        category: source,
+        memo: null,
+        type: TransactionType.income,
+        createdAt: DateTime.now(),
+      );
+      homeViewModel.addTransactionOptimistically(optimisticTransaction);
+
+      // 2. API 호출
+      await createIncome(income);
+    }
+
+    // 3. 서버 데이터로 갱신
+    unawaited(homeViewModel.fetchMonthlyData(
+      date,
+      forceRefresh: true,
+    ));
+
+    // 4. 예산/자산 정보 갱신
+    homeViewModel.refreshBudgetAndAsset();
+  }
+
   /// 수입 생성
   Future<void> createIncome(Income income) async {
     // 선택된 가계부 ID 가져오기
@@ -56,25 +141,8 @@ class IncomeViewModel extends _$IncomeViewModel {
     final createUseCase = ref.read(createIncomeUsecaseProvider);
     final request = income.copyWith(accountBookId: selectedAccountBookId);
 
-    // 낙관적 업데이트 또는 로딩 표시를 할 수 있지만,
-    // 여기서는 심플하게 API 호출 후 목록을 다시 로드하는 방식을 사용
     await createUseCase(income: request);
-    // await loadIncome();
   }
-
-  /// 수입 상세 조회
-
-  /// 수입 수정
-  Future<void> updateIncome({
-    required String incomeId,
-    required Income income,
-  }) async {
-    final updateUseCase = ref.read(updateIncomeUsecaseProvider);
-    await updateUseCase(incomeId: incomeId, income: income);
-    // await loadIncome();
-  }
-
-  /// 수입 삭제
 
   /// 총 금액 계산
   int _calculateTotalAmount(List<Income> incomes) {

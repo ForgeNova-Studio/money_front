@@ -1,5 +1,4 @@
 // packages
-import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,14 +6,11 @@ import 'package:intl/intl.dart';
 
 // entities
 import 'package:moamoa/features/expense/domain/entities/expense.dart';
-import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 import 'package:moamoa/features/expense/domain/entities/payment_method.dart';
 import 'package:moamoa/features/expense/presentation/widgets/expense_category_grid.dart';
-import 'package:moamoa/features/expense/presentation/providers/expense_providers.dart';
 
 // viewmodels
 import 'package:moamoa/features/expense/presentation/viewmodels/expense_view_model.dart';
-import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/core/utils/toast_utils.dart';
 
 // constants
@@ -66,10 +62,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     }
 
     // 화면 진입시 키보드 올리기
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _amountFocusNode.requestFocus();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (!mounted) return;
+    //   _amountFocusNode.requestFocus();
+    // });
   }
 
   @override
@@ -87,8 +83,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       return;
     }
     try {
-      final expense =
-          await ref.read(getExpenseDetailUseCaseProvider).call(expenseId);
+      final expense = await ref
+          .read(expenseViewModelProvider.notifier)
+          .getExpenseDetail(expenseId);
+
       if (!mounted) return;
       setState(() {
         _originalExpense = expense;
@@ -145,85 +143,24 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     }
 
     final amount = int.parse(_amountController.text.replaceAll(',', ''));
+    final merchant = _merchantController.text.trim().isEmpty
+        ? null
+        : _merchantController.text.trim();
+    final memo = _memoController.text.trim().isEmpty
+        ? null
+        : _memoController.text.trim();
 
     try {
-      if (widget.expenseId != null) {
-        final base = _originalExpense;
-        if (base == null) {
-          return;
-        }
-        final updated = base.copyWith(
-          amount: amount,
-          date: _selectedDate,
-          category: _selectedCategory,
-          merchant: _merchantController.text.trim().isEmpty
-              ? null
-              : _merchantController.text.trim(),
-          memo: _memoController.text.trim().isEmpty
-              ? null
-              : _memoController.text.trim(),
-          paymentMethod: _selectedPaymentMethod.code,
-        );
-
-        // 1. Optimistic Update
-        final oldTransaction = TransactionEntity.fromExpense(base);
-        final newTransaction = TransactionEntity.fromExpense(
-            updated.copyWith(expenseId: base.expenseId ?? widget.expenseId));
-
-        ref
-            .read(homeViewModelProvider.notifier)
-            .updateTransactionOptimistically(
-              oldTransaction: oldTransaction,
-              newTransaction: newTransaction,
-            );
-
-        // 2. 백그라운드 API 호출
-        await ref.read(updateExpenseUseCaseProvider).call(
-            expenseId: base.expenseId ?? widget.expenseId!, expense: updated);
-      } else {
-        final expense = Expense(
-          amount: amount,
-          date: _selectedDate,
-          category: _selectedCategory,
-          merchant: _merchantController.text.trim().isEmpty
-              ? null
-              : _merchantController.text.trim(),
-          memo: _memoController.text.trim().isEmpty
-              ? null
-              : _memoController.text.trim(),
-          paymentMethod: _selectedPaymentMethod.code,
-        );
-
-        // 1. Optimistic Update: 먼저 로컬 상태 업데이트
-        final optimisticTransaction = TransactionEntity(
-          id: '', // 임시 ID (API 응답 후 갱신됨)
-          amount: amount,
-          date: _selectedDate,
-          title: expense.merchant ?? _selectedCategory,
-          category: _selectedCategory,
-          memo: expense.memo,
-          type: TransactionType.expense,
-          createdAt: DateTime.now(),
-        );
-        ref
-            .read(homeViewModelProvider.notifier)
-            .addTransactionOptimistically(optimisticTransaction);
-
-        // 2. 백그라운드에서 실제 API 호출
-        await ref
-            .read(expenseViewModelProvider.notifier)
-            .createExpense(expense);
-      }
-
-      // 3. 서버 데이터로 갱신 (실제 ID 포함)
-      final homeViewModel = ref.read(homeViewModelProvider.notifier);
-      unawaited(homeViewModel.fetchMonthlyData(
-        _selectedDate,
-        forceRefresh: true,
-      ));
-
-      // 4. 예산/자산 정보 갱신 (백그라운드)
-      homeViewModel.refreshBudgetAndAsset();
+      await ref.read(expenseViewModelProvider.notifier).submitExpense(
+            amount: amount,
+            date: _selectedDate,
+            category: _selectedCategory,
+            merchant: merchant,
+            memo: memo,
+            paymentMethod: _selectedPaymentMethod.code,
+            expenseId: widget.expenseId,
+            existingExpense: _originalExpense,
+          );
 
       if (mounted) {
         context.showToast(
@@ -233,7 +170,6 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         Navigator.of(context).pop(true);
       }
     } catch (e) {
-      // TODO: API 호출 실패 시 Optimistic Update를 롤백하는 로직 추가 필요 (이전 상태로 복구)
       if (mounted) {
         if (kDebugMode) {
           debugPrint(e.toString());

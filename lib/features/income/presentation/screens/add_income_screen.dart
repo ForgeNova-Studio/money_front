@@ -1,5 +1,4 @@
 // packages
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,19 +11,40 @@ import 'package:moamoa/features/common/widgets/transaction_form/date_picker_card
 import 'package:moamoa/features/common/widgets/transaction_form/form_submit_button.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_card.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_text_field.dart';
-import 'package:moamoa/features/income/presentation/providers/income_providers.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
 import 'package:moamoa/features/income/presentation/widgets/income_source_grid.dart';
 
 // features
 import 'package:moamoa/features/income/presentation/viewmodels/income_view_model.dart';
-import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/core/utils/toast_utils.dart';
 
 // entities
 import 'package:moamoa/features/income/domain/entities/income.dart';
-import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 
+/// 수입 등록/수정 화면
+///
+/// 수입 금액, 날짜, 카테고리, 메모를 입력받아 수입을 등록하거나 수정합니다.
+/// [incomeId]가 전달되면 수정 모드로 동작하며, 기존 데이터를 불러와 폼에 채웁니다.
+///
+/// **주요 기능:**
+/// - 금액 입력 (콤마 포맷팅, 최대 12자리)
+/// - 날짜 선택 (DatePicker)
+/// - 수입 카테고리 선택 (IncomeSourceGrid)
+/// - 메모 입력
+/// - IncomeViewModel을 통한 등록/수정 처리 및 Optimistic Update
+///
+/// **주요 파라미터:**
+/// - [initialDate]: 홈 화면에서 선택된 날짜 (기본값: 오늘)
+/// - [incomeId]: 수정할 수입의 ID (null이면 신규 등록)
+///
+/// **사용 예시:**
+/// ```dart
+/// // 신규 등록
+/// AddIncomeScreen(initialDate: DateTime.now());
+///
+/// // 수정
+/// AddIncomeScreen(incomeId: 'abc123');
+/// ```
 class AddIncomeScreen extends ConsumerStatefulWidget {
   final DateTime? initialDate;
   final String? incomeId;
@@ -39,6 +59,17 @@ class AddIncomeScreen extends ConsumerStatefulWidget {
   ConsumerState<AddIncomeScreen> createState() => _AddIncomeScreenState();
 }
 
+/// [AddIncomeScreen]의 상태 관리 클래스
+///
+/// 폼 컨트롤러, 날짜/카테고리 선택 상태를 관리하며,
+/// 비즈니스 로직은 [IncomeViewModel]에 위임합니다.
+///
+/// **주요 책임:**
+/// - UI 상태 관리 (폼 컨트롤러, 포커스 노드, 날짜/카테고리 선택)
+/// - 수정 모드 시 기존 데이터 로드 및 폼 초기화 ([_loadIncome])
+/// - 금액 유효성 검사 ([_validateAmount])
+/// - 날짜 선택 다이얼로그 표시 ([_selectDate])
+/// - 폼 제출 시 ViewModel 호출 및 결과 피드백 ([_handleSubmit])
 class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
@@ -84,8 +115,8 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
 
     try {
       final income = await ref
-          .read(getIncomeDetailUsecaseProvider)
-          .call(incomeId: incomeId);
+          .read(incomeViewModelProvider.notifier)
+          .getIncomeDetail(incomeId);
 
       if (!mounted) return;
       setState(() {
@@ -122,10 +153,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   // 금액 유효성 검사
   String? _validateAmount(String? value) {
     if (value == null || value.isEmpty) {
-      context.showErrorToast(
-        '금액을 입력하세요',
-        duration: const Duration(seconds: 2),
-      );
+      context.showErrorToast('금액을 입력하세요');
       return '';
     }
     final amount = int.tryParse(value.replaceAll(',', ''));
@@ -143,88 +171,26 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     }
 
     final amount = int.parse(_amountController.text.replaceAll(',', ''));
+    final description = _descriptionController.text.trim().isEmpty
+        ? null
+        : _descriptionController.text.trim();
 
     try {
-      if (widget.incomeId != null) {
-        final base = _originalIncome;
-        if (base == null) {
-          return;
-        }
-        final updated = base.copyWith(
-          amount: amount,
-          date: _selectedDate,
-          source: _selectedSource,
-          description: _descriptionController.text.trim().isEmpty
-              ? null
-              : _descriptionController.text.trim(),
-        );
-
-        // 1. Optimistic Update
-        final oldTransaction = TransactionEntity.fromIncome(base);
-        final newTransaction = TransactionEntity.fromIncome(
-            updated.copyWith(incomeId: base.incomeId ?? widget.incomeId));
-
-        ref
-            .read(homeViewModelProvider.notifier)
-            .updateTransactionOptimistically(
-              oldTransaction: oldTransaction,
-              newTransaction: newTransaction,
-            );
-
-        // 2. 백그라운드 API 호출
-        await ref.read(incomeViewModelProvider.notifier).updateIncome(
-              incomeId: base.incomeId ?? widget.incomeId!,
-              income: updated,
-            );
-      } else {
-        // Income 엔티티 작성
-        final income = Income(
-          amount: amount,
-          date: _selectedDate,
-          source: _selectedSource,
-          description: _descriptionController.text.trim().isEmpty
-              ? null
-              : _descriptionController.text.trim(),
-        );
-
-        // 1. Optimistic Update: 먼저 로컬 상태 업데이트
-        final optimisticTransaction = TransactionEntity(
-          id: '', // 임시 ID (API 응답 후 갱신됨)
-          amount: amount,
-          date: _selectedDate,
-          title: income.description ?? _selectedSource,
-          category: _selectedSource,
-          memo: null,
-          type: TransactionType.income,
-          createdAt: DateTime.now(),
-        );
-        ref
-            .read(homeViewModelProvider.notifier)
-            .addTransactionOptimistically(optimisticTransaction);
-
-        // 2. 백그라운드에서 실제 API 호출
-        await ref.read(incomeViewModelProvider.notifier).createIncome(income);
-      }
-
-      // 3. 서버 데이터로 갱신 (실제 ID 포함)
-      final homeViewModel = ref.read(homeViewModelProvider.notifier);
-      unawaited(homeViewModel.fetchMonthlyData(
-        _selectedDate,
-        forceRefresh: true,
-      ));
-
-      // 4. 예산/자산 정보 갱신 (백그라운드)
-      homeViewModel.refreshBudgetAndAsset();
+      await ref.read(incomeViewModelProvider.notifier).submitIncome(
+            amount: amount,
+            date: _selectedDate,
+            source: _selectedSource,
+            description: description,
+            incomeId: widget.incomeId,
+            existingIncome: _originalIncome,
+          );
 
       if (mounted) {
-        context.showToast(
-          widget.incomeId == null ? '수입이 등록되었습니다' : '수입이 수정되었습니다',
-          duration: const Duration(seconds: 2),
-        );
+        context
+            .showToast(widget.incomeId == null ? '수입이 등록되었습니다' : '수입이 수정되었습니다');
         Navigator.of(context).pop(true);
       }
     } catch (e) {
-      // TODO: API 호출 실패 시 Optimistic Update를 롤백하는 로직 추가 필요 (이전 상태로 복구)
       if (mounted && kDebugMode) {
         debugPrint(e.toString());
       }
@@ -302,7 +268,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
 
                             const SizedBox(height: 28),
 
-                            // 4. Source Selection
+                            // 4. 카테고리 그리드
                             IncomeSourceGrid(
                               selectedSourceCode: _selectedSource,
                               onSourceSelected: (code) {
