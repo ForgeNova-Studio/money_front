@@ -11,7 +11,7 @@ import 'package:moamoa/core/constants/app_constants.dart';
 // features
 import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
 import 'package:moamoa/features/expense/presentation/utils/expense_category_utils.dart';
-import 'package:moamoa/core/constants/income_sources.dart';
+import 'package:moamoa/features/income/presentation/utils/income_category_utils.dart';
 import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moamoa/features/common/providers/ui_overlay_providers.dart';

@@ -4,7 +4,7 @@ import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/expense/presentation/utils/expense_category_utils.dart';
 import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 import 'package:moamoa/features/home/presentation/widgets/swipe_to_reveal.dart';
-import 'package:moamoa/core/constants/income_sources.dart';
+import 'package:moamoa/features/income/presentation/utils/income_category_utils.dart';
 
 /// 수입/지출 거래 내역을 표시하는 리스트 아이템 위젯
 ///
