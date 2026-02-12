@@ -360,6 +360,48 @@ class HomeViewModel extends _$HomeViewModel {
     );
   }
 
+  /// 낙관적 트랜잭션 추가 롤백 (API 실패 시 호출)
+  ///
+  /// [addTransactionOptimistically]로 추가한 트랜잭션을 제거합니다.
+  /// id가 빈 문자열인 임시 트랜잭션을 찾아 제거합니다.
+  void removeTransactionOptimistically(TransactionEntity transaction) {
+    final dateKey = DateFormat('yyyy-MM-dd').format(transaction.date);
+    final currentData = state.monthlyData.asData?.value;
+    if (currentData == null || !currentData.containsKey(dateKey)) return;
+
+    final daySummary = currentData[dateKey]!;
+    final updatedTransactions = List<TransactionEntity>.from(
+      daySummary.transactions,
+    );
+
+    // 임시 트랜잭션(id='')을 찾아 하나만 제거
+    final index = updatedTransactions.indexWhere(
+      (tx) =>
+          tx.id == transaction.id &&
+          tx.amount == transaction.amount &&
+          tx.type == transaction.type,
+    );
+    if (index == -1) return;
+    updatedTransactions.removeAt(index);
+
+    final updatedIncome = daySummary.totalIncome -
+        (transaction.type == TransactionType.income ? transaction.amount : 0);
+    final updatedExpense = daySummary.totalExpense -
+        (transaction.type == TransactionType.expense ? transaction.amount : 0);
+
+    final updatedData = Map<String, DailyTransactionSummary>.from(currentData);
+    updatedData[dateKey] = DailyTransactionSummary(
+      date: daySummary.date,
+      transactions: updatedTransactions,
+      totalIncome: updatedIncome,
+      totalExpense: updatedExpense,
+    );
+
+    state = state.copyWith(
+      monthlyData: AsyncValue.data(updatedData),
+    );
+  }
+
   /// 낙관적 트랜잭션 수정 (수정 화면에서 호출)
   void updateTransactionOptimistically({
     required TransactionEntity oldTransaction,

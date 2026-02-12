@@ -4,7 +4,6 @@ import 'package:moamoa/features/expense/domain/entities/expense.dart';
 import 'package:moamoa/features/expense/presentation/providers/expense_providers.dart';
 import 'package:moamoa/features/expense/presentation/states/expense_state.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
-import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -58,7 +57,7 @@ class ExpenseViewModel extends _$ExpenseViewModel {
   /// 지출 등록/수정 통합 메서드
   ///
   /// [existingExpense]가 null이면 신규 등록, 아니면 수정.
-  /// Optimistic Update → API 호출 → HomeViewModel 갱신을 일괄 처리합니다.
+  /// API 호출 성공 후 HomeViewModel 데이터를 갱신합니다.
   Future<void> submitExpense({
     required int amount,
     required DateTime date,
@@ -69,8 +68,6 @@ class ExpenseViewModel extends _$ExpenseViewModel {
     String? expenseId,
     Expense? existingExpense,
   }) async {
-    final homeViewModel = ref.read(homeViewModelProvider.notifier);
-
     if (existingExpense != null && expenseId != null) {
       // === 수정 ===
       final updated = existingExpense.copyWith(
@@ -82,17 +79,6 @@ class ExpenseViewModel extends _$ExpenseViewModel {
         paymentMethod: paymentMethod,
       );
 
-      // 1. Optimistic Update
-      final oldTransaction = TransactionEntity.fromExpense(existingExpense);
-      final newTransaction = TransactionEntity.fromExpense(
-        updated.copyWith(expenseId: existingExpense.expenseId ?? expenseId),
-      );
-      homeViewModel.updateTransactionOptimistically(
-        oldTransaction: oldTransaction,
-        newTransaction: newTransaction,
-      );
-
-      // 2. API 호출
       final updateUseCase = ref.read(updateExpenseUseCaseProvider);
       await updateUseCase(
         expenseId: existingExpense.expenseId ?? expenseId,
@@ -109,30 +95,12 @@ class ExpenseViewModel extends _$ExpenseViewModel {
         paymentMethod: paymentMethod,
       );
 
-      // 1. Optimistic Update
-      final optimisticTransaction = TransactionEntity(
-        id: '',
-        amount: amount,
-        date: date,
-        title: merchant ?? category,
-        category: category,
-        memo: memo,
-        type: TransactionType.expense,
-        createdAt: DateTime.now(),
-      );
-      homeViewModel.addTransactionOptimistically(optimisticTransaction);
-
-      // 2. API 호출
       await createExpense(expense);
     }
 
-    // 3. 서버 데이터로 갱신
-    unawaited(homeViewModel.fetchMonthlyData(
-      date,
-      forceRefresh: true,
-    ));
-
-    // 4. 예산/자산 정보 갱신
+    // 성공 시 홈 데이터 갱신
+    final homeViewModel = ref.read(homeViewModelProvider.notifier);
+    unawaited(homeViewModel.fetchMonthlyData(date, forceRefresh: true));
     homeViewModel.refreshBudgetAndAsset();
   }
 

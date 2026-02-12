@@ -191,8 +191,13 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
         Navigator.of(context).pop(true);
       }
     } catch (e) {
-      if (mounted && kDebugMode) {
-        debugPrint(e.toString());
+      if (mounted) {
+        context.showErrorToast(
+          widget.incomeId == null ? '수입 등록에 실패했습니다' : '수입 수정에 실패했습니다',
+        );
+        if (kDebugMode) {
+          debugPrint(e.toString());
+        }
       }
     }
   }

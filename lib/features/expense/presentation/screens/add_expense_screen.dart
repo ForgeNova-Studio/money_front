@@ -171,6 +171,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       }
     } catch (e) {
       if (mounted) {
+        context.showErrorToast(
+          widget.expenseId == null ? '지출 등록에 실패했습니다' : '지출 수정에 실패했습니다',
+        );
         if (kDebugMode) {
           debugPrint(e.toString());
         }
