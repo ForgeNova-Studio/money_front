@@ -65,6 +65,14 @@ class IncomeViewModel extends _$IncomeViewModel {
   /// 수입 상세 조회
 
   /// 수입 수정
+  Future<void> updateIncome({
+    required String incomeId,
+    required Income income,
+  }) async {
+    final updateUseCase = ref.read(updateIncomeUsecaseProvider);
+    await updateUseCase(incomeId: incomeId, income: income);
+    // await loadIncome();
+  }
 
   /// 수입 삭제
 

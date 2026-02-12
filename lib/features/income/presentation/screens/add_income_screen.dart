@@ -7,15 +7,14 @@ import 'package:intl/intl.dart';
 
 // core
 import 'package:moamoa/core/constants/app_constants.dart';
-import 'package:moamoa/core/constants/income_sources.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/amount_input_card.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/date_picker_card.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/form_submit_button.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_card.dart';
-import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_styles.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_text_field.dart';
 import 'package:moamoa/features/income/presentation/providers/income_providers.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/features/income/presentation/widgets/income_source_grid.dart';
 
 // features
 import 'package:moamoa/features/income/presentation/viewmodels/income_view_model.dart';
@@ -173,7 +172,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
             );
 
         // 2. 백그라운드 API 호출
-        await ref.read(updateIncomeUsecaseProvider).call(
+        await ref.read(incomeViewModelProvider.notifier).updateIncome(
               incomeId: base.incomeId ?? widget.incomeId!,
               income: updated,
             );
@@ -237,7 +236,6 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     // Provider를 watch하여 화면이 살아있는 동안 Provider가 dispose되지 않도록 함
     ref.watch(incomeViewModelProvider);
-    final sources = buildIncomeSources(context);
     final isEditing = widget.incomeId != null;
 
     return DefaultLayout(
@@ -301,105 +299,12 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
                             const SizedBox(height: 28),
 
                             // 4. Source Selection
-                            Text(
-                              '수입 출처',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: context.appColors.textSecondary,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-
-                            // 수입 출처 GridView
-                            LayoutBuilder(
-                              builder: (context, constraints) {
-                                final itemWidth =
-                                    (constraints.maxWidth - 24) / 3;
-                                return Wrap(
-                                  spacing: 12,
-                                  runSpacing: 12,
-                                  children: sources.map((source) {
-                                    final isSelected =
-                                        _selectedSource == source.code;
-                                    return SizedBox(
-                                      width: itemWidth,
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          onTap: () {
-                                            FocusManager.instance.primaryFocus
-                                                ?.unfocus();
-                                            setState(() {
-                                              _selectedSource = source.code;
-                                            });
-                                          },
-                                          child: AnimatedContainer(
-                                            duration: const Duration(
-                                                milliseconds: 200),
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 14),
-                                            decoration:
-                                                transactionFormCardDecoration(
-                                              context,
-                                              backgroundColor: isSelected
-                                                  ? source.color
-                                                      .withValues(alpha: 0.12)
-                                                  : Colors.white,
-                                            ),
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                  width: 36,
-                                                  height: 36,
-                                                  decoration: BoxDecoration(
-                                                    color: isSelected
-                                                        ? source.color
-                                                        : source.color
-                                                            .withValues(
-                                                                alpha: 0.12),
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Image.asset(
-                                                      source.imagePath,
-                                                      width: 20,
-                                                      height: 20,
-                                                      fit: BoxFit.contain,
-                                                      color: isSelected
-                                                          ? Colors.white
-                                                          : source.color,
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                  source.name,
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: isSelected
-                                                        ? source.color
-                                                        : context.appColors
-                                                            .textSecondary,
-                                                    fontWeight: isSelected
-                                                        ? FontWeight.w700
-                                                        : FontWeight.w600,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                );
+                            IncomeSourceGrid(
+                              selectedSourceCode: _selectedSource,
+                              onSourceSelected: (code) {
+                                setState(() {
+                                  _selectedSource = code;
+                                });
                               },
                             ),
                             const SizedBox(height: 28),
