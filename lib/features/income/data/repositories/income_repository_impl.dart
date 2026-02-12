@@ -10,9 +10,14 @@ import 'package:moamoa/features/income/domain/entities/income.dart';
 // repositories
 import 'package:moamoa/features/income/domain/repositories/income_repository.dart';
 
-/// Income Repository 구현체
+/// 수입 리포지토리 구현체
 ///
-/// Data Layer의 DataSource를 조합하여 Domain Layer의 요청을 처리
+/// [IncomeRepository] 인터페이스를 구현하며, 데이터 소스와 도메인 계층 간의 중개 역할을 합니다.
+/// Data Layer의 모델([IncomeModel])과 Domain Layer의 엔티티([Income]) 간의 변환을 담당합니다.
+///
+/// **주요 기능:**
+/// - 수입 목록 조회 및 엔티티 변환 ([getIncomeList])
+/// - 수입 등록/수정/삭제 및 엔티티 변환
 class IncomeRepositoryImpl implements IncomeRepository {
   final IncomeRemoteDataSource remoteDataSource;
 

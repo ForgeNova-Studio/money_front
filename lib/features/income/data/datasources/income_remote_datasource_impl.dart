@@ -12,9 +12,10 @@ import 'package:moamoa/features/income/data/models/income_model.dart';
 // datasources
 import 'package:moamoa/features/income/data/datasources/income_remote_datasource.dart';
 
-/// Income Remote Data Source 구현체
+/// 수입 원격 데이터 소스 구현체
 ///
-/// Dio를 사용한 API 통신 구현
+/// Dio 클라이언트를 사용하여 실제 API 호출을 수행합니다.
+/// [ExceptionHandler]를 통해 DioException을 공통 예외로 변환하여 처리합니다.
 class IncomeRemoteDataSourceImpl implements IncomeRemoteDataSource {
   final Dio dio;
 

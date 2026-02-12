@@ -7,6 +7,14 @@ import 'package:moamoa/features/income/domain/entities/income.dart';
 part 'income_model.freezed.dart';
 part 'income_model.g.dart';
 
+/// 수입 데이터 모델 (DTO)
+///
+/// API 통신에 사용되는 수입 데이터 객체입니다.
+/// Freezed를 사용하여 불변성 및 JSON 직렬화/역직렬화를 지원합니다.
+///
+/// **주요 기능:**
+/// - JSON <-> 객체 변환 ([fromJson])
+/// - 도메인 엔티티 변환 ([toEntity], [fromEntity])
 @freezed
 sealed class IncomeModel with _$IncomeModel {
   const IncomeModel._();
