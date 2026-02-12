@@ -3,6 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
+/// 성별 선택 행 위젯
+///
+/// 남성/여성 선택 버튼을 가로로 배치하여 성별 입력을 받습니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 성별 선택 (단일 선택)
+/// - 선택된 성별 시각적 강조 (색상, 테두리)
+///
+/// **파라미터 (Parameters):**
+/// - [selectedGender]: 현재 선택된 성별 (null 가능)
+/// - [onSelected]: 성별 선택 시 콜백
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// GenderSelectorRow(
+///   selectedGender: state.selectedGender,
+///   onSelected: (gender) => viewModel.selectGender(gender),
+/// )
+/// ```
 class GenderSelectorRow extends StatelessWidget {
   final Gender? selectedGender;
   final ValueChanged<Gender> onSelected;

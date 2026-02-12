@@ -2,8 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Google 공식 브랜드 가이드라인을 준수한 로그인 버튼
+/// Google 로그인 버튼 위젯
+///
+/// Google 공식 브랜드 가이드라인을 준수한 로그인 버튼입니다.
 /// Reference: https://developers.google.com/identity/branding-guidelines
+///
+/// **주요 기능 (Key Features):**
+/// - Google 로고 및 "Google로 로그인" 텍스트 표시
+/// - Roboto 폰트 사용 (가이드라인 준수)
+/// - 로딩 상태 표시
+///
+/// **파라미터 (Parameters):**
+/// - [onPressed]: 버튼 클릭 시 콜백
+/// - [isLoading]: 로딩 진행 여부
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// GoogleLoginButton(
+///   onPressed: viewModel.loginWithGoogle,
+///   isLoading: authState.isLoading,
+/// )
+/// ```
 class GoogleLoginButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isLoading;
@@ -40,7 +59,8 @@ class GoogleLoginButton extends StatelessWidget {
                 height: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.grey.shade600),
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(Colors.grey.shade600),
                 ),
               )
             : Row(

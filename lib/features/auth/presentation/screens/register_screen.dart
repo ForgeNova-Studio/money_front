@@ -23,6 +23,21 @@ import 'package:moamoa/features/auth/presentation/viewmodels/register_view_model
 import 'package:moamoa/core/utils/toast_utils.dart';
 
 /// 회원가입 화면
+///
+/// 사용자가 서비스 이용을 위해 계정을 생성하는 화면입니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 사용자 기본 정보 입력 (닉네임, 성별, 비밀번호 등)
+/// - 이메일 인증 프로세스 (`_handleSendVerificationCode`, `_handleVerifyCode`, `_handleEmailNotReceived`)
+/// - 입력값 유효성 검사 및 회원가입 요청 (`_handleSignUp`)
+/// - 이용약관 및 개인정보 처리방침 동의
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// context.push(RouteNames.register);
+/// // or
+/// const RegisterScreen();
+/// ```
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
@@ -30,6 +45,9 @@ class RegisterScreen extends ConsumerStatefulWidget {
   ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
+/// [RegisterScreen]의 상태 관리 클래스
+///
+/// 입력 필드 컨트롤러, 포커스 노드, 그리고 회원가입 관련 비즈니스 로직을 연결합니다.
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _displayNameController = TextEditingController();
   final _emailController = TextEditingController();

@@ -9,9 +9,20 @@ import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dar
 
 part 'find_password_view_model.g.dart';
 
-/// 비밀번호 찾기 폼 ViewModel
+/// 비밀번호 찾기 ViewModel
 ///
-/// 폼 상태 관리 및 이메일 인증 로직 처리
+/// 비밀번호 재설정을 위한 이메일 인증 프로세스를 관리합니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 이메일 주소 입력 및 관리
+/// - 인증번호 전송 요청 (`sendVerificationCode`)
+/// - 인증번호 검증 요청 (`verifyCode`)
+/// - 상태 초기화 (`reset`)
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// await ref.read(findPasswordViewModelProvider.notifier).sendVerificationCode(email);
+/// ```
 @riverpod
 class FindPasswordViewModel extends _$FindPasswordViewModel {
   @override

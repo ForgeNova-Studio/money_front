@@ -2,7 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
 
-// 마지막 로그인 방법 힌트 위젯
+/// 마지막 로그인 방법 힌트 위젯
+///
+/// 사용자가 이전에 로그인했던 방법(Google, Naver, Kakao 등)을
+/// 로컬 저장소에서 확인하여 힌트로 표시합니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 마지막 로그인 제공업체 정보 조회 (`lastLoginProviderProvider`)
+/// - 제공업체별 한글 디스플레이 이름 매핑 (`_getProviderDisplayName`)
+/// - 로그인 이력이 있을 경우 하단에 힌트 텍스트 표시
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// const LastLoginHint();
+/// ```
 class LastLoginHint extends ConsumerWidget {
   const LastLoginHint({super.key});
 

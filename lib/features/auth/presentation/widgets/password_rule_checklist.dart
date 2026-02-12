@@ -3,6 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/core/validators/input_validator.dart';
 
+/// 비밀번호 규칙 체크리스트 위젯
+///
+/// 입력된 비밀번호가 보안 규칙을 만족하는지 실시간으로 시각화하여 보여줍니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 비밀번호 복잡도 규칙 검사 (길이, 대소문자, 숫자, 특수문자)
+/// - 규칙 만족 여부에 따른 아이콘 및 색상 변경
+///
+/// **파라미터 (Parameters):**
+/// - [password]: 검사할 비밀번호 문자열
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// PasswordRuleChecklist(
+///   password: _passwordController.text,
+/// )
+/// ```
 class PasswordRuleChecklist extends StatelessWidget {
   final String password;
 
@@ -57,6 +74,7 @@ class PasswordRuleChecklist extends StatelessWidget {
   }
 }
 
+/// 개별 비밀번호 규칙 항목 표시 위젯
 class _PasswordRuleRow extends StatelessWidget {
   final String label;
   final bool satisfied;

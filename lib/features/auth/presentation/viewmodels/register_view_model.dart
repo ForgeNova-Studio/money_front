@@ -15,9 +15,21 @@ import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dar
 
 part 'register_view_model.g.dart';
 
-/// 회원가입 폼 ViewModel
+/// 회원가입 ViewModel
 ///
-/// 폼 상태 관리 및 이메일 인증 로직 처리
+/// 회원가입 화면의 UI 상태 관리 및 데이터 처리를 담당합니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 입력 폼 상태 관리 (닉네임, 이메일, 비밀번호, 성별 등)
+/// - 유효성 검사 (`validateForSignup`)
+/// - 이메일 인증 (`sendVerificationCode`, `verifyCode`)
+/// - 약관 동의 및 비밀번호 가시성 토글
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// final errorMessage = ref.read(registerViewModelProvider.notifier)
+///     .validateForSignup(password: pw, confirmPassword: cp);
+/// ```
 @riverpod
 class RegisterViewModel extends _$RegisterViewModel {
   static const String _passwordMismatchMessage = '비밀번호가 일치하지 않습니다.';

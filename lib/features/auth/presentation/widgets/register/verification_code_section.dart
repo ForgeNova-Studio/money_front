@@ -3,6 +3,31 @@ import 'package:flutter/material.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
 
+/// 인증번호 입력 섹션 위젯
+///
+/// 회원가입 화면에서 이메일 인증번호를 입력하고 확인하는 영역입니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 인증번호 입력 필드
+/// - 인증 확인 버튼
+/// - 인증번호 유효 시간 안내 문구
+/// - "메일이 오지 않나요?" 도움말 링크
+///
+/// **파라미터 (Parameters):**
+/// - [controller]: 인증번호 입력 필드 컨트롤러
+/// - [focusNode]: 인증번호 입력 필드 포커스 노드
+/// - [onVerify]: 인증 확인 버튼 클릭 콜백
+/// - [onEmailNotReceived]: "메일이 오지 않나요?" 링크 클릭 콜백 (선택적)
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// VerificationCodeSection(
+///   controller: _codeController,
+///   focusNode: _codeFocusNode,
+///   onVerify: () => viewModel.verifyCode(_codeController.text),
+///   onEmailNotReceived: _showHelpDialog,
+/// )
+/// ```
 class VerificationCodeSection extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;

@@ -14,6 +14,22 @@ import 'package:moamoa/features/auth/presentation/screens/reset_password_screen.
 import 'package:moamoa/features/auth/presentation/widgets/find_password/find_password_title.dart';
 import 'package:moamoa/features/auth/presentation/widgets/find_password/email_verification_form.dart';
 
+/// 비밀번호 찾기(이메일 인증) 화면
+///
+/// 사용자가 비밀번호를 재설정하기 위해 이메일 인증을 수행하는 화면입니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 이메일 입력 및 인증번호 전송 (`_handleSendVerificationCode`)
+/// - 인증번호 입력 및 검증 (`_handleVerifyCode`)
+/// - 인증 완료 후 비밀번호 재설정 화면(`ResetPasswordScreen`)으로 이동 (`_handleContinue`)
+/// - `FindPasswordViewModel`을 통한 비즈니스 로직 처리
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// context.push(RouteNames.findPassword);
+/// // or
+/// const FindPasswordScreen();
+/// ```
 class FindPasswordScreen extends ConsumerStatefulWidget {
   const FindPasswordScreen({super.key});
 
@@ -21,6 +37,10 @@ class FindPasswordScreen extends ConsumerStatefulWidget {
   ConsumerState<FindPasswordScreen> createState() => _FindPasswordScreenState();
 }
 
+/// [FindPasswordScreen]의 상태 관리 클래스
+///
+/// 이메일 및 인증번호 입력 필드의 컨트롤러를 관리하고,
+/// ViewModel과 상호작용하여 인증 로직을 수행합니다.
 class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
   final _emailController = TextEditingController();
   final _verificationCodeController = TextEditingController();

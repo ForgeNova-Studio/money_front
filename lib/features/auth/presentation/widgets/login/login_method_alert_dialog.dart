@@ -1,7 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-// 다른 로그인 방법 안내 AlertDialog를 띄우는 함수
+/// 로그인 방법 안내 알림창 표시 함수
+///
+/// 사용자가 이미 가입된 계정(소셜/이메일)이 있을 경우,
+/// 해당 로그인 방법으로 유도하는 안내 다이얼로그를 표시합니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 가입된 제공업체(Naver, Google, Kakao, Email)에 따라 맞춤 UI 표시
+/// - 해당 제공업체의 로그인 버튼 제공 및 콜백 연결
+/// - 브랜드별 색상 및 아이콘 적용
+///
+/// **파라미터 (Parameters):**
+/// - [context]: 다이얼로그를 표시할 BuildContext
+/// - [message]: 백엔드에서 전달받은 에러 메시지 (제공업체 정보 포함)
+/// - [onNaverLogin]: 네이버 로그인 콜백
+/// - [onGoogleLogin]: 구글 로그인 콜백
+/// - [onKakaoLogin]: 카카오 로그인 콜백
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// showLoginMethodAlert(
+///   context,
+///   message: 'User already exists with ... NAVER',
+///   onNaverLogin: _viewModel.loginWithNaver,
+///   // ... other callbacks
+/// );
+/// ```
 void showLoginMethodAlert(
   BuildContext context, {
   required String message,

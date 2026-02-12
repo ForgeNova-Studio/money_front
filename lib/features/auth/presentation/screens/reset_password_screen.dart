@@ -17,6 +17,22 @@ import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dar
 import 'package:moamoa/features/auth/presentation/viewmodels/find_password_view_model.dart';
 import 'package:moamoa/core/utils/toast_utils.dart';
 
+/// 비밀번호 재설정 화면
+///
+/// 이메일 인증 완료 후, 새로운 비밀번호를 설정하는 화면입니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 새로운 비밀번호 입력 및 확인
+/// - 비밀번호 복잡도 유효성 검사 (`InputValidator`)
+/// - 비밀번호 재설정 요청 (`_handleResetPassword`)
+/// - 재설정 완료 후 로그인 화면으로 이동
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// Navigator.of(context).push(
+///   MaterialPageRoute(builder: (context) => const ResetPasswordScreen()),
+/// );
+/// ```
 class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key});
 
@@ -25,6 +41,9 @@ class ResetPasswordScreen extends ConsumerStatefulWidget {
       _ResetPasswordScreenState();
 }
 
+/// [ResetPasswordScreen]의 상태 관리 클래스
+///
+/// 비밀번호 입력 필드 관리 및 유효성 검사 로직을 수행합니다.
 class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();

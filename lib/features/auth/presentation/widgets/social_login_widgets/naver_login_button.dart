@@ -1,8 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// 네이버 공식 디자인 가이드라인을 준수한 로그인 버튼
+/// 네이버 로그인 버튼 위젯
+///
+/// 네이버 공식 디자인 가이드라인을 준수한 로그인 버튼입니다.
 /// Reference: https://developers.naver.com/docs/login/bi/bi.md
+///
+/// **주요 기능 (Key Features):**
+/// - 네이버 로고 및 텍스트 표시
+/// - 완성형('네이버로 로그인') 및 축약형('네이버 로그인') 지원
+/// - 공식 색상(Green/White) 적용
+///
+/// **파라미터 (Parameters):**
+/// - [onPressed]: 버튼 클릭 시 콜백
+/// - [isLoading]: 로딩 진행 여부
+/// - [useShortLabel]: 축약형 라벨 사용 여부 (기본값: true)
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// NaverLoginButton(
+///   onPressed: viewModel.loginWithNaver,
+///   isLoading: authState.isLoading,
+/// )
+/// ```
 class NaverLoginButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isLoading;

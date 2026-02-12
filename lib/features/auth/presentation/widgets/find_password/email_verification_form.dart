@@ -5,6 +5,34 @@ import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/find_password_view_model.dart';
 
+/// 이메일 인증 폼 위젯
+///
+/// 비밀번호 찾기 화면에서 사용되는 이메일 입력 및 인증번호 검증 폼입니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 이메일 입력 및 인증번호 전송 요청
+/// - 인증번호 입력 및 확인 요청
+/// - 인증 상태에 따른 UI 업데이트 (버튼 활성화/비활성화)
+/// - 인증 완료 시 다음 단계('계속하기') 진행
+///
+/// **파라미터 (Parameters):**
+/// - [emailController]: 이메일 입력 필드 컨트롤러
+/// - [verificationCodeController]: 인증번호 입력 필드 컨트롤러
+/// - [verificationCodeFocusNode]: 인증번호 필드 포커스 제어
+/// - [onSendVerificationCode]: 인증번호 전송 콜백
+/// - [onVerifyCode]: 인증번호 확인 콜백
+/// - [onContinue]: 다음 단계 진행 콜백
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// EmailVerificationForm(
+///   emailController: _emailController,
+///   verificationCodeController: _codeController,
+///   onSendVerificationCode: _sendCode,
+///   onVerifyCode: _verifyCode,
+///   onContinue: _nextStep,
+/// )
+/// ```
 class EmailVerificationForm extends ConsumerStatefulWidget {
   final TextEditingController emailController;
   final TextEditingController verificationCodeController;
@@ -28,6 +56,10 @@ class EmailVerificationForm extends ConsumerStatefulWidget {
       _EmailVerificationFormState();
 }
 
+/// [EmailVerificationForm]의 상태 관리 클래스
+///
+/// ViewModel([findPasswordViewModelProvider])의 상태를 구독하여
+/// 인증 진행 단계에 따라 UI를 업데이트합니다.
 class _EmailVerificationFormState extends ConsumerState<EmailVerificationForm> {
   @override
   Widget build(BuildContext context) {

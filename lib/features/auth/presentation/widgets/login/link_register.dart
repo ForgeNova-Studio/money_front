@@ -1,6 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 
+/// 회원가입 링크 위젯
+///
+/// 로그인 화면 하단에 위치하여 회원가입 화면으로 이동하는 기능을 제공합니다.
+///
+/// **주요 기능 (Key Features):**
+/// - "모아모아가 처음이신가요?" 안내 문구와 회원가입 버튼 조합
+///
+/// **파라미터 (Parameters):**
+/// - [onTap]: 회원가입 버튼 클릭 시 실행될 콜백
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// LinkRegister(
+///   onTap: () => context.push(RouteNames.register),
+/// )
+/// ```
 class LinkRegister extends StatelessWidget {
   final VoidCallback onTap;
 

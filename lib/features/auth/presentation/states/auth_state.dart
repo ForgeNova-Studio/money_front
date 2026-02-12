@@ -6,12 +6,27 @@ import 'package:moamoa/features/auth/domain/entities/user.dart';
 
 part 'auth_state.freezed.dart';
 
-/// Auth 상태 관리
+/// 인증 상태 관리 클래스
 ///
-/// - unauthenticated: 비로그인 상태
-/// - authenticated: 로그인 상태 (user 보장)
-/// - isLoading: 요청 진행 여부
-/// - errorMessage: 에러 메시지
+/// 애플리케이션의 전역적인 인증 상태를 표현합니다.
+/// `sealed class`와 `freezed`를 사용하여 상태를 불변 객체로 관리합니다.
+///
+/// **주요 상태 (States):**
+/// - [AuthUnauthenticated]: 비로그인 상태. 기본 상태입니다.
+/// - [AuthAuthenticated]: 로그인 성공 상태. 유효한 [User] 객체를 포함합니다.
+///
+/// **주요 속성 (Properties):**
+/// - `isLoading`: 인증 요청(로그인, 회원가입 등) 진행 중 여부
+/// - `errorMessage`: 인증 실패 시 반환된 에러 메시지
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// ref.listen(authViewModelProvider, (previous, next) {
+///   if (next.isAuthenticated) {
+///     context.go(RouteNames.home);
+///   }
+/// });
+/// ```
 @freezed
 sealed class AuthState with _$AuthState {
   /// 비로그인 상태

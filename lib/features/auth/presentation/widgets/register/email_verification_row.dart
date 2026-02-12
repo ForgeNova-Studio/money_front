@@ -2,6 +2,28 @@ import 'package:flutter/material.dart';
 
 import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
 
+/// 이메일 인증 요청 행 위젯
+///
+/// 이메일 입력 필드와 인증 요청 버튼을 가로로 배치한 위젯입니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 이메일 입력 및 수정
+/// - 인증 번호 전송 요청 버튼
+/// - 인증 완료 상태에 따른 UI 변경 (버튼 비활성화, 텍스트 변경)
+///
+/// **파라미터 (Parameters):**
+/// - [controller]: 이메일 입력 필드 컨트롤러
+/// - [isEmailVerified]: 이메일 인증 완료 여부
+/// - [onRequest]: 인증 요청 버튼 클릭 시 콜백
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// EmailVerificationRow(
+///   controller: emailController,
+///   isEmailVerified: state.isEmailVerified,
+///   onRequest: () => viewModel.sendVerificationCode(email),
+/// )
+/// ```
 class EmailVerificationRow extends StatelessWidget {
   final TextEditingController controller;
   final bool isEmailVerified;

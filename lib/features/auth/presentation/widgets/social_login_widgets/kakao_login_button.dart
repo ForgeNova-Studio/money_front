@@ -1,8 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// 카카오 공식 디자인 가이드라인을 준수한 로그인 버튼
+/// 카카오 로그인 버튼 위젯
+///
+/// 카카오 공식 디자인 가이드라인을 준수한 로그인 버튼입니다.
 /// Reference: https://developers.kakao.com/docs/latest/ko/kakaologin/design-guide
+///
+/// **주요 기능 (Key Features):**
+/// - 카카오 심볼 및 텍스트 표시
+/// - 완성형('카카오로 로그인') 및 축약형('카카오 로그인') 지원
+/// - 공식 색상(Yellow/Black) 적용
+///
+/// **파라미터 (Parameters):**
+/// - [onPressed]: 버튼 클릭 시 콜백
+/// - [isLoading]: 로딩 진행 여부
+/// - [useShortLabel]: 축약형 라벨 사용 여부 (기본값: true)
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// KakaoLoginButton(
+///   onPressed: viewModel.loginWithKakao,
+///   isLoading: authState.isLoading,
+/// )
+/// ```
 class KakaoLoginButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isLoading;
