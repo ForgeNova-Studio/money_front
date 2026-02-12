@@ -32,6 +32,27 @@ class ExpenseCategory {
   });
 }
 
+/// 지출 카테고리 코드 상수
+class ExpenseCategoryCode {
+  static const String food = 'FOOD';
+  static const String cafeSnack = 'CAFE_SNACK';
+  static const String transport = 'TRANSPORT';
+  static const String housing = 'HOUSING';
+  static const String communication = 'COMMUNICATION';
+  static const String subscription = 'SUBSCRIPTION';
+  static const String living = 'LIVING';
+  static const String shopping = 'SHOPPING';
+  static const String health = 'HEALTH';
+  static const String insurance = 'INSURANCE';
+  static const String education = 'EDUCATION';
+  static const String culture = 'CULTURE';
+  static const String travel = 'TRAVEL';
+  static const String pet = 'PET';
+  static const String gift = 'GIFT';
+  static const String condolence = 'CONDOLENCE';
+  static const String uncategorized = 'UNCATEGORIZED';
+}
+
 /// 기본 카테고리 상수
 /// 앱에서 기본으로 제공하는 지출 카테고리 목록을 정의하는 클래스.
 ///
@@ -48,39 +69,87 @@ class ExpenseCategory {
 class DefaultExpenseCategories {
   static final List<ExpenseCategory> all = [
     ExpenseCategory(
-        id: 'FOOD', name: '식비', icon: 'restaurant', color: 'EF6C00'),
+        id: ExpenseCategoryCode.food,
+        name: '식비',
+        icon: 'restaurant',
+        color: 'EF6C00'),
     ExpenseCategory(
-        id: 'CAFE_SNACK', name: '카페/간식', icon: 'local_cafe', color: '8D6E63'),
+        id: ExpenseCategoryCode.cafeSnack,
+        name: '카페/간식',
+        icon: 'local_cafe',
+        color: '8D6E63'),
     ExpenseCategory(
-        id: 'TRANSPORT', name: '교통', icon: 'directions_bus', color: '1E88E5'),
-    ExpenseCategory(id: 'HOUSING', name: '주거', icon: 'home', color: '546E7A'),
+        id: ExpenseCategoryCode.transport,
+        name: '교통',
+        icon: 'directions_bus',
+        color: '1E88E5'),
     ExpenseCategory(
-        id: 'COMMUNICATION', name: '통신/인터넷', icon: 'wifi', color: '3949AB'),
+        id: ExpenseCategoryCode.housing,
+        name: '주거',
+        icon: 'home',
+        color: '546E7A'),
     ExpenseCategory(
-        id: 'SUBSCRIPTION', name: '구독', icon: 'subscriptions', color: '7E57C2'),
+        id: ExpenseCategoryCode.communication,
+        name: '통신/인터넷',
+        icon: 'wifi',
+        color: '3949AB'),
     ExpenseCategory(
-        id: 'LIVING', name: '생활', icon: 'home_repair_service', color: '43A047'),
+        id: ExpenseCategoryCode.subscription,
+        name: '구독',
+        icon: 'subscriptions',
+        color: '7E57C2'),
     ExpenseCategory(
-        id: 'SHOPPING', name: '쇼핑', icon: 'shopping_bag', color: 'EC407A'),
+        id: ExpenseCategoryCode.living,
+        name: '생활',
+        icon: 'home_repair_service',
+        color: '43A047'),
     ExpenseCategory(
-        id: 'HEALTH', name: '건강', icon: 'medical_services', color: 'E53935'),
+        id: ExpenseCategoryCode.shopping,
+        name: '쇼핑',
+        icon: 'shopping_bag',
+        color: 'EC407A'),
     ExpenseCategory(
-        id: 'INSURANCE', name: '보험', icon: 'verified_user', color: '00897B'),
+        id: ExpenseCategoryCode.health,
+        name: '건강',
+        icon: 'medical_services',
+        color: 'E53935'),
     ExpenseCategory(
-        id: 'EDUCATION', name: '교육', icon: 'school', color: '5C6BC0'),
-    ExpenseCategory(id: 'CULTURE', name: '문화', icon: 'movie', color: '8E24AA'),
+        id: ExpenseCategoryCode.insurance,
+        name: '보험',
+        icon: 'verified_user',
+        color: '00897B'),
     ExpenseCategory(
-        id: 'TRAVEL', name: '여행', icon: 'flight_takeoff', color: '039BE5'),
-    ExpenseCategory(id: 'PET', name: '반려동물', icon: 'pets', color: '6D4C41'),
+        id: ExpenseCategoryCode.education,
+        name: '교육',
+        icon: 'school',
+        color: '5C6BC0'),
     ExpenseCategory(
-        id: 'GIFT', name: '선물', icon: 'card_giftcard', color: 'F06292'),
+        id: ExpenseCategoryCode.culture,
+        name: '문화',
+        icon: 'movie',
+        color: '8E24AA'),
     ExpenseCategory(
-        id: 'CONDOLENCE',
+        id: ExpenseCategoryCode.travel,
+        name: '여행',
+        icon: 'flight_takeoff',
+        color: '039BE5'),
+    ExpenseCategory(
+        id: ExpenseCategoryCode.pet,
+        name: '반려동물',
+        icon: 'pets',
+        color: '6D4C41'),
+    ExpenseCategory(
+        id: ExpenseCategoryCode.gift,
+        name: '선물',
+        icon: 'card_giftcard',
+        color: 'F06292'),
+    ExpenseCategory(
+        id: ExpenseCategoryCode.condolence,
         name: '경조사',
         icon: 'volunteer_activism',
         color: '26A69A'),
     ExpenseCategory(
-        id: 'UNCATEGORIZED',
+        id: ExpenseCategoryCode.uncategorized,
         name: '미분류',
         icon: 'help_outline',
         color: '9E9E9E'),

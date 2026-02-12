@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:moamoa/features/expense/domain/entities/expense.dart';
 import 'package:moamoa/features/expense/domain/entities/payment_method.dart';
 import 'package:moamoa/features/expense/presentation/widgets/expense_category_grid.dart';
+import 'package:moamoa/core/constants/expense_categories.dart';
 
 // viewmodels
 import 'package:moamoa/features/expense/presentation/viewmodels/expense_view_model.dart';
@@ -47,7 +48,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   final _amountFormatter = NumberFormat('#,###');
 
   late DateTime _selectedDate;
-  String _selectedCategory = 'FOOD';
+  String _selectedCategory = ExpenseCategoryCode.food;
   PaymentMethod _selectedPaymentMethod = PaymentMethod.cash;
   Expense? _originalExpense;
   bool _isLoading = false;

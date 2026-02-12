@@ -13,6 +13,7 @@ import 'package:moamoa/features/common/widgets/transaction_form/transaction_form
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_text_field.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
 import 'package:moamoa/features/income/presentation/widgets/income_source_grid.dart';
+import 'package:moamoa/core/constants/income_categories.dart'; // Added import
 
 // features
 import 'package:moamoa/features/income/presentation/viewmodels/income_view_model.dart';
@@ -78,7 +79,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   final _amountFormatter = NumberFormat('#,###');
 
   late DateTime _selectedDate;
-  String _selectedSource = IncomeSource.salary;
+  String _selectedSource = IncomeCategoryCode.salary;
   Income? _originalIncome;
   bool _isLoading = false;
   bool _isSubmitting = false;

@@ -1,12 +1,15 @@
-/// 수입 도메인 엔티티
+import 'package:moamoa/core/constants/income_categories.dart';
+
+/// 수입 엔티티
 ///
-/// 사용자의 수입 내역 정보를 담고 있는 불변 객체입니다.
+/// 가계부의 수입 내역을 나타내는 핵심 엔티티입니다.
 ///
 /// **주요 속성:**
-/// - [amount]: 수입 금액 (원 단위, 필수)
-/// - [date]: 수입 일자 (필수)
-/// - [source]: 수입 출처 코드 ([IncomeSource] 상수 사용, 필수)
-/// - [description]: 메모 또는 설명
+/// - [incomeId]: 수입 고유 ID
+/// - [amount]: 수입 금액
+/// - [date]: 수입 날짜
+/// - [source]: 수입 출처 코드 ([IncomeCategoryCode] 상수 사용, 필수)
+/// - [description]: 수입 설명 (선택)설명
 /// - [incomeId], [userId], [accountBookId]: 식별자 정보
 ///
 /// **사용 예시:**
@@ -14,8 +17,8 @@
 /// final income = Income(
 ///   amount: 3000000,
 ///   date: DateTime.now(),
-///   source: IncomeSource.salary,
-///   description: '10월 급여',
+///   source: IncomeCategoryCode.salary,
+///   description: '3월 월급',
 /// );
 /// ```
 class Income {
@@ -27,7 +30,7 @@ class Income {
   /// Amount in KRW (won). Keep this as int to avoid floating point rounding.
   final int amount;
   final DateTime date;
-  final String source; // 급여, 부수입, 용돈, 상여금, 기타
+  final String source;
   final String? description;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -99,33 +102,4 @@ class Income {
       description.hashCode ^
       createdAt.hashCode ^
       updatedAt.hashCode;
-}
-
-/// 수입 출처 상수 정의 클래스
-///
-/// 시스템에서 지원하는 표준 수입 출처 코드들을 정의합니다.
-///
-/// **주요 상수:**
-/// - [salary]: 급여
-/// - [sideIncome]: 부수입
-/// - [allowance]: 용돈
-/// - [bonus]: 상여금
-/// - [investment]: 금융소득(투자)
-/// - [other]: 기타
-class IncomeSource {
-  static const String salary = 'SALARY';
-  static const String sideIncome = 'SIDE_INCOME';
-  static const String allowance = 'ALLOWANCE';
-  static const String bonus = 'BONUS';
-  static const String investment = 'INVESTMENT';
-  static const String other = 'OTHER';
-
-  static const List<String> all = [
-    salary,
-    sideIncome,
-    allowance,
-    bonus,
-    investment,
-    other,
-  ];
 }

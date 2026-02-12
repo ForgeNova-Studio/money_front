@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
-import 'package:moamoa/core/constants/income_sources.dart';
+import 'package:moamoa/core/constants/income_categories.dart';
 import 'package:moamoa/features/income/presentation/widgets/income_source_entry.dart';
 
 /// 수입 출처 카테고리 그리드 위젯
@@ -19,7 +19,7 @@ import 'package:moamoa/features/income/presentation/widgets/income_source_entry.
 ///   onSourceSelected: (code) => setState(() => _source = code),
 /// )
 /// ```
-class IncomeSourceGrid extends StatefulWidget {
+class IncomeSourceGrid extends StatelessWidget {
   final String selectedSourceCode;
   final ValueChanged<String> onSourceSelected;
 
@@ -29,21 +29,18 @@ class IncomeSourceGrid extends StatefulWidget {
     required this.onSourceSelected,
   });
 
-  @override
-  State<IncomeSourceGrid> createState() => _IncomeSourceGridState();
-}
-
-/// [IncomeSourceGrid]의 상태 관리 클래스
-///
-/// `didChangeDependencies`에서 수입 출처 목록을 캐시하여
-/// `build` 시마다 재생성하는 것을 방지합니다.
-class _IncomeSourceGridState extends State<IncomeSourceGrid> {
-  late List<IncomeSourceItem> _sources;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _sources = buildIncomeSources(context);
+  Color _categoryColor(String hexColor) {
+    if (hexColor.length == 6) {
+      final value = int.parse(hexColor, radix: 16);
+      return Color(0xFF000000 | value);
+    }
+    // Fallback or handle 8 digit hex if needed, but we used 6 digits in constants
+    try {
+      return Color(
+          int.parse(hexColor.replaceFirst('#', ''), radix: 16) + 0xFF000000);
+    } catch (_) {
+      return Colors.grey;
+    }
   }
 
   @override
@@ -66,13 +63,14 @@ class _IncomeSourceGridState extends State<IncomeSourceGrid> {
             return Wrap(
               spacing: 12,
               runSpacing: 12,
-              children: _sources.map((source) {
+              children: DefaultIncomeCategories.all.map((category) {
                 return SizedBox(
                   width: itemWidth,
                   child: IncomeSourceEntry(
-                    source: source,
-                    isSelected: widget.selectedSourceCode == source.code,
-                    onTap: () => widget.onSourceSelected(source.code),
+                    category: category,
+                    color: _categoryColor(category.color),
+                    isSelected: selectedSourceCode == category.id,
+                    onTap: () => onSourceSelected(category.id),
                   ),
                 );
               }).toList(),
