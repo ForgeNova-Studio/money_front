@@ -51,37 +51,84 @@ class IncomeSourceItem {
 /// ```dart
 /// final sources = buildIncomeSources(context);
 /// ```
+class IncomeSourceDefinition {
+  final String name;
+  final IconData icon;
+  final Color color;
+
+  const IncomeSourceDefinition({
+    required this.name,
+    required this.icon,
+    required this.color,
+  });
+}
+
+const Map<String, IncomeSourceDefinition> _incomeDefinitions = {
+  IncomeSource.salary: IncomeSourceDefinition(
+    name: '급여',
+    icon: Icons.attach_money,
+    color: Color(
+        0xFF4CAF50), // Default green (will be overridden by context.appColors.income if needed)
+  ),
+  IncomeSource.sideIncome: IncomeSourceDefinition(
+    name: '부수입',
+    icon: Icons.work,
+    color: Color(0xFF2E7D32),
+  ),
+  IncomeSource.allowance: IncomeSourceDefinition(
+    name: '용돈',
+    icon: Icons.account_balance_wallet,
+    color: Color(0xFF8D6E63), // Brown tone example, adjusted below
+  ),
+  IncomeSource.bonus: IncomeSourceDefinition(
+    name: '상여금',
+    icon: Icons.card_giftcard,
+    color: Color(0xFFF57C00),
+  ),
+  IncomeSource.investment: IncomeSourceDefinition(
+    name: '투자수익',
+    icon: Icons.trending_up,
+    color: Color(0xFF1565C0),
+  ),
+  IncomeSource.other: IncomeSourceDefinition(
+    name: '기타',
+    icon: Icons.more_horiz,
+    color: Color(0xFF6D4C41),
+  ),
+};
+
+/// Helper to access definitions without context
+IncomeSourceDefinition? getIncomeSourceDefinition(String code) {
+  return _incomeDefinitions[code];
+}
+
 List<IncomeSourceItem> buildIncomeSources(BuildContext context) {
   return [
-    IncomeSourceItem(
-      code: IncomeSource.salary,
-      name: '급여',
-      icon: Icons.work,
-      color: context.appColors.income,
-    ),
-    IncomeSourceItem(
-      code: IncomeSource.sideIncome,
-      name: '부수입',
-      icon: Icons.attach_money,
-      color: const Color(0xFF2E7D32),
-    ),
-    IncomeSourceItem(
-      code: IncomeSource.bonus,
-      name: '상여금',
-      icon: Icons.card_giftcard,
-      color: const Color(0xFFF57C00),
-    ),
-    IncomeSourceItem(
-      code: IncomeSource.investment,
-      name: '투자수익',
-      icon: Icons.trending_up,
-      color: const Color(0xFF1565C0),
-    ),
-    IncomeSourceItem(
-      code: IncomeSource.other,
-      name: '기타',
-      icon: Icons.more_horiz,
-      color: const Color(0xFF6D4C41),
-    ),
-  ];
+    IncomeSource.salary,
+    IncomeSource.sideIncome,
+    IncomeSource.allowance, // Added allowance here
+    IncomeSource.bonus,
+    IncomeSource.investment,
+    IncomeSource.other,
+  ].map((code) {
+    final def = _incomeDefinitions[code]!;
+    // Apply theme color specifically for salary if needed, others use fixed colors
+    final color =
+        code == IncomeSource.salary ? context.appColors.income : def.color;
+
+    return IncomeSourceItem(
+      code: code,
+      name: def.name,
+      icon: def.icon,
+      color: color,
+    );
+  }).toList();
+}
+
+String resolveIncomeCategoryLabel(String source) {
+  return getIncomeSourceDefinition(source)?.name ?? source;
+}
+
+IconData resolveIncomeCategoryIcon(String source) {
+  return getIncomeSourceDefinition(source)?.icon ?? Icons.attach_money;
 }
