@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/core/constants/income_sources.dart';
-import 'package:moamoa/features/income/presentation/widgets/income_source_item.dart';
+import 'package:moamoa/features/income/presentation/widgets/income_source_entry.dart';
 
 class IncomeSourceGrid extends StatefulWidget {
   final String selectedSourceCode;

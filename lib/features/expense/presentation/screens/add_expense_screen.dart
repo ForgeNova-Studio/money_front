@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:moamoa/features/expense/domain/entities/expense.dart';
 import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 import 'package:moamoa/features/expense/domain/entities/payment_method.dart';
-import 'package:moamoa/features/expense/presentation/utils/expense_category_utils.dart';
+import 'package:moamoa/features/expense/presentation/widgets/expense_category_grid.dart';
 import 'package:moamoa/features/expense/presentation/providers/expense_providers.dart';
 
 // viewmodels
@@ -19,12 +19,12 @@ import 'package:moamoa/core/utils/toast_utils.dart';
 
 // constants
 import 'package:moamoa/core/constants/app_constants.dart';
-import 'package:moamoa/core/constants/expense_categories.dart';
+
 import 'package:moamoa/features/common/widgets/transaction_form/amount_input_card.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/date_picker_card.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/form_submit_button.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_card.dart';
-import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_styles.dart';
+
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_text_field.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
 
@@ -136,11 +136,6 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       return '올바른 금액을 입력하세요';
     }
     return null;
-  }
-
-  Color _categoryColor(String hexColor) {
-    final value = int.parse(hexColor, radix: 16);
-    return Color(0xFF000000 | value);
   }
 
   Future<void> _handleSubmit() async {
@@ -324,97 +319,12 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                             const SizedBox(height: 28),
 
                             // 4. Category Selection
-                            Text(
-                              '카테고리',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: context.appColors.textSecondary,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            LayoutBuilder(
-                              builder: (context, constraints) {
-                                final itemWidth =
-                                    (constraints.maxWidth - 24) / 3;
-                                return Wrap(
-                                  spacing: 12,
-                                  runSpacing: 12,
-                                  children: DefaultExpenseCategories.all
-                                      .map((category) {
-                                    final isSelected =
-                                        _selectedCategory == category.id;
-                                    final color =
-                                        _categoryColor(category.color);
-                                    return SizedBox(
-                                      width: itemWidth,
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          onTap: () {
-                                            setState(() {
-                                              _selectedCategory = category.id;
-                                            });
-                                          },
-                                          child: AnimatedContainer(
-                                            duration: const Duration(
-                                                milliseconds: 200),
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 14),
-                                            decoration:
-                                                transactionFormCardDecoration(
-                                              context,
-                                              backgroundColor: isSelected
-                                                  ? color.withValues(
-                                                      alpha: 0.12)
-                                                  : Colors.white,
-                                            ),
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                  width: 36,
-                                                  height: 36,
-                                                  decoration: BoxDecoration(
-                                                    color: isSelected
-                                                        ? color
-                                                        : color.withValues(
-                                                            alpha: 0.12),
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                  child: Icon(
-                                                    expenseIconFromName(
-                                                        category.icon),
-                                                    color: isSelected
-                                                        ? Colors.white
-                                                        : color,
-                                                    size: 18,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                  category.name,
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: isSelected
-                                                        ? color
-                                                        : context.appColors
-                                                            .textSecondary,
-                                                    fontWeight: isSelected
-                                                        ? FontWeight.w700
-                                                        : FontWeight.w600,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                );
+                            ExpenseCategoryGrid(
+                              selectedCategoryId: _selectedCategory,
+                              onCategorySelected: (id) {
+                                setState(() {
+                                  _selectedCategory = id;
+                                });
                               },
                             ),
                             const SizedBox(height: 28),
