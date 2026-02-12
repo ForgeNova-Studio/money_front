@@ -201,18 +201,6 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<AuthResult> loginWithApple({
-    required String authorizationCode,
-    String? nickname,
-  }) async {
-    return await _socialLogin(
-      provider: 'APPLE',
-      idToken: authorizationCode, // Apple은 authorizationCode를 idToken으로 사용
-      nickname: nickname ?? 'Apple 사용자',
-    );
-  }
-
-  @override
   Future<AuthResult> loginWithNaver({
     required String accessToken,
     String? email,

@@ -91,7 +91,7 @@ abstract class AuthRemoteDataSource {
 
   /// 소셜 로그인 API 호출 (통합 엔드포인트)
   ///
-  /// [provider] 소셜 로그인 제공자 (GOOGLE, APPLE 등)
+  /// [provider] 소셜 로그인 제공자 (GOOGLE, NAVER, KAKAO)
   /// [idToken] 소셜 로그인 ID Token
   /// [nickname] 사용자 닉네임
   ///

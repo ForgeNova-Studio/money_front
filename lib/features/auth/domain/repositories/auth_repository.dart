@@ -4,17 +4,25 @@ import 'package:moamoa/features/auth/domain/entities/auth_token.dart';
 import 'package:moamoa/features/auth/domain/entities/user.dart';
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
-/// Auth Repository 인터페이스
+/// 인증 레포지토리 인터페이스
 ///
-/// 인증 관련 비즈니스 로직의 추상화 계층
-/// Data Layer에서 이 인터페이스를 구현
+/// 애플리케이션의 인증 관련 데이터 조작을 위한 추상화 계층입니다.
+/// 로그인, 회원가입, 로그아웃, 토큰 관리 등의 기능을 정의합니다.
 ///
-/// Exception 처리:
-/// - NetworkException: 네트워크 연결 오류
-/// - UnauthorizedException: 인증 실패 (잘못된 이메일/비밀번호)
-/// - ValidationException: 입력값 검증 오류
-/// - ServerException: 서버 오류 (500번대)
-/// - TokenExpiredException: 토큰 만료
+/// **주요 기능 (Key Features):**
+/// - 이메일/비밀번호 로그인 및 회원가입
+/// - 소셜 로그인 (Google, Kakao, Naver) 통합
+/// - 토큰 관리 (저장, 갱신, 조회)
+/// - 이메일 인증 및 비밀번호 재설정
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// final authRepository = ref.read(authRepositoryProvider);
+/// final result = await authRepository.login(
+///   email: 'test@example.com',
+///   password: 'password123!',
+/// );
+/// ```
 abstract class AuthRepository {
   /// 로그인
   /// [email] 사용자 이메일
@@ -129,21 +137,6 @@ abstract class AuthRepository {
   /// - [ServerException] 서버 오류
   Future<AuthResult> loginWithGoogle({
     required String idToken,
-    String? nickname,
-  });
-
-  /// Apple 로그인
-  /// [authorizationCode] Apple Authorization Code
-  /// [nickname] 사용자 닉네임 (선택)
-  ///
-  /// Returns: [AuthResult] (User + AuthToken)
-  ///
-  /// Throws:
-  /// - [NetworkException] 네트워크 오류
-  /// - [UnauthorizedException] Apple 인증 실패
-  /// - [ServerException] 서버 오류
-  Future<AuthResult> loginWithApple({
-    required String authorizationCode,
     String? nickname,
   });
 

@@ -9,7 +9,6 @@ import 'package:moamoa/features/auth/data/repositories/auth_repository_impl.dart
 import 'package:moamoa/features/auth/domain/repositories/auth_repository.dart';
 
 // usecases
-import 'package:moamoa/features/auth/domain/usecases/apple_login_usecase.dart';
 import 'package:moamoa/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:moamoa/features/auth/domain/usecases/google_login_usecase.dart';
 import 'package:moamoa/features/auth/domain/usecases/login_usecase.dart';
@@ -101,12 +100,6 @@ GetCurrentUserUseCase getCurrentUserUseCase(Ref ref) {
 @riverpod
 GoogleLoginUseCase googleLoginUseCase(Ref ref) {
   return GoogleLoginUseCase(ref.read(authRepositoryProvider));
-}
-
-/// Apple Login UseCase Provider
-@riverpod
-AppleLoginUseCase appleLoginUseCase(Ref ref) {
-  return AppleLoginUseCase(ref.read(authRepositoryProvider));
 }
 
 /// Naver Login UseCase Provider

@@ -65,7 +65,7 @@ abstract class AuthLocalDataSource {
 
   /// 마지막 로그인 방법 저장
   ///
-  /// [provider] 로그인 방법 (GOOGLE, APPLE, NAVER, KAKAO, EMAIL)
+  /// [provider] 로그인 방법 (GOOGLE, NAVER, KAKAO, EMAIL)
   Future<void> saveLastLoginProvider(String provider);
 
   /// 마지막 로그인 방법 불러오기
