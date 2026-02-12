@@ -123,6 +123,9 @@ class ExpenseViewModel extends _$ExpenseViewModel {
     final homeViewModel = ref.read(homeViewModelProvider.notifier);
     unawaited(homeViewModel.fetchMonthlyData(date, forceRefresh: true));
     homeViewModel.refreshBudgetAndAsset();
+
+    // 현재 리스트 갱신 (Stale Data 방지)
+    await loadExpenses();
   }
 
   /// 지출 생성
