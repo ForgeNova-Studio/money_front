@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
 import 'package:moamoa/features/notification/domain/entities/notification_entity.dart';
+import 'package:moamoa/features/notification/presentation/models/notification_filter_type.dart';
+import 'package:moamoa/features/notification/presentation/models/notification_group_data.dart';
 import 'package:moamoa/features/notification/presentation/viewmodels/notification_view_model.dart';
+import 'package:moamoa/features/notification/presentation/widgets/notification_list/notification_detail_sheet.dart';
+import 'package:moamoa/features/notification/presentation/widgets/notification_list/notification_empty_state.dart';
+import 'package:moamoa/features/notification/presentation/widgets/notification_list/notification_filter_tabs.dart';
+import 'package:moamoa/features/notification/presentation/widgets/notification_list/notification_group_section.dart';
 
 /// 알림 목록 화면
 class NotificationListScreen extends ConsumerStatefulWidget {
@@ -18,12 +23,11 @@ class NotificationListScreen extends ConsumerStatefulWidget {
 
 class _NotificationListScreenState
     extends ConsumerState<NotificationListScreen> {
-  String? _selectedType; // null = 전체
+  NotificationFilterType _selectedFilter = NotificationFilterType.all;
 
   @override
   void initState() {
     super.initState();
-    // 화면 진입 시 알림 목록 새로고침
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(notificationViewModelProvider.notifier).refresh();
     });
@@ -42,7 +46,6 @@ class _NotificationListScreenState
         icon: const Icon(Icons.arrow_back_ios_new_rounded),
         onPressed: () => context.pop(),
       ),
-      // 읽지 않은 개수 뱃지
       actions: state.unreadCount > 0
           ? [
               Center(
@@ -68,78 +71,12 @@ class _NotificationListScreenState
           : null,
       child: Column(
         children: [
-          _buildFilterTabs(context),
+          NotificationFilterTabs(
+            selectedType: _selectedFilter,
+            onChanged: (type) => setState(() => _selectedFilter = type),
+          ),
           Expanded(child: _buildBody(context, state, viewModel)),
         ],
-      ),
-    );
-  }
-
-  /// 필터 탭 버튼들
-  Widget _buildFilterTabs(BuildContext context) {
-    final appColors = context.appColors;
-    final filterTypes = [
-      (null, '전체', appColors.primary),
-      ('NOTICE', '공지', Colors.orange),
-      ('PERSONAL', '개인', Colors.blue),
-      ('UPDATE', '업데이트', Colors.green),
-      ('EVENT', '이벤트', Colors.purple),
-    ];
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          children: filterTypes.map((filter) {
-            final isSelected = _selectedType == filter.$1;
-            final typeColor = filter.$3;
-
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: GestureDetector(
-                onTap: () => setState(() => _selectedType = filter.$1),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                  decoration: BoxDecoration(
-                    // 선택 시: 솔리드 컬러 배경, 미선택 시: 아주 옅은 배경
-                    color: isSelected
-                        ? typeColor
-                        : typeColor.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color:
-                          typeColor.withValues(alpha: isSelected ? 1.0 : 0.3),
-                      width: 1.5,
-                    ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: typeColor.withValues(alpha: 0.3),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Text(
-                    filter.$2,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight:
-                          isSelected ? FontWeight.w700 : FontWeight.w600,
-                      color: isSelected ? Colors.white : typeColor,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
       ),
     );
   }
@@ -154,92 +91,31 @@ class _NotificationListScreenState
     }
 
     if (state.errorMessage != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              state.errorMessage!,
-              style: TextStyle(color: context.appColors.error),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: viewModel.refresh,
-              child: const Text('다시 시도'),
-            ),
-          ],
-        ),
-      );
+      return _buildErrorState(context, state.errorMessage!, viewModel.refresh);
     }
 
-    if (state.notifications.isEmpty) {
-      return _buildEmptyState(context);
-    }
-
-    // 타입 필터링 적용
-    final filteredNotifications = _selectedType == null
-        ? state.notifications
-        : state.notifications
-            .where((n) => n.type.toUpperCase() == _selectedType)
-            .toList();
+    final filteredNotifications = state.notifications
+        .where((notification) => _selectedFilter.matches(notification.type))
+        .toList();
 
     if (filteredNotifications.isEmpty) {
-      return _buildEmptyState(context);
+      return const NotificationEmptyState();
     }
 
-    // 날짜별 그룹핑
-    final grouped = _groupByDate(filteredNotifications);
+    final grouped = groupNotificationsByDate(filteredNotifications);
 
     return RefreshIndicator(
       onRefresh: viewModel.refresh,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        // 로딩 중이거나, 로딩이 끝났으면 안내 메시지를 위해 +1
         itemCount: grouped.length + 1,
         itemBuilder: (context, index) {
-          // 마지막 아이템 (로딩 인디케이터 또는 안내 메시지)
           if (index == grouped.length) {
-            if (state.hasMore) {
-              viewModel.loadMore();
-              return const Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator()),
-              );
-            } else {
-              // 더 이상 불러올 데이터가 없으면 안내 메시지 표시
-              return Container(
-                margin: const EdgeInsets.fromLTRB(16, 24, 16, 40),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  color: context.appColors.backgroundGray,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.info_outline_rounded,
-                      size: 16,
-                      color: context.appColors.textTertiary,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '공지는 최대 30일동안 보관되며 이후 사라집니다.',
-                      style: TextStyle(
-                        color: context.appColors.textTertiary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
+            return _buildListFooter(context, state, viewModel);
           }
 
           final group = grouped[index];
-          return _NotificationGroup(
+          return NotificationGroupSection(
             title: group.title,
             notifications: group.notifications,
             onNotificationTap: (notification) =>
@@ -250,22 +126,65 @@ class _NotificationListScreenState
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildErrorState(
+    BuildContext context,
+    String message,
+    Future<void> Function() onRetry,
+  ) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.notifications_none_rounded,
-            size: 64,
-            color: context.appColors.gray300,
+          Text(
+            message,
+            style: TextStyle(color: context.appColors.error),
           ),
           const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: onRetry,
+            child: const Text('다시 시도'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListFooter(
+    BuildContext context,
+    NotificationState state,
+    NotificationViewModel viewModel,
+  ) {
+    if (state.hasMore) {
+      viewModel.loadMore();
+      return const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 24, 16, 40),
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: context.appColors.backgroundGray,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      alignment: Alignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            size: 16,
+            color: context.appColors.textTertiary,
+          ),
+          const SizedBox(width: 8),
           Text(
-            '알림이 없습니다',
+            '공지는 최대 30일동안 보관되며 이후 사라집니다.',
             style: TextStyle(
-              fontSize: 16,
-              color: context.appColors.gray500,
+              color: context.appColors.textTertiary,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -273,54 +192,11 @@ class _NotificationListScreenState
     );
   }
 
-  /// 날짜별로 알림 그룹핑
-  List<_NotificationGroupData> _groupByDate(
-      List<NotificationEntity> notifications) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final weekAgo = today.subtract(const Duration(days: 7));
-
-    final todayList = <NotificationEntity>[];
-    final thisWeekList = <NotificationEntity>[];
-    final olderList = <NotificationEntity>[];
-
-    for (final notification in notifications) {
-      final notificationDate = DateTime(
-        notification.createdAt.year,
-        notification.createdAt.month,
-        notification.createdAt.day,
-      );
-
-      if (notificationDate == today) {
-        todayList.add(notification);
-      } else if (notificationDate.isAfter(weekAgo)) {
-        thisWeekList.add(notification);
-      } else {
-        olderList.add(notification);
-      }
-    }
-
-    final groups = <_NotificationGroupData>[];
-    if (todayList.isNotEmpty) {
-      groups.add(_NotificationGroupData(title: '오늘', notifications: todayList));
-    }
-    if (thisWeekList.isNotEmpty) {
-      groups.add(
-          _NotificationGroupData(title: '이번 주', notifications: thisWeekList));
-    }
-    if (olderList.isNotEmpty) {
-      groups.add(_NotificationGroupData(title: '이전', notifications: olderList));
-    }
-
-    return groups;
-  }
-
   void _showNotificationDetail(
     BuildContext context,
     NotificationEntity notification,
     NotificationViewModel viewModel,
   ) {
-    // 읽음 처리
     if (!notification.isRead) {
       viewModel.markAsRead(notification.id);
     }
@@ -329,448 +205,7 @@ class _NotificationListScreenState
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) =>
-          _NotificationDetailSheet(notification: notification),
+      builder: (context) => NotificationDetailSheet(notification: notification),
     );
-  }
-}
-
-/// 알림 그룹 데이터
-class _NotificationGroupData {
-  final String title;
-  final List<NotificationEntity> notifications;
-
-  _NotificationGroupData({required this.title, required this.notifications});
-}
-
-/// 알림 그룹 위젯
-class _NotificationGroup extends StatelessWidget {
-  final String title;
-  final List<NotificationEntity> notifications;
-  final void Function(NotificationEntity) onNotificationTap;
-
-  const _NotificationGroup({
-    required this.title,
-    required this.notifications,
-    required this.onNotificationTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final appColors = context.appColors;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // 섹션 타이틀 (강조 바 + 타이틀 + 디바이더 조합)
-        Padding(
-          padding:
-              const EdgeInsets.only(left: 16, right: 16, top: 24, bottom: 12),
-          child: Row(
-            children: [
-              // 강조 바 (Accent Bar)
-              Container(
-                width: 4,
-                height: 14,
-                decoration: BoxDecoration(
-                  color: appColors.primary,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(width: 8),
-              // 타이틀
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: appColors.textPrimary,
-                  letterSpacing: -0.3,
-                ),
-              ),
-              const SizedBox(width: 12),
-              // 구분선 (Right Divider)
-              Expanded(
-                child: Container(
-                  height: 1,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        appColors.gray200,
-                        appColors.gray200.withValues(alpha: 0),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        // 알림 카드들
-        Container(
-          decoration: BoxDecoration(
-            color: appColors.backgroundGray,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            children: notifications.asMap().entries.map((entry) {
-              final index = entry.key;
-              final notification = entry.value;
-              final isLast = index == notifications.length - 1;
-
-              return Column(
-                children: [
-                  _NotificationTile(
-                    notification: notification,
-                    onTap: () => onNotificationTap(notification),
-                  ),
-                  if (!isLast)
-                    Divider(
-                      height: 1,
-                      indent: 16,
-                      endIndent: 16,
-                      color: appColors.gray200,
-                    ),
-                ],
-              );
-            }).toList(),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// 알림 타일 위젯
-class _NotificationTile extends StatelessWidget {
-  final NotificationEntity notification;
-  final VoidCallback onTap;
-
-  const _NotificationTile({
-    required this.notification,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final appColors = context.appColors;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        height: 80, // 고정 높이
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center, // 수직 중앙 정렬
-          children: [
-            // 알림 아이콘
-            Container(
-              width: 40,
-              height: 40,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: _getTypeColor(notification.type).withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                _getTypeIcon(notification.type),
-                color: _getTypeColor(notification.type),
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 12),
-            // 내용
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    notification.title,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: notification.isRead
-                          ? FontWeight.w500
-                          : FontWeight.w700,
-                      color: appColors.textPrimary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    notification.message,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: appColors.textSecondary,
-                      height: 1.3,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            // 읽지 않음 표시 (빨간 점)
-            if (!notification.isRead)
-              Container(
-                width: 8,
-                height: 8,
-                decoration: const BoxDecoration(
-                  color: Colors.red,
-                  shape: BoxShape.circle,
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  IconData _getTypeIcon(String type) {
-    switch (type.toUpperCase()) {
-      case 'NOTICE':
-        return Icons.campaign_rounded;
-      case 'PERSONAL':
-        return Icons.person_rounded;
-      case 'UPDATE':
-        return Icons.system_update_rounded;
-      case 'EVENT':
-        return Icons.celebration_rounded;
-      default:
-        return Icons.notifications_rounded;
-    }
-  }
-
-  Color _getTypeColor(String type) {
-    switch (type.toUpperCase()) {
-      case 'NOTICE':
-        return Colors.orange;
-      case 'PERSONAL':
-        return Colors.blue;
-      case 'UPDATE':
-        return Colors.green;
-      case 'EVENT':
-        return Colors.purple;
-      default:
-        return Colors.grey;
-    }
-  }
-}
-
-/// 알림 상세 바텀시트 (모던 디자인)
-class _NotificationDetailSheet extends StatelessWidget {
-  final NotificationEntity notification;
-
-  const _NotificationDetailSheet({required this.notification});
-
-  @override
-  Widget build(BuildContext context) {
-    final appColors = context.appColors;
-    final typeColor = _getTypeColor(notification.type);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: appColors.backgroundLight,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // 드래그 핸들
-          Container(
-            margin: const EdgeInsets.only(top: 12),
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: appColors.gray300,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-
-          // 헤더 영역 (타입 아이콘 + 색상 배경)
-          Container(
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  typeColor.withValues(alpha: 0.15),
-                  typeColor.withValues(alpha: 0.05),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: typeColor.withValues(alpha: 0.2),
-                width: 1,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 타입 뱃지 + 날짜
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: typeColor.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            _getTypeIcon(notification.type),
-                            size: 14,
-                            color: typeColor,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            _getTypeLabel(notification.type),
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: typeColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      _formatDate(notification.createdAt),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: appColors.textTertiary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                // 제목
-                Text(
-                  notification.title,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: appColors.textPrimary,
-                    height: 1.3,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // 내용 영역
-          Padding(
-            padding: EdgeInsets.only(
-              left: 20,
-              right: 20,
-              bottom: MediaQuery.of(context).padding.bottom + 24,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  notification.message,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: appColors.textPrimary,
-                    height: 1.7,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // 닫기 버튼
-                SizedBox(
-                  width: double.infinity,
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      backgroundColor: appColors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      '확인',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  IconData _getTypeIcon(String type) {
-    switch (type.toUpperCase()) {
-      case 'NOTICE':
-        return Icons.campaign_rounded;
-      case 'PERSONAL':
-        return Icons.person_rounded;
-      case 'UPDATE':
-        return Icons.system_update_rounded;
-      case 'EVENT':
-        return Icons.celebration_rounded;
-      default:
-        return Icons.notifications_rounded;
-    }
-  }
-
-  Color _getTypeColor(String type) {
-    switch (type.toUpperCase()) {
-      case 'NOTICE':
-        return Colors.orange;
-      case 'PERSONAL':
-        return Colors.blue;
-      case 'UPDATE':
-        return Colors.green;
-      case 'EVENT':
-        return Colors.purple;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  String _getTypeLabel(String type) {
-    switch (type.toUpperCase()) {
-      case 'NOTICE':
-        return '공지';
-      case 'PERSONAL':
-        return '개인';
-      case 'UPDATE':
-        return '업데이트';
-      case 'EVENT':
-        return '이벤트';
-      default:
-        return '알림';
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final diff = now.difference(date);
-
-    if (diff.inMinutes < 1) return '방금 전';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}분 전';
-    if (diff.inHours < 24) return '${diff.inHours}시간 전';
-    if (diff.inDays < 7) return '${diff.inDays}일 전';
-    return DateFormat('M월 d일').format(date);
   }
 }
