@@ -1,5 +1,8 @@
 import 'package:moamoa/features/notification/domain/entities/notification_entity.dart';
 
+/// 날짜별 알림 그룹 데이터
+///
+/// 알림 목록을 날짜별(오늘, 이번 주, 이전)로 그룹화하여 표시하기 위한 데이터 구조입니다.
 class NotificationGroupData {
   final String title;
   final List<NotificationEntity> notifications;
@@ -10,6 +13,13 @@ class NotificationGroupData {
   });
 }
 
+/// 알림 목록 날짜별 그룹화 함수
+///
+/// 주어진 알림 목록을 [오늘], [이번 주], [이전]으로 분류하여 그룹화된 리스트를 반환합니다.
+///
+/// - [notifications]: 그룹화할 알림 엔티티 리스트
+///
+/// Returns: 그룹화된 [NotificationGroupData] 리스트
 List<NotificationGroupData> groupNotificationsByDate(
   List<NotificationEntity> notifications,
 ) {

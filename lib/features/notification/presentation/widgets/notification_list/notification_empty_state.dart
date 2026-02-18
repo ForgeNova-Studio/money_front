@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 
+/// 알림 목록 빈 상태 위젯
+///
+/// 표시할 알림이 없을 때 보여주는 플레이스홀더 화면입니다.
+///
+/// ## 주요 기능
+/// - 중앙 정렬된 아이콘 및 메시지 표시
 class NotificationEmptyState extends StatelessWidget {
   const NotificationEmptyState({super.key});
 

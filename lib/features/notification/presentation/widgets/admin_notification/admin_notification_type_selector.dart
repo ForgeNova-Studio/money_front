@@ -2,6 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/notification/presentation/models/admin_notification_type.dart';
 
+/// 관리자 알림 유형 선택 위젯
+///
+/// 발송할 알림의 유형(공지, 이벤트 등)을 선택하는 UI입니다.
+/// 칩(Chip) 형태로 선택 가능한 옵션들을 나열합니다.
+///
+/// ## 주요 기능
+/// - 알림 유형 목록 표시
+/// - 선택된 유형 시각적 강조 (색상, 테두리)
+/// - 유형 변경 콜백 처리
+///
+/// ## 사용 예시
+/// ```dart
+/// AdminNotificationTypeSelector(
+///   selectedType: state.selectedType,
+///   onChanged: viewModel.selectType,
+/// )
+/// ```
 class AdminNotificationTypeSelector extends StatelessWidget {
   final AppThemeColors appColors;
   final AdminNotificationType selectedType;

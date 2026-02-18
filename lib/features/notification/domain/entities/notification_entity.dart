@@ -1,4 +1,14 @@
 /// 알림 도메인 엔티티
+///
+/// 비즈니스 로직에서 사용하는 순수한 알림 데이터 객체입니다.
+///
+/// ## 주요 필드
+/// - [id]: 알림 식별자
+/// - [title]: 제목
+/// - [message]: 내용
+/// - [type]: 알림 유형
+/// - [isRead]: 읽음 상태
+/// - [createdAt]: 생성 일시
 class NotificationEntity {
   final String id;
   final String title;

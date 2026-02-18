@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+/// 관리자 알림 유형 열거형
+///
+/// 관리자가 발송할 수 있는 알림의 종류를 정의합니다.
+///
+/// ## 종류
+/// - [notice]: 공지사항
+/// - [update]: 업데이트 소식
+/// - [event]: 이벤트 알림
+/// - [personal]: 개인 알림
 enum AdminNotificationType {
   notice,
   update,

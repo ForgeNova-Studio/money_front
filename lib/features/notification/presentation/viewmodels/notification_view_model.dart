@@ -5,6 +5,15 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'notification_view_model.g.dart';
 
 /// 알림 화면 상태
+///
+/// 사용자 알림 목록 화면의 UI 상태를 관리합니다.
+///
+/// ## 주요 상태
+/// - [notifications]: 알림 목록 데이터
+/// - [unreadCount]: 읽지 않은 알림 개수
+/// - [isLoading]: 초기 로딩 상태
+/// - [isLoadingMore]: 추가 로딩 상태 (무한 스크롤)
+/// - [hasMore]: 더 불러올 데이터가 있는지 여부
 class NotificationState {
   final List<NotificationEntity> notifications;
   final int unreadCount;
@@ -45,6 +54,15 @@ class NotificationState {
   }
 }
 
+/// 알림 ViewModel
+///
+/// 사용자의 알림 목록을 조회하고 읽음 처리를 담당합니다.
+///
+/// ## 주요 기능
+/// - 초기 알림 목록 및 읽지 않은 개수 로드
+/// - 무한 스크롤을 위한 추가 데이터 로드
+/// - 알림 읽음 처리 및 로컬 상태 업데이트
+/// - 푸시 알림 수신 시 실시간 목록 업데이트
 @riverpod
 class NotificationViewModel extends _$NotificationViewModel {
   @override

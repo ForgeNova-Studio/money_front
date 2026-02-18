@@ -4,6 +4,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'admin_notification_view_model.g.dart';
 
+/// 관리자 알림 화면 UI 상태
+///
+/// 알림 발송 화면의 UI 상태를 관리합니다.
+///
+/// ## 주요 상태
+/// - [selectedType]: 선택된 알림 유형 (공지, 업데이트, 이벤트 등)
+/// - [isSubmitting]: 발송 중 여부 (로딩 표시용)
+/// - [isFabExpanded]: FAB 확장 여부 (메뉴 표시용)
 class AdminNotificationUiState {
   final AdminNotificationType selectedType;
   final bool isSubmitting;
@@ -28,6 +36,9 @@ class AdminNotificationUiState {
   }
 }
 
+/// 알림 발송 결과
+///
+/// 알림 발송 작업의 성공 여부와 메시지를 담습니다.
 class AdminNotificationSubmitResult {
   final bool isSuccess;
   final String message;
@@ -38,6 +49,14 @@ class AdminNotificationSubmitResult {
   });
 }
 
+/// 관리자 알림 ViewModel
+///
+/// 관리자 페이지에서 알림을 생성하고 발송하는 기능을 담당합니다.
+///
+/// ## 주요 기능
+/// - 알림 제목, 내용, 대상 이메일 유효성 검사
+/// - 알림 유형 선택 및 UI 상태 관리
+/// - 전체 발송 및 개별 발송 처리
 @riverpod
 class AdminNotificationViewModel extends _$AdminNotificationViewModel {
   static const int titleMaxLength = 100;

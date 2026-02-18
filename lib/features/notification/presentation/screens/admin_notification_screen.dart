@@ -12,6 +12,15 @@ import 'package:moamoa/features/notification/presentation/widgets/admin_notifica
 import 'package:moamoa/features/notification/presentation/widgets/admin_notification/admin_target_email_dialog.dart';
 
 /// 관리자 공지 작성 화면
+///
+/// 관리자가 새로운 공지사항이나 알림을 작성하고 발송하는 화면입니다.
+///
+/// ## 주요 기능
+/// - 알림 제목, 내용 입력 및 유효성 검사
+/// - 알림 유형 선택 (공지, 이벤트 등)
+/// - 전체 사용자 공지 발송
+/// - 특정 사용자(이메일) 개별 발송
+/// - FAB 메뉴를 통한 발송 옵션 선택
 class AdminNotificationScreen extends ConsumerStatefulWidget {
   const AdminNotificationScreen({super.key});
 
@@ -20,6 +29,9 @@ class AdminNotificationScreen extends ConsumerStatefulWidget {
       _AdminNotificationScreenState();
 }
 
+/// AdminNotificationScreen 상태 클래스
+///
+/// 폼 상태(Key), 텍스트 컨트롤러를 관리하고 ViewModel과 상호작용합니다.
 class _AdminNotificationScreenState
     extends ConsumerState<AdminNotificationScreen> {
   final _formKey = GlobalKey<FormState>();

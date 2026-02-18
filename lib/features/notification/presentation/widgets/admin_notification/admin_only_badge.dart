@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/// 관리자 전용 배지 위젯
+///
+/// 관리자 권한이 필요한 기능이나 화면임을 표시하는 시각적 요소입니다.
+/// 붉은색 계열의 아이콘과 텍스트로 구성됩니다.
 class AdminOnlyBadge extends StatelessWidget {
   const AdminOnlyBadge({super.key});
 

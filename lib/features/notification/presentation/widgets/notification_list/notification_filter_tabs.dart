@@ -2,6 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/notification/presentation/models/notification_filter_type.dart';
 
+/// 알림 목록 필터 탭 위젯
+///
+/// 알림 목록 상단에 위치하여 유형별 필터링 기능을 제공합니다.
+///
+/// ## 주요 기능
+/// - 가로 스크롤 가능한 필터 칩 목록 표시
+/// - 선택된 필터 시각적 강조 (배경색, 그림자)
+/// - 필터 변경 이벤트 처리
+///
+/// ## 사용 예시
+/// ```dart
+/// NotificationFilterTabs(
+///   selectedType: state.selectedType,
+///   onChanged: (type) => viewModel.updateFilter(type),
+/// )
+/// ```
 class NotificationFilterTabs extends StatelessWidget {
   final NotificationFilterType selectedType;
   final ValueChanged<NotificationFilterType> onChanged;

@@ -2,7 +2,15 @@ import 'package:moamoa/features/notification/data/datasources/remote/notificatio
 import 'package:moamoa/features/notification/data/models/notification_model.dart';
 import 'package:moamoa/features/notification/domain/entities/notification_entity.dart';
 
-/// 알림 Repository
+/// 알림 Repository 인터페이스
+///
+/// 알림 관련 데이터 조작을 위한 추상화 계층입니다.
+/// 데이터 소스와 도메인 계층 사이의 중개 역할을 합니다.
+///
+/// ## 주요 기능
+/// - 알림 목록 조회 및 도메인 엔티티 변환
+/// - 알림 상태 변경 (읽음 처리)
+/// - 알림 생성 및 발송
 abstract class NotificationRepository {
   /// 알림 목록 조회
   Future<List<NotificationEntity>> getNotifications({
@@ -33,6 +41,15 @@ abstract class NotificationRepository {
   });
 }
 
+/// NotificationRepository 구현체
+///
+/// [NotificationRemoteDataSource]를 사용하여 데이터를 가져오고,
+/// [NotificationEntity]로 변환하여 도메인 계층에 전달합니다.
+///
+/// ## 사용 예시
+/// ```dart
+/// final repository = NotificationRepositoryImpl(remoteDataSource);
+/// ```
 class NotificationRepositoryImpl implements NotificationRepository {
   final NotificationRemoteDataSource _remoteDataSource;
 

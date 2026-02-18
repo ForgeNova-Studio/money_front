@@ -3,6 +3,14 @@ import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/notification/domain/entities/notification_entity.dart';
 import 'package:moamoa/features/notification/presentation/models/notification_type_ui.dart';
 
+/// 알림 날짜별 그룹 섹션 위젯
+///
+/// 특정 날짜 그룹(오늘, 이번 주, 이전)에 해당하는 알림 목록을 표시합니다.
+///
+/// ## 주요 기능
+/// - 섹션 타이틀 및 구분선 표시
+/// - 해당 그룹의 알림 리스트 렌더링
+/// - 개별 알림 클릭 이벤트 처리
 class NotificationGroupSection extends StatelessWidget {
   final String title;
   final List<NotificationEntity> notifications;
@@ -96,6 +104,9 @@ class NotificationGroupSection extends StatelessWidget {
   }
 }
 
+/// 개별 알림 타일 위젯
+///
+/// 알림의 간략한 정보(아이콘, 제목, 내용)를 리스트 아이템 형태로 표시합니다.
 class _NotificationTile extends StatelessWidget {
   final NotificationEntity notification;
   final VoidCallback onTap;

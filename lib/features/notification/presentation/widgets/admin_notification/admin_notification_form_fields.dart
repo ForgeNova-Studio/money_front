@@ -1,6 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 
+/// 관리자 알림 입력 폼 필드
+///
+/// 알림 제목과 내용을 입력받는 텍스트 필드 그룹입니다.
+///
+/// ## 주요 기능
+/// - 제목 입력 및 글자 수 제한
+/// - 내용 입력 (멀티 라인) 및 글자 수 제한
+/// - 유효성 검사 (Validator)
+///
+/// ## 사용 예시
+/// ```dart
+/// AdminNotificationFormFields(
+///   titleController: _titleController,
+///   messageController: _messageController,
+///   // ... validators
+/// )
+/// ```
 class AdminNotificationFormFields extends StatelessWidget {
   final AppThemeColors appColors;
   final TextEditingController titleController;

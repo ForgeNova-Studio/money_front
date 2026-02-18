@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+/// 알림 유형 UI 확장
+///
+/// 알림 유형 문자열(String)을 UI 표시에 적합한 아이콘, 색상, 라벨로 변환하는 기능을 제공합니다.
 extension NotificationTypeUiX on String {
   IconData get notificationTypeIcon {
     switch (toUpperCase()) {

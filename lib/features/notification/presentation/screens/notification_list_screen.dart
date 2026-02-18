@@ -13,6 +13,15 @@ import 'package:moamoa/features/notification/presentation/widgets/notification_l
 import 'package:moamoa/features/notification/presentation/widgets/notification_list/notification_group_section.dart';
 
 /// 알림 목록 화면
+///
+/// 사용자가 수신한 알림 목록을 확인하는 화면입니다.
+///
+/// ## 주요 기능
+/// - 알림 목록 조회 및 무한 스크롤
+/// - 알림 유형별 필터링 (전체, 공지, 개인 등)
+/// - 읽지 않은 알림 개수 배지 표시
+/// - 알림 클릭 시 읽음 처리 및 상세 내용 보기
+/// - 당겨서 새로고침 (RefreshIndicator)
 class NotificationListScreen extends ConsumerStatefulWidget {
   const NotificationListScreen({super.key});
 
@@ -21,6 +30,9 @@ class NotificationListScreen extends ConsumerStatefulWidget {
       _NotificationListScreenState();
 }
 
+/// NotificationListScreen 상태 클래스
+///
+/// 필터링 상태와 ViewModel을 연동하여 알림 목록을 렌더링합니다.
 class _NotificationListScreenState
     extends ConsumerState<NotificationListScreen> {
   NotificationFilterType _selectedFilter = NotificationFilterType.all;

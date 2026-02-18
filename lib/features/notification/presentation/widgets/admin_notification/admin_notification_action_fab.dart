@@ -1,6 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 
+/// 관리자 알림 발송 FAB (Floating Action Button)
+///
+/// 확장 가능한 FAB로, 알림 발송 대상을 선택하는 메뉴를 제공합니다.
+///
+/// ## 주요 기능
+/// - [onToggle]: FAB 확장/축소 토글
+/// - [onSendToSpecificUser]: 특정 사용자에게 발송 메뉴 선택
+/// - [onSendToAllUsers]: 전체 사용자에게 발송 메뉴 선택
+/// - 로딩 상태 표시
+///
+/// ## 사용 예시
+/// ```dart
+/// AdminNotificationActionFab(
+///   isExpanded: state.isFabExpanded,
+///   isLoading: state.isSubmitting,
+///   // ... callbacks
+/// )
+/// ```
 class AdminNotificationActionFab extends StatelessWidget {
   final AppThemeColors appColors;
   final bool isExpanded;
@@ -64,6 +82,9 @@ class AdminNotificationActionFab extends StatelessWidget {
   }
 }
 
+/// FAB 메뉴 아이템 위젯
+///
+/// 확장된 FAB 메뉴의 개별 아이템을 표시합니다.
 class _FabMenuItem extends StatelessWidget {
   final String label;
   final IconData icon;

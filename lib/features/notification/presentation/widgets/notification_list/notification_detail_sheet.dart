@@ -4,6 +4,22 @@ import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/notification/domain/entities/notification_entity.dart';
 import 'package:moamoa/features/notification/presentation/models/notification_type_ui.dart';
 
+/// 알림 상세 내용 바텀 시트
+///
+/// 목록에서 알림을 선택했을 때 상세 내용을 보여주는 모달 시트입니다.
+///
+/// ## 주요 기능
+/// - 알림 유형별 색상 및 아이콘 표시
+/// - 알림 제목, 내용, 날짜 상세 표시
+/// - 확인 버튼을 통한 닫기 기능
+///
+/// ## 사용 예시
+/// ```dart
+/// showModalBottomSheet(
+///   context: context,
+///   builder: (_) => NotificationDetailSheet(notification: notification),
+/// );
+/// ```
 class NotificationDetailSheet extends StatelessWidget {
   final NotificationEntity notification;
 
