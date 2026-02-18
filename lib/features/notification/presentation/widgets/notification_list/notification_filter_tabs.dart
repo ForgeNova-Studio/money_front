@@ -1,0 +1,75 @@
+import 'package:flutter/material.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/features/notification/presentation/models/notification_filter_type.dart';
+
+class NotificationFilterTabs extends StatelessWidget {
+  final NotificationFilterType selectedType;
+  final ValueChanged<NotificationFilterType> onChanged;
+
+  const NotificationFilterTabs({
+    super.key,
+    required this.selectedType,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: NotificationFilterType.values.map((filter) {
+            final isSelected = selectedType == filter;
+            final typeColor = filter.color(appColors);
+
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: GestureDetector(
+                onTap: () => onChanged(filter),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? typeColor
+                        : typeColor.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color:
+                          typeColor.withValues(alpha: isSelected ? 1.0 : 0.3),
+                      width: 1.5,
+                    ),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: typeColor.withValues(alpha: 0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Text(
+                    filter.label,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w600,
+                      color: isSelected ? Colors.white : typeColor,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+}
