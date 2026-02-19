@@ -2,6 +2,7 @@ import 'package:moamoa/features/expense/data/datasources/expense_remote_datasour
 import 'package:moamoa/features/expense/data/models/expense_model.dart';
 import 'package:moamoa/features/expense/domain/entities/expense.dart';
 import 'package:moamoa/features/expense/domain/repositories/expense_repository.dart';
+import 'package:moamoa/features/common/utils/transaction_repository_utils.dart';
 
 /// Expense Repository 구현체
 ///
@@ -32,21 +33,25 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       endDate: endDate,
       category: category,
     );
-    return response.expenses.map((model) => model.toEntity()).toList();
+    return mapModelsToEntities(response.expenses, (model) => model.toEntity());
   }
 
   @override
   Future<Expense> createExpense({required Expense expense}) async {
-    final model = ExpenseModel.fromEntity(expense);
-    final response = await _remoteDataSource.createExpense(expense: model);
-    return response.toEntity();
+    return mapEntityRoundTrip(
+      entity: expense,
+      toModel: ExpenseModel.fromEntity,
+      request: (model) => _remoteDataSource.createExpense(expense: model),
+      toEntity: (model) => model.toEntity(),
+    );
   }
 
   @override
   Future<Expense> getExpenseDetail({required String expenseId}) async {
-    final model =
-        await _remoteDataSource.getExpenseDetail(expenseId: expenseId);
-    return model.toEntity();
+    return mapModelToEntity(
+      request: _remoteDataSource.getExpenseDetail(expenseId: expenseId),
+      toEntity: (model) => model.toEntity(),
+    );
   }
 
   @override
@@ -54,12 +59,15 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     required String expenseId,
     required Expense expense,
   }) async {
-    final model = ExpenseModel.fromEntity(expense);
-    final response = await _remoteDataSource.updateExpense(
-      expenseId: expenseId,
-      expense: model,
+    return mapEntityRoundTrip(
+      entity: expense,
+      toModel: ExpenseModel.fromEntity,
+      request: (model) => _remoteDataSource.updateExpense(
+        expenseId: expenseId,
+        expense: model,
+      ),
+      toEntity: (model) => model.toEntity(),
     );
-    return response.toEntity();
   }
 
   @override

@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:moamoa/core/constants/api_constants.dart';
-import 'package:moamoa/core/exceptions/exceptions.dart';
+import 'package:moamoa/features/common/utils/transaction_remote_utils.dart';
 import 'package:moamoa/features/expense/data/datasources/expense_remote_datasource.dart';
 import 'package:moamoa/features/expense/data/models/expense_list_response_model.dart';
 import 'package:moamoa/features/expense/data/models/expense_model.dart';
@@ -30,48 +30,39 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     required DateTime endDate,
     String? category,
   }) async {
-    try {
-      final queryParams = <String, dynamic>{
-        'startDate': startDate.toIso8601String().split('T')[0],
-        'endDate': endDate.toIso8601String().split('T')[0],
-      };
+    final queryParams = buildTransactionListQuery(
+      startDate: startDate,
+      endDate: endDate,
+      filterKey: 'category',
+      filterValue: category,
+    );
 
-      if (category != null) {
-        queryParams['category'] = category;
-      }
-
-      final response = await dio.get(
+    return requestModel(
+      request: () => dio.get(
         ApiConstants.expenses,
         queryParameters: queryParams,
-      );
-
-      return ExpenseListResponseModel.fromJson(response.data);
-    } on DioException catch (e) {
-      throw ExceptionHandler.handleDioException(e);
-    }
+      ),
+      fromJson: ExpenseListResponseModel.fromJson,
+    );
   }
 
   @override
   Future<ExpenseModel> createExpense({required ExpenseModel expense}) async {
-    try {
-      final response = await dio.post(
+    return requestModel(
+      request: () => dio.post(
         ApiConstants.expenses,
         data: expense.toJson(),
-      );
-      return ExpenseModel.fromJson(response.data);
-    } on DioException catch (e) {
-      throw ExceptionHandler.handleDioException(e);
-    }
+      ),
+      fromJson: ExpenseModel.fromJson,
+    );
   }
 
   @override
   Future<ExpenseModel> getExpenseDetail({required String expenseId}) async {
-    try {
-      final response = await dio.get(ApiConstants.expenseById(expenseId));
-      return ExpenseModel.fromJson(response.data);
-    } on DioException catch (e) {
-      throw ExceptionHandler.handleDioException(e);
-    }
+    return requestModel(
+      request: () => dio.get(ApiConstants.expenseById(expenseId)),
+      fromJson: ExpenseModel.fromJson,
+    );
   }
 
   @override
@@ -79,23 +70,19 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     required String expenseId,
     required ExpenseModel expense,
   }) async {
-    try {
-      final response = await dio.put(
+    return requestModel(
+      request: () => dio.put(
         ApiConstants.expenseById(expenseId),
         data: expense.toJson(),
-      );
-      return ExpenseModel.fromJson(response.data);
-    } on DioException catch (e) {
-      throw ExceptionHandler.handleDioException(e);
-    }
+      ),
+      fromJson: ExpenseModel.fromJson,
+    );
   }
 
   @override
   Future<void> deleteExpense({required String expenseId}) async {
-    try {
-      await dio.delete(ApiConstants.expenseById(expenseId));
-    } on DioException catch (e) {
-      throw ExceptionHandler.handleDioException(e);
-    }
+    await requestVoid(
+      request: () => dio.delete(ApiConstants.expenseById(expenseId)),
+    );
   }
 }

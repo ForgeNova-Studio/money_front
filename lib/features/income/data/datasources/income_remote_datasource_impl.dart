@@ -3,8 +3,7 @@ import 'package:dio/dio.dart';
 
 // core
 import 'package:moamoa/core/constants/api_constants.dart';
-import 'package:moamoa/core/exceptions/exceptions.dart';
-
+import 'package:moamoa/features/common/utils/transaction_remote_utils.dart';
 import 'package:moamoa/features/income/data/models/income_list_response_model.dart';
 // models
 import 'package:moamoa/features/income/data/models/income_model.dart';
@@ -27,52 +26,41 @@ class IncomeRemoteDataSourceImpl implements IncomeRemoteDataSource {
     required DateTime endDate,
     String? source,
   }) async {
-    try {
-      final queryParams = <String, dynamic>{
-        'startDate': startDate.toIso8601String().split('T')[0],
-        'endDate': endDate.toIso8601String().split('T')[0],
-      };
+    final queryParams = buildTransactionListQuery(
+      startDate: startDate,
+      endDate: endDate,
+      filterKey: 'source',
+      filterValue: source,
+    );
 
-      if (source != null) {
-        queryParams['source'] = source;
-      }
-
-      final response = await dio.get(
+    return requestModel(
+      request: () => dio.get(
         ApiConstants.incomes,
         queryParameters: queryParams,
-      );
-
-      return IncomeListResponseModel.fromJson(response.data);
-    } on DioException catch (e) {
-      throw ExceptionHandler.handleDioException(e);
-    }
+      ),
+      fromJson: IncomeListResponseModel.fromJson,
+    );
   }
 
   @override
   Future<IncomeModel> createIncome({required IncomeModel income}) async {
-    try {
-      final response = await dio.post(
+    return requestModel(
+      request: () => dio.post(
         ApiConstants.incomes,
         data: income.toJson(),
-      );
-
-      return IncomeModel.fromJson(response.data);
-    } on DioException catch (e) {
-      throw ExceptionHandler.handleDioException(e);
-    }
+      ),
+      fromJson: IncomeModel.fromJson,
+    );
   }
 
   @override
   Future<IncomeModel> getIncomeDetail({required String incomeId}) async {
-    try {
-      final response = await dio.get(
+    return requestModel(
+      request: () => dio.get(
         ApiConstants.incomeById(incomeId),
-      );
-
-      return IncomeModel.fromJson(response.data);
-    } on DioException catch (e) {
-      throw ExceptionHandler.handleDioException(e);
-    }
+      ),
+      fromJson: IncomeModel.fromJson,
+    );
   }
 
   @override
@@ -80,26 +68,21 @@ class IncomeRemoteDataSourceImpl implements IncomeRemoteDataSource {
     required String incomeId,
     required IncomeModel income,
   }) async {
-    try {
-      final response = await dio.put(
+    return requestModel(
+      request: () => dio.put(
         ApiConstants.incomeById(incomeId),
         data: income.toJson(),
-      );
-
-      return IncomeModel.fromJson(response.data);
-    } on DioException catch (e) {
-      throw ExceptionHandler.handleDioException(e);
-    }
+      ),
+      fromJson: IncomeModel.fromJson,
+    );
   }
 
   @override
   Future<void> deleteIncome({required String incomeId}) async {
-    try {
-      await dio.delete(
+    await requestVoid(
+      request: () => dio.delete(
         ApiConstants.incomeById(incomeId),
-      );
-    } on DioException catch (e) {
-      throw ExceptionHandler.handleDioException(e);
-    }
+      ),
+    );
   }
 }
