@@ -244,7 +244,6 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    ref.watch(expenseViewModelProvider);
     final isEditing = widget.expenseId != null;
 
     return DefaultLayout(

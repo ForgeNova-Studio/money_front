@@ -230,8 +230,6 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    // Provider를 watch하여 화면이 살아있는 동안 Provider가 dispose되지 않도록 함
-    ref.watch(incomeViewModelProvider);
     final isEditing = widget.incomeId != null;
 
     return DefaultLayout(

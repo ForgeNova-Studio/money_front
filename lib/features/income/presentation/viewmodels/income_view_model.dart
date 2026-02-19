@@ -32,7 +32,7 @@ part 'income_view_model.g.dart';
 ///   source: 'SALARY',
 /// );
 /// ```
-@riverpod
+@Riverpod(keepAlive: true)
 class IncomeViewModel extends _$IncomeViewModel {
   @override
   IncomeState build() {

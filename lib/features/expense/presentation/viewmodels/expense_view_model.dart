@@ -33,7 +33,7 @@ part 'expense_view_model.g.dart';
 ///   paymentMethod: 'CARD',
 /// );
 /// ```
-@riverpod
+@Riverpod(keepAlive: true)
 class ExpenseViewModel extends _$ExpenseViewModel {
   @override
   ExpenseState build() {
