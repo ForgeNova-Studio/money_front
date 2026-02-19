@@ -47,7 +47,7 @@ final class OcrScanViewModelProvider
   }
 }
 
-String _$ocrScanViewModelHash() => r'538a7ea5c3f303a313d00530853d928487af41b6';
+String _$ocrScanViewModelHash() => r'e19e3b9b365d5608487926472720f4e4895a1199';
 
 /// OCR 스캔 ViewModel
 /// 영수증 이미지를 처리하고 대기 목록 관리

@@ -24,7 +24,7 @@ class OcrScanViewModel extends _$OcrScanViewModel {
   }
 
   /// 이미지에서 영수증 데이터 추출
-  Future<void> processImage(File imageFile) async {
+  Future<void> processImage(File imageFile, {String? cardCompanyId}) async {
     try {
       state = state.copyWith(
         isProcessing: true,
@@ -33,7 +33,7 @@ class OcrScanViewModel extends _$OcrScanViewModel {
       );
 
       if (kDebugMode) {
-        debugPrint('[OcrScan] 이미지 처리 시작: ${imageFile.path}');
+        debugPrint('[OcrScan] 이미지 처리 시작: ${imageFile.path} (카드사: $cardCompanyId)');
       }
 
       final results = await _repository.extractReceiptData(imageFile);
@@ -46,14 +46,16 @@ class OcrScanViewModel extends _$OcrScanViewModel {
         return;
       }
 
-      // ReceiptData를 PendingReceipt로 변환
+      // ReceiptData를 PendingReceipt로 변환 (카드사 정보 포함)
       final pendingReceipts = results
-          .map((data) => PendingReceipt.fromReceiptData(data))
+          .map((data) => PendingReceipt.fromReceiptData(
+                data.copyWith(cardIssuer: cardCompanyId),
+              ))
           .toList();
 
       state = state.copyWith(
         isProcessing: false,
-        pendingReceipts: pendingReceipts,
+        pendingReceipts: [...state.pendingReceipts, ...pendingReceipts],
       );
 
       if (kDebugMode) {

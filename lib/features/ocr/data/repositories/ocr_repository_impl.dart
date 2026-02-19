@@ -7,7 +7,7 @@ import 'package:moamoa/features/ocr/domain/patterns/receipt_pattern.dart';
 import 'package:moamoa/features/ocr/domain/strategies/brand_match_strategy.dart';
 import 'package:moamoa/features/ocr/data/datasources/local/image_preprocessor.dart';
 import 'package:moamoa/features/ocr/data/datasources/local/mlkit_text_recognizer.dart';
-import 'package:moamoa/features/ocr/data/parser/common_pattern.dart';
+import 'package:moamoa/features/ocr/data/parser/receipt_pattern_factory.dart';
 import 'package:moamoa/features/ocr/data/utils/date_corrector.dart';
 import 'package:moamoa/features/ocr/data/datasources/remote/ocr_api_service.dart';
 
@@ -28,12 +28,8 @@ class OcrRepositoryImpl implements OcrRepository {
   final _logger = Logger();
   final _dateCorrector = DateCorrector();
 
-  /// 등록된 패턴 파서 목록
-  /// 우선순위 순서: 카드사별 패턴 → 공통 패턴
-  final List<ReceiptPattern> _patterns = [
-    // 향후 카드사별 패턴 추가 예정 (예: SamsungCardPattern 등)
-    CommonPattern(), // 최후의 수단 (범용 앵커링 파서)
-  ];
+  /// 패턴 팩토리 인스턴스
+  final ReceiptPatternFactory _patternFactory = ReceiptPatternFactory.instance;
 
   OcrRepositoryImpl({
     ImagePreprocessor? preprocessor,
@@ -46,11 +42,17 @@ class OcrRepositoryImpl implements OcrRepository {
         _apiService = apiService;
 
   @override
-  Future<List<ReceiptData>> extractReceiptData(File imageFile) async {
+  Future<List<ReceiptData>> extractReceiptData(
+    File imageFile, {
+    String? cardIssuerId,
+  }) async {
     try {
       _logger.i('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       _logger.i('📸 OCR 처리 시작');
       _logger.d('   파일: ${imageFile.path}');
+      if (cardIssuerId != null) {
+        _logger.d('   카드사: $cardIssuerId');
+      }
       _logger.i('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
       // 1. 이미지 전처리 (다크모드 반전, 2배 확대 등)
@@ -74,29 +76,22 @@ class OcrRepositoryImpl implements OcrRepository {
         return [];
       }
 
-      // 3. 적절한 패턴 찾기
-      ReceiptPattern? selectedPattern;
+      // 3. 패턴 선택
+      ReceiptPattern selectedPattern;
 
-      // 일반 패턴들 먼저 체크
-      for (final pattern in _patterns) {
-        if (pattern is CommonPattern) continue; // 공통 패턴은 마지막에 사용
-
-        if (pattern.canParse(recognizedText)) {
-          selectedPattern = pattern;
-          _logger.i('✅ 선택된 패턴: ${pattern.name}');
-          break;
-        }
+      if (cardIssuerId != null && cardIssuerId.isNotEmpty) {
+        // 카드사 ID가 지정된 경우 해당 패턴 사용
+        selectedPattern = _patternFactory.getPatternByCardId(cardIssuerId);
+        _logger.i('✅ 카드사 패턴 사용: ${selectedPattern.name}');
+      } else {
+        // 카드사 ID가 없으면 텍스트에서 자동 감지
+        final fullText = recognizedText.blocks.map((b) => b.text).join(' ');
+        selectedPattern = _patternFactory.detectPattern(fullText);
+        _logger.i('✅ 자동 감지 패턴: ${selectedPattern.name}');
       }
 
-      // 4. 패턴으로 파싱 (없으면 CommonPattern 사용)
-      final parser =
-          selectedPattern ?? _patterns.firstWhere((p) => p is CommonPattern);
-
-      if (selectedPattern == null) {
-        _logger.i('ℹ️ 기본 패턴 사용: ${parser.name}');
-      }
-
-      final rawResults = parser.parse(recognizedText);
+      // 4. 패턴으로 파싱
+      final rawResults = selectedPattern.parse(recognizedText);
 
       _logger.i('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       _logger.i('✅ 1차 파싱 완료: ${rawResults.length}건 추출');
@@ -201,15 +196,12 @@ class OcrRepositoryImpl implements OcrRepository {
     }
   }
 
-  /// 새로운 패턴 등록
-  void registerPattern(ReceiptPattern pattern) {
-    int commonIndex = _patterns.indexWhere((p) => p is CommonPattern);
-    if (commonIndex != -1) {
-      _patterns.insert(commonIndex, pattern);
-    } else {
-      _patterns.add(pattern);
-    }
-    _logger.i('패턴 등록: ${pattern.name}');
+  /// 지원하는 카드사 ID 목록 가져오기
+  List<String> get supportedCardIds => _patternFactory.supportedCardIds;
+
+  /// 카드사 ID로 카드사명 가져오기
+  String getCardName(String cardIssuerId) {
+    return _patternFactory.getCardName(cardIssuerId);
   }
 
   /// 리소스 정리

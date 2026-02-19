@@ -1,21 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+// CardCompany 모델은 core/models/card_company.dart로 이동됨
+export 'package:moamoa/core/models/card_company.dart';
+
 part 'shortcuts_guide_state.freezed.dart';
-
-/// 카드사 정보
-class CardCompany {
-  final String id;
-  final String name;
-  final String iconPath;
-  final String shortcutUrl; // iCloud 단축어 템플릿 URL
-
-  const CardCompany({
-    required this.id,
-    required this.name,
-    required this.iconPath,
-    required this.shortcutUrl,
-  });
-}
 
 /// 단축어 가이드 화면 상태
 @freezed

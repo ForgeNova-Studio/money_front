@@ -5,10 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/core/models/card_company.dart';
+import 'package:moamoa/core/services/recent_card_service.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/router/route_names.dart';
 import '../states/ocr_scan_state.dart';
 import '../viewmodels/ocr_scan_view_model.dart';
+import '../widgets/card_company_selector_bottom_sheet.dart';
 import '../widgets/pending_receipt_list_item.dart';
 import 'package:moamoa/core/utils/toast_utils.dart';
 
@@ -23,14 +26,39 @@ class OcrScanScreen extends ConsumerStatefulWidget {
 class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
   final ImagePicker _picker = ImagePicker();
   bool _isPickerOpen = false;
+  CardCompany? _selectedCardCompany;
 
   @override
   void initState() {
     super.initState();
-    // 화면 진입 시 바로 갤러리 열기
+    // 화면 진입 시 카드사 선택 바텀시트 열기
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _pickImageFromGallery();
+      _showCardCompanySelector();
     });
+  }
+
+  /// 카드사 선택 바텀시트 표시 → 선택 후 갤러리 열기
+  Future<void> _showCardCompanySelector() async {
+    final selectedCard = await CardCompanySelectorBottomSheet.show(context);
+
+    if (selectedCard != null) {
+      setState(() {
+        _selectedCardCompany = selectedCard;
+      });
+
+      // 최근 사용 카드사 저장
+      ref
+          .read(recentCardServiceProvider.notifier)
+          .saveRecentCard(selectedCard.id);
+
+      // 갤러리 열기
+      _pickImageFromGallery();
+    } else {
+      // 카드사 선택 취소 시 이전 화면으로
+      if (mounted && !ref.read(ocrScanViewModelProvider).hasPendingReceipts) {
+        context.pop();
+      }
+    }
   }
 
   Future<void> _pickImageFromGallery() async {
@@ -42,11 +70,15 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
     _isPickerOpen = true;
 
     try {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      final XFile? image =
+          await _picker.pickImage(source: ImageSource.gallery);
 
       if (image != null) {
         final viewModel = ref.read(ocrScanViewModelProvider.notifier);
-        await viewModel.processImage(File(image.path));
+        await viewModel.processImage(
+          File(image.path),
+          cardCompanyId: _selectedCardCompany?.id,
+        );
       } else {
         // 이미지 선택 취소 시 이전 화면으로 돌아가기
         if (mounted && !ref.read(ocrScanViewModelProvider).hasPendingReceipts) {
@@ -80,12 +112,25 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
       child: Scaffold(
         backgroundColor: context.appColors.backgroundLight,
         appBar: AppBar(
-          title: Text(
-            '영수증 스캔',
-            style: TextStyle(
-              color: context.appColors.textPrimary,
-              fontWeight: FontWeight.w600,
-            ),
+          title: Column(
+            children: [
+              Text(
+                '영수증 스캔',
+                style: TextStyle(
+                  color: context.appColors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              if (_selectedCardCompany != null)
+                Text(
+                  _selectedCardCompany!.name,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.appColors.textSecondary,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+            ],
           ),
           centerTitle: true,
           backgroundColor: context.appColors.backgroundLight,
@@ -280,7 +325,7 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
                   '총 $count건',
                   style: TextStyle(
                     fontSize: 14,
-                    color: context.appColors.textPrimary.withOpacity(0.8),
+                    color: context.appColors.textPrimary.withValues(alpha: 0.8),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -298,7 +343,7 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.6),
+              color: Colors.white.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -335,10 +380,10 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: context.appColors.error.withOpacity(0.08),
+        color: context.appColors.error.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: context.appColors.error.withOpacity(0.3),
+          color: context.appColors.error.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -373,7 +418,7 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: context.appColors.shadow.withOpacity(0.1),
+              color: context.appColors.shadow.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, -4),
             ),
@@ -382,7 +427,7 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // 다른 영수증 추가 버튼
+            // 다른 영수증 추가 버튼 (같은 카드사로 바로 갤러리 열기)
             SizedBox(
               width: double.infinity,
               height: 48,
@@ -462,7 +507,7 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
 
   Widget _buildProcessingOverlay(BuildContext context) {
     return Container(
-      color: Colors.black.withOpacity(0.4),
+      color: Colors.black.withValues(alpha: 0.4),
       child: Center(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -471,7 +516,7 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: context.appColors.shadow.withOpacity(0.12),
+                color: context.appColors.shadow.withValues(alpha: 0.12),
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),
