@@ -89,7 +89,7 @@ final class IncomeViewModelProvider
           argument: null,
           retry: null,
           name: r'incomeViewModelProvider',
-          isAutoDispose: true,
+          isAutoDispose: false,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
@@ -110,7 +110,7 @@ final class IncomeViewModelProvider
   }
 }
 
-String _$incomeViewModelHash() => r'8a89b81f809ae18a7646718ac8f6772e112806a1';
+String _$incomeViewModelHash() => r'92a3b34b0d2a0f153684ac60139d9fb17fa9bd22';
 
 /// 수입 기능의 비즈니스 로직을 관리하는 ViewModel
 ///

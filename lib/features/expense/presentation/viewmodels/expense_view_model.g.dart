@@ -92,7 +92,7 @@ final class ExpenseViewModelProvider
           argument: null,
           retry: null,
           name: r'expenseViewModelProvider',
-          isAutoDispose: true,
+          isAutoDispose: false,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
@@ -113,7 +113,7 @@ final class ExpenseViewModelProvider
   }
 }
 
-String _$expenseViewModelHash() => r'a5bd807f9d92276b22435f0c3ade27b531171437';
+String _$expenseViewModelHash() => r'ecff6a1be8c274007596c64d583dab342ea4a333';
 
 /// 지출 기능의 비즈니스 로직을 관리하는 ViewModel
 ///
