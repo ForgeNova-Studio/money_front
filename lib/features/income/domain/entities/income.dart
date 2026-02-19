@@ -22,6 +22,8 @@ import 'package:moamoa/core/constants/income_categories.dart';
 /// );
 /// ```
 class Income {
+  static const Object _unset = Object();
+
   final String? incomeId;
   final String? userId;
   final String? accountBookId;
@@ -49,28 +51,39 @@ class Income {
   });
 
   Income copyWith({
-    String? incomeId,
-    String? userId,
-    String? accountBookId,
-    String? fundingSource,
+    Object? incomeId = _unset,
+    Object? userId = _unset,
+    Object? accountBookId = _unset,
+    Object? fundingSource = _unset,
     int? amount,
     DateTime? date,
     String? source,
-    String? description,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    Object? description = _unset,
+    Object? createdAt = _unset,
+    Object? updatedAt = _unset,
   }) {
     return Income(
-      incomeId: incomeId ?? this.incomeId,
-      userId: userId ?? this.userId,
-      accountBookId: accountBookId ?? this.accountBookId,
-      fundingSource: fundingSource ?? this.fundingSource,
+      incomeId:
+          identical(incomeId, _unset) ? this.incomeId : incomeId as String?,
+      userId: identical(userId, _unset) ? this.userId : userId as String?,
+      accountBookId: identical(accountBookId, _unset)
+          ? this.accountBookId
+          : accountBookId as String?,
+      fundingSource: identical(fundingSource, _unset)
+          ? this.fundingSource
+          : fundingSource as String?,
       amount: amount ?? this.amount,
       date: date ?? this.date,
       source: source ?? this.source,
-      description: description ?? this.description,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
+      description: identical(description, _unset)
+          ? this.description
+          : description as String?,
+      createdAt: identical(createdAt, _unset)
+          ? this.createdAt
+          : createdAt as DateTime?,
+      updatedAt: identical(updatedAt, _unset)
+          ? this.updatedAt
+          : updatedAt as DateTime?,
     );
   }
 

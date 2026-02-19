@@ -22,6 +22,8 @@
 /// );
 /// ```
 class Expense {
+  static const Object _unset = Object();
+
   final String? expenseId;
   final String? userId;
   final String? accountBookId;
@@ -57,36 +59,52 @@ class Expense {
   });
 
   Expense copyWith({
-    String? expenseId,
-    String? userId,
-    String? accountBookId,
-    String? fundingSource,
+    Object? expenseId = _unset,
+    Object? userId = _unset,
+    Object? accountBookId = _unset,
+    Object? fundingSource = _unset,
     int? amount,
     DateTime? date,
-    String? category,
-    String? merchant,
-    String? memo,
-    String? paymentMethod,
-    String? imageUrl,
-    bool? isAutoCategorized,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    Object? category = _unset,
+    Object? merchant = _unset,
+    Object? memo = _unset,
+    Object? paymentMethod = _unset,
+    Object? imageUrl = _unset,
+    Object? isAutoCategorized = _unset,
+    Object? createdAt = _unset,
+    Object? updatedAt = _unset,
   }) {
     return Expense(
-      expenseId: expenseId ?? this.expenseId,
-      userId: userId ?? this.userId,
-      accountBookId: accountBookId ?? this.accountBookId,
-      fundingSource: fundingSource ?? this.fundingSource,
+      expenseId:
+          identical(expenseId, _unset) ? this.expenseId : expenseId as String?,
+      userId: identical(userId, _unset) ? this.userId : userId as String?,
+      accountBookId: identical(accountBookId, _unset)
+          ? this.accountBookId
+          : accountBookId as String?,
+      fundingSource: identical(fundingSource, _unset)
+          ? this.fundingSource
+          : fundingSource as String?,
       amount: amount ?? this.amount,
       date: date ?? this.date,
-      category: category ?? this.category,
-      merchant: merchant ?? this.merchant,
-      memo: memo ?? this.memo,
-      paymentMethod: paymentMethod ?? this.paymentMethod,
-      imageUrl: imageUrl ?? this.imageUrl,
-      isAutoCategorized: isAutoCategorized ?? this.isAutoCategorized,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
+      category:
+          identical(category, _unset) ? this.category : category as String?,
+      merchant:
+          identical(merchant, _unset) ? this.merchant : merchant as String?,
+      memo: identical(memo, _unset) ? this.memo : memo as String?,
+      paymentMethod: identical(paymentMethod, _unset)
+          ? this.paymentMethod
+          : paymentMethod as String?,
+      imageUrl:
+          identical(imageUrl, _unset) ? this.imageUrl : imageUrl as String?,
+      isAutoCategorized: identical(isAutoCategorized, _unset)
+          ? this.isAutoCategorized
+          : isAutoCategorized as bool?,
+      createdAt: identical(createdAt, _unset)
+          ? this.createdAt
+          : createdAt as DateTime?,
+      updatedAt: identical(updatedAt, _unset)
+          ? this.updatedAt
+          : updatedAt as DateTime?,
     );
   }
 
