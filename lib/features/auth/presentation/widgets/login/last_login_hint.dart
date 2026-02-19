@@ -63,8 +63,6 @@ class LastLoginHint extends ConsumerWidget {
     switch (provider.toUpperCase()) {
       case 'GOOGLE':
         return 'Google';
-      case 'APPLE':
-        return 'Apple';
       case 'NAVER':
         return '네이버';
       case 'KAKAO':

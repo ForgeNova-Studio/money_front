@@ -40,7 +40,6 @@ dependencies:
 
   # ==================== 인증 ====================
   google_sign_in: ^7.2.0             # Google OAuth 로그인
-  sign_in_with_apple: ^7.0.1         # Apple 소셜 로그인
   flutter_naver_login: ^2.1.1        # Naver 소셜 로그인
   kakao_flutter_sdk: ^1.10.0         # Kakao 소셜 로그인
 
