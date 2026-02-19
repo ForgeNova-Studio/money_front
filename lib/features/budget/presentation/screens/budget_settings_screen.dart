@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -8,9 +7,10 @@ import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 import 'package:moamoa/features/budget/presentation/providers/budget_providers.dart';
+import 'package:moamoa/features/budget/presentation/utils/budget_amount_utils.dart';
+import 'package:moamoa/features/budget/presentation/widgets/budget_form_widgets.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
-import 'package:moamoa/features/common/widgets/transaction_form/thousands_separator_input_formatter.dart';
 import 'package:moamoa/core/utils/toast_utils.dart';
 
 /// 예산 설정 화면
@@ -209,9 +209,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
       return;
     }
 
-    final numericValue =
-        _amountController.text.replaceAll(RegExp(r'[^0-9]'), '');
-    final amount = double.tryParse(numericValue) ?? 0;
+    final amount = parseFormattedAmount(_amountController.text);
 
     if (amount <= 0) {
       _showError('예산 금액을 입력해주세요.');
@@ -388,254 +386,56 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
   }
 
   Widget _buildAmountInput() {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => _amountFocusNode.requestFocus(),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Text(
-              '이번 달 예산',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: context.appColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Center(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    IntrinsicWidth(
-                      child: TextFormField(
-                        controller: _amountController,
-                        focusNode: _amountFocusNode,
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        onChanged: (_) => setState(() {}),
-                        style: TextStyle(
-                          fontSize: 42,
-                          fontWeight: FontWeight.bold,
-                          color: context.appColors.primary,
-                        ),
-                        decoration: InputDecoration(
-                          filled: false,
-                          hintText: '0',
-                          hintStyle: TextStyle(
-                            color: context.appColors.gray300,
-                            fontSize: 42,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          focusedErrorBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          errorStyle: const TextStyle(
-                            height: 0,
-                            color: Colors.transparent,
-                          ),
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          ThousandsSeparatorInputFormatter(maxDigits: 12),
-                        ],
-                        autofocus: false,
-                        showCursor: false,
-                        cursorColor: Colors.transparent,
-                        validator: (value) => (value == null || value.isEmpty)
-                            ? '예산 금액을 입력해주세요'
-                            : null,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '원',
-                      style: TextStyle(
-                        fontSize: 42,
-                        fontWeight: FontWeight.w600,
-                        color: context.appColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+    return BudgetAmountInputCard(
+      header: Text(
+        '이번 달 예산',
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: context.appColors.textSecondary,
         ),
       ),
+      controller: _amountController,
+      focusNode: _amountFocusNode,
+      onChanged: () => setState(() {}),
+      amountColor: context.appColors.primary,
+      validator: (value) =>
+          (value == null || value.isEmpty) ? '예산 금액을 입력해주세요' : null,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
+      headerBottomSpacing: 16,
     );
   }
 
   Widget _buildSuggestedAmounts() {
-    final suggestions = [
-      (500000, '50만'),
-      (1000000, '100만'),
-      (1500000, '150만'),
-      (2000000, '200만'),
-      (3000000, '300만'),
-      (5000000, '500만'),
+    const suggestions = [
+      BudgetAmountSuggestion(500000, '50만'),
+      BudgetAmountSuggestion(1000000, '100만'),
+      BudgetAmountSuggestion(1500000, '150만'),
+      BudgetAmountSuggestion(2000000, '200만'),
+      BudgetAmountSuggestion(3000000, '300만'),
+      BudgetAmountSuggestion(5000000, '500만'),
     ];
 
-    return Column(
-      children: [
-        // 헤더: 빠른 입력 + 초기화 버튼
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '빠른 입력',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: context.appColors.textSecondary,
-              ),
-            ),
-            if (_amountController.text.isNotEmpty) ...[
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: () {
-                  _amountController.clear();
-                  setState(() {});
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: context.appColors.gray100,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    '초기화',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: context.appColors.textTertiary,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-        const SizedBox(height: 16),
-        // 2x3 그리드
-        GridView.count(
-          crossAxisCount: 3,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
-          childAspectRatio: 2.2,
-          children: suggestions.map((item) {
-            final isSelected =
-                _amountController.text == _numberFormat.format(item.$1);
-            return GestureDetector(
-              onTap: () => _setSuggestedAmount(item.$1),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? context.appColors.primary.withValues(alpha: 0.1)
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isSelected
-                        ? context.appColors.primary
-                        : context.appColors.gray200,
-                    width: isSelected ? 1.5 : 1,
-                  ),
-                  boxShadow: isSelected
-                      ? null
-                      : [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.03),
-                            blurRadius: 4,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                ),
-                child: Text(
-                  item.$2,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected
-                        ? context.appColors.primary
-                        : context.appColors.textPrimary,
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
+    return BudgetQuickAmountGrid(
+      showClear: _amountController.text.isNotEmpty,
+      onClear: () {
+        _amountController.clear();
+        setState(() {});
+      },
+      suggestions: suggestions,
+      isSelected: (amount) =>
+          _amountController.text == _numberFormat.format(amount),
+      onSelect: _setSuggestedAmount,
     );
   }
 
   Widget _buildSaveButton() {
     final hasValue = _amountController.text.isNotEmpty;
 
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 16,
-        bottom: MediaQuery.of(context).padding.bottom + 16,
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        height: 54,
-        child: ElevatedButton(
-          onPressed: (_isSaving || !hasValue) ? null : _saveBudget,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: context.appColors.primary,
-            disabledBackgroundColor: context.appColors.gray200,
-            foregroundColor: Colors.white,
-            disabledForegroundColor: context.appColors.gray400,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
-          ),
-          child: _isSaving
-              ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-              : const Text(
-                  '저장하기',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-        ),
-      ),
+    return BudgetSaveButton(
+      isSaving: _isSaving,
+      enabled: hasValue,
+      onPressed: _saveBudget,
     );
   }
 }
