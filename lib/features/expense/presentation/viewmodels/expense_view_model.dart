@@ -80,7 +80,8 @@ class ExpenseViewModel extends _$ExpenseViewModel {
 
   /// 지출 등록/수정 통합 메서드
   ///
-  /// [existingExpense]가 null이면 신규 등록, 아니면 수정.
+  /// [expenseId]가 있으면 수정, 없으면 신규 등록.
+  /// [existingExpense]가 없는 수정 케이스도 안전하게 update 경로로 처리합니다.
   /// API 호출 성공 후 HomeViewModel 데이터를 갱신합니다.
   Future<void> submitExpense({
     required int amount,
@@ -92,9 +93,20 @@ class ExpenseViewModel extends _$ExpenseViewModel {
     String? expenseId,
     Expense? existingExpense,
   }) async {
-    if (existingExpense != null && expenseId != null) {
+    if (expenseId != null) {
       // === 수정 ===
-      final updated = existingExpense.copyWith(
+      final baseExpense = existingExpense ??
+          Expense(
+            expenseId: expenseId,
+            amount: amount,
+            date: date,
+            category: category,
+            merchant: merchant,
+            memo: memo,
+            paymentMethod: paymentMethod,
+          );
+
+      final updated = baseExpense.copyWith(
         expenseId: expenseId,
         amount: amount,
         date: date,

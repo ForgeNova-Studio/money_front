@@ -79,7 +79,8 @@ class IncomeViewModel extends _$IncomeViewModel {
 
   /// 수입 등록/수정 통합 메서드
   ///
-  /// [existingIncome]이 null이면 신규 등록, 아니면 수정.
+  /// [incomeId]가 있으면 수정, 없으면 신규 등록.
+  /// [existingIncome]이 없는 수정 케이스도 안전하게 update 경로로 처리합니다.
   /// API 호출 성공 후 HomeViewModel 데이터를 갱신합니다.
   Future<void> submitIncome({
     required int amount,
@@ -89,9 +90,17 @@ class IncomeViewModel extends _$IncomeViewModel {
     String? incomeId,
     Income? existingIncome,
   }) async {
-    if (existingIncome != null && incomeId != null) {
+    if (incomeId != null) {
       // === 수정 ===
-      final updated = existingIncome.copyWith(
+      final baseIncome = existingIncome ??
+          Income(
+            incomeId: incomeId,
+            amount: amount,
+            date: date,
+            source: source,
+          );
+
+      final updated = baseIncome.copyWith(
         incomeId: incomeId,
         amount: amount,
         date: date,
