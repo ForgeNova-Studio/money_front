@@ -68,4 +68,6 @@ android/app/src/main/res/values/strings.xml
 .env.production
 
 # 프로젝트 개발 docs
-docs/
+docs/*
+!docs/issue/
+!docs/issue/**

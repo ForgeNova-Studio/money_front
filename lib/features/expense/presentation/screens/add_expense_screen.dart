@@ -20,6 +20,7 @@ import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/amount_input_card.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/date_picker_card.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/form_submit_button.dart';
+import 'package:moamoa/features/common/widgets/retryable_load_error_state.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_card.dart';
 
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_text_field.dart';
@@ -88,6 +89,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   Expense? _originalExpense;
   bool _isLoading = false;
   bool _isSubmitting = false;
+  String? _loadErrorMessage;
 
   @override
   void initState() {
@@ -136,11 +138,24 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         _merchantController.text = expense.merchant ?? '';
         _memoController.text = expense.memo ?? '';
         _isLoading = false;
+        _loadErrorMessage = null;
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() => _isLoading = false);
+      setState(() {
+        _isLoading = false;
+        _loadErrorMessage = '지출 정보를 불러오지 못했습니다';
+      });
+      context.showErrorToast('지출 정보를 불러오지 못했습니다. 다시 시도해주세요');
     }
+  }
+
+  Future<void> _retryLoadExpense() async {
+    setState(() {
+      _isLoading = true;
+      _loadErrorMessage = null;
+    });
+    await _loadExpense();
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -175,6 +190,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
   Future<void> _handleSubmit() async {
     if (_isSubmitting) return;
+    if (widget.expenseId != null && _originalExpense == null) {
+      context.showErrorToast('수정할 지출 정보를 먼저 불러와 주세요');
+      return;
+    }
     FocusManager.instance.primaryFocus?.unfocus();
     if (!_formKey.currentState!.validate()) {
       return;
@@ -238,142 +257,150 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       ),
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(
-                  child: NotificationListener<ScrollStartNotification>(
-                    onNotification: (notification) {
-                      if (notification.dragDetails != null) {
-                        FocusManager.instance.primaryFocus?.unfocus();
-                      }
-                      return false;
-                    },
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            SizedBox(height: 20),
-                            // 1. Large Amount Input
-                            AmountInputCard(
-                              controller: _amountController,
-                              focusNode: _amountFocusNode,
-                              validator: _validateAmount,
-                              amountColor: context.appColors.black,
-                              unitColor: context.appColors.textPrimary,
-                              maxDigits: 12, // 입력 허용 최대 자릿수
-                            ),
-                            const SizedBox(height: 24),
+          : (_loadErrorMessage != null
+              ? RetryableLoadErrorState(
+                  message: _loadErrorMessage!,
+                  onRetry: _retryLoadExpense,
+                  onClose: () => Navigator.of(context).pop(),
+                )
+              : Column(
+                  children: [
+                    Expanded(
+                      child: NotificationListener<ScrollStartNotification>(
+                        onNotification: (notification) {
+                          if (notification.dragDetails != null) {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          }
+                          return false;
+                        },
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                SizedBox(height: 20),
+                                // 1. Large Amount Input
+                                AmountInputCard(
+                                  controller: _amountController,
+                                  focusNode: _amountFocusNode,
+                                  validator: _validateAmount,
+                                  amountColor: context.appColors.black,
+                                  unitColor: context.appColors.textPrimary,
+                                  maxDigits: 12, // 입력 허용 최대 자릿수
+                                ),
+                                const SizedBox(height: 24),
 
-                            // 2. Date Selection
-                            DatePickerCard(
-                              selectedDate: _selectedDate,
-                              onTap: () => _selectDate(context),
-                            ),
-                            const SizedBox(height: 28),
+                                // 2. Date Selection
+                                DatePickerCard(
+                                  selectedDate: _selectedDate,
+                                  onTap: () => _selectDate(context),
+                                ),
+                                const SizedBox(height: 28),
 
-                            // 3. Additional Fields (Merchant, Memo)
-                            TransactionFormCard(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 6),
-                              child: Column(
-                                children: [
-                                  TransactionTextField(
-                                    controller: _merchantController,
-                                    hint: '어디서 썼나요?',
-                                    icon: Icons.store_outlined,
+                                // 3. Additional Fields (Merchant, Memo)
+                                TransactionFormCard(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 6),
+                                  child: Column(
+                                    children: [
+                                      TransactionTextField(
+                                        controller: _merchantController,
+                                        hint: '어디서 썼나요?',
+                                        icon: Icons.store_outlined,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      const SizedBox(height: 4),
+                                      TransactionTextField(
+                                        controller: _memoController,
+                                        hint: '메모를 남겨주세요',
+                                        icon: Icons.edit_outlined,
+                                        multiline: true,
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 4),
-                                  const SizedBox(height: 4),
-                                  TransactionTextField(
-                                    controller: _memoController,
-                                    hint: '메모를 남겨주세요',
-                                    icon: Icons.edit_outlined,
-                                    multiline: true,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 28),
+                                ),
+                                const SizedBox(height: 28),
 
-                            // 4. Category Selection
-                            ExpenseCategoryGrid(
-                              selectedCategoryId: _selectedCategory,
-                              onCategorySelected: (id) {
-                                setState(() {
-                                  _selectedCategory = id;
-                                });
-                              },
-                            ),
-                            const SizedBox(height: 28),
+                                // 4. Category Selection
+                                ExpenseCategoryGrid(
+                                  selectedCategoryId: _selectedCategory,
+                                  onCategorySelected: (id) {
+                                    setState(() {
+                                      _selectedCategory = id;
+                                    });
+                                  },
+                                ),
+                                const SizedBox(height: 28),
 
-                            // 4. 결제 수단 선택 필드
-                            Text(
-                              '결제 수단',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: context.appColors.textSecondary,
-                              ),
-                            ),
-                            SizedBox(height: 12),
-                            Row(
-                              children: PaymentMethod.values.map((method) {
-                                final isSelected =
-                                    _selectedPaymentMethod == method;
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 12),
-                                  child: ChoiceChip(
-                                    label: Text(method.label),
-                                    selected: isSelected,
-                                    onSelected: (selected) {
-                                      if (selected) {
-                                        setState(() {
-                                          _selectedPaymentMethod = method;
-                                        });
-                                      }
-                                    },
-                                    backgroundColor: colorScheme.surface,
-                                    selectedColor: colorScheme.primaryContainer,
-                                    labelStyle: TextStyle(
-                                      color: isSelected
-                                          ? context.appColors.black54
-                                          : colorScheme.onSurfaceVariant,
-                                      fontWeight: isSelected
-                                          ? FontWeight.w600
-                                          : FontWeight.normal,
-                                    ),
-                                    side: BorderSide(
-                                      color: isSelected
-                                          ? colorScheme.primary
-                                          : Colors.transparent,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    showCheckmark: false,
+                                // 4. 결제 수단 선택 필드
+                                Text(
+                                  '결제 수단',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: context.appColors.textSecondary,
                                   ),
-                                );
-                              }).toList(),
+                                ),
+                                SizedBox(height: 12),
+                                Row(
+                                  children: PaymentMethod.values.map((method) {
+                                    final isSelected =
+                                        _selectedPaymentMethod == method;
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 12),
+                                      child: ChoiceChip(
+                                        label: Text(method.label),
+                                        selected: isSelected,
+                                        onSelected: (selected) {
+                                          if (selected) {
+                                            setState(() {
+                                              _selectedPaymentMethod = method;
+                                            });
+                                          }
+                                        },
+                                        backgroundColor: colorScheme.surface,
+                                        selectedColor:
+                                            colorScheme.primaryContainer,
+                                        labelStyle: TextStyle(
+                                          color: isSelected
+                                              ? context.appColors.black54
+                                              : colorScheme.onSurfaceVariant,
+                                          fontWeight: isSelected
+                                              ? FontWeight.w600
+                                              : FontWeight.normal,
+                                        ),
+                                        side: BorderSide(
+                                          color: isSelected
+                                              ? colorScheme.primary
+                                              : Colors.transparent,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        showCheckmark: false,
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                                const SizedBox(height: 48),
+                              ],
                             ),
-                            const SizedBox(height: 48),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
 
-                // Bottom Button
-                FormSubmitButton(
-                  isVisible: MediaQuery.of(context).viewInsets.bottom == 0,
-                  label: isEditing ? '수정하기' : '등록하기',
-                  onPressed: _isSubmitting ? null : _handleSubmit,
-                ),
-              ],
-            ),
+                    // Bottom Button
+                    FormSubmitButton(
+                      isVisible: MediaQuery.of(context).viewInsets.bottom == 0,
+                      label: isEditing ? '수정하기' : '등록하기',
+                      onPressed: _isSubmitting ? null : _handleSubmit,
+                    ),
+                  ],
+                )),
     );
   }
 }

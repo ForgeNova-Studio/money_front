@@ -9,6 +9,7 @@ import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/amount_input_card.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/date_picker_card.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/form_submit_button.dart';
+import 'package:moamoa/features/common/widgets/retryable_load_error_state.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_form_card.dart';
 import 'package:moamoa/features/common/widgets/transaction_form/transaction_text_field.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
@@ -83,6 +84,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   Income? _originalIncome;
   bool _isLoading = false;
   bool _isSubmitting = false;
+  String? _loadErrorMessage;
 
   @override
   void initState() {
@@ -128,11 +130,24 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
         _amountController.text = _amountFormatter.format(income.amount);
         _descriptionController.text = income.description ?? '';
         _isLoading = false;
+        _loadErrorMessage = null;
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() => _isLoading = false);
+      setState(() {
+        _isLoading = false;
+        _loadErrorMessage = '수입 정보를 불러오지 못했습니다';
+      });
+      context.showErrorToast('수입 정보를 불러오지 못했습니다. 다시 시도해주세요');
     }
+  }
+
+  Future<void> _retryLoadIncome() async {
+    setState(() {
+      _isLoading = true;
+      _loadErrorMessage = null;
+    });
+    await _loadIncome();
   }
 
   // 날짜 선택 모달 열기
@@ -168,6 +183,10 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
   // 등록
   Future<void> _handleSubmit() async {
     if (_isSubmitting) return;
+    if (widget.incomeId != null && _originalIncome == null) {
+      context.showErrorToast('수정할 수입 정보를 먼저 불러와 주세요');
+      return;
+    }
     FocusManager.instance.primaryFocus?.unfocus();
     if (!_formKey.currentState!.validate()) {
       return;
@@ -225,84 +244,90 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
       ),
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(
-                  // 스크롤 시작시 키보드를 자동으로 내리기 위한 처리
-                  child: NotificationListener<ScrollStartNotification>(
-                    onNotification: (notification) {
-                      if (notification.dragDetails != null) {
-                        FocusManager.instance.primaryFocus?.unfocus();
-                      }
-                      return false;
-                    },
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const SizedBox(height: 20),
+          : (_loadErrorMessage != null
+              ? RetryableLoadErrorState(
+                  message: _loadErrorMessage!,
+                  onRetry: _retryLoadIncome,
+                  onClose: () => Navigator.of(context).pop(),
+                )
+              : Column(
+                  children: [
+                    Expanded(
+                      // 스크롤 시작시 키보드를 자동으로 내리기 위한 처리
+                      child: NotificationListener<ScrollStartNotification>(
+                        onNotification: (notification) {
+                          if (notification.dragDetails != null) {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          }
+                          return false;
+                        },
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const SizedBox(height: 20),
 
-                            // 1. 금액 입력 필드
-                            AmountInputCard(
-                              controller: _amountController,
-                              focusNode: _amountFocusNode,
-                              validator: _validateAmount,
-                              amountColor: context.appColors.primary,
-                              unitColor: context.appColors.textPrimary,
-                              maxDigits: 12, // 입력 허용 최대 자릿수
+                                // 1. 금액 입력 필드
+                                AmountInputCard(
+                                  controller: _amountController,
+                                  focusNode: _amountFocusNode,
+                                  validator: _validateAmount,
+                                  amountColor: context.appColors.primary,
+                                  unitColor: context.appColors.textPrimary,
+                                  maxDigits: 12, // 입력 허용 최대 자릿수
+                                ),
+
+                                const SizedBox(height: 24),
+
+                                // 2. 날짜 선택 필드
+                                DatePickerCard(
+                                  selectedDate: _selectedDate,
+                                  onTap: () => _selectDate(context),
+                                ),
+
+                                const SizedBox(height: 28),
+
+                                // 3. 메모 필드
+                                TransactionFormCard(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 10),
+                                  child: TransactionTextField(
+                                    controller: _descriptionController,
+                                    hint: '어떤 수입인가요?',
+                                    icon: Icons.edit_outlined,
+                                    multiline: true,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 28),
+
+                                // 4. 카테고리 그리드
+                                IncomeSourceGrid(
+                                  selectedSourceCode: _selectedSource,
+                                  onSourceSelected: (code) {
+                                    setState(() {
+                                      _selectedSource = code;
+                                    });
+                                  },
+                                ),
+                              ],
                             ),
-
-                            const SizedBox(height: 24),
-
-                            // 2. 날짜 선택 필드
-                            DatePickerCard(
-                              selectedDate: _selectedDate,
-                              onTap: () => _selectDate(context),
-                            ),
-
-                            const SizedBox(height: 28),
-
-                            // 3. 메모 필드
-                            TransactionFormCard(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 10),
-                              child: TransactionTextField(
-                                controller: _descriptionController,
-                                hint: '어떤 수입인가요?',
-                                icon: Icons.edit_outlined,
-                                multiline: true,
-                              ),
-                            ),
-
-                            const SizedBox(height: 28),
-
-                            // 4. 카테고리 그리드
-                            IncomeSourceGrid(
-                              selectedSourceCode: _selectedSource,
-                              onSourceSelected: (code) {
-                                setState(() {
-                                  _selectedSource = code;
-                                });
-                              },
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
 
-                // 등록하기 버튼
-                FormSubmitButton(
-                  isVisible: MediaQuery.of(context).viewInsets.bottom == 0,
-                  label: isEditing ? '수정하기' : '등록하기',
-                  onPressed: _isSubmitting ? null : _handleSubmit,
-                ),
-              ],
-            ),
+                    // 등록하기 버튼
+                    FormSubmitButton(
+                      isVisible: MediaQuery.of(context).viewInsets.bottom == 0,
+                      label: isEditing ? '수정하기' : '등록하기',
+                      onPressed: _isSubmitting ? null : _handleSubmit,
+                    ),
+                  ],
+                )),
     );
   }
 }
