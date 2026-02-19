@@ -1,10 +1,8 @@
-import 'dart:async';
-
 import 'package:moamoa/features/income/domain/entities/income.dart';
 import 'package:moamoa/features/income/presentation/providers/income_providers.dart';
 import 'package:moamoa/features/income/presentation/states/income_state.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
-import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/features/common/utils/transaction_sync_utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'income_view_model.g.dart';
@@ -46,17 +44,14 @@ class IncomeViewModel extends _$IncomeViewModel {
   Future<void> loadIncome() async {
     final repository = ref.read(getIncomeListUsecaseProvider);
     final focusedDay = state.focusedDay;
-
-    // 해당 월의 시작일과 종료일 계산
-    final startDate = DateTime(focusedDay.year, focusedDay.month, 1);
-    final endDate = DateTime(focusedDay.year, focusedDay.month + 1, 0);
+    final range = buildMonthDateRange(focusedDay);
 
     state = state.copyWith(incomes: const AsyncValue.loading());
 
     try {
       final incomes = await repository(
-        startDate: startDate,
-        endDate: endDate,
+        startDate: range.startDate,
+        endDate: range.endDate,
       );
 
       // 날짜 내림차순 정렬
@@ -64,7 +59,7 @@ class IncomeViewModel extends _$IncomeViewModel {
 
       state = state.copyWith(
         incomes: AsyncValue.data(incomes),
-        totalAmount: _calculateTotalAmount(incomes),
+        totalAmount: sumAmounts(incomes, (item) => item.amount),
       );
     } catch (e, stack) {
       state = state.copyWith(incomes: AsyncValue.error(e, stack));
@@ -122,9 +117,7 @@ class IncomeViewModel extends _$IncomeViewModel {
     }
 
     // 성공 시 홈 데이터 갱신
-    final homeViewModel = ref.read(homeViewModelProvider.notifier);
-    unawaited(homeViewModel.fetchMonthlyData(date, forceRefresh: true));
-    homeViewModel.refreshBudgetAndAsset();
+    syncHomeAfterTransaction(ref: ref, date: date);
 
     // 현재 리스트 갱신 (Stale Data 방지)
     await loadIncome();
@@ -150,10 +143,5 @@ class IncomeViewModel extends _$IncomeViewModel {
   }) async {
     final updateUseCase = ref.read(updateIncomeUsecaseProvider);
     await updateUseCase(incomeId: income.incomeId!, income: income);
-  }
-
-  /// 총 금액 계산
-  int _calculateTotalAmount(List<Income> incomes) {
-    return incomes.fold(0, (sum, item) => sum + item.amount);
   }
 }

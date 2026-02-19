@@ -1,10 +1,8 @@
-import 'dart:async';
-
 import 'package:moamoa/features/expense/domain/entities/expense.dart';
 import 'package:moamoa/features/expense/presentation/providers/expense_providers.dart';
 import 'package:moamoa/features/expense/presentation/states/expense_state.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
-import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/features/common/utils/transaction_sync_utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'expense_view_model.g.dart';
@@ -47,17 +45,14 @@ class ExpenseViewModel extends _$ExpenseViewModel {
   Future<void> loadExpenses() async {
     final repository = ref.read(getExpenseListUseCaseProvider);
     final focusedDay = state.focusedDay;
-
-    // 해당 월의 시작일과 종료일 계산
-    final startDate = DateTime(focusedDay.year, focusedDay.month, 1);
-    final endDate = DateTime(focusedDay.year, focusedDay.month + 1, 0);
+    final range = buildMonthDateRange(focusedDay);
 
     state = state.copyWith(expenses: const AsyncValue.loading());
 
     try {
       final expenses = await repository(
-        startDate: startDate,
-        endDate: endDate,
+        startDate: range.startDate,
+        endDate: range.endDate,
       );
 
       // 날짜 내림차순 정렬
@@ -65,7 +60,7 @@ class ExpenseViewModel extends _$ExpenseViewModel {
 
       state = state.copyWith(
         expenses: AsyncValue.data(expenses),
-        totalAmount: _calculateTotalAmount(expenses),
+        totalAmount: sumAmounts(expenses, (item) => item.amount),
       );
     } catch (e, stack) {
       state = state.copyWith(expenses: AsyncValue.error(e, stack));
@@ -132,9 +127,7 @@ class ExpenseViewModel extends _$ExpenseViewModel {
     }
 
     // 성공 시 홈 데이터 갱신
-    final homeViewModel = ref.read(homeViewModelProvider.notifier);
-    unawaited(homeViewModel.fetchMonthlyData(date, forceRefresh: true));
-    homeViewModel.refreshBudgetAndAsset();
+    syncHomeAfterTransaction(ref: ref, date: date);
 
     // 현재 리스트 갱신 (Stale Data 방지)
     await loadExpenses();
@@ -160,10 +153,5 @@ class ExpenseViewModel extends _$ExpenseViewModel {
   }) async {
     final updateUseCase = ref.read(updateExpenseUseCaseProvider);
     await updateUseCase(expenseId: expense.expenseId!, expense: expense);
-  }
-
-  /// 총 금액 계산
-  int _calculateTotalAmount(List<Expense> expenses) {
-    return expenses.fold(0, (sum, item) => sum + item.amount);
   }
 }
