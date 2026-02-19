@@ -80,10 +80,10 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
       return;
     }
 
-    // 현재 월 기준 -1 ~ +1 개월 (총 3개월)
+    // 선택 월 기준 -1 ~ +1 개월 (총 3개월)
     final months = <DateTime>[];
     for (int i = -1; i <= 1; i++) {
-      months.add(DateTime(_currentMonth.year, _currentMonth.month + i));
+      months.add(DateTime(_selectedMonth.year, _selectedMonth.month + i));
     }
 
     // 병렬로 모든 월 데이터 fetch
@@ -99,7 +99,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
         );
         _budgetCache[key] = budget;
       } catch (e) {
-        _budgetCache[key] = null;
+        // 네트워크 실패를 "예산 미설정(null)"으로 캐시하지 않는다.
       }
     }));
 
@@ -164,7 +164,8 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
         _prefetchDirectional(month, direction);
       }
     } catch (e) {
-      _budgetCache[key] = null;
+      // 실패 시 null 캐시를 남기지 않아 다음 시도에서 재조회되도록 한다.
+      _budgetCache.remove(key);
       if (mounted) _updateAmountFromCache();
     }
   }
@@ -194,7 +195,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
         .then((budget) {
       _budgetCache[key] = budget;
     }).catchError((_) {
-      _budgetCache[key] = null;
+      // 프리페치 실패는 캐시하지 않고 다음 기회에 재시도한다.
     });
   }
 
@@ -265,7 +266,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     setState(() {
       _selectedMonth = _currentMonth;
     });
-    _updateAmountFromCache();
+    _fetchAndCacheMonth(_currentMonth, direction: 0);
   }
 
   void _setSuggestedAmount(int amount) {
