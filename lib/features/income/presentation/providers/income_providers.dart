@@ -43,26 +43,26 @@ IncomeRepository incomeRepository(Ref ref) {
 // UseCase Providers
 // ============================================================================
 @riverpod
-GetIncomeListUsecase getIncomeListUsecase(Ref ref) {
-  return GetIncomeListUsecase(ref.read(incomeRepositoryProvider));
+GetIncomeListUseCase getIncomeListUseCase(Ref ref) {
+  return GetIncomeListUseCase(ref.read(incomeRepositoryProvider));
 }
 
 @riverpod
-CreateIncomeUsecase createIncomeUsecase(Ref ref) {
-  return CreateIncomeUsecase(ref.read(incomeRepositoryProvider));
+CreateIncomeUseCase createIncomeUseCase(Ref ref) {
+  return CreateIncomeUseCase(ref.read(incomeRepositoryProvider));
 }
 
 @riverpod
-GetIncomeDetailUsecase getIncomeDetailUsecase(Ref ref) {
-  return GetIncomeDetailUsecase(ref.read(incomeRepositoryProvider));
+GetIncomeDetailUseCase getIncomeDetailUseCase(Ref ref) {
+  return GetIncomeDetailUseCase(ref.read(incomeRepositoryProvider));
 }
 
 @riverpod
-UpdateIncomeUsecase updateIncomeUsecase(Ref ref) {
-  return UpdateIncomeUsecase(ref.read(incomeRepositoryProvider));
+UpdateIncomeUseCase updateIncomeUseCase(Ref ref) {
+  return UpdateIncomeUseCase(ref.read(incomeRepositoryProvider));
 }
 
 @riverpod
-DeleteIncomeUsecase deleteIncomeUsecase(Ref ref) {
-  return DeleteIncomeUsecase(ref.read(incomeRepositoryProvider));
+DeleteIncomeUseCase deleteIncomeUseCase(Ref ref) {
+  return DeleteIncomeUseCase(ref.read(incomeRepositoryProvider));
 }

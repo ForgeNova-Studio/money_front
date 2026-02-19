@@ -42,7 +42,7 @@ class IncomeViewModel extends _$IncomeViewModel {
 
   /// 초기 데이터 로드 및 월 변경 시 호출
   Future<void> loadIncome() async {
-    final repository = ref.read(getIncomeListUsecaseProvider);
+    final repository = ref.read(getIncomeListUseCaseProvider);
     final focusedDay = state.focusedDay;
     final range = buildMonthDateRange(focusedDay);
 
@@ -68,7 +68,7 @@ class IncomeViewModel extends _$IncomeViewModel {
 
   /// 수입 상세 조회
   Future<Income> getIncomeDetail(String incomeId) async {
-    final useCase = ref.read(getIncomeDetailUsecaseProvider);
+    final useCase = ref.read(getIncomeDetailUseCaseProvider);
     return await useCase(incomeId: incomeId);
   }
 
@@ -131,7 +131,7 @@ class IncomeViewModel extends _$IncomeViewModel {
     if (selectedAccountBookId == null) {
       throw StateError('Account book is not selected');
     }
-    final createUseCase = ref.read(createIncomeUsecaseProvider);
+    final createUseCase = ref.read(createIncomeUseCaseProvider);
     final request = income.copyWith(accountBookId: selectedAccountBookId);
 
     await createUseCase(income: request);
@@ -141,7 +141,7 @@ class IncomeViewModel extends _$IncomeViewModel {
   Future<void> updateIncome({
     required Income income,
   }) async {
-    final updateUseCase = ref.read(updateIncomeUsecaseProvider);
+    final updateUseCase = ref.read(updateIncomeUseCaseProvider);
     await updateUseCase(incomeId: income.incomeId!, income: income);
   }
 }

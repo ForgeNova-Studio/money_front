@@ -1,10 +1,10 @@
 import 'package:moamoa/features/income/domain/entities/income.dart';
 import 'package:moamoa/features/income/domain/repositories/income_repository.dart';
 
-class GetIncomeDetailUsecase {
+class GetIncomeDetailUseCase {
   final IncomeRepository _repository;
 
-  GetIncomeDetailUsecase(this._repository);
+  GetIncomeDetailUseCase(this._repository);
 
   /// 수입 상세 조회
   ///

@@ -1,9 +1,9 @@
 import 'package:moamoa/features/income/domain/repositories/income_repository.dart';
 
-class DeleteIncomeUsecase {
+class DeleteIncomeUseCase {
   final IncomeRepository _repository;
 
-  DeleteIncomeUsecase(this._repository);
+  DeleteIncomeUseCase(this._repository);
 
   /// 수입 삭제
   ///

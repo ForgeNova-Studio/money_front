@@ -95,222 +95,222 @@ final class IncomeRepositoryProvider extends $FunctionalProvider<
 
 String _$incomeRepositoryHash() => r'7db0ff9cc7fcbf265f76551521eddd67638e6718';
 
-@ProviderFor(getIncomeListUsecase)
-const getIncomeListUsecaseProvider = GetIncomeListUsecaseProvider._();
+@ProviderFor(getIncomeListUseCase)
+const getIncomeListUseCaseProvider = GetIncomeListUseCaseProvider._();
 
-final class GetIncomeListUsecaseProvider extends $FunctionalProvider<
-    GetIncomeListUsecase,
-    GetIncomeListUsecase,
-    GetIncomeListUsecase> with $Provider<GetIncomeListUsecase> {
-  const GetIncomeListUsecaseProvider._()
+final class GetIncomeListUseCaseProvider extends $FunctionalProvider<
+    GetIncomeListUseCase,
+    GetIncomeListUseCase,
+    GetIncomeListUseCase> with $Provider<GetIncomeListUseCase> {
+  const GetIncomeListUseCaseProvider._()
       : super(
           from: null,
           argument: null,
           retry: null,
-          name: r'getIncomeListUsecaseProvider',
+          name: r'getIncomeListUseCaseProvider',
           isAutoDispose: true,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
 
   @override
-  String debugGetCreateSourceHash() => _$getIncomeListUsecaseHash();
+  String debugGetCreateSourceHash() => _$getIncomeListUseCaseHash();
 
   @$internal
   @override
-  $ProviderElement<GetIncomeListUsecase> $createElement(
+  $ProviderElement<GetIncomeListUseCase> $createElement(
           $ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  GetIncomeListUsecase create(Ref ref) {
-    return getIncomeListUsecase(ref);
+  GetIncomeListUseCase create(Ref ref) {
+    return getIncomeListUseCase(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(GetIncomeListUsecase value) {
+  Override overrideWithValue(GetIncomeListUseCase value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<GetIncomeListUsecase>(value),
+      providerOverride: $SyncValueProvider<GetIncomeListUseCase>(value),
     );
   }
 }
 
-String _$getIncomeListUsecaseHash() =>
-    r'ae61a3e27f0ce6ea5c5a5b6be7de6c9873e3d2f1';
+String _$getIncomeListUseCaseHash() =>
+    r'bb8a9e6b659eaab39b44358bf3ee9eebca11f076';
 
-@ProviderFor(createIncomeUsecase)
-const createIncomeUsecaseProvider = CreateIncomeUsecaseProvider._();
+@ProviderFor(createIncomeUseCase)
+const createIncomeUseCaseProvider = CreateIncomeUseCaseProvider._();
 
-final class CreateIncomeUsecaseProvider extends $FunctionalProvider<
-    CreateIncomeUsecase,
-    CreateIncomeUsecase,
-    CreateIncomeUsecase> with $Provider<CreateIncomeUsecase> {
-  const CreateIncomeUsecaseProvider._()
+final class CreateIncomeUseCaseProvider extends $FunctionalProvider<
+    CreateIncomeUseCase,
+    CreateIncomeUseCase,
+    CreateIncomeUseCase> with $Provider<CreateIncomeUseCase> {
+  const CreateIncomeUseCaseProvider._()
       : super(
           from: null,
           argument: null,
           retry: null,
-          name: r'createIncomeUsecaseProvider',
+          name: r'createIncomeUseCaseProvider',
           isAutoDispose: true,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
 
   @override
-  String debugGetCreateSourceHash() => _$createIncomeUsecaseHash();
+  String debugGetCreateSourceHash() => _$createIncomeUseCaseHash();
 
   @$internal
   @override
-  $ProviderElement<CreateIncomeUsecase> $createElement(
+  $ProviderElement<CreateIncomeUseCase> $createElement(
           $ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  CreateIncomeUsecase create(Ref ref) {
-    return createIncomeUsecase(ref);
+  CreateIncomeUseCase create(Ref ref) {
+    return createIncomeUseCase(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(CreateIncomeUsecase value) {
+  Override overrideWithValue(CreateIncomeUseCase value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<CreateIncomeUsecase>(value),
+      providerOverride: $SyncValueProvider<CreateIncomeUseCase>(value),
     );
   }
 }
 
-String _$createIncomeUsecaseHash() =>
-    r'97d6593d86ec0de8deb8ad767c7657eda5ef9207';
+String _$createIncomeUseCaseHash() =>
+    r'67e6d6bce69923e41cf3930e7abf5cd06d912d8d';
 
-@ProviderFor(getIncomeDetailUsecase)
-const getIncomeDetailUsecaseProvider = GetIncomeDetailUsecaseProvider._();
+@ProviderFor(getIncomeDetailUseCase)
+const getIncomeDetailUseCaseProvider = GetIncomeDetailUseCaseProvider._();
 
-final class GetIncomeDetailUsecaseProvider extends $FunctionalProvider<
-    GetIncomeDetailUsecase,
-    GetIncomeDetailUsecase,
-    GetIncomeDetailUsecase> with $Provider<GetIncomeDetailUsecase> {
-  const GetIncomeDetailUsecaseProvider._()
+final class GetIncomeDetailUseCaseProvider extends $FunctionalProvider<
+    GetIncomeDetailUseCase,
+    GetIncomeDetailUseCase,
+    GetIncomeDetailUseCase> with $Provider<GetIncomeDetailUseCase> {
+  const GetIncomeDetailUseCaseProvider._()
       : super(
           from: null,
           argument: null,
           retry: null,
-          name: r'getIncomeDetailUsecaseProvider',
+          name: r'getIncomeDetailUseCaseProvider',
           isAutoDispose: true,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
 
   @override
-  String debugGetCreateSourceHash() => _$getIncomeDetailUsecaseHash();
+  String debugGetCreateSourceHash() => _$getIncomeDetailUseCaseHash();
 
   @$internal
   @override
-  $ProviderElement<GetIncomeDetailUsecase> $createElement(
+  $ProviderElement<GetIncomeDetailUseCase> $createElement(
           $ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  GetIncomeDetailUsecase create(Ref ref) {
-    return getIncomeDetailUsecase(ref);
+  GetIncomeDetailUseCase create(Ref ref) {
+    return getIncomeDetailUseCase(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(GetIncomeDetailUsecase value) {
+  Override overrideWithValue(GetIncomeDetailUseCase value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<GetIncomeDetailUsecase>(value),
+      providerOverride: $SyncValueProvider<GetIncomeDetailUseCase>(value),
     );
   }
 }
 
-String _$getIncomeDetailUsecaseHash() =>
-    r'8e068973d2e0d5749b46aacdb8fd99d697cbab6f';
+String _$getIncomeDetailUseCaseHash() =>
+    r'2e2a70de0ffe6a4f1ae4a271c6d60cf11b061ba2';
 
-@ProviderFor(updateIncomeUsecase)
-const updateIncomeUsecaseProvider = UpdateIncomeUsecaseProvider._();
+@ProviderFor(updateIncomeUseCase)
+const updateIncomeUseCaseProvider = UpdateIncomeUseCaseProvider._();
 
-final class UpdateIncomeUsecaseProvider extends $FunctionalProvider<
-    UpdateIncomeUsecase,
-    UpdateIncomeUsecase,
-    UpdateIncomeUsecase> with $Provider<UpdateIncomeUsecase> {
-  const UpdateIncomeUsecaseProvider._()
+final class UpdateIncomeUseCaseProvider extends $FunctionalProvider<
+    UpdateIncomeUseCase,
+    UpdateIncomeUseCase,
+    UpdateIncomeUseCase> with $Provider<UpdateIncomeUseCase> {
+  const UpdateIncomeUseCaseProvider._()
       : super(
           from: null,
           argument: null,
           retry: null,
-          name: r'updateIncomeUsecaseProvider',
+          name: r'updateIncomeUseCaseProvider',
           isAutoDispose: true,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
 
   @override
-  String debugGetCreateSourceHash() => _$updateIncomeUsecaseHash();
+  String debugGetCreateSourceHash() => _$updateIncomeUseCaseHash();
 
   @$internal
   @override
-  $ProviderElement<UpdateIncomeUsecase> $createElement(
+  $ProviderElement<UpdateIncomeUseCase> $createElement(
           $ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  UpdateIncomeUsecase create(Ref ref) {
-    return updateIncomeUsecase(ref);
+  UpdateIncomeUseCase create(Ref ref) {
+    return updateIncomeUseCase(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(UpdateIncomeUsecase value) {
+  Override overrideWithValue(UpdateIncomeUseCase value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<UpdateIncomeUsecase>(value),
+      providerOverride: $SyncValueProvider<UpdateIncomeUseCase>(value),
     );
   }
 }
 
-String _$updateIncomeUsecaseHash() =>
-    r'452d030af56274a97b841baa10979781107eca4d';
+String _$updateIncomeUseCaseHash() =>
+    r'79bc029e285d8065e28bf0ea332a735597a72816';
 
-@ProviderFor(deleteIncomeUsecase)
-const deleteIncomeUsecaseProvider = DeleteIncomeUsecaseProvider._();
+@ProviderFor(deleteIncomeUseCase)
+const deleteIncomeUseCaseProvider = DeleteIncomeUseCaseProvider._();
 
-final class DeleteIncomeUsecaseProvider extends $FunctionalProvider<
-    DeleteIncomeUsecase,
-    DeleteIncomeUsecase,
-    DeleteIncomeUsecase> with $Provider<DeleteIncomeUsecase> {
-  const DeleteIncomeUsecaseProvider._()
+final class DeleteIncomeUseCaseProvider extends $FunctionalProvider<
+    DeleteIncomeUseCase,
+    DeleteIncomeUseCase,
+    DeleteIncomeUseCase> with $Provider<DeleteIncomeUseCase> {
+  const DeleteIncomeUseCaseProvider._()
       : super(
           from: null,
           argument: null,
           retry: null,
-          name: r'deleteIncomeUsecaseProvider',
+          name: r'deleteIncomeUseCaseProvider',
           isAutoDispose: true,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
 
   @override
-  String debugGetCreateSourceHash() => _$deleteIncomeUsecaseHash();
+  String debugGetCreateSourceHash() => _$deleteIncomeUseCaseHash();
 
   @$internal
   @override
-  $ProviderElement<DeleteIncomeUsecase> $createElement(
+  $ProviderElement<DeleteIncomeUseCase> $createElement(
           $ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  DeleteIncomeUsecase create(Ref ref) {
-    return deleteIncomeUsecase(ref);
+  DeleteIncomeUseCase create(Ref ref) {
+    return deleteIncomeUseCase(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(DeleteIncomeUsecase value) {
+  Override overrideWithValue(DeleteIncomeUseCase value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<DeleteIncomeUsecase>(value),
+      providerOverride: $SyncValueProvider<DeleteIncomeUseCase>(value),
     );
   }
 }
 
-String _$deleteIncomeUsecaseHash() =>
-    r'3666cf6ecfddbd606255afd6699bacbbd56a90d1';
+String _$deleteIncomeUseCaseHash() =>
+    r'899547ed1a6d8fab8633b835e472e642e4ec391c';

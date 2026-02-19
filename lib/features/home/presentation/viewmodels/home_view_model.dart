@@ -303,7 +303,7 @@ class HomeViewModel extends _$HomeViewModel {
         await ref.read(deleteExpenseUseCaseProvider).call(transaction.id);
       } else {
         await ref
-            .read(deleteIncomeUsecaseProvider)
+            .read(deleteIncomeUseCaseProvider)
             .call(incomeId: transaction.id);
       }
     } catch (e) {

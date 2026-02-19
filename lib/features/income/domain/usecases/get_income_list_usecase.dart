@@ -1,10 +1,10 @@
 import 'package:moamoa/features/income/domain/entities/income.dart';
 import 'package:moamoa/features/income/domain/repositories/income_repository.dart';
 
-class GetIncomeListUsecase {
+class GetIncomeListUseCase {
   final IncomeRepository _repository;
 
-  GetIncomeListUsecase(this._repository);
+  GetIncomeListUseCase(this._repository);
 
   /// 수입 목록 조회
   ///
@@ -25,6 +25,9 @@ class GetIncomeListUsecase {
     String? source,
   }) async {
     return await _repository.getIncomeList(
-        startDate: startDate, endDate: endDate, source: source);
+      startDate: startDate,
+      endDate: endDate,
+      source: source,
+    );
   }
 }
