@@ -549,7 +549,7 @@ class HomeViewModel extends _$HomeViewModel {
     if (accountBookId == null) return;
 
     await _fetchBudgetAndAssetInfo(
-      state.selectedDate,
+      state.focusedMonth,
       accountBookId,
       forceRefresh: true,
     );
