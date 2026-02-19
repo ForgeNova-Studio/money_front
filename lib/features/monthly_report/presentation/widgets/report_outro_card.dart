@@ -34,155 +34,161 @@ class _ReportOutroCardState extends ConsumerState<ReportOutroCard> {
           ),
         ],
       ),
-      padding: const EdgeInsets.all(28),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              '✨',
-              style: TextStyle(fontSize: 48),
-            ),
-            const SizedBox(height: 12),
+      padding: const EdgeInsets.fromLTRB(28, 28, 28, 16),
+      child: Column(
+        children: [
+          // 스크롤 가능한 콘텐츠
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    '✨',
+                    style: TextStyle(fontSize: 48),
+                  ),
+                  const SizedBox(height: 12),
 
-            Text(
-              '$nextMonth월도 화이팅!',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 24),
+                  Text(
+                    '$nextMonth월도 화이팅!',
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
 
-            // 가장 많이 간 곳
-            if (widget.report.topMerchant != null)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.backgroundAccentTint,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  children: [
-                    const Text(
-                      '이번 달 가장 많이 간 곳',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
+                  // 가장 많이 간 곳
+                  if (widget.report.topMerchant != null)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.backgroundAccentTint,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: [
+                          const Text(
+                            '이번 달 가장 많이 간 곳',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                '☕',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '${widget.report.topMerchant!.name} (${widget.report.topMerchant!.visitCount}회)',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+
+                  const SizedBox(height: 16),
+
+                  // 팁
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.info.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
                       children: [
                         const Text(
-                          '☕',
+                          '💡',
                           style: TextStyle(fontSize: 18),
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          '${widget.report.topMerchant!.name} (${widget.report.topMerchant!.visitCount}회)',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            _getTip(widget.report),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppColors.info,
+                              height: 1.4,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-
-            const SizedBox(height: 16),
-
-            // 팁
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.info.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: [
-                  const Text(
-                    '💡',
-                    style: TextStyle(fontSize: 18),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      _getTip(widget.report),
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppColors.info,
-                        height: 1.4,
-                      ),
+
+                  const SizedBox(height: 20),
+
+                  // 해시태그
+                  Text(
+                    '#나의소비리포트 #${widget.report.month}월결산 #모아모아',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textTertiary,
                     ),
                   ),
                 ],
               ),
             ),
+          ),
 
-            const SizedBox(height: 20),
-
-            // 해시태그
-            Text(
-              '#나의소비리포트 #${widget.report.month}월결산 #모아모아',
-              style: TextStyle(
-                fontSize: 11,
-                color: AppColors.textTertiary,
+          // 하단 고정 체크박스
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _isDontShowAgain = !_isDontShowAgain;
+                if (_isDontShowAgain) {
+                  ref.read(reportBannerDismissedProvider.notifier).dismiss();
+                }
+              });
+            },
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.gray50,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    _isDontShowAgain
+                        ? Icons.check_box
+                        : Icons.check_box_outline_blank,
+                    size: 20,
+                    color: _isDontShowAgain
+                        ? AppColors.primary
+                        : AppColors.gray400,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '이번 달 배너 그만 보기',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
               ),
             ),
-
-            const SizedBox(height: 24),
-
-            // 더 이상 보지 않기 체크박스
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _isDontShowAgain = !_isDontShowAgain;
-                  if (_isDontShowAgain) {
-                    ref.read(reportBannerDismissedProvider.notifier).dismiss();
-                  }
-                });
-              },
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  color: AppColors.gray50,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      _isDontShowAgain
-                          ? Icons.check_box
-                          : Icons.check_box_outline_blank,
-                      size: 20,
-                      color: _isDontShowAgain
-                          ? AppColors.primary
-                          : AppColors.gray400,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '이번 달 배너 그만 보기',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

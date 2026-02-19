@@ -34,33 +34,14 @@ class ShortcutsGuideViewModel extends _$ShortcutsGuideViewModel {
     }
   }
 
-  /// 카드사 선택/해제 토글
-  void toggleCardCompany(String cardCompanyId) {
-    final currentSelection = List<String>.from(state.selectedCardCompanyIds);
-    if (currentSelection.contains(cardCompanyId)) {
-      currentSelection.remove(cardCompanyId);
-    } else {
-      currentSelection.add(cardCompanyId);
-    }
-    state = state.copyWith(selectedCardCompanyIds: currentSelection);
+  /// 카드사 선택 (단일 선택)
+  void selectCardCompany(String cardCompanyId) {
+    state = state.copyWith(selectedCardCompanyId: cardCompanyId);
   }
 
-  /// 카드사 전체 선택
-  void selectAllCardCompanies() {
-    final allIds = supportedCardCompanies.map((c) => c.id).toList();
-    state = state.copyWith(selectedCardCompanyIds: allIds);
-  }
-
-  /// 카드사 전체 해제
-  void deselectAllCardCompanies() {
-    state = state.copyWith(selectedCardCompanyIds: []);
-  }
-
-  /// 선택된 카드사 목록 반환
-  List<CardCompany> get selectedCardCompanies {
-    return supportedCardCompanies
-        .where((c) => state.selectedCardCompanyIds.contains(c.id))
-        .toList();
+  /// 카드사 선택 해제
+  void clearCardCompany() {
+    state = state.copyWith(selectedCardCompanyId: null);
   }
 
   /// 설정 완료 처리

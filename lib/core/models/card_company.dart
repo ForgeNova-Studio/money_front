@@ -20,21 +20,19 @@ const List<CardCompany> supportedCardCompanies = [
     id: 'shinhan',
     name: '신한카드',
     iconPath: 'assets/icons/cards/shinhan.png',
-    shortcutUrl:
-        'https://www.icloud.com/shortcuts/e094e29ec62e4320982c973ef1ebd61a',
+    shortcutUrl: 'https://www.icloud.com/shortcuts/e094e29ec62e4320982c973ef1ebd61a',
   ),
   CardCompany(
     id: 'samsung',
     name: '삼성카드',
     iconPath: 'assets/icons/cards/samsung.png',
-    shortcutUrl:
-        'https://www.icloud.com/shortcuts/2fd8644e5fbe4819bf8ceeba1f8ffd35',
+    shortcutUrl: 'https://www.icloud.com/shortcuts/2fd8644e5fbe4819bf8ceeba1f8ffd35',
   ),
   CardCompany(
     id: 'kb',
     name: 'KB국민카드',
     iconPath: 'assets/icons/cards/kb.png',
-    shortcutUrl: 'https://www.icloud.com/shortcuts/4d224a90bd9b4e01baf3b61409fcd5a9',
+    shortcutUrl: 'https://www.icloud.com/shortcuts/28912120df70440ba36e5e7e6b9fc2c9',
   ),
   CardCompany(
     id: 'hyundai',

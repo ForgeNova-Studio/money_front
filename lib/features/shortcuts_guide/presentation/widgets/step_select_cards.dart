@@ -37,24 +37,6 @@ class StepSelectCards extends ConsumerWidget {
 
           const SizedBox(height: 24),
 
-          // 전체 선택/해제 버튼
-          Row(
-            children: [
-              _SelectAllButton(
-                label: '전체 선택',
-                onTap: () => viewModel.selectAllCardCompanies(),
-              ),
-              const SizedBox(width: 12),
-              _SelectAllButton(
-                label: '전체 해제',
-                onTap: () => viewModel.deselectAllCardCompanies(),
-                isOutlined: true,
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-
           // 카드사 그리드
           GridView.builder(
             shrinkWrap: true,
@@ -68,20 +50,19 @@ class StepSelectCards extends ConsumerWidget {
             itemCount: supportedCardCompanies.length,
             itemBuilder: (context, index) {
               final card = supportedCardCompanies[index];
-              final isSelected =
-                  state.selectedCardCompanyIds.contains(card.id);
+              final isSelected = state.selectedCardCompanyId == card.id;
               return _CardCompanyItem(
                 card: card,
                 isSelected: isSelected,
-                onTap: () => viewModel.toggleCardCompany(card.id),
+                onTap: () => viewModel.selectCardCompany(card.id),
               );
             },
           ),
 
           const SizedBox(height: 24),
 
-          // 선택된 카드 수 표시
-          if (state.selectedCardCompanyIds.isNotEmpty)
+          // 선택된 카드 표시
+          if (state.selectedCardCompany != null)
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -97,7 +78,7 @@ class StepSelectCards extends ConsumerWidget {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    '${state.selectedCardCompanyIds.length}개 카드사 선택됨',
+                    '${state.selectedCardCompany!.name} 선택됨',
                     style: TextStyle(
                       color: context.appColors.primary,
                       fontWeight: FontWeight.w600,
@@ -107,7 +88,7 @@ class StepSelectCards extends ConsumerWidget {
               ),
             ),
 
-          if (state.selectedCardCompanyIds.isEmpty)
+          if (state.selectedCardCompanyId == null)
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -123,7 +104,7 @@ class StepSelectCards extends ConsumerWidget {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    '카드를 1개 이상 선택해주세요',
+                    '사용하는 카드를 선택해주세요',
                     style: TextStyle(
                       color: context.appColors.textSecondary,
                     ),
@@ -132,58 +113,6 @@ class StepSelectCards extends ConsumerWidget {
               ),
             ),
         ],
-      ),
-    );
-  }
-}
-
-class _SelectAllButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-  final bool isOutlined;
-
-  const _SelectAllButton({
-    required this.label,
-    required this.onTap,
-    this.isOutlined = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (isOutlined) {
-      return OutlinedButton(
-        onPressed: onTap,
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          side: BorderSide(color: context.appColors.gray300),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            color: context.appColors.textSecondary,
-          ),
-        ),
-      );
-    }
-
-    return ElevatedButton(
-      onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: context.appColors.primary,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        elevation: 0,
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(fontSize: 13),
       ),
     );
   }

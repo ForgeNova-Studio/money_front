@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
+import 'package:moamoa/features/shortcuts_guide/presentation/viewmodels/shortcuts_guide_view_model.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-// TODO: 실제 공유 링크로 교체
-const _regularShortcutUrl = 'https://www.icloud.com/shortcuts/f6ccd8d5ecfc46368b9523647947adae';
 
 /// 자동화 설정 가이드 스크린샷 경로
 /// TODO: 실제 스크린샷 이미지로 교체
@@ -48,11 +47,14 @@ class _GuideStep {
 }
 
 /// Step 3: 단축어 설치 화면
-class StepInstallShortcut extends StatelessWidget {
+class StepInstallShortcut extends ConsumerWidget {
   const StepInstallShortcut({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(shortcutsGuideViewModelProvider);
+    final selectedCard = state.selectedCardCompany;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -122,14 +124,15 @@ class StepInstallShortcut extends StatelessWidget {
           const SizedBox(height: 28),
 
           // ② 일반 단축어 섹션
-          _buildSectionLabel(context, '2', '일반 단축어 (링크 설치)'),
+          _buildSectionLabel(context, '2', '${selectedCard?.name ?? ''} 단축어 (링크 설치)'),
           const SizedBox(height: 12),
-          const _ShortcutInstallCard(
-            icon: Icons.build_outlined,
-            title: '일반 단축어',
-            description: 'SMS 문자를 파싱하여 가계부에 전달하는 단축어',
-            url: _regularShortcutUrl,
-          ),
+          if (selectedCard != null)
+            _ShortcutInstallCard(
+              icon: Icons.build_outlined,
+              title: '${selectedCard.name} 단축어',
+              description: 'SMS 문자를 파싱하여 가계부에 전달하는 단축어',
+              url: selectedCard.shortcutUrl,
+            ),
 
           const SizedBox(height: 24),
 
@@ -559,7 +562,7 @@ class _AutomationGuideModalState extends State<_AutomationGuideModal> {
 // 일반 단축어 설치 카드
 // ──────────────────────────────────────────────────────
 
-class _ShortcutInstallCard extends StatefulWidget {
+class _ShortcutInstallCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String description;
@@ -572,20 +575,10 @@ class _ShortcutInstallCard extends StatefulWidget {
     required this.url,
   });
 
-  @override
-  State<_ShortcutInstallCard> createState() => _ShortcutInstallCardState();
-}
-
-class _ShortcutInstallCardState extends State<_ShortcutInstallCard> {
-  bool _isInstalled = false;
-
   Future<void> _openShortcutUrl() async {
-    final uri = Uri.parse(widget.url);
+    final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
-      setState(() {
-        _isInstalled = true;
-      });
     }
   }
 
@@ -594,15 +587,9 @@ class _ShortcutInstallCardState extends State<_ShortcutInstallCard> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _isInstalled
-            ? context.appColors.success.withValues(alpha: 0.1)
-            : Colors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: _isInstalled
-              ? context.appColors.success
-              : context.appColors.gray200,
-        ),
+        border: Border.all(color: context.appColors.gray200),
       ),
       child: Row(
         children: [
@@ -610,16 +597,12 @@ class _ShortcutInstallCardState extends State<_ShortcutInstallCard> {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: _isInstalled
-                  ? context.appColors.success.withValues(alpha: 0.15)
-                  : context.appColors.primary.withValues(alpha: 0.1),
+              color: context.appColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
-              _isInstalled ? Icons.check : widget.icon,
-              color: _isInstalled
-                  ? context.appColors.success
-                  : context.appColors.primary,
+              icon,
+              color: context.appColors.primary,
               size: 22,
             ),
           ),
@@ -629,7 +612,7 @@ class _ShortcutInstallCardState extends State<_ShortcutInstallCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.title,
+                  title,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
@@ -638,46 +621,28 @@ class _ShortcutInstallCardState extends State<_ShortcutInstallCard> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  _isInstalled ? '설치 완료' : widget.description,
+                  description,
                   style: TextStyle(
                     fontSize: 12,
-                    color: _isInstalled
-                        ? context.appColors.success
-                        : context.appColors.textSecondary,
+                    color: context.appColors.textSecondary,
                   ),
                 ),
               ],
             ),
           ),
-          if (_isInstalled)
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: context.appColors.success,
-                shape: BoxShape.circle,
+          ElevatedButton(
+            onPressed: _openShortcutUrl,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.appColors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
-                Icons.check,
-                color: Colors.white,
-                size: 20,
-              ),
-            )
-          else
-            ElevatedButton(
-              onPressed: _openShortcutUrl,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: context.appColors.primary,
-                foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                elevation: 0,
-              ),
-              child: const Text('설치'),
+              elevation: 0,
             ),
+            child: const Text('설치'),
+          ),
         ],
       ),
     );

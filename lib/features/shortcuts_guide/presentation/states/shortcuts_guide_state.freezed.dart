@@ -20,8 +20,8 @@ mixin _$ShortcutsGuideState {
   /// 총 단계 수
   int get totalSteps;
 
-  /// 선택된 카드사 목록
-  List<String> get selectedCardCompanyIds;
+  /// 선택된 카드사 ID (단일 선택)
+  String? get selectedCardCompanyId;
 
   /// 설정 완료 여부
   bool get isSetupComplete;
@@ -49,8 +49,8 @@ mixin _$ShortcutsGuideState {
                 other.currentStep == currentStep) &&
             (identical(other.totalSteps, totalSteps) ||
                 other.totalSteps == totalSteps) &&
-            const DeepCollectionEquality()
-                .equals(other.selectedCardCompanyIds, selectedCardCompanyIds) &&
+            (identical(other.selectedCardCompanyId, selectedCardCompanyId) ||
+                other.selectedCardCompanyId == selectedCardCompanyId) &&
             (identical(other.isSetupComplete, isSetupComplete) ||
                 other.isSetupComplete == isSetupComplete) &&
             (identical(other.isLoading, isLoading) ||
@@ -60,18 +60,12 @@ mixin _$ShortcutsGuideState {
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      currentStep,
-      totalSteps,
-      const DeepCollectionEquality().hash(selectedCardCompanyIds),
-      isSetupComplete,
-      isLoading,
-      errorMessage);
+  int get hashCode => Object.hash(runtimeType, currentStep, totalSteps,
+      selectedCardCompanyId, isSetupComplete, isLoading, errorMessage);
 
   @override
   String toString() {
-    return 'ShortcutsGuideState(currentStep: $currentStep, totalSteps: $totalSteps, selectedCardCompanyIds: $selectedCardCompanyIds, isSetupComplete: $isSetupComplete, isLoading: $isLoading, errorMessage: $errorMessage)';
+    return 'ShortcutsGuideState(currentStep: $currentStep, totalSteps: $totalSteps, selectedCardCompanyId: $selectedCardCompanyId, isSetupComplete: $isSetupComplete, isLoading: $isLoading, errorMessage: $errorMessage)';
   }
 }
 
@@ -84,7 +78,7 @@ abstract mixin class $ShortcutsGuideStateCopyWith<$Res> {
   $Res call(
       {int currentStep,
       int totalSteps,
-      List<String> selectedCardCompanyIds,
+      String? selectedCardCompanyId,
       bool isSetupComplete,
       bool isLoading,
       String? errorMessage});
@@ -105,7 +99,7 @@ class _$ShortcutsGuideStateCopyWithImpl<$Res>
   $Res call({
     Object? currentStep = null,
     Object? totalSteps = null,
-    Object? selectedCardCompanyIds = null,
+    Object? selectedCardCompanyId = freezed,
     Object? isSetupComplete = null,
     Object? isLoading = null,
     Object? errorMessage = freezed,
@@ -119,10 +113,10 @@ class _$ShortcutsGuideStateCopyWithImpl<$Res>
           ? _self.totalSteps
           : totalSteps // ignore: cast_nullable_to_non_nullable
               as int,
-      selectedCardCompanyIds: null == selectedCardCompanyIds
-          ? _self.selectedCardCompanyIds
-          : selectedCardCompanyIds // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      selectedCardCompanyId: freezed == selectedCardCompanyId
+          ? _self.selectedCardCompanyId
+          : selectedCardCompanyId // ignore: cast_nullable_to_non_nullable
+              as String?,
       isSetupComplete: null == isSetupComplete
           ? _self.isSetupComplete
           : isSetupComplete // ignore: cast_nullable_to_non_nullable
@@ -233,7 +227,7 @@ extension ShortcutsGuideStatePatterns on ShortcutsGuideState {
     TResult Function(
             int currentStep,
             int totalSteps,
-            List<String> selectedCardCompanyIds,
+            String? selectedCardCompanyId,
             bool isSetupComplete,
             bool isLoading,
             String? errorMessage)?
@@ -246,7 +240,7 @@ extension ShortcutsGuideStatePatterns on ShortcutsGuideState {
         return $default(
             _that.currentStep,
             _that.totalSteps,
-            _that.selectedCardCompanyIds,
+            _that.selectedCardCompanyId,
             _that.isSetupComplete,
             _that.isLoading,
             _that.errorMessage);
@@ -273,7 +267,7 @@ extension ShortcutsGuideStatePatterns on ShortcutsGuideState {
     TResult Function(
             int currentStep,
             int totalSteps,
-            List<String> selectedCardCompanyIds,
+            String? selectedCardCompanyId,
             bool isSetupComplete,
             bool isLoading,
             String? errorMessage)
@@ -285,7 +279,7 @@ extension ShortcutsGuideStatePatterns on ShortcutsGuideState {
         return $default(
             _that.currentStep,
             _that.totalSteps,
-            _that.selectedCardCompanyIds,
+            _that.selectedCardCompanyId,
             _that.isSetupComplete,
             _that.isLoading,
             _that.errorMessage);
@@ -309,7 +303,7 @@ extension ShortcutsGuideStatePatterns on ShortcutsGuideState {
     TResult? Function(
             int currentStep,
             int totalSteps,
-            List<String> selectedCardCompanyIds,
+            String? selectedCardCompanyId,
             bool isSetupComplete,
             bool isLoading,
             String? errorMessage)?
@@ -321,7 +315,7 @@ extension ShortcutsGuideStatePatterns on ShortcutsGuideState {
         return $default(
             _that.currentStep,
             _that.totalSteps,
-            _that.selectedCardCompanyIds,
+            _that.selectedCardCompanyId,
             _that.isSetupComplete,
             _that.isLoading,
             _that.errorMessage);
@@ -337,12 +331,11 @@ class _ShortcutsGuideState extends ShortcutsGuideState {
   const _ShortcutsGuideState(
       {this.currentStep = 0,
       this.totalSteps = 4,
-      final List<String> selectedCardCompanyIds = const [],
+      this.selectedCardCompanyId,
       this.isSetupComplete = false,
       this.isLoading = false,
       this.errorMessage})
-      : _selectedCardCompanyIds = selectedCardCompanyIds,
-        super._();
+      : super._();
 
   /// 현재 단계 (0-indexed)
   @override
@@ -354,18 +347,9 @@ class _ShortcutsGuideState extends ShortcutsGuideState {
   @JsonKey()
   final int totalSteps;
 
-  /// 선택된 카드사 목록
-  final List<String> _selectedCardCompanyIds;
-
-  /// 선택된 카드사 목록
+  /// 선택된 카드사 ID (단일 선택)
   @override
-  @JsonKey()
-  List<String> get selectedCardCompanyIds {
-    if (_selectedCardCompanyIds is EqualUnmodifiableListView)
-      return _selectedCardCompanyIds;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_selectedCardCompanyIds);
-  }
+  final String? selectedCardCompanyId;
 
   /// 설정 완료 여부
   @override
@@ -399,8 +383,8 @@ class _ShortcutsGuideState extends ShortcutsGuideState {
                 other.currentStep == currentStep) &&
             (identical(other.totalSteps, totalSteps) ||
                 other.totalSteps == totalSteps) &&
-            const DeepCollectionEquality().equals(
-                other._selectedCardCompanyIds, _selectedCardCompanyIds) &&
+            (identical(other.selectedCardCompanyId, selectedCardCompanyId) ||
+                other.selectedCardCompanyId == selectedCardCompanyId) &&
             (identical(other.isSetupComplete, isSetupComplete) ||
                 other.isSetupComplete == isSetupComplete) &&
             (identical(other.isLoading, isLoading) ||
@@ -410,18 +394,12 @@ class _ShortcutsGuideState extends ShortcutsGuideState {
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      currentStep,
-      totalSteps,
-      const DeepCollectionEquality().hash(_selectedCardCompanyIds),
-      isSetupComplete,
-      isLoading,
-      errorMessage);
+  int get hashCode => Object.hash(runtimeType, currentStep, totalSteps,
+      selectedCardCompanyId, isSetupComplete, isLoading, errorMessage);
 
   @override
   String toString() {
-    return 'ShortcutsGuideState(currentStep: $currentStep, totalSteps: $totalSteps, selectedCardCompanyIds: $selectedCardCompanyIds, isSetupComplete: $isSetupComplete, isLoading: $isLoading, errorMessage: $errorMessage)';
+    return 'ShortcutsGuideState(currentStep: $currentStep, totalSteps: $totalSteps, selectedCardCompanyId: $selectedCardCompanyId, isSetupComplete: $isSetupComplete, isLoading: $isLoading, errorMessage: $errorMessage)';
   }
 }
 
@@ -436,7 +414,7 @@ abstract mixin class _$ShortcutsGuideStateCopyWith<$Res>
   $Res call(
       {int currentStep,
       int totalSteps,
-      List<String> selectedCardCompanyIds,
+      String? selectedCardCompanyId,
       bool isSetupComplete,
       bool isLoading,
       String? errorMessage});
@@ -457,7 +435,7 @@ class __$ShortcutsGuideStateCopyWithImpl<$Res>
   $Res call({
     Object? currentStep = null,
     Object? totalSteps = null,
-    Object? selectedCardCompanyIds = null,
+    Object? selectedCardCompanyId = freezed,
     Object? isSetupComplete = null,
     Object? isLoading = null,
     Object? errorMessage = freezed,
@@ -471,10 +449,10 @@ class __$ShortcutsGuideStateCopyWithImpl<$Res>
           ? _self.totalSteps
           : totalSteps // ignore: cast_nullable_to_non_nullable
               as int,
-      selectedCardCompanyIds: null == selectedCardCompanyIds
-          ? _self._selectedCardCompanyIds
-          : selectedCardCompanyIds // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      selectedCardCompanyId: freezed == selectedCardCompanyId
+          ? _self.selectedCardCompanyId
+          : selectedCardCompanyId // ignore: cast_nullable_to_non_nullable
+              as String?,
       isSetupComplete: null == isSetupComplete
           ? _self.isSetupComplete
           : isSetupComplete // ignore: cast_nullable_to_non_nullable

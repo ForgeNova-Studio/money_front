@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:moamoa/core/models/card_company.dart';
 
-// CardCompany 모델은 core/models/card_company.dart로 이동됨
+// CardCompany 모델 re-export
 export 'package:moamoa/core/models/card_company.dart';
 
 part 'shortcuts_guide_state.freezed.dart';
@@ -17,8 +18,8 @@ sealed class ShortcutsGuideState with _$ShortcutsGuideState {
     /// 총 단계 수
     @Default(4) int totalSteps,
 
-    /// 선택된 카드사 목록
-    @Default([]) List<String> selectedCardCompanyIds,
+    /// 선택된 카드사 ID (단일 선택)
+    String? selectedCardCompanyId,
 
     /// 설정 완료 여부
     @Default(false) bool isSetupComplete,
@@ -30,6 +31,15 @@ sealed class ShortcutsGuideState with _$ShortcutsGuideState {
     String? errorMessage,
   }) = _ShortcutsGuideState;
 
+  /// 선택된 카드사 정보
+  CardCompany? get selectedCardCompany {
+    if (selectedCardCompanyId == null) return null;
+    return supportedCardCompanies.cast<CardCompany?>().firstWhere(
+          (c) => c?.id == selectedCardCompanyId,
+          orElse: () => null,
+        );
+  }
+
   /// 다음 단계로 이동 가능 여부
   bool get canProceedToNext {
     switch (currentStep) {
@@ -37,8 +47,8 @@ sealed class ShortcutsGuideState with _$ShortcutsGuideState {
         // Step 1: 소개, 항상 진행 가능
         return true;
       case 1:
-        // Step 2: 카드사 선택, 1개 이상 선택해야 함
-        return selectedCardCompanyIds.isNotEmpty;
+        // Step 2: 카드사 선택, 1개 선택해야 함
+        return selectedCardCompanyId != null;
       case 2:
         // Step 3: 단축어 설치, 항상 진행 가능
         return true;

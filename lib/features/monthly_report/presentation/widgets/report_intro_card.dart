@@ -18,10 +18,10 @@ class ReportIntroCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.backgroundWhite,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.primaryLight, width: 2),
+        border: Border.all(color: AppColors.primaryPale, width: 2),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowAccent,
+            color: AppColors.shadow,
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
