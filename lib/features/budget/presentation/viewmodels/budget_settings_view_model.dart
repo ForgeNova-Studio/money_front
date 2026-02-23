@@ -13,10 +13,21 @@ part 'budget_settings_view_model.g.dart';
 
 @riverpod
 class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
+  static const _monthChangeDebounceDuration = Duration(milliseconds: 150);
+  static const _prefetchRetryCount = 1;
+
   bool _initialized = false;
+  int _latestMonthRequestId = 0;
+  Timer? _monthChangeDebounceTimer;
+  final Map<String, Future<BudgetEntity?>> _inFlightMonthlyBudgetRequests = {};
 
   @override
   BudgetSettingsState build() {
+    ref.onDispose(() {
+      _monthChangeDebounceTimer?.cancel();
+      _inFlightMonthlyBudgetRequests.clear();
+    });
+
     final now = DateTime.now();
     final currentMonth = DateTime(now.year, now.month);
 
@@ -69,10 +80,10 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
       if (updatedCache.containsKey(key)) return;
 
       try {
-        final budget = await ref.read(getMonthlyBudgetUseCaseProvider)(
-          year: month.year,
-          month: month.month,
+        final budget = await _getMonthlyBudgetWithDedupe(
+          month: month,
           accountBookId: accountBookId,
+          retryCount: _prefetchRetryCount,
         );
         updatedCache[key] = budget;
       } catch (_) {
@@ -99,9 +110,9 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
     state = state.copyWith(event: null);
   }
 
-  /// 월 변경
-  /// [delta] 만큼 월을 변경한다.
-  /// [delta]가 0이면 현재 월로 변경한다.
+  /// 월을 변경한다.
+  /// [delta] 만큼 [selectedMonth]를 즉시 갱신하고,
+  /// 실제 월 데이터 조회는 디바운스 스케줄러([_scheduleMonthFetch])로 위임한다.
   Future<void> changeMonth(int delta) async {
     final newMonth = DateTime(
       state.selectedMonth.year,
@@ -109,15 +120,17 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
     );
 
     state = state.copyWith(selectedMonth: newMonth);
-    await _fetchAndCacheMonth(newMonth, direction: delta);
+    _scheduleMonthFetch(newMonth, direction: delta, useDebounce: true);
   }
 
-  /// 현재 월로 변경
+  /// 현재 월로 이동한다.
+  /// 현재 월이 아닐 때만 [selectedMonth]를 갱신하고,
+  /// 즉시 조회(디바운스 미적용)로 데이터를 동기화한다.
   Future<void> goToCurrentMonth() async {
     if (state.isCurrentMonth) return;
     final month = state.currentMonth;
     state = state.copyWith(selectedMonth: month);
-    await _fetchAndCacheMonth(month, direction: 0);
+    _scheduleMonthFetch(month, direction: 0, useDebounce: false);
   }
 
   /// 예산 저장
@@ -221,13 +234,18 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
     }
   }
 
-  /// 예산 데이터를 가져와 캐시에 저장한다.
-  /// 캐시에 이미 값이 있으면 조회를 생략하고 [direction] 방향으로 프리페치만 수행한다.
-  /// [direction]은 추가 프리페치 방향이며, -1/1은 이전/다음 달, 0은 추가 프리페치 없음이다.
+  /// 특정 월 예산을 조회해 캐시에 반영한다.
+  /// - 캐시 hit면 본조회 없이 [direction] 방향 프리페치만 수행한다.
+  /// - 캐시 miss면 본조회 후 캐시를 갱신하고 방향 프리페치를 수행한다.
+  /// - [requestId]가 최신 요청이 아닐 경우 응답 반영을 중단한다.
+  /// - 본조회 실패 시 해당 월 캐시를 제거하고 사용자 에러 이벤트를 발행한다.
   Future<void> _fetchAndCacheMonth(
     DateTime month, {
     required int direction,
+    required int requestId,
   }) async {
+    if (!_isLatestMonthRequest(requestId)) return;
+
     final key = buildBudgetMonthKey(month);
 
     if (state.budgetCache.containsKey(key)) {
@@ -239,13 +257,12 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
     if (accountBookId == null) return;
 
     try {
-      final budget = await ref.read(getMonthlyBudgetUseCaseProvider)(
-        year: month.year,
-        month: month.month,
+      final budget = await _getMonthlyBudgetWithDedupe(
+        month: month,
         accountBookId: accountBookId,
       );
 
-      if (!ref.mounted) return;
+      if (!ref.mounted || !_isLatestMonthRequest(requestId)) return;
 
       final updatedCache = Map<String, BudgetEntity?>.from(state.budgetCache)
         ..[key] = budget;
@@ -253,14 +270,19 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
 
       _prefetchDirectional(month, direction);
     } catch (_) {
-      if (!ref.mounted) return;
+      if (!ref.mounted || !_isLatestMonthRequest(requestId)) return;
 
       final updatedCache = Map<String, BudgetEntity?>.from(state.budgetCache)
         ..remove(key);
       state = state.copyWith(budgetCache: updatedCache);
+      _showError(BudgetErrorMessages.selectedMonthBudgetLoadFailed);
     }
   }
 
+  /// 월 이동 방향으로 인접 1개월을 백그라운드 프리패치한다.
+  /// - [direction]이 0이면 프리패치하지 않는다.
+  /// - 동일 월 요청이 진행 중이면 dedupe 로직([_getMonthlyBudgetWithDedupe])을 사용한다.
+  /// - 프리패치는 실패 시 사용자 에러를 노출하지 않고 조용히 종료한다.
   void _prefetchDirectional(DateTime currentMonth, int direction) {
     if (direction == 0) return;
 
@@ -274,21 +296,119 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
     if (state.budgetCache.containsKey(key)) return;
 
     unawaited(
-      ref
-          .read(getMonthlyBudgetUseCaseProvider)(
-        year: targetMonth.year,
-        month: targetMonth.month,
-        accountBookId: accountBookId,
-      )
-          .then((budget) {
-        if (!ref.mounted) return;
-        final updatedCache = Map<String, BudgetEntity?>.from(state.budgetCache)
-          ..[key] = budget;
-        state = state.copyWith(budgetCache: updatedCache);
-      }).catchError((_) {
-        // 프리페치 실패는 캐시하지 않는다.
-      }),
+      () async {
+        try {
+          final budget = await _getMonthlyBudgetWithDedupe(
+            month: targetMonth,
+            accountBookId: accountBookId,
+            retryCount: _prefetchRetryCount,
+          );
+
+          if (!ref.mounted) return;
+          final updatedCache =
+              Map<String, BudgetEntity?>.from(state.budgetCache)
+                ..[key] = budget;
+          state = state.copyWith(budgetCache: updatedCache);
+        } catch (_) {
+          // 프리페치 실패는 캐시하지 않는다.
+        }
+      }(),
     );
+  }
+
+  /// 월 조회 실행을 스케줄링한다.
+  /// - 호출 시마다 요청 번호를 증가시켜 이전 요청의 응답 반영을 차단한다.
+  /// - [useDebounce]가 true면 [_monthChangeDebounceDuration] 이후 실행한다.
+  /// - [useDebounce]가 false면 즉시 실행한다.
+  void _scheduleMonthFetch(
+    DateTime month, {
+    required int direction,
+    required bool useDebounce,
+  }) {
+    final requestId = ++_latestMonthRequestId;
+    _monthChangeDebounceTimer?.cancel();
+
+    void run() {
+      if (!ref.mounted || !_isLatestMonthRequest(requestId)) return;
+      unawaited(
+        _fetchAndCacheMonth(
+          month,
+          direction: direction,
+          requestId: requestId,
+        ),
+      );
+    }
+
+    if (!useDebounce) {
+      run();
+      return;
+    }
+
+    _monthChangeDebounceTimer = Timer(_monthChangeDebounceDuration, run);
+  }
+
+  /// 전달된 [requestId]가 최신 월 요청인지 확인한다.
+  /// 최신 요청이 아니면 상태 반영을 중단해 레이스 컨디션을 방지한다.
+  bool _isLatestMonthRequest(int requestId) {
+    return requestId == _latestMonthRequestId;
+  }
+
+  /// 월별 in-flight dedupe 조회를 수행한다.
+  /// - 이미 진행 중인 같은 월 요청이 있으면 해당 Future를 재사용한다.
+  /// - 없으면 새 요청을 생성하고 완료 시 in-flight 맵에서 정리한다.
+  /// - [retryCount]는 내부 재시도 횟수([_fetchMonthlyBudgetWithRetry])로 전달된다.
+  Future<BudgetEntity?> _getMonthlyBudgetWithDedupe({
+    required DateTime month,
+    required String accountBookId,
+    int retryCount = 0,
+  }) {
+    final key = buildBudgetMonthKey(month);
+    final existing = _inFlightMonthlyBudgetRequests[key];
+    if (existing != null) return existing;
+
+    final future = _fetchMonthlyBudgetWithRetry(
+      month: month,
+      accountBookId: accountBookId,
+      retryCount: retryCount,
+    );
+    _inFlightMonthlyBudgetRequests[key] = future;
+
+    future.then<void>((_) {}, onError: (_, __) {}).whenComplete(() {
+      final current = _inFlightMonthlyBudgetRequests[key];
+      if (identical(current, future)) {
+        _inFlightMonthlyBudgetRequests.remove(key);
+      }
+    });
+
+    return future;
+  }
+
+  /// 월 예산 조회를 재시도 정책과 함께 수행한다.
+  /// - 최대 [retryCount]만큼 재시도한다.
+  /// - 재시도 간격은 120ms * 시도회수(backoff)다.
+  /// - 재시도 한도를 초과하면 예외를 재던진다.
+  Future<BudgetEntity?> _fetchMonthlyBudgetWithRetry({
+    required DateTime month,
+    required String accountBookId,
+    required int retryCount,
+  }) async {
+    var attempts = 0;
+
+    while (true) {
+      try {
+        return await ref.read(getMonthlyBudgetUseCaseProvider)(
+          year: month.year,
+          month: month.month,
+          accountBookId: accountBookId,
+        );
+      } catch (_) {
+        if (attempts >= retryCount) rethrow;
+        attempts += 1;
+        await Future<void>.delayed(
+          Duration(milliseconds: 120 * attempts),
+        );
+      }
+    }
   }
 
   /// 선택된 가계부의 ID를 반환한다.
