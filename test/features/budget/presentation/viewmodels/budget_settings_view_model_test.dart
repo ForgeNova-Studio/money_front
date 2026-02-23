@@ -4,6 +4,7 @@ import 'package:moamoa/features/account_book/presentation/viewmodels/selected_ac
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 import 'package:moamoa/features/budget/domain/repositories/budget_repository.dart';
 import 'package:moamoa/features/budget/data/providers/budget_data_providers.dart';
+import 'package:moamoa/features/budget/presentation/constants/budget_error_messages.dart';
 import 'package:moamoa/features/budget/presentation/states/budget_settings_state.dart';
 import 'package:moamoa/features/budget/presentation/utils/budget_amount_utils.dart';
 import 'package:moamoa/features/budget/presentation/viewmodels/budget_settings_view_model.dart';
@@ -111,7 +112,7 @@ void main() {
       expect(state.event, isA<BudgetSettingsShowError>());
       expect(
         (state.event as BudgetSettingsShowError).message,
-        '선택한 월의 예산 정보를 불러오지 못했습니다. 다시 시도해주세요.',
+        BudgetErrorMessages.selectedMonthBudgetLoadFailed,
       );
     });
   });

@@ -1,5 +1,6 @@
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moamoa/features/budget/domain/providers/budget_usecase_providers.dart';
+import 'package:moamoa/features/budget/presentation/constants/budget_error_messages.dart';
 import 'package:moamoa/features/budget/presentation/states/initial_balance_settings_state.dart';
 import 'package:moamoa/features/budget/presentation/utils/budget_amount_utils.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
@@ -51,7 +52,7 @@ class InitialBalanceSettingsViewModel
       );
     } catch (_) {
       if (!ref.mounted) return;
-      _showError('초기 잔액 정보를 불러오지 못했습니다. 다시 시도해주세요.');
+      _showError(BudgetErrorMessages.initialBalanceLoadFailed);
     } finally {
       if (ref.mounted) {
         state = state.copyWith(isLoading: false);
@@ -77,7 +78,7 @@ class InitialBalanceSettingsViewModel
 
     final accountBookId = _resolveAccountBookId();
     if (accountBookId == null) {
-      _showError('가계부를 선택해주세요.');
+      _showError(BudgetErrorMessages.accountBookNotSelected);
       return;
     }
 
@@ -100,9 +101,9 @@ class InitialBalanceSettingsViewModel
       state = state.copyWith(
         event: const InitialBalanceSettingsPopWithToast('초기 잔액이 저장되었습니다.'),
       );
-    } catch (e) {
+    } catch (_) {
       if (!ref.mounted) return;
-      _showError('초기 잔액 저장에 실패했습니다: $e');
+      _showError(BudgetErrorMessages.initialBalanceSaveFailed);
     } finally {
       if (ref.mounted) {
         state = state.copyWith(isSaving: false);

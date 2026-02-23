@@ -4,6 +4,7 @@ import 'package:moamoa/features/account_book/presentation/viewmodels/selected_ac
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 import 'package:moamoa/features/budget/domain/repositories/budget_repository.dart';
 import 'package:moamoa/features/budget/data/providers/budget_data_providers.dart';
+import 'package:moamoa/features/budget/presentation/constants/budget_error_messages.dart';
 import 'package:moamoa/features/budget/presentation/states/initial_balance_settings_state.dart';
 import 'package:moamoa/features/budget/presentation/viewmodels/initial_balance_settings_view_model.dart';
 import 'package:moamoa/features/home/presentation/states/home_state.dart';
@@ -88,7 +89,7 @@ void main() {
       expect(state.event, isA<InitialBalanceSettingsShowError>());
       expect(
         (state.event as InitialBalanceSettingsShowError).message,
-        '초기 잔액 정보를 불러오지 못했습니다. 다시 시도해주세요.',
+        BudgetErrorMessages.initialBalanceLoadFailed,
       );
     });
   });

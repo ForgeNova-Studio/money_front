@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 import 'package:moamoa/features/budget/domain/providers/budget_usecase_providers.dart';
+import 'package:moamoa/features/budget/presentation/constants/budget_error_messages.dart';
 import 'package:moamoa/features/budget/presentation/states/budget_settings_state.dart';
 import 'package:moamoa/features/budget/presentation/utils/budget_amount_utils.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
@@ -84,7 +85,7 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
 
     if (!ref.mounted) return;
     if (selectedMonthFetchFailed) {
-      _showError('선택한 월의 예산 정보를 불러오지 못했습니다. 다시 시도해주세요.');
+      _showError(BudgetErrorMessages.selectedMonthBudgetLoadFailed);
     }
     state = state.copyWith(
       budgetCache: updatedCache,
@@ -128,13 +129,13 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
   /// 저장 실패시 [BudgetSettingsShowError] 이벤트를 발생시킨다.
   Future<void> saveBudget(double amount) async {
     if (amount < 0) {
-      _showError('예산 금액은 0원 이상이어야 합니다.');
+      _showError(BudgetErrorMessages.invalidBudgetAmount);
       return;
     }
 
     final accountBookId = _resolveAccountBookId();
     if (accountBookId == null) {
-      _showError('가계부를 선택해주세요.');
+      _showError(BudgetErrorMessages.accountBookNotSelected);
       return;
     }
 
@@ -165,9 +166,9 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
       state = state.copyWith(
         event: const BudgetSettingsPopWithToast('예산이 저장되었습니다.'),
       );
-    } catch (e) {
+    } catch (_) {
       if (!ref.mounted) return;
-      _showError('예산 저장에 실패했습니다: $e');
+      _showError(BudgetErrorMessages.budgetSaveFailed);
     } finally {
       if (ref.mounted) {
         state = state.copyWith(isSaving: false);
@@ -183,7 +184,7 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
   Future<void> deleteSelectedBudget() async {
     final budget = state.selectedBudget;
     if (budget == null) {
-      _showError('삭제할 예산이 없습니다.');
+      _showError(BudgetErrorMessages.noBudgetToDelete);
       return;
     }
 
@@ -210,9 +211,9 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
               forceRefresh: true,
             ),
       );
-    } catch (e) {
+    } catch (_) {
       if (!ref.mounted) return;
-      _showError('예산 삭제에 실패했습니다: $e');
+      _showError(BudgetErrorMessages.budgetDeleteFailed);
     } finally {
       if (ref.mounted) {
         state = state.copyWith(isDeleting: false);
