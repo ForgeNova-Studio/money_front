@@ -13,7 +13,22 @@ import 'package:moamoa/features/budget/presentation/widgets/initial_balance_desc
 import 'package:moamoa/features/budget/presentation/widgets/initial_balance_sign_selector.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
 
-/// 초기 잔액 설정 화면
+/// 초기 잔액(자산 시작값)을 조회/수정하는 설정 화면 위젯입니다.
+///
+/// Key Features:
+/// - 초기 잔액 데이터 로드 상태에 따라 로딩/입력 UI를 전환합니다.
+/// - 부호(플러스/마이너스) 선택, 금액 직접 입력, 빠른 금액 선택을 제공합니다.
+/// - 저장 시 ViewModel 이벤트를 통해 토스트 표시 및 화면 복귀를 처리합니다.
+///
+/// Parameters:
+/// - `key`: 위젯 식별과 트리 갱신 제어에 사용하는 선택 파라미터입니다.
+///
+/// Usage Example:
+/// ```dart
+/// InitialBalanceSettingsScreen(
+///   key: const ValueKey('initial-balance-settings'),
+/// )
+/// ```
 class InitialBalanceSettingsScreen extends ConsumerStatefulWidget {
   const InitialBalanceSettingsScreen({super.key});
 
@@ -22,6 +37,22 @@ class InitialBalanceSettingsScreen extends ConsumerStatefulWidget {
       _InitialBalanceSettingsScreenState();
 }
 
+/// [InitialBalanceSettingsScreen]의 내부 상태와 화면 상호작용을 관리하는 Private State 클래스입니다.
+///
+/// Key Features:
+/// - 폼 검증, 금액 입력 컨트롤러, 포커스 노드 등 로컬 UI 상태를 관리합니다.
+/// - `initialBalanceSettingsViewModelProvider` 상태 변화를 구독해 입력값/이벤트를 동기화합니다.
+/// - 저장 버튼, 빠른 금액 입력, 이벤트 토스트/팝 동작을 화면 경계에서 처리합니다.
+///
+/// Parameters:
+/// - `widget`: 연결된 부모 StatefulWidget 인스턴스로, 화면 구성 정보에 접근할 때 사용됩니다.
+///
+/// Usage Example:
+/// ```dart
+/// @override
+/// ConsumerState<InitialBalanceSettingsScreen> createState() =>
+///     _InitialBalanceSettingsScreenState();
+/// ```
 class _InitialBalanceSettingsScreenState
     extends ConsumerState<InitialBalanceSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
@@ -48,6 +79,7 @@ class _InitialBalanceSettingsScreenState
     super.dispose();
   }
 
+  /// 잔액 금액 동기화
   void _syncAmountFromState(int? amount) {
     if (amount == null) return;
     if (amount == 0) {
@@ -58,6 +90,8 @@ class _InitialBalanceSettingsScreenState
     _amountController.text = _numberFormat.format(amount);
   }
 
+  /// 이벤트 핸들러
+  /// [InitialBalanceSettingsEvent]를 베이스로 하는 다양한 이벤트를 처리하여 UI를 업데이트합니다.
   void _handleEvent(InitialBalanceSettingsEvent event) {
     switch (event) {
       case InitialBalanceSettingsShowError(:final message):
@@ -73,6 +107,7 @@ class _InitialBalanceSettingsScreenState
     ref.read(initialBalanceSettingsViewModelProvider.notifier).clearEvent();
   }
 
+  /// 선택된 금액을 입력 필드에 설정합니다.
   void _setSuggestedAmount(int amount) {
     if (amount == 0) {
       _amountController.clear();
@@ -82,6 +117,7 @@ class _InitialBalanceSettingsScreenState
     setState(() {});
   }
 
+  /// 저장 버튼 핸들러
   void _onSavePressed() {
     if (!_formKey.currentState!.validate()) return;
 

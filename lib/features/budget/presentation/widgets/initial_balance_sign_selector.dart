@@ -17,14 +17,14 @@ class InitialBalanceSignSelector extends StatelessWidget {
       children: [
         _SignChip(
           selected: !isNegative,
-          label: '플러스',
+          label: '+',
           color: context.appColors.success,
           onTap: () => onChanged(false),
         ),
         const SizedBox(width: 8),
         _SignChip(
           selected: isNegative,
-          label: '마이너스',
+          label: '-',
           color: context.appColors.error,
           onTap: () => onChanged(true),
         ),
