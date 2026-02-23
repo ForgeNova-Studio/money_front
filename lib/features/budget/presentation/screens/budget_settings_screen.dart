@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -38,6 +40,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
 
   bool _isInitialLoading = true;
   bool _isSaving = false;
+  bool _isDeleting = false;
   bool _didAutoFocusAmount = false;
   late DateTime _selectedMonth;
   late DateTime _currentMonth;
@@ -67,6 +70,9 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
   bool get _isCurrentMonth =>
       _selectedMonth.year == _currentMonth.year &&
       _selectedMonth.month == _currentMonth.month;
+
+  BudgetEntity? get _selectedBudget =>
+      _budgetCache[buildBudgetMonthKey(_selectedMonth)];
 
   /// 현재 월 기준 앞뒤 1개월 프리페치
   Future<void> _prefetchBudgets() async {
@@ -240,6 +246,68 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
       _showError('예산 저장에 실패했습니다: $e');
     } finally {
       if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _deleteBudget() async {
+    final budget = _selectedBudget;
+    if (budget == null) {
+      _showError('삭제할 예산이 없습니다.');
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('예산 삭제'),
+        content: Text(
+          '${DateFormat('yyyy년 M월').format(_selectedMonth)} 예산을 삭제하면\n해당 월은 "예산 미설정" 상태가 됩니다.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('취소'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: context.appColors.error,
+            ),
+            child: const Text('삭제'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    setState(() => _isDeleting = true);
+
+    try {
+      final homeNotifier = ref.read(homeViewModelProvider.notifier);
+
+      await ref.read(budgetRepositoryProvider).deleteBudget(
+            budgetId: budget.budgetId,
+          );
+
+      final key = buildBudgetMonthKey(_selectedMonth);
+      _budgetCache[key] = null;
+      _amountController.clear();
+
+      if (mounted) {
+        context.pop();
+      }
+
+      unawaited(
+        homeNotifier.fetchMonthlyData(
+          _selectedMonth,
+          forceRefresh: true,
+        ),
+      );
+    } catch (e) {
+      _showError('예산 삭제에 실패했습니다: $e');
+    } finally {
+      if (mounted) setState(() => _isDeleting = false);
     }
   }
 
@@ -430,12 +498,63 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
   }
 
   Widget _buildSaveButton() {
+    final hasBudget = _selectedBudget != null;
     final hasValue = _amountController.text.isNotEmpty;
+    final isBusy = _isSaving || _isDeleting;
 
-    return BudgetSaveButton(
-      isSaving: _isSaving,
-      enabled: hasValue,
-      onPressed: _saveBudget,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (hasBudget)
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+            child: Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: isBusy ? null : _deleteBudget,
+                    icon: Icon(
+                      Icons.delete_outline_rounded,
+                      color: context.appColors.error,
+                      size: 18,
+                    ),
+                    label: Text(
+                      '이 달 예산 삭제',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: context.appColors.error,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: context.appColors.error.withValues(alpha: 0.3),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '삭제해도 지출/수입 내역은 유지됩니다.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.appColors.textTertiary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        BudgetSaveButton(
+          isSaving: _isSaving,
+          enabled: hasValue && !_isDeleting,
+          onPressed: _saveBudget,
+        ),
+      ],
     );
   }
 }

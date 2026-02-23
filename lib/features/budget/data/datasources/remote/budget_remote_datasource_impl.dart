@@ -29,7 +29,8 @@ class BudgetRemoteDataSourceImpl implements BudgetRemoteDataSource {
         },
       );
 
-      return BudgetResponseModel.fromJson(response.data as Map<String, dynamic>);
+      return BudgetResponseModel.fromJson(
+          response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e, stackTrace) {
@@ -66,16 +67,36 @@ class BudgetRemoteDataSourceImpl implements BudgetRemoteDataSource {
         return null;
       }
 
-      if (response.data == null || response.data == '' || response.data is! Map<String, dynamic>) {
+      if (response.data == null ||
+          response.data == '' ||
+          response.data is! Map<String, dynamic>) {
         return null;
       }
 
-      return BudgetResponseModel.fromJson(response.data as Map<String, dynamic>);
+      return BudgetResponseModel.fromJson(
+          response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e, stackTrace) {
       if (kDebugMode) {
         debugPrint('[BudgetRemoteDataSource] getMonthlyBudget error: $e');
+        debugPrint('[BudgetRemoteDataSource] Stack trace: $stackTrace');
+      }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteBudget({
+    required String budgetId,
+  }) async {
+    try {
+      await dio.delete(ApiConstants.budgetById(budgetId));
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e, stackTrace) {
+      if (kDebugMode) {
+        debugPrint('[BudgetRemoteDataSource] deleteBudget error: $e');
         debugPrint('[BudgetRemoteDataSource] Stack trace: $stackTrace');
       }
       rethrow;

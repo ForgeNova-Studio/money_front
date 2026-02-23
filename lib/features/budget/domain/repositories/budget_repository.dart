@@ -17,6 +17,11 @@ abstract class BudgetRepository {
     String? accountBookId,
   });
 
+  /// 예산 삭제
+  Future<void> deleteBudget({
+    required String budgetId,
+  });
+
   /// 총 자산 조회
   Future<AssetEntity> getTotalAssets({
     String? accountBookId,

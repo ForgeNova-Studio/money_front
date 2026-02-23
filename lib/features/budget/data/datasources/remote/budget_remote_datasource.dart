@@ -17,6 +17,11 @@ abstract class BudgetRemoteDataSource {
     String? accountBookId,
   });
 
+  /// 예산 삭제 API 호출
+  Future<void> deleteBudget({
+    required String budgetId,
+  });
+
   /// 총 자산 조회 API 호출
   Future<AssetResponseModel> getTotalAssets({
     String? accountBookId,

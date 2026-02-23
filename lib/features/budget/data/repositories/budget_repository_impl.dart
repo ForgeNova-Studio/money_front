@@ -39,6 +39,15 @@ class BudgetRepositoryImpl implements BudgetRepository {
   }
 
   @override
+  Future<void> deleteBudget({
+    required String budgetId,
+  }) async {
+    await remoteDataSource.deleteBudget(
+      budgetId: budgetId,
+    );
+  }
+
+  @override
   Future<AssetEntity> getTotalAssets({
     String? accountBookId,
   }) async {
