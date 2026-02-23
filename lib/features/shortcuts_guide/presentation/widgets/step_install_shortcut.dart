@@ -5,7 +5,6 @@ import 'package:moamoa/features/shortcuts_guide/presentation/viewmodels/shortcut
 import 'package:url_launcher/url_launcher.dart';
 
 /// 자동화 설정 가이드 스크린샷 경로
-/// TODO: 실제 스크린샷 이미지로 교체
 const _automationGuideSteps = [
   _GuideStep(
     imagePath: 'assets/images/automation_guide/step_1.png',
@@ -19,18 +18,18 @@ const _automationGuideSteps = [
   ),
   _GuideStep(
     imagePath: 'assets/images/automation_guide/step_3.png',
-    title: '발신자 번호 입력',
-    description: '카드사 발신번호를 입력하세요\n(예: 신한 1544-7000, 삼성 1588-8700)',
+    title: '메시지 포함 내용 입력 및 즉시 실행 ',
+    description: '1. 해당 카드사를 입력하세요\n(예: 현대카드, 신한카드)\n2. 즉시 실행을 선택하세요',
   ),
   _GuideStep(
     imagePath: 'assets/images/automation_guide/step_4.png',
     title: '단축어 연결',
-    description: '"단축어 실행"을 선택하고 설치한 일반 단축어를 선택하세요',
+    description: '"새로운 단축어 생성"을 선택하세요',
   ),
   _GuideStep(
     imagePath: 'assets/images/automation_guide/step_5.png',
-    title: '즉시 실행 설정',
-    description: '"실행 전에 묻기"를 끄면 문자 수신 시 자동으로 실행됩니다',
+    title: '단축어 작업 추가',
+    description: '1. 동작 검색 → "입력" → "단축어에서 텍스트 가져오기" 선택 해서 생성 \n2. 파란색 입력 부분 클릭 후 "단축어 입력으로 변경" \n3. 동작 검색 → "단축어" → "단축어 실행" 선택해서 생성\n3. 파란색 단축어 부분 클릭 후 1단계에서 설치한 일반 단축어 선택\n 4. V 클릭하여 생성',
   ),
 ];
 
@@ -116,15 +115,8 @@ class StepInstallShortcut extends ConsumerWidget {
 
           const SizedBox(height: 28),
 
-          // ① 자동화 단축어 섹션
-          _buildSectionLabel(context, '1', '자동화 단축어 (직접 설정)'),
-          const SizedBox(height: 12),
-          _AutomationSetupCard(),
-
-          const SizedBox(height: 28),
-
-          // ② 일반 단축어 섹션
-          _buildSectionLabel(context, '2', '${selectedCard?.name ?? ''} 단축어 (링크 설치)'),
+          // ① 일반 단축어 섹션
+          _buildSectionLabel(context, '1', '${selectedCard?.name ?? ''} 단축어 (링크 설치)'),
           const SizedBox(height: 12),
           if (selectedCard != null)
             _ShortcutInstallCard(
@@ -133,6 +125,13 @@ class StepInstallShortcut extends ConsumerWidget {
               description: 'SMS 문자를 파싱하여 가계부에 전달하는 단축어',
               url: selectedCard.shortcutUrl,
             ),
+
+          const SizedBox(height: 28),
+
+          // ② 자동화 단축어 섹션
+          _buildSectionLabel(context, '2', '자동화 단축어 (직접 설정)'),
+          const SizedBox(height: 12),
+          _AutomationSetupCard(),
 
           const SizedBox(height: 24),
 
@@ -154,7 +153,7 @@ class StepInstallShortcut extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    '자동화 설정과 일반 단축어 설치를 모두 완료해야\n정상적으로 작동합니다.',
+                    '일반 단축어 설치와 자동화 설정을 모두 완료해야\n정상적으로 작동합니다.',
                     style: TextStyle(
                       color: context.appColors.primary,
                       fontSize: 14,
