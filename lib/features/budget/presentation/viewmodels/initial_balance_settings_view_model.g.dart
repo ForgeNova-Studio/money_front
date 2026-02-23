@@ -43,7 +43,7 @@ final class InitialBalanceSettingsViewModelProvider extends $NotifierProvider<
 }
 
 String _$initialBalanceSettingsViewModelHash() =>
-    r'035c4e7c1e14a3577fb4f002a6bb1a3533669b27';
+    r'c4dfd3e6edaface23760e2e1f5ee57bb1209321d';
 
 abstract class _$InitialBalanceSettingsViewModel
     extends $Notifier<InitialBalanceSettingsState> {

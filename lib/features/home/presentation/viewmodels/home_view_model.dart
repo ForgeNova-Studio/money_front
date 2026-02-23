@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 
-import 'package:moamoa/features/budget/presentation/providers/budget_providers.dart';
+import 'package:moamoa/features/budget/domain/providers/budget_usecase_providers.dart';
 import 'package:moamoa/features/expense/presentation/providers/expense_providers.dart';
 import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';

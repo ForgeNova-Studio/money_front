@@ -15,7 +15,7 @@ import 'package:moamoa/features/ocr/data/datasources/memory/global_brand_source.
 import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
 import 'package:moamoa/features/home/presentation/providers/home_providers.dart';
-import 'package:moamoa/features/budget/presentation/providers/budget_providers.dart';
+import 'package:moamoa/features/budget/domain/providers/budget_usecase_providers.dart';
 
 const bool kForceAppInitFailure = false;
 // Keep splash visible for at least this duration to avoid flicker on fast init.

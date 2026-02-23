@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
-import 'package:moamoa/features/budget/presentation/providers/budget_providers.dart';
+import 'package:moamoa/features/budget/domain/providers/budget_usecase_providers.dart';
 import 'package:moamoa/features/budget/presentation/states/budget_settings_state.dart';
 import 'package:moamoa/features/budget/presentation/utils/budget_amount_utils.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
@@ -54,6 +54,7 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
 
     // 선택된 월과 +-1인 달의 예산을 캐싱하기 위해 월 선별
     final baseMonth = state.selectedMonth;
+    bool selectedMonthFetchFailed = false;
     final months = <DateTime>[];
     for (int i = -1; i <= 1; i++) {
       months.add(DateTime(baseMonth.year, baseMonth.month + i));
@@ -74,11 +75,17 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
         );
         updatedCache[key] = budget;
       } catch (_) {
+        if (month.year == baseMonth.year && month.month == baseMonth.month) {
+          selectedMonthFetchFailed = true;
+        }
         // 프리페치 실패는 캐시하지 않는다.
       }
     }));
 
     if (!ref.mounted) return;
+    if (selectedMonthFetchFailed) {
+      _showError('선택한 월의 예산 정보를 불러오지 못했습니다. 다시 시도해주세요.');
+    }
     state = state.copyWith(
       budgetCache: updatedCache,
       isInitialLoading: false,

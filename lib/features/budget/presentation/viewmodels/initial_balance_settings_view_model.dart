@@ -1,5 +1,5 @@
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
-import 'package:moamoa/features/budget/presentation/providers/budget_providers.dart';
+import 'package:moamoa/features/budget/domain/providers/budget_usecase_providers.dart';
 import 'package:moamoa/features/budget/presentation/states/initial_balance_settings_state.dart';
 import 'package:moamoa/features/budget/presentation/utils/budget_amount_utils.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
@@ -50,7 +50,8 @@ class InitialBalanceSettingsViewModel
         initialAmount: absValue,
       );
     } catch (_) {
-      // 로드 실패는 초기 화면 상태 유지
+      if (!ref.mounted) return;
+      _showError('초기 잔액 정보를 불러오지 못했습니다. 다시 시도해주세요.');
     } finally {
       if (ref.mounted) {
         state = state.copyWith(isLoading: false);
