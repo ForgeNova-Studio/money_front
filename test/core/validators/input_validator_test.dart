@@ -75,10 +75,10 @@ void main() {
     });
 
     group('isValidNickname', () {
-      test('2~20자 닉네임은 true를 반환해야 한다', () {
+      test('2~10자 닉네임은 true를 반환해야 한다', () {
         expect(InputValidator.isValidNickname('홍길동'), true);
         expect(InputValidator.isValidNickname('사용자'), true);
-        expect(InputValidator.isValidNickname('가나다라마바사아자차카타파하'), true); // 15자
+        expect(InputValidator.isValidNickname('가나다라마바사아자차'), true); // 10자
       });
 
       test('2자 미만이면 false를 반환해야 한다', () {
@@ -86,9 +86,8 @@ void main() {
         expect(InputValidator.isValidNickname('홍'), false);
       });
 
-      test('20자 초과하면 false를 반환해야 한다', () {
-        expect(InputValidator.isValidNickname('가나다라마바사아자차카타파하가나다라마바사'),
-            false); // 21자
+      test('10자 초과하면 false를 반환해야 한다', () {
+        expect(InputValidator.isValidNickname('가나다라마바사아자차카'), false); // 11자
       });
     });
 
@@ -152,10 +151,10 @@ void main() {
         );
       });
 
-      test('20자 초과는 에러 메시지를 반환해야 한다', () {
+      test('10자 초과는 에러 메시지를 반환해야 한다', () {
         expect(
-          InputValidator.getNicknameErrorMessage('가나다라마바사아자차카타파하가나다라마바사'),
-          '닉네임은 최대 20자 이하여야 합니다.',
+          InputValidator.getNicknameErrorMessage('가나다라마바사아자차카'),
+          '닉네임은 최대 10자 이하여야 합니다.',
         );
       });
 

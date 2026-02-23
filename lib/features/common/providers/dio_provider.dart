@@ -167,7 +167,7 @@ class _AuthInterceptor extends Interceptor {
       // 4. 토큰 갱신 시도
       try {
         if (kDebugMode) {
-          debugPrint('[AuthInterceptor] 401 발생: 토큰 갱신 시도 시작 (${path})');
+          debugPrint('[AuthInterceptor] 401 발생: 토큰 갱신 시도 시작 ($path)');
         }
 
         final response = await _refreshTokenAndRetry(err, localDataSource);

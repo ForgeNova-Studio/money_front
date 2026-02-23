@@ -179,8 +179,9 @@ class _PendingReceiptListItemState extends State<PendingReceiptListItem> {
           AnimatedCrossFade(
             firstChild: const SizedBox.shrink(),
             secondChild: _buildExpandedContent(context),
-            crossFadeState:
-                _isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: _isExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             duration: const Duration(milliseconds: 200),
           ),
         ],
@@ -203,7 +204,7 @@ class _PendingReceiptListItemState extends State<PendingReceiptListItem> {
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         shape: BoxShape.circle,
       ),
       child: Icon(
@@ -255,7 +256,8 @@ class _PendingReceiptListItemState extends State<PendingReceiptListItem> {
             child: InkWell(
               onTap: () => _selectDate(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: context.appColors.backgroundGray,
                   borderRadius: BorderRadius.circular(12),
@@ -263,7 +265,8 @@ class _PendingReceiptListItemState extends State<PendingReceiptListItem> {
                 child: Row(
                   children: [
                     Text(
-                      DateFormat('yyyy년 M월 d일 (E)', 'ko').format(widget.receipt.date),
+                      DateFormat('yyyy년 M월 d일 (E)', 'ko')
+                          .format(widget.receipt.date),
                       style: TextStyle(
                         fontSize: 14,
                         color: context.appColors.textPrimary,
@@ -338,7 +341,8 @@ class _PendingReceiptListItemState extends State<PendingReceiptListItem> {
               ),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                side: BorderSide(color: context.appColors.error.withOpacity(0.3)),
+                side: BorderSide(
+                    color: context.appColors.error.withValues(alpha: 0.3)),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -350,7 +354,8 @@ class _PendingReceiptListItemState extends State<PendingReceiptListItem> {
     );
   }
 
-  Widget _buildLabeledField(BuildContext context, {required String label, required Widget child}) {
+  Widget _buildLabeledField(BuildContext context,
+      {required String label, required Widget child}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -401,7 +406,9 @@ class _PendingReceiptListItemState extends State<PendingReceiptListItem> {
             duration: const Duration(milliseconds: 150),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: isSelected ? color.withOpacity(0.15) : context.appColors.backgroundGray,
+              color: isSelected
+                  ? color.withValues(alpha: 0.15)
+                  : context.appColors.backgroundGray,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: isSelected ? color : Colors.transparent,
