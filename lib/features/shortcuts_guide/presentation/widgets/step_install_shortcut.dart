@@ -72,29 +72,7 @@ class StepInstallShortcut extends ConsumerWidget {
                     ),
                     Expanded(
                       child: Text(
-                        '메시지 내용은 기기 내에서만 처리되며',
-                        style: TextStyle(
-                          color: context.appColors.textPrimary,
-                          fontSize: 14,
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '• ',
-                      style: TextStyle(
-                        color: context.appColors.textPrimary,
-                        fontSize: 14,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        '외부로 저장되거나 전송되지 않습니다',
+                        '메시지 내용은 기기 내에서만 처리되며, 외부로 저장되거나 전송되지 않습니다',
                         style: TextStyle(
                           color: context.appColors.textPrimary,
                           fontSize: 14,
