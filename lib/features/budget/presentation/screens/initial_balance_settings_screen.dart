@@ -4,13 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import 'package:moamoa/core/constants/app_constants.dart';
-import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
-import 'package:moamoa/features/budget/presentation/providers/budget_providers.dart';
-import 'package:moamoa/features/budget/presentation/utils/budget_amount_utils.dart';
-import 'package:moamoa/features/budget/presentation/widgets/budget_form_widgets.dart';
-import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
-import 'package:moamoa/features/common/widgets/default_layout.dart';
 import 'package:moamoa/core/utils/toast_utils.dart';
+import 'package:moamoa/features/budget/presentation/states/initial_balance_settings_state.dart';
+import 'package:moamoa/features/budget/presentation/viewmodels/initial_balance_settings_view_model.dart';
+import 'package:moamoa/features/budget/presentation/widgets/budget_form_widgets.dart';
+import 'package:moamoa/features/budget/presentation/widgets/initial_balance_current_assets_card.dart';
+import 'package:moamoa/features/budget/presentation/widgets/initial_balance_description_card.dart';
+import 'package:moamoa/features/budget/presentation/widgets/initial_balance_sign_selector.dart';
+import 'package:moamoa/features/common/widgets/default_layout.dart';
 
 /// 초기 잔액 설정 화면
 class InitialBalanceSettingsScreen extends ConsumerStatefulWidget {
@@ -28,15 +29,16 @@ class _InitialBalanceSettingsScreenState
   final _amountFocusNode = FocusNode();
   final _numberFormat = NumberFormat('#,###');
 
-  bool _isLoading = false;
-  bool _isSaving = false;
-  bool _isNegative = false;
-  double? _currentTotalAssets;
+  bool _didInitialize = false;
 
   @override
   void initState() {
     super.initState();
-    _loadCurrentAssets();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _didInitialize) return;
+      _didInitialize = true;
+      ref.read(initialBalanceSettingsViewModelProvider.notifier).initialize();
+    });
   }
 
   @override
@@ -46,75 +48,29 @@ class _InitialBalanceSettingsScreenState
     super.dispose();
   }
 
-  Future<void> _loadCurrentAssets() async {
-    final accountBookId =
-        ref.read(selectedAccountBookViewModelProvider).asData?.value;
-    if (accountBookId == null) return;
-
-    setState(() => _isLoading = true);
-
-    try {
-      final assets = await ref.read(getTotalAssetsUseCaseProvider)(
-        accountBookId: accountBookId,
-      );
-
-      if (mounted) {
-        setState(() {
-          _currentTotalAssets = assets.currentTotalAssets;
-          _isNegative = assets.initialBalance < 0;
-          final absValue = assets.initialBalance.abs().toInt();
-          _amountController.text =
-              absValue == 0 ? '' : _numberFormat.format(absValue);
-        });
-      }
-    } catch (e) {
-      // Ignore
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _saveInitialBalance() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final accountBookId =
-        ref.read(selectedAccountBookViewModelProvider).asData?.value;
-    if (accountBookId == null) {
-      _showError('가계부를 선택해주세요.');
+  void _syncAmountFromState(int? amount) {
+    if (amount == null) return;
+    if (amount == 0) {
+      _amountController.clear();
       return;
     }
 
-    final amount = parseSignedFormattedAmount(
-      rawText: _amountController.text,
-      isNegative: _isNegative,
-    );
-
-    setState(() => _isSaving = true);
-
-    try {
-      await ref.read(updateInitialBalanceUseCaseProvider)(
-        accountBookId: accountBookId,
-        initialBalance: amount,
-      );
-
-      await ref.read(homeViewModelProvider.notifier).refresh();
-
-      if (mounted) {
-        context.showToast('초기 잔액이 저장되었습니다.');
-        context.pop();
-      }
-    } catch (e) {
-      _showError('초기 잔액 저장에 실패했습니다: $e');
-    } finally {
-      if (mounted) setState(() => _isSaving = false);
-    }
+    _amountController.text = _numberFormat.format(amount);
   }
 
-  void _showError(String message) {
-    context.showErrorToast(
-      message,
-      duration: const Duration(seconds: 2),
-    );
+  void _handleEvent(InitialBalanceSettingsEvent event) {
+    switch (event) {
+      case InitialBalanceSettingsShowError(:final message):
+        context.showErrorToast(
+          message,
+          duration: const Duration(seconds: 2),
+        );
+      case InitialBalanceSettingsPopWithToast(:final message):
+        context.showToast(message);
+        context.pop();
+    }
+
+    ref.read(initialBalanceSettingsViewModelProvider.notifier).clearEvent();
   }
 
   void _setSuggestedAmount(int amount) {
@@ -126,8 +82,32 @@ class _InitialBalanceSettingsScreenState
     setState(() {});
   }
 
+  void _onSavePressed() {
+    if (!_formKey.currentState!.validate()) return;
+
+    ref
+        .read(initialBalanceSettingsViewModelProvider.notifier)
+        .saveInitialBalance(rawText: _amountController.text);
+  }
+
   @override
   Widget build(BuildContext context) {
+    ref.listen<InitialBalanceSettingsState>(
+      initialBalanceSettingsViewModelProvider,
+      (previous, next) {
+        if (previous?.initialAmount != next.initialAmount) {
+          _syncAmountFromState(next.initialAmount);
+        }
+
+        final event = next.event;
+        if (event != null) {
+          _handleEvent(event);
+        }
+      },
+    );
+
+    final state = ref.watch(initialBalanceSettingsViewModelProvider);
+
     return DefaultLayout(
       title: '초기 잔액 설정',
       titleSpacing: 0,
@@ -136,7 +116,7 @@ class _InitialBalanceSettingsScreenState
         icon: const Icon(Icons.close),
         onPressed: () => context.pop(),
       ),
-      child: _isLoading
+      child: state.isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
@@ -148,12 +128,14 @@ class _InitialBalanceSettingsScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (_currentTotalAssets != null)
-                            _buildCurrentAssetInfo(),
+                          if (state.currentTotalAssets != null)
+                            InitialBalanceCurrentAssetsCard(
+                              currentTotalAssets: state.currentTotalAssets!,
+                            ),
                           const SizedBox(height: 24),
-                          _buildAmountInput(),
+                          _buildAmountInput(state),
                           const SizedBox(height: 16),
-                          _buildDescription(),
+                          const InitialBalanceDescriptionCard(),
                           const SizedBox(height: 32),
                           _buildSuggestedAmounts(),
                         ],
@@ -161,77 +143,19 @@ class _InitialBalanceSettingsScreenState
                     ),
                   ),
                 ),
-                _buildSaveButton(),
+                BudgetSaveButton(
+                  isSaving: state.isSaving,
+                  enabled: true,
+                  onPressed: _onSavePressed,
+                ),
               ],
             ),
     );
   }
 
-  Widget _buildCurrentAssetInfo() {
-    final isNegative = _currentTotalAssets! < 0;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isNegative
-            ? context.appColors.error.withValues(alpha: 0.1)
-            : context.appColors.success.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isNegative
-              ? context.appColors.error.withValues(alpha: 0.3)
-              : context.appColors.success.withValues(alpha: 0.3),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: isNegative
-                  ? context.appColors.error.withValues(alpha: 0.15)
-                  : context.appColors.success.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              Icons.account_balance_wallet_rounded,
-              color: isNegative
-                  ? context.appColors.error
-                  : context.appColors.success,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '현재 총 자산',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: context.appColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                '${isNegative ? '-' : ''}${_numberFormat.format(_currentTotalAssets!.abs().toInt())}원',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: isNegative
-                      ? context.appColors.error
-                      : context.appColors.success,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAmountInput() {
+  Widget _buildAmountInput(InitialBalanceSettingsState state) {
     final amountColor =
-        _isNegative ? context.appColors.error : context.appColors.primary;
+        state.isNegative ? context.appColors.error : context.appColors.primary;
 
     return BudgetAmountInputCard(
       header: Row(
@@ -245,12 +169,13 @@ class _InitialBalanceSettingsScreenState
               color: context.appColors.textSecondary,
             ),
           ),
-          Row(
-            children: [
-              _buildSignButton(false),
-              const SizedBox(width: 8),
-              _buildSignButton(true),
-            ],
+          InitialBalanceSignSelector(
+            isNegative: state.isNegative,
+            onChanged: (value) {
+              ref
+                  .read(initialBalanceSettingsViewModelProvider.notifier)
+                  .setNegative(value);
+            },
           ),
         ],
       ),
@@ -258,67 +183,7 @@ class _InitialBalanceSettingsScreenState
       focusNode: _amountFocusNode,
       onChanged: () => setState(() {}),
       amountColor: amountColor,
-      showNegativeSign: _isNegative,
-    );
-  }
-
-  Widget _buildSignButton(bool isNegative) {
-    final isSelected = _isNegative == isNegative;
-    final color =
-        isNegative ? context.appColors.error : context.appColors.success;
-
-    return GestureDetector(
-      onTap: () => setState(() => _isNegative = isNegative),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? color : context.appColors.gray100,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isSelected ? color : context.appColors.gray200,
-          ),
-        ),
-        child: Text(
-          isNegative ? '마이너스' : '플러스',
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : context.appColors.textSecondary,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDescription() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.appColors.gray50,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            Icons.info_outline_rounded,
-            size: 18,
-            color: context.appColors.textTertiary,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              '초기 잔액은 가계부 시작 시점의 자산을 의미합니다.\n총 자산 = 초기 잔액 + 총 수입 - 총 지출',
-              style: TextStyle(
-                fontSize: 13,
-                color: context.appColors.textSecondary,
-                height: 1.5,
-              ),
-            ),
-          ),
-        ],
-      ),
+      showNegativeSign: state.isNegative,
     );
   }
 
@@ -343,14 +208,6 @@ class _InitialBalanceSettingsScreenState
           (amount == 0 && _amountController.text.isEmpty) ||
           _amountController.text == _numberFormat.format(amount),
       onSelect: _setSuggestedAmount,
-    );
-  }
-
-  Widget _buildSaveButton() {
-    return BudgetSaveButton(
-      isSaving: _isSaving,
-      enabled: true,
-      onPressed: _saveInitialBalance,
     );
   }
 }
