@@ -116,8 +116,7 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
   /// [amount] 만큼 예산을 저장한다.
   /// [amount]가 0보다 작으면 에러를 발생시킨다.
   /// [accountBookId]가 null이면 에러를 발생시킨다.
-  /// [isSaving]이 true이면 에러를 발생시킨다.
-  /// [isDeleting]이 true이면 에러를 발생시킨다.
+  /// [isSaving] 또는 [isDeleting]이 true이면 중복 요청을 무시한다.
   /// 저장 성공시 [BudgetSettingsPopWithToast] 이벤트를 발생시킨다.
   /// 저장 실패시 [BudgetSettingsShowError] 이벤트를 발생시킨다.
   Future<void> saveBudget(double amount) async {
@@ -171,9 +170,8 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
 
   /// 예산 삭제
   /// [budget]이 null이면 에러를 발생시킨다.
-  /// [isSaving]이 true이면 에러를 발생시킨다.
-  /// [isDeleting]이 true이면 에러를 발생시킨다.
-  /// 삭제 성공시 [BudgetSettingsPopWithToast] 이벤트를 발생시킨다.
+  /// [isSaving] 또는 [isDeleting]이 true이면 중복 요청을 무시한다.
+  /// 삭제 성공시 [BudgetSettingsPop] 이벤트를 발생시킨다.
   /// 삭제 실패시 [BudgetSettingsShowError] 이벤트를 발생시킨다.
   Future<void> deleteSelectedBudget() async {
     final budget = state.selectedBudget;
@@ -216,10 +214,8 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
   }
 
   /// 예산 데이터를 가져와 캐시에 저장한다.
-  /// [month]이 null이면 에러를 발생시킨다.
-  /// [direction]이 0이면 현재 월로 변경한다.
-  /// [direction]이 1이면 다음 월로 변경한다.
-  /// [direction]이 -1이면 이전 월로 변경한다.
+  /// 캐시에 이미 값이 있으면 조회를 생략하고 [direction] 방향으로 프리페치만 수행한다.
+  /// [direction]은 추가 프리페치 방향이며, -1/1은 이전/다음 달, 0은 추가 프리페치 없음이다.
   Future<void> _fetchAndCacheMonth(
     DateTime month, {
     required int direction,
