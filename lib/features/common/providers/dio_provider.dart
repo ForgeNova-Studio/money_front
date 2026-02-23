@@ -10,9 +10,10 @@ import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dar
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:synchronized/synchronized.dart';
 
-/// Dio Provider
-final dioProvider = Provider<Dio>((ref) {
-  final dio = Dio(BaseOptions(
+typedef BasicDioFactory = Dio Function();
+
+BaseOptions _buildBaseOptions() {
+  return BaseOptions(
     baseUrl: ApiConstants.baseUrl,
     connectTimeout: const Duration(seconds: 30),
     receiveTimeout: const Duration(seconds: 30),
@@ -20,9 +21,20 @@ final dioProvider = Provider<Dio>((ref) {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
-  ));
+  );
+}
 
-  dio.interceptors.add(_AuthInterceptor(ref));
+@visibleForTesting
+final authInterceptorBasicDioFactoryProvider = Provider<BasicDioFactory>(
+  (ref) => () => Dio(_buildBaseOptions()),
+);
+
+/// Dio Provider
+final dioProvider = Provider<Dio>((ref) {
+  final dio = Dio(_buildBaseOptions());
+  final createBasicDio = ref.read(authInterceptorBasicDioFactoryProvider);
+
+  dio.interceptors.add(_AuthInterceptor(ref, createBasicDio: createBasicDio));
   if (kDebugMode) {
     dio.interceptors.add(PrettyDioLogger(
       requestHeader: true,
@@ -43,11 +55,13 @@ final dioProvider = Provider<Dio>((ref) {
 
 class _AuthInterceptor extends Interceptor {
   final Ref ref;
+  final BasicDioFactory _createBasicDio;
 
   // Refresh Token 요청이 한 번만 실행되도록 관리 (Race Condition 방지)
   final Lock _lock = Lock();
 
-  _AuthInterceptor(this.ref);
+  _AuthInterceptor(this.ref, {required BasicDioFactory createBasicDio})
+      : _createBasicDio = createBasicDio;
 
   // 401 세션 만료를 건너 뛰는 엔드포인트
   // 예) 로그인 실패를 세션 만료로 처리하지 않도록 추가
@@ -65,18 +79,6 @@ class _AuthInterceptor extends Interceptor {
     ApiConstants.devGetUserByEmail,
     ApiConstants.devGetAllUsers,
   };
-
-  Dio _createBasicDio() {
-    return Dio(BaseOptions(
-      baseUrl: ApiConstants.baseUrl,
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    ));
-  }
 
   @override
   void onRequest(
