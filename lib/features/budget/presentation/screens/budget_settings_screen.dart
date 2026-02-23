@@ -1,28 +1,27 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import 'package:moamoa/core/constants/app_constants.dart';
-import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
-import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
-import 'package:moamoa/features/budget/presentation/providers/budget_providers.dart';
-import 'package:moamoa/features/budget/presentation/utils/budget_amount_utils.dart';
-import 'package:moamoa/features/budget/presentation/widgets/budget_form_widgets.dart';
-import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
-import 'package:moamoa/features/common/widgets/default_layout.dart';
 import 'package:moamoa/core/utils/toast_utils.dart';
+import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
+import 'package:moamoa/features/budget/presentation/states/budget_settings_state.dart';
+import 'package:moamoa/features/budget/presentation/utils/budget_amount_utils.dart';
+import 'package:moamoa/features/budget/presentation/viewmodels/budget_settings_view_model.dart';
+import 'package:moamoa/features/budget/presentation/widgets/budget_form_widgets.dart';
+import 'package:moamoa/features/budget/presentation/widgets/budget_month_selector.dart';
+import 'package:moamoa/features/budget/presentation/widgets/budget_settings_actions.dart';
+import 'package:moamoa/features/common/widgets/default_layout.dart';
 
 /// 예산 설정 화면
 class BudgetSettingsScreen extends ConsumerStatefulWidget {
-  final DateTime? initialDate;
-
   const BudgetSettingsScreen({
     super.key,
     this.initialDate,
   });
+
+  final DateTime? initialDate;
 
   @override
   ConsumerState<BudgetSettingsScreen> createState() =>
@@ -35,29 +34,19 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
   final _amountFocusNode = FocusNode();
   final _numberFormat = NumberFormat('#,###');
 
-  // 월별 예산 캐시 (key: "yyyy-MM")
-  final Map<String, BudgetEntity?> _budgetCache = {};
-
-  bool _isInitialLoading = true;
-  bool _isSaving = false;
-  bool _isDeleting = false;
+  bool _didInitialize = false;
   bool _didAutoFocusAmount = false;
-  late DateTime _selectedMonth;
-  late DateTime _currentMonth;
 
   @override
   void initState() {
     super.initState();
-    final now = DateTime.now();
-    _currentMonth = DateTime(now.year, now.month);
-    // initialDate가 있으면 해당 월로, 없으면 현재 월로 설정
-    if (widget.initialDate != null) {
-      _selectedMonth =
-          DateTime(widget.initialDate!.year, widget.initialDate!.month);
-    } else {
-      _selectedMonth = _currentMonth;
-    }
-    _prefetchBudgets();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _didInitialize) return;
+      _didInitialize = true;
+      ref
+          .read(budgetSettingsViewModelProvider.notifier)
+          .initialize(widget.initialDate);
+    });
   }
 
   @override
@@ -67,201 +56,39 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     super.dispose();
   }
 
-  bool get _isCurrentMonth =>
-      _selectedMonth.year == _currentMonth.year &&
-      _selectedMonth.month == _currentMonth.month;
-
-  BudgetEntity? get _selectedBudget =>
-      _budgetCache[buildBudgetMonthKey(_selectedMonth)];
-
-  /// 현재 월 기준 앞뒤 1개월 프리페치
-  Future<void> _prefetchBudgets() async {
-    final accountBookId =
-        ref.read(selectedAccountBookViewModelProvider).asData?.value;
-    if (accountBookId == null) {
-      if (mounted) setState(() => _isInitialLoading = false);
-      return;
-    }
-
-    // 선택 월 기준 -1 ~ +1 개월 (총 3개월)
-    final months = <DateTime>[];
-    for (int i = -1; i <= 1; i++) {
-      months.add(DateTime(_selectedMonth.year, _selectedMonth.month + i));
-    }
-
-    // 병렬로 모든 월 데이터 fetch
-    await Future.wait(months.map((month) async {
-      final key = buildBudgetMonthKey(month);
-      if (_budgetCache.containsKey(key)) return;
-
-      try {
-        final budget = await ref.read(getMonthlyBudgetUseCaseProvider)(
-          year: month.year,
-          month: month.month,
-          accountBookId: accountBookId,
-        );
-        _budgetCache[key] = budget;
-      } catch (e) {
-        // 네트워크 실패를 "예산 미설정(null)"으로 캐시하지 않는다.
-      }
-    }));
-
-    // 현재 월 예산을 입력 필드에 설정
-    if (mounted) {
-      _updateAmountFromCache();
-      setState(() => _isInitialLoading = false);
-      _autoFocusAmountIfNeeded();
-    }
-  }
-
-  /// 예산이 설정되지 않은 경우 금액 필드 포커싱
-  void _autoFocusAmountIfNeeded() {
-    if (_didAutoFocusAmount) return;
-    if (_amountController.text.isNotEmpty) return;
-    _didAutoFocusAmount = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _amountFocusNode.requestFocus();
-    });
-  }
-
-  /// 캐시에서 현재 선택된 월의 예산을 가져와 입력 필드에 설정
-  void _updateAmountFromCache() {
-    final key = buildBudgetMonthKey(_selectedMonth);
-    final budget = _budgetCache[key];
-    if (budget != null) {
-      _amountController.text =
-          _numberFormat.format(budget.targetAmount.toInt());
-    } else {
-      _amountController.clear();
-    }
-  }
-
-  /// 캐시에 없는 월로 이동할 경우 개별 fetch
-  Future<void> _fetchAndCacheMonth(DateTime month,
-      {required int direction}) async {
-    final key = buildBudgetMonthKey(month);
-
-    // 이미 캐시에 있으면 값만 업데이트하고 프리페칭 시도
-    if (_budgetCache.containsKey(key)) {
-      _updateAmountFromCache();
-      if (mounted) _prefetchDirectional(month, direction);
-      return;
-    }
-
-    final accountBookId =
-        ref.read(selectedAccountBookViewModelProvider).asData?.value;
-    if (accountBookId == null) return;
-
-    try {
-      final budget = await ref.read(getMonthlyBudgetUseCaseProvider)(
-        year: month.year,
-        month: month.month,
-        accountBookId: accountBookId,
-      );
-      _budgetCache[key] = budget;
-
-      if (mounted) {
-        _updateAmountFromCache();
-        // 이동 방향으로 추가 프리페치
-        _prefetchDirectional(month, direction);
-      }
-    } catch (e) {
-      // 실패 시 null 캐시를 남기지 않아 다음 시도에서 재조회되도록 한다.
-      _budgetCache.remove(key);
-      if (mounted) _updateAmountFromCache();
-    }
-  }
-
-  /// 이동한 방향으로 1개월 추가 프리페치
-  void _prefetchDirectional(DateTime currentMonth, int direction) {
-    if (direction == 0) return;
-
-    final accountBookId =
-        ref.read(selectedAccountBookViewModelProvider).asData?.value;
-    if (accountBookId == null) return;
-
-    // direction: -1 (이전 달로 이동) -> 더 이전 달(-1) 프리페치
-    // direction: 1 (다음 달로 이동) -> 더 다음 달(+1) 프리페치
-    final targetMonth =
-        DateTime(currentMonth.year, currentMonth.month + direction);
-    final key = buildBudgetMonthKey(targetMonth);
-
-    if (_budgetCache.containsKey(key)) return;
-
-    ref
-        .read(getMonthlyBudgetUseCaseProvider)(
-      year: targetMonth.year,
-      month: targetMonth.month,
-      accountBookId: accountBookId,
-    )
-        .then((budget) {
-      _budgetCache[key] = budget;
-    }).catchError((_) {
-      // 프리페치 실패는 캐시하지 않고 다음 기회에 재시도한다.
-    });
-  }
-
-  Future<void> _saveBudget() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final accountBookId =
-        ref.read(selectedAccountBookViewModelProvider).asData?.value;
-    if (accountBookId == null) {
-      _showError('가계부를 선택해주세요.');
-      return;
-    }
-
-    final amount = parseFormattedAmount(_amountController.text);
-
-    if (amount < 0) {
-      _showError('예산 금액은 0원 이상이어야 합니다.');
-      return;
-    }
-
-    setState(() => _isSaving = true);
-
-    try {
-      await ref.read(createOrUpdateBudgetUseCaseProvider)(
-        accountBookId: accountBookId,
-        year: _selectedMonth.year,
-        month: _selectedMonth.month,
-        targetAmount: amount,
-      );
-
-      // 캐시 업데이트 - 저장 후 다음 방문 시 새로운 데이터 불러오도록 invalidate
-      final key = buildBudgetMonthKey(_selectedMonth);
-      _budgetCache.remove(key);
-
-      await ref.read(homeViewModelProvider.notifier).fetchMonthlyData(
-            _selectedMonth,
-            forceRefresh: true,
-          );
-
-      if (mounted) {
-        context.showToast('예산이 저장되었습니다.');
-        context.pop();
-      }
-    } catch (e) {
-      _showError('예산 저장에 실패했습니다: $e');
-    } finally {
-      if (mounted) setState(() => _isSaving = false);
-    }
-  }
-
-  Future<void> _deleteBudget() async {
-    final budget = _selectedBudget;
+  void _syncAmountFromBudget(BudgetEntity? budget) {
     if (budget == null) {
-      _showError('삭제할 예산이 없습니다.');
+      _amountController.clear();
       return;
     }
 
+    _amountController.text = _numberFormat.format(budget.targetAmount.toInt());
+  }
+
+  void _handleEvent(BudgetSettingsEvent event) {
+    switch (event) {
+      case BudgetSettingsShowError(:final message):
+        context.showErrorToast(
+          message,
+          duration: const Duration(seconds: 2),
+        );
+      case BudgetSettingsPopWithToast(:final message):
+        context.showToast(message);
+        context.pop();
+      case BudgetSettingsPop():
+        context.pop();
+    }
+
+    ref.read(budgetSettingsViewModelProvider.notifier).clearEvent();
+  }
+
+  Future<void> _onDeletePressed(DateTime selectedMonth) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('예산 삭제'),
         content: Text(
-          '${DateFormat('yyyy년 M월').format(_selectedMonth)} 예산을 삭제하면\n해당 월은 "예산 미설정" 상태가 됩니다.',
+          '${DateFormat('yyyy년 M월').format(selectedMonth)} 예산을 삭제하면\n해당 월은 "예산 미설정" 상태가 됩니다.',
         ),
         actions: [
           TextButton(
@@ -280,59 +107,13 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     );
 
     if (confirmed != true) return;
-
-    setState(() => _isDeleting = true);
-
-    try {
-      final homeNotifier = ref.read(homeViewModelProvider.notifier);
-
-      await ref.read(budgetRepositoryProvider).deleteBudget(
-            budgetId: budget.budgetId,
-          );
-
-      final key = buildBudgetMonthKey(_selectedMonth);
-      _budgetCache[key] = null;
-      _amountController.clear();
-
-      if (mounted) {
-        context.pop();
-      }
-
-      unawaited(
-        homeNotifier.fetchMonthlyData(
-          _selectedMonth,
-          forceRefresh: true,
-        ),
-      );
-    } catch (e) {
-      _showError('예산 삭제에 실패했습니다: $e');
-    } finally {
-      if (mounted) setState(() => _isDeleting = false);
-    }
+    ref.read(budgetSettingsViewModelProvider.notifier).deleteSelectedBudget();
   }
 
-  void _showError(String message) {
-    context.showErrorToast(
-      message,
-      duration: const Duration(seconds: 2),
-    );
-  }
-
-  void _changeMonth(int delta) {
-    final newMonth =
-        DateTime(_selectedMonth.year, _selectedMonth.month + delta);
-    setState(() {
-      _selectedMonth = newMonth;
-    });
-    _fetchAndCacheMonth(newMonth, direction: delta);
-  }
-
-  void _goToCurrentMonth() {
-    if (_isCurrentMonth) return;
-    setState(() {
-      _selectedMonth = _currentMonth;
-    });
-    _fetchAndCacheMonth(_currentMonth, direction: 0);
+  void _onSavePressed() {
+    if (!_formKey.currentState!.validate()) return;
+    final amount = parseFormattedAmount(_amountController.text);
+    ref.read(budgetSettingsViewModelProvider.notifier).saveBudget(amount);
   }
 
   void _setSuggestedAmount(int amount) {
@@ -342,6 +123,35 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<BudgetSettingsState>(
+      budgetSettingsViewModelProvider,
+      (previous, next) {
+        final monthChanged = previous?.selectedMonth != next.selectedMonth;
+        final budgetChanged = previous?.selectedBudget != next.selectedBudget;
+
+        if (monthChanged || budgetChanged) {
+          _syncAmountFromBudget(next.selectedBudget);
+        }
+
+        if (!_didAutoFocusAmount &&
+            !next.isInitialLoading &&
+            _amountController.text.isEmpty) {
+          _didAutoFocusAmount = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            _amountFocusNode.requestFocus();
+          });
+        }
+
+        final event = next.event;
+        if (event != null) {
+          _handleEvent(event);
+        }
+      },
+    );
+
+    final state = ref.watch(budgetSettingsViewModelProvider);
+
     return DefaultLayout(
       title: '예산 설정',
       titleSpacing: 0,
@@ -350,7 +160,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
         icon: const Icon(Icons.close),
         onPressed: () => context.pop(),
       ),
-      child: _isInitialLoading
+      child: state.isInitialLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
@@ -362,7 +172,28 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildMonthSelector(),
+                          BudgetMonthSelector(
+                            selectedMonth: state.selectedMonth,
+                            isCurrentMonth: state.isCurrentMonth,
+                            onPrevious: () {
+                              ref
+                                  .read(
+                                      budgetSettingsViewModelProvider.notifier)
+                                  .changeMonth(-1);
+                            },
+                            onNext: () {
+                              ref
+                                  .read(
+                                      budgetSettingsViewModelProvider.notifier)
+                                  .changeMonth(1);
+                            },
+                            onGoToCurrentMonth: () {
+                              ref
+                                  .read(
+                                      budgetSettingsViewModelProvider.notifier)
+                                  .goToCurrentMonth();
+                            },
+                          ),
                           const SizedBox(height: 24),
                           _buildAmountInput(),
                           const SizedBox(height: 32),
@@ -372,84 +203,16 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
                     ),
                   ),
                 ),
-                _buildSaveButton(),
+                BudgetSettingsActions(
+                  hasBudget: state.selectedBudget != null,
+                  hasValue: _amountController.text.isNotEmpty,
+                  isSaving: state.isSaving,
+                  isDeleting: state.isDeleting,
+                  onSave: _onSavePressed,
+                  onDelete: () => _onDeletePressed(state.selectedMonth),
+                ),
               ],
             ),
-    );
-  }
-
-  Widget _buildMonthSelector() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          IconButton(
-            icon: Icon(
-              Icons.chevron_left_rounded,
-              color: context.appColors.gray600,
-              size: 28,
-            ),
-            onPressed: () => _changeMonth(-1),
-          ),
-          Expanded(
-            child: Center(
-              child: Text(
-                DateFormat('yyyy년 M월').format(_selectedMonth),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: context.appColors.textPrimary,
-                ),
-              ),
-            ),
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.chevron_right_rounded,
-              color: context.appColors.gray600,
-              size: 28,
-            ),
-            onPressed: () => _changeMonth(1),
-          ),
-          // 이번달 버튼
-          if (!_isCurrentMonth) ...[
-            Container(
-              height: 24,
-              width: 1,
-              color: context.appColors.gray200,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-            ),
-            TextButton(
-              onPressed: _goToCurrentMonth,
-              style: TextButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: Text(
-                '이번달',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: context.appColors.primary,
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
     );
   }
 
@@ -494,67 +257,6 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
       isSelected: (amount) =>
           _amountController.text == _numberFormat.format(amount),
       onSelect: _setSuggestedAmount,
-    );
-  }
-
-  Widget _buildSaveButton() {
-    final hasBudget = _selectedBudget != null;
-    final hasValue = _amountController.text.isNotEmpty;
-    final isBusy = _isSaving || _isDeleting;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (hasBudget)
-          Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
-            child: Column(
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: isBusy ? null : _deleteBudget,
-                    icon: Icon(
-                      Icons.delete_outline_rounded,
-                      color: context.appColors.error,
-                      size: 18,
-                    ),
-                    label: Text(
-                      '이 달 예산 삭제',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: context.appColors.error,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(
-                        color: context.appColors.error.withValues(alpha: 0.3),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  '삭제해도 지출/수입 내역은 유지됩니다.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: context.appColors.textTertiary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        BudgetSaveButton(
-          isSaving: _isSaving,
-          enabled: hasValue && !_isDeleting,
-          onPressed: _saveBudget,
-        ),
-      ],
     );
   }
 }

@@ -272,3 +272,47 @@ final class UpdateInitialBalanceUseCaseProvider extends $FunctionalProvider<
 
 String _$updateInitialBalanceUseCaseHash() =>
     r'47b14ce7681a885ca05fce2d186330fe35312f65';
+
+@ProviderFor(deleteBudgetUseCase)
+const deleteBudgetUseCaseProvider = DeleteBudgetUseCaseProvider._();
+
+final class DeleteBudgetUseCaseProvider extends $FunctionalProvider<
+    DeleteBudgetUseCase,
+    DeleteBudgetUseCase,
+    DeleteBudgetUseCase> with $Provider<DeleteBudgetUseCase> {
+  const DeleteBudgetUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'deleteBudgetUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$deleteBudgetUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<DeleteBudgetUseCase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  DeleteBudgetUseCase create(Ref ref) {
+    return deleteBudgetUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DeleteBudgetUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DeleteBudgetUseCase>(value),
+    );
+  }
+}
+
+String _$deleteBudgetUseCaseHash() =>
+    r'8f2ac21745791c839e220d11a5b8d02d9966df56';

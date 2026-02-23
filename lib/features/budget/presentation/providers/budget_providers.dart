@@ -3,6 +3,7 @@ import 'package:moamoa/features/budget/data/datasources/remote/budget_remote_dat
 import 'package:moamoa/features/budget/data/repositories/budget_repository_impl.dart';
 import 'package:moamoa/features/budget/domain/repositories/budget_repository.dart';
 import 'package:moamoa/features/budget/domain/usecases/create_or_update_budget_usecase.dart';
+import 'package:moamoa/features/budget/domain/usecases/delete_budget_usecase.dart';
 import 'package:moamoa/features/budget/domain/usecases/get_monthly_budget_usecase.dart';
 import 'package:moamoa/features/budget/domain/usecases/get_total_assets_usecase.dart';
 import 'package:moamoa/features/budget/domain/usecases/update_initial_balance_usecase.dart';
@@ -53,4 +54,9 @@ GetTotalAssetsUseCase getTotalAssetsUseCase(Ref ref) {
 @riverpod
 UpdateInitialBalanceUseCase updateInitialBalanceUseCase(Ref ref) {
   return UpdateInitialBalanceUseCase(ref.read(budgetRepositoryProvider));
+}
+
+@riverpod
+DeleteBudgetUseCase deleteBudgetUseCase(Ref ref) {
+  return DeleteBudgetUseCase(ref.read(budgetRepositoryProvider));
 }
