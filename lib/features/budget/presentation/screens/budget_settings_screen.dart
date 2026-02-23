@@ -227,7 +227,10 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
       final key = buildBudgetMonthKey(_selectedMonth);
       _budgetCache.remove(key);
 
-      await ref.read(homeViewModelProvider.notifier).refresh();
+      await ref.read(homeViewModelProvider.notifier).fetchMonthlyData(
+            _selectedMonth,
+            forceRefresh: true,
+          );
 
       if (mounted) {
         context.showToast('예산이 저장되었습니다.');

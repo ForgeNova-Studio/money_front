@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -36,6 +38,19 @@ class HomeBudgetInfoCard extends ConsumerStatefulWidget {
 class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+
+  void _openBudgetSettings(DateTime initialMonth) {
+    context.push(RouteNames.budgetSettings, extra: initialMonth).then((_) {
+      if (!mounted) return;
+      final targetMonth = ref.read(homeViewModelProvider).focusedMonth;
+      unawaited(
+        ref.read(homeViewModelProvider.notifier).fetchMonthlyData(
+              targetMonth,
+              forceRefresh: true,
+            ),
+      );
+    });
+  }
 
   @override
   void dispose() {
@@ -78,8 +93,7 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
               currentMonth: currentMonth,
               pageIndicator: _buildPageIndicator(context),
             ),
-            onTap: () => context.push(RouteNames.budgetSettings,
-                extra: homeState.focusedMonth),
+            onTap: () => _openBudgetSettings(homeState.focusedMonth),
           ),
           // 카드 2: 총 자산
           _buildCard(
