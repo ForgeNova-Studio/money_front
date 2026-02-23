@@ -70,6 +70,13 @@ class RouteNames {
   /// 예산 설정 화면 (월별)
   static const String budgetSettings = '/budget/settings';
 
+  /// 예산 설정 화면 + 월 쿼리 문자열
+  static String budgetSettingsWithMonth(DateTime month) {
+    final year = month.year;
+    final monthValue = month.month.toString().padLeft(2, '0');
+    return '$budgetSettings?year=$year&month=$monthValue';
+  }
+
   // ==================== Asset Route ====================
   /// 자산 화면
   static const String assets = '/assets';

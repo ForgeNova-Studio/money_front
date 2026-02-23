@@ -305,7 +305,17 @@ class AppRouter {
           path: RouteNames.budgetSettings,
           name: 'budgetSettings',
           builder: (context, state) {
-            final initialDate = state.extra as DateTime?;
+            final year = int.tryParse(state.uri.queryParameters['year'] ?? '');
+            final month =
+                int.tryParse(state.uri.queryParameters['month'] ?? '');
+
+            final initialDate = (year != null &&
+                    month != null &&
+                    month >= 1 &&
+                    month <= 12)
+                ? DateTime(year, month)
+                : null;
+
             return BudgetSettingsScreen(
               initialDate: initialDate,
             );

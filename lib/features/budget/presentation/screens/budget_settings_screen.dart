@@ -15,6 +15,31 @@ import 'package:moamoa/features/budget/presentation/widgets/budget_settings_acti
 import 'package:moamoa/features/common/widgets/default_layout.dart';
 
 /// 예산 설정 화면
+///
+/// 사용자가 특정 월의 예산을 설정하거나 수정, 삭제할 수 있는 화면입니다.
+/// ViewModel을 통해 상태를 관리하며, 예산 금액 입력 및 빠른 금액 선택 기능을 제공합니다.
+///
+/// **Key Features:**
+/// *   월별 예산 조회 및 월 이동 (`BudgetMonthSelector`)
+/// *   예산 금액 직접 입력 및 콤마 포맷팅 (`BudgetAmountInputCard`)
+/// *   빠른 예산 금액 추천 버튼 제공 (`BudgetQuickAmountGrid`)
+/// *   선택된 월의 예산 저장 및 삭제 처리 (`BudgetSettingsActions`)
+///
+/// **Parameters:**
+/// *   [initialDate] - 화면 진입 시 초기 기준으로 설정될 날짜입니다. (선택 사항)
+///
+/// **Usage Example:**
+/// ```dart
+/// // 라우터를 통한 이동 예시 (GoRouter 사용 시)
+/// context.push(
+///   '/budget/settings?year=2026&month=02',
+/// );
+///
+/// // 직접 위젯 생성 예시
+/// BudgetSettingsScreen(
+///   initialDate: DateTime.now(),
+/// )
+/// ```
 class BudgetSettingsScreen extends ConsumerStatefulWidget {
   const BudgetSettingsScreen({
     super.key,
@@ -28,6 +53,10 @@ class BudgetSettingsScreen extends ConsumerStatefulWidget {
       _BudgetSettingsScreenState();
 }
 
+/// [BudgetSettingsScreen]의 상태 관리를 담당하는 State 클래스
+///
+/// 폼 검증([_formKey]), 금액 텍스트 컨트롤러([_amountController]), 포커스([_amountFocusNode]) 등을 비롯한 로컬 UI 상태를 관리합니다.
+/// [budgetSettingsViewModelProvider]를 수신하여 상태를 동기화하고, 에러 메시지나 정상 처리 등의 이벤트 위임 알림(Toast, Pop 등)을 처리합니다.
 class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();

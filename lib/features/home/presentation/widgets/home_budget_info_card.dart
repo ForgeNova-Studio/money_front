@@ -40,7 +40,7 @@ class _HomeBudgetInfoCardState extends ConsumerState<HomeBudgetInfoCard> {
   int _currentPage = 0;
 
   void _openBudgetSettings(DateTime initialMonth) {
-    context.push(RouteNames.budgetSettings, extra: initialMonth).then((_) {
+    context.push(RouteNames.budgetSettingsWithMonth(initialMonth)).then((_) {
       if (!mounted) return;
       final targetMonth = ref.read(homeViewModelProvider).focusedMonth;
       unawaited(
