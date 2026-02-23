@@ -1,3 +1,7 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'initial_balance_settings_state.freezed.dart';
+
 /// 잔액 설정 화면 이벤트를 반환하는 클래스
 /// - [InitialBalanceSettingsShowError] : 에러 발생시 이벤트
 /// - [InitialBalanceSettingsPopWithToast] : 화면을 종료하고 토스트 메시지를 표시한다.
@@ -17,52 +21,19 @@ class InitialBalanceSettingsPopWithToast extends InitialBalanceSettingsEvent {
   final String message;
 }
 
-class InitialBalanceSettingsState {
-  const InitialBalanceSettingsState({
-    required this.isLoading,
-    required this.isSaving,
-    required this.isNegative,
-    this.currentTotalAssets,
-    this.initialAmount,
-    this.event,
-  });
+@freezed
+sealed class InitialBalanceSettingsState with _$InitialBalanceSettingsState {
+  const InitialBalanceSettingsState._();
 
-  factory InitialBalanceSettingsState.initial() {
-    return const InitialBalanceSettingsState(
-      isLoading: false,
-      isSaving: false,
-      isNegative: false,
-    );
-  }
+  const factory InitialBalanceSettingsState({
+    @Default(false) bool isLoading,
+    @Default(false) bool isSaving,
+    @Default(false) bool isNegative,
+    double? currentTotalAssets,
+    int? initialAmount,
+    InitialBalanceSettingsEvent? event,
+  }) = _InitialBalanceSettingsState;
 
-  final bool isLoading;
-  final bool isSaving;
-  final bool isNegative;
-  final double? currentTotalAssets;
-  final int? initialAmount;
-  final InitialBalanceSettingsEvent? event;
-
-  static const _unset = Object();
-
-  InitialBalanceSettingsState copyWith({
-    bool? isLoading,
-    bool? isSaving,
-    bool? isNegative,
-    Object? currentTotalAssets = _unset,
-    Object? initialAmount = _unset,
-    Object? event = _unset,
-  }) {
-    return InitialBalanceSettingsState(
-      isLoading: isLoading ?? this.isLoading,
-      isSaving: isSaving ?? this.isSaving,
-      isNegative: isNegative ?? this.isNegative,
-      currentTotalAssets: currentTotalAssets == _unset
-          ? this.currentTotalAssets
-          : currentTotalAssets as double?,
-      initialAmount:
-          initialAmount == _unset ? this.initialAmount : initialAmount as int?,
-      event:
-          event == _unset ? this.event : event as InitialBalanceSettingsEvent?,
-    );
-  }
+  factory InitialBalanceSettingsState.initial() =>
+      const InitialBalanceSettingsState();
 }
