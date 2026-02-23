@@ -1,8 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-/// Step 4: 자동화 설정 안내 화면
+/// 자동화 설정 가이드 스크린샷 경로
+const _automationGuideSteps = [
+  _GuideStep(
+    imagePath: 'assets/images/automation_guide/step_1.png',
+    title: '단축어 앱 → 자동화 탭',
+    description: '단축어 앱을 열고 하단의 "자동화" 탭을 선택하세요',
+  ),
+  _GuideStep(
+    imagePath: 'assets/images/automation_guide/step_2.png',
+    title: '새 자동화 만들기',
+    description: '오른쪽 상단 "+" 버튼을 탭하고 "메시지"를 선택하세요',
+  ),
+  _GuideStep(
+    imagePath: 'assets/images/automation_guide/step_3.png',
+    title: '메시지 포함 내용 입력 및 즉시 실행',
+    description: '1. 해당 카드사를 입력하세요\n(예: 현대카드, 신한카드)\n2. 즉시 실행을 선택하세요',
+  ),
+  _GuideStep(
+    imagePath: 'assets/images/automation_guide/step_4.png',
+    title: '단축어 연결',
+    description: '"새로운 단축어 생성"을 선택하세요',
+  ),
+  _GuideStep(
+    imagePath: 'assets/images/automation_guide/step_5.png',
+    title: '단축어 작업 추가',
+    description: '1. 동작 검색 → "입력" → "단축어에서 텍스트 가져오기" 선택 해서 생성 \n2. 파란색 입력 부분 클릭 후 "단축어 입력으로 변경" \n3. 동작 검색 → "단축어" → "단축어 실행" 선택해서 생성\n3. 파란색 단축어 부분 클릭 후 1단계에서 설치한 일반 단축어 선택\n 4. V 클릭하여 생성',
+  ),
+];
+
+class _GuideStep {
+  final String imagePath;
+  final String title;
+  final String description;
+
+  const _GuideStep({
+    required this.imagePath,
+    required this.title,
+    required this.description,
+  });
+}
+
+/// Step 4: 자동화 설정 화면
 class StepSetupAutomation extends StatelessWidget {
   const StepSetupAutomation({super.key});
 
@@ -24,218 +64,64 @@ class StepSetupAutomation extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '문자가 오면 자동으로 단축어가 실행되도록 설정합니다',
+            '아래 단계를 따라 자동화 단축어를 설정해주세요',
             style: TextStyle(
               fontSize: 14,
               color: context.appColors.textSecondary,
             ),
           ),
 
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
 
-          // 단계별 안내
-          _AutomationStep(
-            stepNumber: 1,
-            title: '단축어 앱 열기',
-            description: '"자동화" 탭으로 이동하세요',
-            imagePlaceholder: Icons.apps,
-          ),
-
-          const SizedBox(height: 16),
-
-          _AutomationStep(
-            stepNumber: 2,
-            title: '새 자동화 만들기',
-            description: '오른쪽 상단 "+" 버튼을 탭하세요',
-            imagePlaceholder: Icons.add_circle_outline,
-          ),
-
-          const SizedBox(height: 16),
-
-          _AutomationStep(
-            stepNumber: 3,
-            title: '메시지 트리거 선택',
-            description: '"메시지"를 선택하고 카드사 발신번호를 입력하세요',
-            imagePlaceholder: Icons.message_outlined,
-          ),
-
-          const SizedBox(height: 16),
-
-          _AutomationStep(
-            stepNumber: 4,
-            title: '단축어 연결',
-            description: '"단축어 실행"을 선택하고 설치한 단축어를 선택하세요',
-            imagePlaceholder: Icons.play_circle_outline,
-          ),
-
-          const SizedBox(height: 16),
-
-          _AutomationStep(
-            stepNumber: 5,
-            title: '"즉시 실행" 설정',
-            description: '"실행 전에 묻기"를 끄면 자동으로 실행됩니다',
-            imagePlaceholder: Icons.flash_on,
-          ),
-
-          const SizedBox(height: 32),
-
-          // 단축어 앱 열기 버튼
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () => _openShortcutsApp(),
-              icon: const Icon(Icons.launch),
-              label: const Text('단축어 앱 열기'),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                side: BorderSide(color: context.appColors.primary),
-                foregroundColor: context.appColors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+          // 보안 안내
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: context.appColors.warning.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: context.appColors.warning.withValues(alpha: 0.3),
               ),
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // 주요 카드사 발신번호 안내
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: context.appColors.gray50,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.phone_android,
-                      color: context.appColors.primary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '카드사 발신번호',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                _buildCardNumber(context, '신한카드', '1544-7000'),
-                _buildCardNumber(context, '삼성카드', '1588-8700'),
-                _buildCardNumber(context, 'KB국민카드', '1588-1688'),
-                _buildCardNumber(context, '현대카드', '1577-6000'),
-                _buildCardNumber(context, '롯데카드', '1588-8100'),
-                _buildCardNumber(context, '우리카드', '1588-9955'),
-                _buildCardNumber(context, '하나카드', '1800-1111'),
-                _buildCardNumber(context, 'NH농협카드', '1644-4000'),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // 완료 안내
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: context.appColors.success.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
-                  Icons.check_circle,
-                  color: context.appColors.success,
-                  size: 24,
+                  Icons.lock_outline,
+                  color: context.appColors.warning,
+                  size: 20,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '설정 완료!',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: context.appColors.success,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '이제 카드 결제 문자가 오면 자동으로 가계부에 기록됩니다.',
-                        style: TextStyle(
-                          color: context.appColors.success,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    'iPhone 자동화 단축어는 보안 정책으로 인해 공유가 불가능하여 직접 설정이 필요합니다.',
+                    style: TextStyle(
+                      color: context.appColors.warning,
+                      fontSize: 13,
+                      height: 1.5,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
+
+          const SizedBox(height: 28),
+
+          // 자동화 단축어 섹션
+          _AutomationSetupCard(),
         ],
       ),
     );
-  }
-
-  Widget _buildCardNumber(
-      BuildContext context, String cardName, String number) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            cardName,
-            style: TextStyle(
-              fontSize: 14,
-              color: context.appColors.textSecondary,
-            ),
-          ),
-          Text(
-            number,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _openShortcutsApp() async {
-    final uri = Uri.parse('shortcuts://');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    }
   }
 }
 
-class _AutomationStep extends StatelessWidget {
-  final int stepNumber;
-  final String title;
-  final String description;
-  final IconData imagePlaceholder;
+// ──────────────────────────────────────────────────────
+// 자동화 설정 카드 + 모달
+// ──────────────────────────────────────────────────────
 
-  const _AutomationStep({
-    required this.stepNumber,
-    required this.title,
-    required this.description,
-    required this.imagePlaceholder,
-  });
-
+class _AutomationSetupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -247,64 +133,334 @@ class _AutomationStep extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Step number
           Container(
-            width: 32,
-            height: 32,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: context.appColors.primary,
-              shape: BoxShape.circle,
+              color: context.appColors.warning.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Center(
-              child: Text(
-                stepNumber.toString(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
+            child: Icon(
+              Icons.flash_on_outlined,
+              color: context.appColors.warning,
+              size: 22,
             ),
           ),
           const SizedBox(width: 16),
-
-          // Content
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  '자동화 단축어 (직접 설정)',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
-                  description,
+                  '문자 수신 시 자동으로 실행',
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 12,
                     color: context.appColors.textSecondary,
                   ),
                 ),
               ],
             ),
           ),
-
-          // Icon placeholder (could be screenshot later)
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: context.appColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+          ElevatedButton(
+            onPressed: () => _showAutomationGuideModal(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.appColors.warning,
+              foregroundColor: Colors.white,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              elevation: 0,
             ),
-            child: Icon(
-              imagePlaceholder,
-              color: context.appColors.primary,
-              size: 24,
+            child: const Text('설정 방법'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAutomationGuideModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const _AutomationGuideModal(),
+    );
+  }
+}
+
+// ──────────────────────────────────────────────────────
+// 자동화 설정 가이드 모달 (스크린샷 슬라이드)
+// ──────────────────────────────────────────────────────
+
+class _AutomationGuideModal extends StatefulWidget {
+  const _AutomationGuideModal();
+
+  @override
+  State<_AutomationGuideModal> createState() => _AutomationGuideModalState();
+}
+
+class _AutomationGuideModalState extends State<_AutomationGuideModal> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final totalPages = _automationGuideSteps.length;
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.85,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        children: [
+          // 핸들 + 헤더
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 12, 12, 0),
+            child: Column(
+              children: [
+                // 드래그 핸들
+                Center(
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: context.appColors.gray300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '자동화 설정 방법',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(
+                        Icons.close,
+                        color: context.appColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // 슬라이드
+          Expanded(
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: totalPages,
+              onPageChanged: (index) {
+                setState(() => _currentPage = index);
+              },
+              itemBuilder: (context, index) {
+                final step = _automationGuideSteps[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 16),
+
+                      // 스크린샷 이미지
+                      Expanded(
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: context.appColors.gray50,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.asset(
+                              step.imagePath,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) => Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.image_outlined,
+                                      size: 48,
+                                      color: context.appColors.gray300,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      '스크린샷 ${index + 1}',
+                                      style: TextStyle(
+                                        color: context.appColors.textTertiary,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // 설명 텍스트
+                      Text(
+                        step.title,
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        step.description,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: context.appColors.textSecondary,
+                          height: 1.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+
+          // 페이지 인디케이터 + 네비게이션
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+              child: Column(
+                children: [
+                  // 도트 인디케이터
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(totalPages, (index) {
+                      final isActive = index == _currentPage;
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        width: isActive ? 24 : 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: isActive
+                              ? context.appColors.primary
+                              : context.appColors.gray300,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // 페이지 번호
+                  Text(
+                    '${_currentPage + 1} / $totalPages',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: context.appColors.textTertiary,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 이전/다음 버튼
+                  Row(
+                    children: [
+                      if (_currentPage > 0)
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {
+                              _pageController.previousPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            style: OutlinedButton.styleFrom(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 14),
+                              side:
+                                  BorderSide(color: context.appColors.gray300),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              '이전',
+                              style: TextStyle(
+                                color: context.appColors.textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      if (_currentPage > 0) const SizedBox(width: 12),
+                      Expanded(
+                        flex: _currentPage == 0 ? 1 : 2,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_currentPage < totalPages - 1) {
+                              _pageController.nextPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            } else {
+                              Navigator.pop(context);
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: context.appColors.primary,
+                            foregroundColor: Colors.white,
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            _currentPage < totalPages - 1 ? '다음' : '닫기',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],
