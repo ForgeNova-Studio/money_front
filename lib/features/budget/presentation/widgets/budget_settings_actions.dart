@@ -29,7 +29,7 @@ class BudgetSettingsActions extends StatelessWidget {
       children: [
         if (hasBudget)
           Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 8),
             child: Column(
               children: [
                 SizedBox(

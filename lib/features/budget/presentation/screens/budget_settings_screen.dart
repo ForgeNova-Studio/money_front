@@ -55,7 +55,9 @@ class BudgetSettingsScreen extends ConsumerStatefulWidget {
 
 /// [BudgetSettingsScreen]의 상태 관리를 담당하는 State 클래스
 ///
-/// 폼 검증([_formKey]), 금액 텍스트 컨트롤러([_amountController]), 포커스([_amountFocusNode]) 등을 비롯한 로컬 UI 상태를 관리합니다.
+/// 폼 검증([_formKey])
+/// 금액 텍스트 컨트롤러([_amountController])
+/// 금액 포커스([_amountFocusNode]) 등을 비롯한 로컬 UI 상태를 관리합니다.
 /// [budgetSettingsViewModelProvider]를 수신하여 상태를 동기화하고, 에러 메시지나 정상 처리 등의 이벤트 위임 알림(Toast, Pop 등)을 처리합니다.
 class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
@@ -85,6 +87,9 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     super.dispose();
   }
 
+  /// 예산 금액 동기화
+  /// 예산이 null이면 금액 컨트롤러를 초기화한다.
+  /// 예산이 null이 아니면 예산 금액을 금액 컨트롤러에 설정한다.
   void _syncAmountFromBudget(BudgetEntity? budget) {
     if (budget == null) {
       _amountController.clear();
@@ -94,6 +99,12 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     _amountController.text = _numberFormat.format(budget.targetAmount.toInt());
   }
 
+  /// 이벤트 핸들러
+  /// [BudgetSettingsEvent]를 베이스로 하는 다양한 이벤트를 처리하여 UI를 업데이트한다.
+  /// - [BudgetSettingsShowError]
+  /// - [BudgetSettingsPopWithToast]
+  /// - [BudgetSettingsPop]
+  /// 처리 완료후에는 [BudgetSettingsViewModel.clearEvent]를 호출하여 이벤트를 비운다.
   void _handleEvent(BudgetSettingsEvent event) {
     switch (event) {
       case BudgetSettingsShowError(:final message):
@@ -108,9 +119,11 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
         context.pop();
     }
 
+    // 이벤트 비우기 위한 호출
     ref.read(budgetSettingsViewModelProvider.notifier).clearEvent();
   }
 
+  /// 예산 삭제
   Future<void> _onDeletePressed(DateTime selectedMonth) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -139,12 +152,14 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     ref.read(budgetSettingsViewModelProvider.notifier).deleteSelectedBudget();
   }
 
+  /// 예산 저장
   void _onSavePressed() {
     if (!_formKey.currentState!.validate()) return;
     final amount = parseFormattedAmount(_amountController.text);
     ref.read(budgetSettingsViewModelProvider.notifier).saveBudget(amount);
   }
 
+  /// 빠른 금액 선택
   void _setSuggestedAmount(int amount) {
     _amountController.text = _numberFormat.format(amount);
     setState(() {});

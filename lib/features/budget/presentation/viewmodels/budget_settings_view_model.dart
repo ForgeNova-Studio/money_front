@@ -25,10 +25,15 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
     );
   }
 
+  /// 예산 설정 첫 진입 초기화 담당
+  /// - 선택된 월의 예산, 이전 달의 예산, 다음 달의 예산을 미리 캐시에 채운다.
   Future<void> initialize(DateTime? initialDate) async {
+    // 초기화는 한 번만 수행한다. 이미 초기화 된 상태면 리턴한다.
     if (_initialized) return;
     _initialized = true;
 
+    // selectedMonth 초기화 및 가공
+    // initialDate가 null이면 현재 월을 선택한다.
     final selectedMonth = initialDate != null
         ? DateTime(initialDate.year, initialDate.month)
         : state.currentMonth;
@@ -37,11 +42,58 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
     await _prefetchBudgets();
   }
 
+  /// 선택된 월의 예산, 이전 달의 예산, 다음 달의 예산을 미리 캐싱한다
+  /// 즉 선택된 월과 +- 1인 달의 예산을 캐싱
+  Future<void> _prefetchBudgets() async {
+    // 가계부 ID를 가져온다.
+    final accountBookId = _resolveAccountBookId();
+    if (accountBookId == null) {
+      state = state.copyWith(isInitialLoading: false);
+      return;
+    }
+
+    // 선택된 월과 +-1인 달의 예산을 캐싱하기 위해 월 선별
+    final baseMonth = state.selectedMonth;
+    final months = <DateTime>[];
+    for (int i = -1; i <= 1; i++) {
+      months.add(DateTime(baseMonth.year, baseMonth.month + i));
+    }
+
+    // 선택된 월들에 대한 캐싱
+    final updatedCache = Map<String, BudgetEntity?>.from(state.budgetCache);
+
+    await Future.wait(months.map((month) async {
+      final key = buildBudgetMonthKey(month);
+      if (updatedCache.containsKey(key)) return;
+
+      try {
+        final budget = await ref.read(getMonthlyBudgetUseCaseProvider)(
+          year: month.year,
+          month: month.month,
+          accountBookId: accountBookId,
+        );
+        updatedCache[key] = budget;
+      } catch (_) {
+        // 프리페치 실패는 캐시하지 않는다.
+      }
+    }));
+
+    if (!ref.mounted) return;
+    state = state.copyWith(
+      budgetCache: updatedCache,
+      isInitialLoading: false,
+    );
+  }
+
+  /// 이벤트가 종료되면 이벤트를 비운다
   void clearEvent() {
     if (state.event == null) return;
     state = state.copyWith(event: null);
   }
 
+  /// 월 변경
+  /// [delta] 만큼 월을 변경한다.
+  /// [delta]가 0이면 현재 월로 변경한다.
   Future<void> changeMonth(int delta) async {
     final newMonth = DateTime(
       state.selectedMonth.year,
@@ -52,6 +104,7 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
     await _fetchAndCacheMonth(newMonth, direction: delta);
   }
 
+  /// 현재 월로 변경
   Future<void> goToCurrentMonth() async {
     if (state.isCurrentMonth) return;
     final month = state.currentMonth;
@@ -59,6 +112,14 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
     await _fetchAndCacheMonth(month, direction: 0);
   }
 
+  /// 예산 저장
+  /// [amount] 만큼 예산을 저장한다.
+  /// [amount]가 0보다 작으면 에러를 발생시킨다.
+  /// [accountBookId]가 null이면 에러를 발생시킨다.
+  /// [isSaving]이 true이면 에러를 발생시킨다.
+  /// [isDeleting]이 true이면 에러를 발생시킨다.
+  /// 저장 성공시 [BudgetSettingsPopWithToast] 이벤트를 발생시킨다.
+  /// 저장 실패시 [BudgetSettingsShowError] 이벤트를 발생시킨다.
   Future<void> saveBudget(double amount) async {
     if (amount < 0) {
       _showError('예산 금액은 0원 이상이어야 합니다.');
@@ -108,6 +169,12 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
     }
   }
 
+  /// 예산 삭제
+  /// [budget]이 null이면 에러를 발생시킨다.
+  /// [isSaving]이 true이면 에러를 발생시킨다.
+  /// [isDeleting]이 true이면 에러를 발생시킨다.
+  /// 삭제 성공시 [BudgetSettingsPopWithToast] 이벤트를 발생시킨다.
+  /// 삭제 실패시 [BudgetSettingsShowError] 이벤트를 발생시킨다.
   Future<void> deleteSelectedBudget() async {
     final budget = state.selectedBudget;
     if (budget == null) {
@@ -148,44 +215,11 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
     }
   }
 
-  Future<void> _prefetchBudgets() async {
-    final accountBookId = _resolveAccountBookId();
-    if (accountBookId == null) {
-      state = state.copyWith(isInitialLoading: false);
-      return;
-    }
-
-    final baseMonth = state.selectedMonth;
-    final months = <DateTime>[];
-    for (int i = -1; i <= 1; i++) {
-      months.add(DateTime(baseMonth.year, baseMonth.month + i));
-    }
-
-    final updatedCache = Map<String, BudgetEntity?>.from(state.budgetCache);
-
-    await Future.wait(months.map((month) async {
-      final key = buildBudgetMonthKey(month);
-      if (updatedCache.containsKey(key)) return;
-
-      try {
-        final budget = await ref.read(getMonthlyBudgetUseCaseProvider)(
-          year: month.year,
-          month: month.month,
-          accountBookId: accountBookId,
-        );
-        updatedCache[key] = budget;
-      } catch (_) {
-        // 프리페치 실패는 캐시하지 않는다.
-      }
-    }));
-
-    if (!ref.mounted) return;
-    state = state.copyWith(
-      budgetCache: updatedCache,
-      isInitialLoading: false,
-    );
-  }
-
+  /// 예산 데이터를 가져와 캐시에 저장한다.
+  /// [month]이 null이면 에러를 발생시킨다.
+  /// [direction]이 0이면 현재 월로 변경한다.
+  /// [direction]이 1이면 다음 월로 변경한다.
+  /// [direction]이 -1이면 이전 월로 변경한다.
   Future<void> _fetchAndCacheMonth(
     DateTime month, {
     required int direction,
@@ -253,11 +287,14 @@ class BudgetSettingsViewModel extends _$BudgetSettingsViewModel {
     );
   }
 
+  /// 선택된 가계부의 ID를 반환한다.
   String? _resolveAccountBookId() {
     final accountBookState = ref.read(selectedAccountBookViewModelProvider);
     return accountBookState.asData?.value;
   }
 
+  /// 에러 이벤트를 추가한다.
+  /// [message]를 포함한 [BudgetSettingsShowError] 이벤트를 추가한다.
   void _showError(String message) {
     state = state.copyWith(event: BudgetSettingsShowError(message));
   }
