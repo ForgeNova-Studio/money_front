@@ -42,7 +42,7 @@ final class ShortcutsGuideViewModelProvider
 }
 
 String _$shortcutsGuideViewModelHash() =>
-    r'a6fd18d4169133aea8ec3eea106d046e8bc69e83';
+    r'734e3a4dd049d8773d977f4e11b6df48385bab0c';
 
 abstract class _$ShortcutsGuideViewModel
     extends $Notifier<ShortcutsGuideState> {

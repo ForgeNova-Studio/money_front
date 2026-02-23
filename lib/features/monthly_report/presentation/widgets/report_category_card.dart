@@ -10,16 +10,16 @@ class ReportCategoryCard extends StatelessWidget {
 
   const ReportCategoryCard({super.key, required this.categories});
 
-  // 화려한 색상 팔레트
+  // 버터 톤 색상 팔레트
   static const List<Color> _vibrantColors = [
-    Color(0xFFFF6B6B), // 코럴 핑크
-    Color(0xFF4ECDC4), // 청록
-    Color(0xFFFFE66D), // 옐로우
-    Color(0xFF95E1D3), // 민트
-    Color(0xFFDDA0DD), // 플럼
-    Color(0xFFFF8C42), // 오렌지
-    Color(0xFF98D8C8), // 세이지
-    Color(0xFFF7DC6F), // 골드
+    Color(0xFFcfa52b), // 진한 버터 (primaryDark)
+    Color(0xFFe8b84a), // 따뜻한 골드
+    Color(0xFFf2d35e), // 메인 버터 (primary)
+    Color(0xFFd4a24a), // 앰버 골드
+    Color(0xFFe0c06e), // 소프트 골드
+    Color(0xFFc99832), // 다크 앰버
+    Color(0xFFf0ca57), // 밝은 버터
+    Color(0xFFd9ad45), // 미드 골드
   ];
 
   @override

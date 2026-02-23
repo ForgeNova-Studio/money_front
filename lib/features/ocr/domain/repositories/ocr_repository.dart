@@ -10,8 +10,12 @@ abstract class OcrRepository {
   /// 이미지에서 영수증 정보 추출
   ///
   /// [imageFile] 영수증 이미지 파일
+  /// [cardIssuerId] 카드사 ID (선택, 지정 시 해당 카드사 패턴 사용)
   /// Returns 파싱된 영수증 데이터 리스트
-  Future<List<ReceiptData>> extractReceiptData(File imageFile);
+  Future<List<ReceiptData>> extractReceiptData(
+    File imageFile, {
+    String? cardIssuerId,
+  });
 
   /// 영수증 데이터를 서버로 전송하여 지출 등록
   ///
