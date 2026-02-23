@@ -214,8 +214,8 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
 
     final amount = parseFormattedAmount(_amountController.text);
 
-    if (amount <= 0) {
-      _showError('예산 금액을 입력해주세요.');
+    if (amount < 0) {
+      _showError('예산 금액은 0원 이상이어야 합니다.');
       return;
     }
 
