@@ -160,32 +160,41 @@ class _ProgressBar extends StatelessWidget {
       child: Column(
         children: [
           // Step indicators
-          Row(
-            children: List.generate(totalSteps, (index) {
-              final isCompleted = index < currentStep;
-              final isCurrent = index == currentStep;
-              return Expanded(
-                child: Row(
-                  children: [
-                    if (index > 0)
-                      Expanded(
-                        child: Container(
-                          height: 2,
-                          color: isCompleted || isCurrent
-                              ? context.appColors.primary
-                              : context.appColors.gray200,
-                        ),
-                      ),
-                    Container(
+          SizedBox(
+            height: 28,
+            child: Stack(
+              children: [
+                if (totalSteps > 1)
+                  Positioned(
+                    left: 14,
+                    right: 14,
+                    top: 13,
+                    child: Row(
+                      children: List.generate(totalSteps - 1, (index) {
+                        return Expanded(
+                          child: Container(
+                            height: 2,
+                            color: index < currentStep
+                                ? context.appColors.primary
+                                : context.appColors.gray200,
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(totalSteps, (index) {
+                    final isCompleted = index < currentStep;
+                    final isCurrent = index == currentStep;
+                    return Container(
                       width: 28,
                       height: 28,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: isCompleted
+                        color: isCompleted || isCurrent
                             ? context.appColors.primary
-                            : isCurrent
-                                ? context.appColors.primary
-                                : context.appColors.gray200,
+                            : context.appColors.gray200,
                         border: isCurrent
                             ? Border.all(
                                 color: context.appColors.primary,
@@ -211,20 +220,11 @@ class _ProgressBar extends StatelessWidget {
                                 ),
                               ),
                       ),
-                    ),
-                    if (index < totalSteps - 1)
-                      Expanded(
-                        child: Container(
-                          height: 2,
-                          color: isCompleted
-                              ? context.appColors.primary
-                              : context.appColors.gray200,
-                        ),
-                      ),
-                  ],
+                    );
+                  }),
                 ),
-              );
-            }),
+              ],
+            ),
           ),
           const SizedBox(height: 12),
           // Step labels
