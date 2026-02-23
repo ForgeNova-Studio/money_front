@@ -17,6 +17,13 @@ class ShortcutsGuideScreen extends ConsumerStatefulWidget {
 }
 
 class _ShortcutsGuideScreenState extends ConsumerState<ShortcutsGuideScreen> {
+  static const List<String> _stepTitles = [
+    '소개',
+    '카드 선택',
+    '단축어 설치',
+    '자동화 설정',
+  ];
+
   late PageController _pageController;
 
   @override
@@ -37,6 +44,13 @@ class _ShortcutsGuideScreenState extends ConsumerState<ShortcutsGuideScreen> {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
+  }
+
+  String _getStepTitle(int currentStep) {
+    if (currentStep >= 0 && currentStep < _stepTitles.length) {
+      return _stepTitles[currentStep];
+    }
+    return '자동 가계부 설정';
   }
 
   @override
@@ -65,7 +79,7 @@ class _ShortcutsGuideScreenState extends ConsumerState<ShortcutsGuideScreen> {
           onPressed: () => _showExitDialog(context),
         ),
         title: Text(
-          '자동 가계부 설정',
+          _getStepTitle(state.currentStep),
           style: TextStyle(
             color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
@@ -226,34 +240,7 @@ class _ProgressBar extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 12),
-          // Step labels
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _stepLabel(context, '소개', 0, currentStep),
-              _stepLabel(context, '카드 선택', 1, currentStep),
-              _stepLabel(context, '단축어 설치', 2, currentStep),
-              _stepLabel(context, '자동화 설정', 3, currentStep),
-            ],
-          ),
         ],
-      ),
-    );
-  }
-
-  Widget _stepLabel(
-      BuildContext context, String label, int step, int currentStep) {
-    final isCurrent = step == currentStep;
-    final isCompleted = step < currentStep;
-    return Text(
-      label,
-      style: TextStyle(
-        fontSize: 10,
-        fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-        color: isCompleted || isCurrent
-            ? context.appColors.primary
-            : context.appColors.textTertiary,
       ),
     );
   }
