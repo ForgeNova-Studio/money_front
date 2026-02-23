@@ -84,8 +84,10 @@ class _InitialBalanceSettingsScreenState
       return;
     }
 
-    var amount = parseFormattedAmount(_amountController.text);
-    if (_isNegative) amount = -amount;
+    final amount = parseSignedFormattedAmount(
+      rawText: _amountController.text,
+      isNegative: _isNegative,
+    );
 
     setState(() => _isSaving = true);
 

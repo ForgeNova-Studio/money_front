@@ -64,9 +64,6 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     super.dispose();
   }
 
-  String _monthKey(DateTime month) =>
-      '${month.year}-${month.month.toString().padLeft(2, '0')}';
-
   bool get _isCurrentMonth =>
       _selectedMonth.year == _currentMonth.year &&
       _selectedMonth.month == _currentMonth.month;
@@ -88,7 +85,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
 
     // 병렬로 모든 월 데이터 fetch
     await Future.wait(months.map((month) async {
-      final key = _monthKey(month);
+      final key = buildBudgetMonthKey(month);
       if (_budgetCache.containsKey(key)) return;
 
       try {
@@ -124,7 +121,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
 
   /// 캐시에서 현재 선택된 월의 예산을 가져와 입력 필드에 설정
   void _updateAmountFromCache() {
-    final key = _monthKey(_selectedMonth);
+    final key = buildBudgetMonthKey(_selectedMonth);
     final budget = _budgetCache[key];
     if (budget != null) {
       _amountController.text =
@@ -137,7 +134,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
   /// 캐시에 없는 월로 이동할 경우 개별 fetch
   Future<void> _fetchAndCacheMonth(DateTime month,
       {required int direction}) async {
-    final key = _monthKey(month);
+    final key = buildBudgetMonthKey(month);
 
     // 이미 캐시에 있으면 값만 업데이트하고 프리페칭 시도
     if (_budgetCache.containsKey(key)) {
@@ -182,7 +179,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     // direction: 1 (다음 달로 이동) -> 더 다음 달(+1) 프리페치
     final targetMonth =
         DateTime(currentMonth.year, currentMonth.month + direction);
-    final key = _monthKey(targetMonth);
+    final key = buildBudgetMonthKey(targetMonth);
 
     if (_budgetCache.containsKey(key)) return;
 
@@ -227,7 +224,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
       );
 
       // 캐시 업데이트 - 저장 후 다음 방문 시 새로운 데이터 불러오도록 invalidate
-      final key = _monthKey(_selectedMonth);
+      final key = buildBudgetMonthKey(_selectedMonth);
       _budgetCache.remove(key);
 
       await ref.read(homeViewModelProvider.notifier).refresh();
