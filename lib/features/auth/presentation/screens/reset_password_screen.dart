@@ -14,6 +14,8 @@ import 'package:moamoa/features/auth/presentation/widgets/reset_password/reset_p
 
 // viewmodels
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moamoa/features/auth/presentation/states/auth_ui_event.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/auth_ui_event_view_model.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/find_password_view_model.dart';
 import 'package:moamoa/core/utils/toast_utils.dart';
 
@@ -136,18 +138,18 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     // ViewModel 상태 구독
     final authState = ref.watch(authViewModelProvider);
 
-    // ViewModel 상태 변화 감지
-    ref.listen(authViewModelProvider, (previous, next) {
-      // 에러 발생 시
-      if (next.errorMessage != null && !next.isLoading) {
-        context.showErrorToast(next.errorMessage!);
-        // 에러 메시지 표시 후 초기화
-        Future.delayed(Duration(milliseconds: 100), () {
-          if (mounted) {
-            ref.read(authViewModelProvider.notifier).clearError();
-          }
-        });
+    // 인증 UI 이벤트 감지
+    ref.listen(authUiEventViewModelProvider, (previous, next) {
+      if (next == null) return;
+
+      final isCurrent = ModalRoute.of(context)?.isCurrent ?? true;
+      if (!isCurrent) return;
+
+      if (next.type == AuthUiEventType.showErrorToast) {
+        context.showErrorToast(next.message);
       }
+
+      ref.read(authUiEventViewModelProvider.notifier).consume();
     });
 
     return PopScope(

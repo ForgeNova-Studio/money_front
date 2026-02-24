@@ -19,6 +19,8 @@ import 'package:moamoa/features/auth/presentation/widgets/register/verification_
 
 // viewmodels
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moamoa/features/auth/presentation/states/auth_ui_event.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/auth_ui_event_view_model.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/register_view_model.dart';
 import 'package:moamoa/core/utils/toast_utils.dart';
 
@@ -204,24 +206,27 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final formState = ref.watch(registerViewModelProvider);
     final isPasswordMismatch = formState.passwordError == '비밀번호가 일치하지 않습니다.';
 
-    // ViewModel 상태 변화 감지
+    // 인증 상태 변화 감지
     ref.listen(authViewModelProvider, (previous, next) {
       // 회원가입 성공 시
       if (next.isAuthenticated && next.user != null) {
         // 홈 화면으로 이동 (뒤로가기 불가)
         context.go(RouteNames.home);
       }
+    });
 
-      // 에러 발생 시
-      if (next.errorMessage != null && !next.isLoading) {
-        context.showErrorToast(next.errorMessage!);
-        // 에러 메시지 표시 후 초기화
-        Future.delayed(Duration(milliseconds: 100), () {
-          if (mounted) {
-            ref.read(authViewModelProvider.notifier).clearError();
-          }
-        });
+    // 인증 UI 이벤트 감지
+    ref.listen(authUiEventViewModelProvider, (previous, next) {
+      if (next == null) return;
+
+      final isCurrent = ModalRoute.of(context)?.isCurrent ?? true;
+      if (!isCurrent) return;
+
+      if (next.type == AuthUiEventType.showErrorToast) {
+        context.showErrorToast(next.message);
       }
+
+      ref.read(authUiEventViewModelProvider.notifier).consume();
     });
 
     return GestureDetector(

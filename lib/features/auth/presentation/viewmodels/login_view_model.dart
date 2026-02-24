@@ -35,16 +35,6 @@ class LoginViewModel {
   Future<void> loginWithProvider(LoginProviderType provider) async {
     await _ref.read(authViewModelProvider.notifier).loginWithProvider(provider);
   }
-
-  LoginErrorAction resolveLoginErrorAction(String message) {
-    return _ref
-        .read(authViewModelProvider.notifier)
-        .resolveLoginErrorAction(message);
-  }
-
-  void clearAuthError() {
-    _ref.read(authViewModelProvider.notifier).clearError();
-  }
 }
 
 @riverpod

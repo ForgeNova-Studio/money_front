@@ -10,7 +10,9 @@ import 'package:moamoa/core/exceptions/exceptions.dart';
 // providers/states
 import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
+import 'package:moamoa/features/auth/presentation/states/auth_ui_event.dart';
 import 'package:moamoa/features/auth/presentation/states/login_error_action.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/auth_ui_event_view_model.dart';
 import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 
@@ -127,7 +129,10 @@ class AuthViewModel extends _$AuthViewModel {
       // OneSignal에 External User ID 등록
       OneSignal.login(result.user.email);
       ref.invalidate(selectedAccountBookViewModelProvider);
-    }, loading: true, defaultErrorMessage: '로그인 중 오류가 발생했습니다');
+    },
+        loading: true,
+        defaultErrorMessage: '로그인 중 오류가 발생했습니다',
+        errorEventBuilder: _buildLoginErrorUiEvent);
   }
 
   /// 회원가입 인증번호 전송
@@ -139,7 +144,8 @@ class AuthViewModel extends _$AuthViewModel {
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다');
+        defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다',
+        errorEventBuilder: _buildErrorToastUiEvent);
   }
 
   /// 회원가입 인증번호 검증
@@ -155,7 +161,8 @@ class AuthViewModel extends _$AuthViewModel {
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다');
+        defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다',
+        errorEventBuilder: _buildErrorToastUiEvent);
   }
 
   /// 비밀번호 찾기 인증번호 검증
@@ -171,7 +178,8 @@ class AuthViewModel extends _$AuthViewModel {
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다');
+        defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다',
+        errorEventBuilder: _buildErrorToastUiEvent);
   }
 
   /// 회원가입
@@ -199,7 +207,8 @@ class AuthViewModel extends _$AuthViewModel {
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: '회원가입 중 오류가 발생했습니다');
+        defaultErrorMessage: '회원가입 중 오류가 발생했습니다',
+        errorEventBuilder: _buildErrorToastUiEvent);
   }
 
   /// 로그아웃
@@ -211,6 +220,7 @@ class AuthViewModel extends _$AuthViewModel {
       forceUnauthenticated();
     } catch (e) {
       state = _setErrorMessage('로그아웃 중 오류가 발생했습니다: $e');
+      _emitUiEvent(AuthUiEvent.showErrorToast('로그아웃 중 오류가 발생했습니다: $e'));
       rethrow;
     }
   }
@@ -247,7 +257,8 @@ class AuthViewModel extends _$AuthViewModel {
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: 'Google 로그인 중 오류가 발생했습니다');
+        defaultErrorMessage: 'Google 로그인 중 오류가 발생했습니다',
+        errorEventBuilder: _buildLoginErrorUiEvent);
   }
 
   /// Naver 로그인
@@ -270,7 +281,8 @@ class AuthViewModel extends _$AuthViewModel {
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: 'Naver 로그인 중 오류가 발생했습니다');
+        defaultErrorMessage: 'Naver 로그인 중 오류가 발생했습니다',
+        errorEventBuilder: _buildLoginErrorUiEvent);
   }
 
   /// Kakao 로그인
@@ -300,7 +312,8 @@ class AuthViewModel extends _$AuthViewModel {
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: 'Kakao 로그인 중 오류가 발생했습니다');
+        defaultErrorMessage: 'Kakao 로그인 중 오류가 발생했습니다',
+        errorEventBuilder: _buildLoginErrorUiEvent);
   }
 
   LoginErrorAction resolveLoginErrorAction(String message) {
@@ -352,6 +365,34 @@ class AuthViewModel extends _$AuthViewModel {
     return LoginProviderType.unknown;
   }
 
+  AuthUiEvent _buildLoginErrorUiEvent(String message) {
+    final action = resolveLoginErrorAction(message);
+    if (action.shouldShowDialog) {
+      return AuthUiEvent.showLoginMethodDialog(
+        message: action.message,
+        provider: action.provider,
+      );
+    }
+
+    return AuthUiEvent.showErrorToast(action.message);
+  }
+
+  AuthUiEvent _buildErrorToastUiEvent(String message) {
+    return AuthUiEvent.showErrorToast(message);
+  }
+
+  void _emitUiEvent(AuthUiEvent event) {
+    ref.read(authUiEventViewModelProvider.notifier).emit(event);
+  }
+
+  void _emitErrorUiEvent(
+    AuthUiEvent Function(String message)? errorEventBuilder,
+    String message,
+  ) {
+    if (errorEventBuilder == null) return;
+    _emitUiEvent(errorEventBuilder(message));
+  }
+
   /// 에러 메시지 초기화
   void clearError() {
     state = _clearError();
@@ -378,7 +419,8 @@ class AuthViewModel extends _$AuthViewModel {
     },
         loading: true,
         rethrowError: true,
-        defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다');
+        defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다',
+        errorEventBuilder: _buildErrorToastUiEvent);
   }
 
   /// 비밀번호 재설정
@@ -397,7 +439,8 @@ class AuthViewModel extends _$AuthViewModel {
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: '비밀번호 재설정 중 오류가 발생했습니다');
+        defaultErrorMessage: '비밀번호 재설정 중 오류가 발생했습니다',
+        errorEventBuilder: _buildErrorToastUiEvent);
   }
 
   AuthState _setLoading(bool isLoading) {
@@ -439,6 +482,7 @@ class AuthViewModel extends _$AuthViewModel {
     bool loading = false,
     bool rethrowError = false,
     String defaultErrorMessage = '오류가 발생했습니다',
+    AuthUiEvent Function(String message)? errorEventBuilder,
   }) async {
     if (loading) {
       state = _setLoading(true);
@@ -450,6 +494,7 @@ class AuthViewModel extends _$AuthViewModel {
         debugPrint('[AuthViewModel] ValidationException: ${e.message}');
       }
       state = _setErrorMessage(e.message);
+      _emitErrorUiEvent(errorEventBuilder, e.message);
       if (rethrowError) rethrow;
     } on UserCancelledException catch (e) {
       if (kDebugMode) {
@@ -461,18 +506,21 @@ class AuthViewModel extends _$AuthViewModel {
         debugPrint('[AuthViewModel] UnauthorizedException: ${e.message}');
       }
       state = _setErrorMessage(e.message);
+      _emitErrorUiEvent(errorEventBuilder, e.message);
       if (rethrowError) rethrow;
     } on NetworkException catch (e) {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] NetworkException: ${e.message}');
       }
       state = _setErrorMessage(e.message);
+      _emitErrorUiEvent(errorEventBuilder, e.message);
       if (rethrowError) rethrow;
     } on ServerException catch (e) {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] ServerException: ${e.message}');
       }
       state = _setErrorMessage(e.message);
+      _emitErrorUiEvent(errorEventBuilder, e.message);
       if (rethrowError) rethrow;
     } catch (e, stackTrace) {
       if (kDebugMode) {
@@ -480,6 +528,7 @@ class AuthViewModel extends _$AuthViewModel {
         debugPrint('[AuthViewModel] StackTrace: $stackTrace');
       }
       state = _setErrorMessage(defaultErrorMessage);
+      _emitErrorUiEvent(errorEventBuilder, defaultErrorMessage);
       if (rethrowError) rethrow;
     }
     // rethrowError=false인 경우의 안전한 fallback 처리

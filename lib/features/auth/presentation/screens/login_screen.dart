@@ -23,7 +23,9 @@ import 'package:moamoa/features/auth/presentation/widgets/login/login_button.dar
 // viewmodels and providers
 import 'package:moamoa/core/utils/toast_utils.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moamoa/features/auth/presentation/states/auth_ui_event.dart';
 import 'package:moamoa/features/auth/presentation/states/login_error_action.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/auth_ui_event_view_model.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/login_view_model.dart';
 
 /// 이메일 및 소셜 로그인을 제공하는 인증 메인 화면입니다.
@@ -52,16 +54,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
-  bool _hasCheckedInitialError = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // 화면 로드 후 첫 프레임에서 기존 에러 메시지 확인
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkInitialError();
-    });
-  }
 
   @override
   void dispose() {
@@ -70,49 +62,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
-  /// 화면 로드 시 이미 존재하는 에러 메시지 확인
-  void _checkInitialError() {
-    if (_hasCheckedInitialError) return;
-    _hasCheckedInitialError = true;
-
-    final authState = ref.read(authViewModelProvider);
-    debugPrint('[LoginScreen] 초기 에러 확인: ${authState.errorMessage}');
-
-    if (authState.errorMessage != null) {
-      _handleAuthError(authState.errorMessage!);
+  void _handleUiEvent(AuthUiEvent event) {
+    switch (event.type) {
+      case AuthUiEventType.showErrorToast:
+        if (mounted) {
+          context.showErrorToast(event.message);
+        }
+        return;
+      case AuthUiEventType.showLoginMethodDialog:
+        if (!mounted) return;
+        debugPrint('[LoginScreen] 에러로 AlertDialog 표시');
+        showLoginMethodAlert(
+          context,
+          provider: event.provider,
+          onNaverLogin: () => _retrySocialLogin(LoginProviderType.naver),
+          onGoogleLogin: () => _retrySocialLogin(LoginProviderType.google),
+          onKakaoLogin: () => _retrySocialLogin(LoginProviderType.kakao),
+        );
+        return;
     }
-  }
-
-  void _handleAuthError(String message) {
-    final action =
-        ref.read(loginViewModelProvider).resolveLoginErrorAction(message);
-
-    if (action.shouldShowDialog) {
-      debugPrint('[LoginScreen] 에러로 AlertDialog 표시');
-      showLoginMethodAlert(
-        context,
-        provider: action.provider,
-        onNaverLogin: () => _retrySocialLogin(LoginProviderType.naver),
-        onGoogleLogin: () => _retrySocialLogin(LoginProviderType.google),
-        onKakaoLogin: () => _retrySocialLogin(LoginProviderType.kakao),
-      );
-    } else if (mounted) {
-      context.showErrorToast(action.message);
-    }
-
-    _scheduleErrorClear();
   }
 
   Future<void> _retrySocialLogin(LoginProviderType provider) async {
     FocusManager.instance.primaryFocus?.unfocus();
     await ref.read(loginViewModelProvider).loginWithProvider(provider);
-  }
-
-  void _scheduleErrorClear() {
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (!mounted) return;
-      ref.read(loginViewModelProvider).clearAuthError();
-    });
   }
 
   @override
@@ -122,21 +95,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     // 인증 상태 관리
     final authState = ref.watch(authViewModelProvider);
 
-    // ViewModel 상태 변화 감지
-    ref.listen(authViewModelProvider, (previous, next) {
-      // 다른 화면으로 이동할 때는 리스너를 건너뜀
-      final isCurrent = ModalRoute.of(context)?.isCurrent ?? true;
-      debugPrint(
-          '[LoginScreen] listener - isCurrent: $isCurrent, errorMessage: ${next.errorMessage}');
+    // 인증 UI 이벤트 감지
+    ref.listen(authUiEventViewModelProvider, (previous, next) {
+      if (next == null) return;
 
+      final isCurrent = ModalRoute.of(context)?.isCurrent ?? true;
       if (!isCurrent) return;
 
-      // 에러 발생 시
-      if (next.errorMessage != null &&
-          next.errorMessage != previous?.errorMessage) {
-        debugPrint('[LoginScreen] 에러 메시지: ${next.errorMessage}');
-        _handleAuthError(next.errorMessage!);
-      }
+      _handleUiEvent(next);
+      ref.read(authUiEventViewModelProvider.notifier).consume();
     });
 
     /// 화면 구성
