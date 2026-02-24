@@ -433,14 +433,17 @@ class AuthViewModel extends _$AuthViewModel {
       state = _setErrorMessage(defaultErrorMessage);
       if (rethrowError) rethrow;
     }
-    // rethrowError가 false이고 에러가 발생한 경우,
-    // Future<T>의 타입에 맞는 기본값을 반환해야 합니다.
-    // T가 bool이면 false, void면 아무것도 반환하지 않습니다.
-    // 여기서는 호출하는 쪽에서 rethrowError=true를 사용하거나 Future<void>이므로,
-    // 이 라인에 도달하는 경우는 Future<void>의 에러 케이스입니다.
-    // 따라서 예외를 던지는 대신 조용히 종료합니다.
-    // 만약 bool을 반환하는데 rethrowError=false라면 `return false as T;`와 같은 처리가 필요합니다.
-    return null
-        as T; // Future<void>의 경우 null을 반환해도 문제가 없으며, bool의 경우 컴파일 에러를 유발하여 실수를 방지합니다.
+    // rethrowError=false인 경우의 안전한 fallback 처리
+    if (T == bool) {
+      return false as T;
+    }
+    if (null is T) {
+      return null as T;
+    }
+
+    throw StateError(
+      '_handleAuthRequest<$T> failed without fallback. '
+      'Use rethrowError=true or a nullable/bool return type.',
+    );
   }
 }
