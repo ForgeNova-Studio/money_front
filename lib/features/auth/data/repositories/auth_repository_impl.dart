@@ -50,11 +50,7 @@ class AuthRepositoryImpl implements AuthRepository {
     );
 
     // profile Map을 UserModel로 변환
-    final profileData = Map<String, dynamic>.from(response.profile);
-    if (!profileData.containsKey('userId')) {
-      profileData['userId'] = response.userId;
-    }
-    final userModel = UserModel.fromJson(profileData);
+    final userModel = UserModel.fromJson(response.toNormalizedProfileJson());
 
     await localDataSource.saveToken(tokenModel);
     await localDataSource.saveUser(userModel);
@@ -254,11 +250,7 @@ class AuthRepositoryImpl implements AuthRepository {
       expiresIn: response.expiresIn,
     );
 
-    final profileData = Map<String, dynamic>.from(response.profile);
-    if (!profileData.containsKey('userId')) {
-      profileData['userId'] = response.userId;
-    }
-    final userModel = UserModel.fromJson(profileData);
+    final userModel = UserModel.fromJson(response.toNormalizedProfileJson());
 
     await localDataSource.saveToken(tokenModel);
     await localDataSource.saveUser(userModel);
