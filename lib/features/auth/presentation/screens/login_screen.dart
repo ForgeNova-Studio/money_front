@@ -23,6 +23,8 @@ import 'package:moamoa/features/auth/presentation/widgets/login/login_button.dar
 // viewmodels and providers
 import 'package:moamoa/core/utils/toast_utils.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:moamoa/features/auth/presentation/states/login_error_action.dart';
+import 'package:moamoa/features/auth/presentation/viewmodels/login_view_model.dart';
 
 /// 이메일 및 소셜 로그인을 제공하는 인증 메인 화면입니다.
 ///
@@ -77,44 +79,39 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     debugPrint('[LoginScreen] 초기 에러 확인: ${authState.errorMessage}');
 
     if (authState.errorMessage != null) {
-      _handleError(authState.errorMessage!);
+      _handleAuthError(authState.errorMessage!);
     }
   }
 
-  /// 에러 처리 (Alert Dialog 또는 Toast)
-  void _handleError(String message) {
-    // 이미 가입된 계정일 경우
-    if (message.contains('로그인으로 가입되어 있습니다')) {
+  void _handleAuthError(String message) {
+    final action =
+        ref.read(loginViewModelProvider).resolveLoginErrorAction(message);
+
+    if (action.shouldShowDialog) {
       debugPrint('[LoginScreen] 에러로 AlertDialog 표시');
       showLoginMethodAlert(
         context,
-        message: message,
-        onNaverLogin: () async {
-          FocusManager.instance.primaryFocus?.unfocus();
-          await ref.read(authViewModelProvider.notifier).loginWithNaver();
-        },
-        onGoogleLogin: () async {
-          FocusManager.instance.primaryFocus?.unfocus();
-          await ref.read(authViewModelProvider.notifier).loginWithGoogle();
-        },
-        onKakaoLogin: () async {
-          FocusManager.instance.primaryFocus?.unfocus();
-          await ref.read(authViewModelProvider.notifier).loginWithKakao();
-        },
+        provider: action.provider,
+        onNaverLogin: () => _retrySocialLogin(LoginProviderType.naver),
+        onGoogleLogin: () => _retrySocialLogin(LoginProviderType.google),
+        onKakaoLogin: () => _retrySocialLogin(LoginProviderType.kakao),
       );
-
-      // 일반적인 오류가 발생했을 경우
-    } else {
-      if (mounted) {
-        context.showErrorToast(message);
-      }
+    } else if (mounted) {
+      context.showErrorToast(action.message);
     }
 
-    // 에러 표시 후 상태 초기화 (메시지 중복 표시 방지)
-    Future.delayed(Duration(milliseconds: 100), () {
-      if (mounted) {
-        ref.read(authViewModelProvider.notifier).clearError();
-      }
+    _scheduleErrorClear();
+  }
+
+  Future<void> _retrySocialLogin(LoginProviderType provider) async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    await ref.read(loginViewModelProvider).loginWithProvider(provider);
+  }
+
+  void _scheduleErrorClear() {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!mounted) return;
+      ref.read(loginViewModelProvider).clearAuthError();
     });
   }
 
@@ -138,7 +135,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (next.errorMessage != null &&
           next.errorMessage != previous?.errorMessage) {
         debugPrint('[LoginScreen] 에러 메시지: ${next.errorMessage}');
-        _handleError(next.errorMessage!);
+        _handleAuthError(next.errorMessage!);
       }
     });
 
@@ -197,7 +194,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 LoginButton(
                   onPressed: () async {
                     FocusManager.instance.primaryFocus?.unfocus();
-                    await ref.read(authViewModelProvider.notifier).login(
+                    await ref.read(loginViewModelProvider).loginWithEmail(
                           email: _emailController.text,
                           password: _passwordController.text,
                         );
@@ -222,7 +219,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       : () async {
                           FocusManager.instance.primaryFocus?.unfocus();
                           await ref
-                              .read(authViewModelProvider.notifier)
+                              .read(loginViewModelProvider)
                               .loginWithGoogle();
                         },
                   isLoading: authState.isLoading,
@@ -237,7 +234,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       : () async {
                           FocusManager.instance.primaryFocus?.unfocus();
                           await ref
-                              .read(authViewModelProvider.notifier)
+                              .read(loginViewModelProvider)
                               .loginWithKakao();
                         },
                   isLoading: authState.isLoading,
@@ -252,7 +249,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       : () async {
                           FocusManager.instance.primaryFocus?.unfocus();
                           await ref
-                              .read(authViewModelProvider.notifier)
+                              .read(loginViewModelProvider)
                               .loginWithNaver();
                         },
                   isLoading: authState.isLoading,

@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // states
 import 'package:moamoa/features/auth/presentation/states/register_form_state.dart';
+import 'package:moamoa/features/auth/presentation/states/form_action_result.dart';
 
 // entities
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
@@ -104,6 +105,24 @@ class RegisterViewModel extends _$RegisterViewModel {
     }
   }
 
+  /// 회원가입 인증번호 요청 (입력 검증 + 요청 오케스트레이션)
+  Future<FormActionResult> requestVerificationCode(String email) async {
+    final emailError = InputValidator.getEmailErrorMessage(email);
+    if (emailError.isNotEmpty) {
+      return FormActionResult.failure(emailError);
+    }
+
+    try {
+      await sendVerificationCode(email);
+      if (!state.isVerificationCodeSent) {
+        return const FormActionResult.failure();
+      }
+      return const FormActionResult.success();
+    } catch (_) {
+      return const FormActionResult.failure();
+    }
+  }
+
   /// 인증번호 확인
   Future<bool> verifyCode({
     required String email,
@@ -126,11 +145,38 @@ class RegisterViewModel extends _$RegisterViewModel {
     return isVerified;
   }
 
+  /// 회원가입 인증번호 확인 (입력 검증 + 확인 오케스트레이션)
+  Future<FormActionResult> confirmVerificationCode({
+    required String email,
+    required String code,
+  }) async {
+    final codeError = InputValidator.getVerificationCodeErrorMessage(code);
+    if (codeError.isNotEmpty) {
+      return FormActionResult.failure(codeError);
+    }
+
+    try {
+      final isVerified = await verifyCode(email: email, code: code);
+      if (!isVerified) {
+        return const FormActionResult.failure('인증번호를 다시 확인해주세요.');
+      }
+      return const FormActionResult.success();
+    } catch (_) {
+      return const FormActionResult.failure();
+    }
+  }
+
   /// 회원가입 가능 여부 검증 및 에러 메시지 반환
   String? validateForSignup({
+    required String nickname,
     required String password,
     required String confirmPassword,
   }) {
+    final nicknameError = InputValidator.getNicknameErrorMessage(nickname);
+    if (nicknameError.isNotEmpty) {
+      return nicknameError;
+    }
+
     if (!state.isEmailVerified) {
       return '이메일 인증을 완료해주세요.';
     }
@@ -158,6 +204,37 @@ class RegisterViewModel extends _$RegisterViewModel {
     }
 
     return null; // 검증 통과
+  }
+
+  /// 회원가입 제출 (입력 검증 + 가입 요청 오케스트레이션)
+  Future<FormActionResult> submitSignup({
+    required String email,
+    required String nickname,
+    required String password,
+    required String confirmPassword,
+  }) async {
+    final errorMessage = validateForSignup(
+      nickname: nickname,
+      password: password,
+      confirmPassword: confirmPassword,
+    );
+
+    if (errorMessage != null) {
+      return FormActionResult.failure(errorMessage);
+    }
+
+    try {
+      await ref.read(authViewModelProvider.notifier).register(
+            email: email,
+            password: password,
+            confirmPassword: confirmPassword,
+            nickname: nickname,
+            gender: state.selectedGender!,
+          );
+      return const FormActionResult.success();
+    } catch (_) {
+      return const FormActionResult.failure();
+    }
   }
 
   String? _passwordMismatchError({

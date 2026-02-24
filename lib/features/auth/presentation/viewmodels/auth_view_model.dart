@@ -10,6 +10,7 @@ import 'package:moamoa/core/exceptions/exceptions.dart';
 // providers/states
 import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
+import 'package:moamoa/features/auth/presentation/states/login_error_action.dart';
 import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 
@@ -39,6 +40,9 @@ part 'auth_view_model.g.dart';
 /// ```
 @Riverpod(keepAlive: true)
 class AuthViewModel extends _$AuthViewModel {
+  static const String _alreadyRegisteredWithOtherMethodMessage =
+      '로그인으로 가입되어 있습니다';
+
   @override
   AuthState build() {
     // 초기화 시 로딩 상태로 시작
@@ -297,6 +301,55 @@ class AuthViewModel extends _$AuthViewModel {
         loading: true,
         rethrowError: false,
         defaultErrorMessage: 'Kakao 로그인 중 오류가 발생했습니다');
+  }
+
+  LoginErrorAction resolveLoginErrorAction(String message) {
+    if (!message.contains(_alreadyRegisteredWithOtherMethodMessage)) {
+      return LoginErrorAction.showToast(message);
+    }
+
+    final provider = _extractLoginProvider(message);
+    if (provider == LoginProviderType.unknown) {
+      return LoginErrorAction.showToast(message);
+    }
+
+    return LoginErrorAction.showLoginMethodDialog(
+      message: message,
+      provider: provider,
+    );
+  }
+
+  Future<void> loginWithProvider(LoginProviderType provider) async {
+    switch (provider) {
+      case LoginProviderType.naver:
+        await loginWithNaver();
+        return;
+      case LoginProviderType.google:
+        await loginWithGoogle();
+        return;
+      case LoginProviderType.kakao:
+        await loginWithKakao();
+        return;
+      case LoginProviderType.email:
+      case LoginProviderType.unknown:
+        return;
+    }
+  }
+
+  LoginProviderType _extractLoginProvider(String message) {
+    if (message.contains('NAVER')) {
+      return LoginProviderType.naver;
+    }
+    if (message.contains('GOOGLE')) {
+      return LoginProviderType.google;
+    }
+    if (message.contains('KAKAO')) {
+      return LoginProviderType.kakao;
+    }
+    if (message.contains('EMAIL')) {
+      return LoginProviderType.email;
+    }
+    return LoginProviderType.unknown;
   }
 
   /// 에러 메시지 초기화

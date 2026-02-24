@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:moamoa/features/auth/presentation/states/login_error_action.dart';
 
 /// 로그인 방법 안내 알림창 표시 함수
 ///
@@ -13,7 +14,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 ///
 /// **파라미터 (Parameters):**
 /// - [context]: 다이얼로그를 표시할 BuildContext
-/// - [message]: 백엔드에서 전달받은 에러 메시지 (제공업체 정보 포함)
+/// - [provider]: 계정이 가입된 로그인 제공자
 /// - [onNaverLogin]: 네이버 로그인 콜백
 /// - [onGoogleLogin]: 구글 로그인 콜백
 /// - [onKakaoLogin]: 카카오 로그인 콜백
@@ -22,49 +23,54 @@ import 'package:flutter_svg/flutter_svg.dart';
 /// ```dart
 /// showLoginMethodAlert(
 ///   context,
-///   message: 'User already exists with ... NAVER',
+///   provider: LoginProviderType.naver,
 ///   onNaverLogin: _viewModel.loginWithNaver,
 ///   // ... other callbacks
 /// );
 /// ```
 void showLoginMethodAlert(
   BuildContext context, {
-  required String message,
+  required LoginProviderType provider,
   required VoidCallback onNaverLogin,
   required VoidCallback onGoogleLogin,
   required VoidCallback onKakaoLogin,
 }) {
-  // 메시지에서 provider 추출
   String providerName = '';
   String iconPath = '';
   Color backgroundColor = Colors.white;
   Color textColor = Colors.black;
   String buttonText = '확인';
 
-  if (message.contains('NAVER')) {
-    providerName = '네이버';
-    iconPath = 'assets/images/naver_logo.svg';
-    backgroundColor = const Color(0xFF03C75A);
-    textColor = Colors.white;
-    buttonText = '네이버로 로그인';
-  } else if (message.contains('GOOGLE')) {
-    providerName = 'Google';
-    iconPath = 'assets/images/google_logo.svg';
-    backgroundColor = Colors.white;
-    textColor = Colors.black; // 구글은 보통 흰배경에 검은글씨/회색테두리
-    buttonText = 'Google로 로그인';
-  } else if (message.contains('KAKAO')) {
-    providerName = '카카오';
-    iconPath = 'assets/images/kakao_symbol.svg';
-    backgroundColor = const Color(0xFFFEE500);
-    textColor = Colors.black;
-    buttonText = '카카오로 로그인';
-  } else if (message.contains('EMAIL')) {
-    providerName = '모아모아 Email';
-    // 이메일 아이콘은 기본 아이콘 사용
-    backgroundColor = Theme.of(context).colorScheme.primary;
-    textColor = Theme.of(context).colorScheme.onPrimary;
-    buttonText = '모아모아 Email로 로그인';
+  switch (provider) {
+    case LoginProviderType.naver:
+      providerName = '네이버';
+      iconPath = 'assets/images/naver_logo.svg';
+      backgroundColor = const Color(0xFF03C75A);
+      textColor = Colors.white;
+      buttonText = '네이버로 로그인';
+      break;
+    case LoginProviderType.google:
+      providerName = 'Google';
+      iconPath = 'assets/images/google_logo.svg';
+      backgroundColor = Colors.white;
+      textColor = Colors.black;
+      buttonText = 'Google로 로그인';
+      break;
+    case LoginProviderType.kakao:
+      providerName = '카카오';
+      iconPath = 'assets/images/kakao_symbol.svg';
+      backgroundColor = const Color(0xFFFEE500);
+      textColor = Colors.black;
+      buttonText = '카카오로 로그인';
+      break;
+    case LoginProviderType.email:
+      providerName = '모아모아 Email';
+      backgroundColor = Theme.of(context).colorScheme.primary;
+      textColor = Theme.of(context).colorScheme.onPrimary;
+      buttonText = '모아모아 Email로 로그인';
+      break;
+    case LoginProviderType.unknown:
+      break;
   }
 
   showDialog(

@@ -65,81 +65,67 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
 
   // 인증번호 전송
   Future<void> _handleSendVerificationCode() async {
-    if (_emailController.text.isEmpty) {
-      context.showErrorToast(
-        '이메일을 입력해주세요.',
-        duration: const Duration(seconds: 2),
-      );
+    final result = await ref
+        .read(findPasswordViewModelProvider.notifier)
+        .requestVerificationCode(_emailController.text);
+
+    if (!mounted) return;
+    if (!result.success) {
+      if (result.message != null) {
+        context.showErrorToast(
+          result.message!,
+          duration: const Duration(seconds: 2),
+        );
+      }
       return;
     }
 
-    try {
-      // FindPasswordViewModel의 sendVerificationCode 메서드 호출
-      await ref
-          .read(findPasswordViewModelProvider.notifier)
-          .sendVerificationCode(_emailController.text);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text('인증번호가 전송되었습니다.')),
+      );
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(content: Text('인증번호가 전송되었습니다.')),
-          );
-
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            FocusScope.of(context).requestFocus(_verificationCodeFocusNode);
-          }
-        });
+        FocusScope.of(context).requestFocus(_verificationCodeFocusNode);
       }
-    } catch (e) {
-      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
-      // try-catch는 UnhandledException 방지용
-    }
+    });
   }
 
   // 인증번호 검증
-  void _handleVerifyCode() async {
-    if (_verificationCodeController.text.isEmpty) {
-      context.showErrorToast(
-        '인증번호를 입력해주세요.',
-        duration: const Duration(seconds: 2),
-      );
+  Future<void> _handleVerifyCode() async {
+    final result = await ref
+        .read(findPasswordViewModelProvider.notifier)
+        .confirmVerificationCode(_verificationCodeController.text);
 
+    if (!mounted) return;
+    if (!result.success) {
+      if (result.message != null) {
+        context.showErrorToast(
+          result.message!,
+          duration: const Duration(seconds: 2),
+        );
+      }
       return;
     }
 
-    // FindPasswordViewModel의 verifyCode 메서드 호출
-    try {
-      final isVerified = await ref
-          .read(findPasswordViewModelProvider.notifier)
-          .verifyCode(code: _verificationCodeController.text);
-
-      if (mounted && isVerified) {
-        context.showToast('인증번호가 확인되었습니다.');
-      }
-    } catch (e) {
-      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
-      // try-catch는 UnhandledException 방지용
-    }
+    context.showToast('인증번호가 확인되었습니다.');
   }
 
   void _handleContinue() {
-    final formState = ref.read(findPasswordViewModelProvider);
+    final result = ref
+        .read(findPasswordViewModelProvider.notifier)
+        .validateContinue(_verificationCodeController.text);
 
-    if (!formState.isEmailVerified) {
-      context.showErrorToast(
-        '이메일 인증을 완료해주세요.',
-        duration: const Duration(seconds: 2),
-      );
-      return;
-    }
-
-    if (_verificationCodeController.text.isEmpty) {
-      context.showErrorToast(
-        '인증번호를 입력해주세요.',
-        duration: const Duration(seconds: 2),
-      );
+    if (!result.success) {
+      if (result.message != null) {
+        context.showErrorToast(
+          result.message!,
+          duration: const Duration(seconds: 2),
+        );
+      }
       return;
     }
 

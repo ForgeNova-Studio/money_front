@@ -79,35 +79,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Future<void> _handleSignUp() async {
-    // ViewModel에서 유효성 검사
-    final errorMessage =
-        ref.read(registerViewModelProvider.notifier).validateForSignup(
+    final result =
+        await ref.read(registerViewModelProvider.notifier).submitSignup(
+              email: _emailController.text,
+              nickname: _displayNameController.text,
               password: _passwordController.text,
               confirmPassword: _confirmPasswordController.text,
             );
 
-    if (errorMessage != null) {
-      context.showErrorToast(errorMessage);
+    if (!mounted) return;
+    if (!result.success && result.message != null) {
+      context.showErrorToast(result.message!);
       return;
     }
-
-    // AuthViewModel의 register 메서드 호출
-    try {
-      await ref.read(authViewModelProvider.notifier).register(
-            email: _emailController.text,
-            password: _passwordController.text,
-            confirmPassword: _confirmPasswordController.text,
-            nickname: _displayNameController.text,
-            gender: ref.read(registerViewModelProvider).selectedGender!,
-          );
-    } catch (e) {
-      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
-      // 174행에서 ref.listen으로 에러를 감지하여 처리
-      // try-catch는 UnhandledException 방지용
-    }
-
-    // 회원가입 성공 시 홈 화면으로 이동
-    // (ref.listen에서 처리됨)
   }
 
   void _handleTermsClick() {
@@ -121,70 +105,56 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Future<void> _handleSendVerificationCode() async {
-    if (_emailController.text.isEmpty) {
-      context.showErrorToast(
-        '이메일을 입력해주세요.',
-        duration: const Duration(seconds: 2),
-      );
+    final result = await ref
+        .read(registerViewModelProvider.notifier)
+        .requestVerificationCode(_emailController.text);
+
+    if (!mounted) return;
+    if (!result.success) {
+      if (result.message != null) {
+        context.showErrorToast(
+          result.message!,
+          duration: const Duration(seconds: 2),
+        );
+      }
       return;
     }
 
-    try {
-      // RegisterViewModel의 sendVerificationCode 메서드 호출
-      await ref
-          .read(registerViewModelProvider.notifier)
-          .sendVerificationCode(_emailController.text);
-
-      // 성공 여부 확인 (에러가 있으면 isVerificationCodeSent가 false)
-      final formState = ref.read(registerViewModelProvider);
-      if (mounted && formState.isVerificationCodeSent) {
-        context.showToast('인증번호가 이메일로 전송되었습니다.');
-        // 인증번호 전송 후 포커싱 처리
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            FocusScope.of(context).requestFocus(_verificationCodeFocusNode);
-          }
-        });
+    if (!mounted) return;
+    context.showToast('인증번호가 이메일로 전송되었습니다.');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        FocusScope.of(context).requestFocus(_verificationCodeFocusNode);
       }
-      // 에러가 있으면 ref.listen에서 에러 메시지가 표시됨
-    } catch (e) {
-      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
-      // ref.listen(authViewModelProvider)에서 에러를 감지하여 처리
-      // try-catch는 UnhandledException 방지용
-    }
+    });
   }
 
   Future<void> _handleVerifyCode() async {
-    if (_verificationCodeController.text.isEmpty) {
-      context.showErrorToast(
-        '인증번호를 입력해주세요.',
-        duration: const Duration(seconds: 2),
-      );
+    final result = await ref
+        .read(registerViewModelProvider.notifier)
+        .confirmVerificationCode(
+          email: _emailController.text,
+          code: _verificationCodeController.text,
+        );
+
+    if (!mounted) return;
+    if (!result.success) {
+      if (result.message != null) {
+        context.showErrorToast(
+          result.message!,
+          duration: const Duration(seconds: 2),
+        );
+      }
       return;
     }
 
-    // RegisterViewModel의 verifyCode 메서드 호출
-    try {
-      final isVerified =
-          await ref.read(registerViewModelProvider.notifier).verifyCode(
-                email: _emailController.text,
-                code: _verificationCodeController.text,
-              );
-
-      if (mounted && isVerified) {
-        context.showToast('이메일 인증이 완료되었습니다.');
-        // 인증 완료 후 포커싱 처리
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            FocusScope.of(context).requestFocus(_passwordFocusNode);
-          }
-        });
+    if (!mounted) return;
+    context.showToast('이메일 인증이 완료되었습니다.');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        FocusScope.of(context).requestFocus(_passwordFocusNode);
       }
-    } catch (e) {
-      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
-      // 174행에서 ref.listen으로 에러를 감지하여 처리
-      // try-catch는 UnhandledException 방지용
-    }
+    });
   }
 
   void _handleEmailNotReceived() {

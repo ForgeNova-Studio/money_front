@@ -69,58 +69,25 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   }
 
   Future<void> _handleResetPassword() async {
-    final password = _passwordController.text;
-    final confirmPassword = _confirmPasswordController.text;
+    final result =
+        await ref.read(findPasswordViewModelProvider.notifier).resetPassword(
+              newPassword: _passwordController.text,
+              confirmPassword: _confirmPasswordController.text,
+            );
 
-    if (password.isEmpty || confirmPassword.isEmpty) {
-      context.showErrorToast(
-        '비밀번호를 입력해주세요.',
-        duration: const Duration(seconds: 2),
-      );
-      return;
-    }
-
-    final passwordError = InputValidator.getPasswordErrorMessage(
-      password,
-      requireUppercase: true,
-      requireSpecialChar: true,
-    );
-    if (passwordError.isNotEmpty) {
-      context.showErrorToast(
-        passwordError,
-        duration: const Duration(seconds: 2),
-      );
-      return;
-    }
-
-    if (password != confirmPassword) {
-      context.showErrorToast(
-        '비밀번호가 일치하지 않습니다.',
-        duration: const Duration(seconds: 2),
-      );
-      return;
-    }
-
-    try {
-      // FindPasswordViewModel에서 email 가져오기
-      final email = ref.read(findPasswordViewModelProvider).email;
-
-      // AuthViewModel의 resetPassword 메서드 호출
-      await ref.read(authViewModelProvider.notifier).resetPassword(
-            email: email,
-            newPassword: _passwordController.text,
-          );
-
-      if (mounted) {
-        context.showToast('비밀번호가 성공적으로 변경되었습니다.');
-
-        // 로그인 화면으로 이동 (스택 초기화)
-        context.go(RouteNames.login);
+    if (!mounted) return;
+    if (!result.success) {
+      if (result.message != null) {
+        context.showErrorToast(
+          result.message!,
+          duration: const Duration(seconds: 2),
+        );
       }
-    } catch (e) {
-      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
-      // try-catch는 UnhandledException 방지용
+      return;
     }
+
+    context.showToast('비밀번호가 성공적으로 변경되었습니다.');
+    context.go(RouteNames.login);
   }
 
   void _updatePassword(String value) {
