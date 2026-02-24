@@ -5,82 +5,19 @@ import 'package:moamoa/features/common/providers/expense_sync_provider.dart';
 import 'package:moamoa/features/statistics/domain/entities/category_monthly_comparison.dart';
 import 'package:moamoa/features/statistics/domain/entities/monthly_statistics.dart';
 import 'package:moamoa/features/statistics/presentation/providers/statistics_providers.dart';
+import 'package:moamoa/features/statistics/presentation/states/statistics_state.dart';
+import 'package:moamoa/features/statistics/presentation/viewmodels/statistics_cache_key.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'statistics_view_model.g.dart';
 
-/// 월간 통계 상태
-class StatisticsState {
-  /// 선택된 월
-  final DateTime selectedMonth;
-
-  /// 현재 월 (미래 이동 방지용)
-  final DateTime currentMonth;
-
-  /// 통계 데이터
-  final AsyncValue<MonthlyStatistics?> statistics;
-
-  /// 카테고리별 전월 대비 데이터
-  final AsyncValue<CategoryMonthlyComparison?> categoryComparison;
-
-  const StatisticsState({
-    required this.selectedMonth,
-    required this.currentMonth,
-    this.statistics = const AsyncValue.loading(),
-    this.categoryComparison = const AsyncValue.loading(),
-  });
-
-  /// 현재 월인지 확인
-  bool get isCurrentMonth =>
-      selectedMonth.year == currentMonth.year &&
-      selectedMonth.month == currentMonth.month;
-
-  /// 필요한 필드만 교체해 상태를 갱신한다.
-  StatisticsState copyWith({
-    DateTime? selectedMonth,
-    DateTime? currentMonth,
-    AsyncValue<MonthlyStatistics?>? statistics,
-    AsyncValue<CategoryMonthlyComparison?>? categoryComparison,
-  }) {
-    return StatisticsState(
-      selectedMonth: selectedMonth ?? this.selectedMonth,
-      currentMonth: currentMonth ?? this.currentMonth,
-      statistics: statistics ?? this.statistics,
-      categoryComparison: categoryComparison ?? this.categoryComparison,
-    );
-  }
-}
-
-class _StatisticsCacheKey {
-  final int monthKey;
-  final String? accountBookId;
-
-  const _StatisticsCacheKey({
-    required this.monthKey,
-    required this.accountBookId,
-  });
-
-  /// month/accountBook 조합이 동일하면 같은 캐시 키로 취급한다.
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is _StatisticsCacheKey &&
-        other.monthKey == monthKey &&
-        other.accountBookId == accountBookId;
-  }
-
-  /// Map key로 사용하기 위한 해시값.
-  @override
-  int get hashCode => Object.hash(monthKey, accountBookId);
-}
-
 @riverpod
 class StatisticsViewModel extends _$StatisticsViewModel {
   /// 월별 통계 캐시 (key: accountBook + yyyyMM)
-  final Map<_StatisticsCacheKey, MonthlyStatistics> _cache = {};
+  final Map<StatisticsCacheKey, MonthlyStatistics> _cache = {};
 
   /// 월별 카테고리 비교 캐시 (key: accountBook + yyyyMM)
-  final Map<_StatisticsCacheKey, CategoryMonthlyComparison> _comparisonCache =
+  final Map<StatisticsCacheKey, CategoryMonthlyComparison> _comparisonCache =
       {};
 
   /// 초기 상태를 만들고, 외부 변경 이벤트(가계부/지출)를 구독한다.
@@ -247,8 +184,8 @@ class StatisticsViewModel extends _$StatisticsViewModel {
   int _monthKey(DateTime month) => month.year * 100 + month.month;
 
   /// 캐시 키 객체를 생성한다. (가계부 + 월)
-  _StatisticsCacheKey _cacheKey(DateTime month, String? accountBookId) {
-    return _StatisticsCacheKey(
+  StatisticsCacheKey _cacheKey(DateTime month, String? accountBookId) {
+    return StatisticsCacheKey(
       monthKey: _monthKey(month),
       accountBookId: accountBookId,
     );
@@ -274,7 +211,7 @@ class StatisticsViewModel extends _$StatisticsViewModel {
       return;
     }
 
-    final key = _StatisticsCacheKey(
+    final key = StatisticsCacheKey(
       monthKey: monthKey,
       accountBookId: accountBookId,
     );
