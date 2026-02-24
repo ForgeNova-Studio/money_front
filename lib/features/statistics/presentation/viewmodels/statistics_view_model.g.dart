@@ -42,7 +42,7 @@ final class StatisticsViewModelProvider
 }
 
 String _$statisticsViewModelHash() =>
-    r'124d73f56b0e77f7de5a4f1d3d2651e84220431c';
+    r'099b3f38ef53cb50ab7616fd9703095bbb22c7ec';
 
 abstract class _$StatisticsViewModel extends $Notifier<StatisticsState> {
   StatisticsState build();

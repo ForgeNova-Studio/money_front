@@ -1,3 +1,4 @@
+import 'package:moamoa/features/common/providers/expense_sync_provider.dart';
 import 'package:moamoa/features/income/domain/entities/income.dart';
 import 'package:moamoa/features/income/presentation/providers/income_providers.dart';
 import 'package:moamoa/features/income/presentation/states/income_state.dart';
@@ -116,8 +117,16 @@ class IncomeViewModel extends _$IncomeViewModel {
       await createIncome(income);
     }
 
-    // 성공 시 홈 데이터 갱신
-    syncHomeAfterTransaction(ref: ref, date: date);
+    final selectedAccountBookId =
+        ref.read(selectedAccountBookViewModelProvider).asData?.value;
+
+    // 성공 시 홈 데이터 갱신 신호 발행
+    ref.read(transactionSyncProvider.notifier).emit(
+          date: date,
+          accountBookId: selectedAccountBookId,
+        );
+    
+    // 추후 수입 변경 시 분석 데이터 동기화 신호 발행이 필요하면 추가해야함
 
     // 현재 리스트 갱신 (Stale Data 방지)
     await loadIncome();

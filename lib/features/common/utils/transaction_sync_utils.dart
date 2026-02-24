@@ -1,8 +1,3 @@
-import 'dart:async';
-
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
-
 typedef MonthDateRange = ({
   DateTime startDate,
   DateTime endDate,
@@ -14,16 +9,6 @@ MonthDateRange buildMonthDateRange(DateTime focusedDay) {
     startDate: DateTime(focusedDay.year, focusedDay.month, 1),
     endDate: DateTime(focusedDay.year, focusedDay.month + 1, 0),
   );
-}
-
-/// 홈 화면의 월간 데이터/예산/자산을 트랜잭션 변경 직후 동기화한다.
-void syncHomeAfterTransaction({
-  required Ref ref,
-  required DateTime date,
-}) {
-  final homeViewModel = ref.read(homeViewModelProvider.notifier);
-  unawaited(homeViewModel.fetchMonthlyData(date, forceRefresh: true));
-  homeViewModel.refreshBudgetAndAsset();
 }
 
 /// 리스트의 금액 필드를 누적 합산한다.

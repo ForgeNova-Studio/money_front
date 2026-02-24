@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:moamoa/features/common/providers/expense_sync_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:moamoa/features/expense/domain/entities/expense.dart';
 import 'package:moamoa/features/expense/presentation/providers/expense_providers.dart';
@@ -33,7 +34,8 @@ class OcrScanViewModel extends _$OcrScanViewModel {
       );
 
       if (kDebugMode) {
-        debugPrint('[OcrScan] 이미지 처리 시작: ${imageFile.path} (카드사: $cardCompanyId)');
+        debugPrint(
+            '[OcrScan] 이미지 처리 시작: ${imageFile.path} (카드사: $cardCompanyId)');
       }
 
       final results = await _repository.extractReceiptData(imageFile);
@@ -101,9 +103,8 @@ class OcrScanViewModel extends _$OcrScanViewModel {
 
   /// 개별 항목 삭제
   void removePendingReceipt(String id) {
-    final updatedList = state.pendingReceipts
-        .where((item) => item.id != id)
-        .toList();
+    final updatedList =
+        state.pendingReceipts.where((item) => item.id != id).toList();
 
     state = state.copyWith(pendingReceipts: updatedList);
 
@@ -131,6 +132,7 @@ class OcrScanViewModel extends _$OcrScanViewModel {
 
       // 저장할 영수증 목록을 미리 복사 (상태 변경 방지)
       final receiptsToSave = List<PendingReceipt>.from(state.pendingReceipts);
+      final changedMonths = <int, DateTime>{};
 
       for (final pending in receiptsToSave) {
         final expense = Expense(
@@ -145,6 +147,19 @@ class OcrScanViewModel extends _$OcrScanViewModel {
         );
 
         await createExpenseUseCase(expense);
+        final month = DateTime(pending.date.year, pending.date.month);
+        changedMonths[month.year * 100 + month.month] = month;
+      }
+
+      for (final month in changedMonths.values) {
+        ref.read(transactionSyncProvider.notifier).emit(
+              date: month,
+              accountBookId: selectedAccountBookId,
+            );
+        ref.read(expenseSyncProvider.notifier).emit(
+              date: month,
+              accountBookId: selectedAccountBookId,
+            );
       }
 
       // 저장 완료 후 상태 초기화
