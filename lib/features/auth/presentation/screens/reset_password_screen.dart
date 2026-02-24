@@ -11,11 +11,10 @@ import 'package:moamoa/router/route_names.dart';
 // widgets
 import 'package:moamoa/features/auth/presentation/widgets/reset_password/reset_password_title.dart';
 import 'package:moamoa/features/auth/presentation/widgets/reset_password/reset_password_form.dart';
+import 'package:moamoa/features/auth/presentation/widgets/auth_ui_event_listener.dart';
 
 // viewmodels
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
-import 'package:moamoa/features/auth/presentation/states/auth_ui_event.dart';
-import 'package:moamoa/features/auth/presentation/viewmodels/auth_ui_event_view_model.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/find_password_view_model.dart';
 import 'package:moamoa/core/utils/toast_utils.dart';
 
@@ -138,52 +137,40 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     // ViewModel 상태 구독
     final authState = ref.watch(authViewModelProvider);
 
-    // 인증 UI 이벤트 감지
-    ref.listen(authUiEventViewModelProvider, (previous, next) {
-      if (next == null) return;
-
-      final isCurrent = ModalRoute.of(context)?.isCurrent ?? true;
-      if (!isCurrent) return;
-
-      if (next.type == AuthUiEventType.showErrorToast) {
-        context.showErrorToast(next.message);
-      }
-
-      ref.read(authUiEventViewModelProvider.notifier).consume();
-    });
-
-    return PopScope(
-      canPop: false,
-      child: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Scaffold(
-          backgroundColor: colorScheme.surface,
-          appBar: AppBar(
+    return AuthUiEventListener(
+      child: PopScope(
+        canPop: false,
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Scaffold(
             backgroundColor: colorScheme.surface,
-            elevation: 0,
-            automaticallyImplyLeading: false,
-          ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 24),
-                  const ResetPasswordTitle(),
-                  const SizedBox(height: 40),
-                  ResetPasswordForm(
-                    passwordController: _passwordController,
-                    confirmPasswordController: _confirmPasswordController,
-                    password: _password,
-                    confirmPassword: _confirmPassword,
-                    confirmError: _confirmError,
-                    onPasswordChanged: _updatePassword,
-                    onConfirmPasswordChanged: _updateConfirmPassword,
-                    onSubmit: _handleResetPassword,
-                    isLoading: authState.isLoading,
-                  ),
-                ],
+            appBar: AppBar(
+              backgroundColor: colorScheme.surface,
+              elevation: 0,
+              automaticallyImplyLeading: false,
+            ),
+            body: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 24),
+                    const ResetPasswordTitle(),
+                    const SizedBox(height: 40),
+                    ResetPasswordForm(
+                      passwordController: _passwordController,
+                      confirmPasswordController: _confirmPasswordController,
+                      password: _password,
+                      confirmPassword: _confirmPassword,
+                      confirmError: _confirmError,
+                      onPasswordChanged: _updatePassword,
+                      onConfirmPasswordChanged: _updateConfirmPassword,
+                      onSubmit: _handleResetPassword,
+                      isLoading: authState.isLoading,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

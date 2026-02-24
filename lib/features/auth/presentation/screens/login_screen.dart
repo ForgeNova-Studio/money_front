@@ -19,13 +19,11 @@ import 'package:moamoa/features/auth/presentation/widgets/login/login_method_ale
 import 'package:moamoa/features/auth/presentation/widgets/login/link_find_password.dart';
 import 'package:moamoa/features/auth/presentation/widgets/login/link_register.dart';
 import 'package:moamoa/features/auth/presentation/widgets/login/login_button.dart';
+import 'package:moamoa/features/auth/presentation/widgets/auth_ui_event_listener.dart';
 
 // viewmodels and providers
-import 'package:moamoa/core/utils/toast_utils.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
-import 'package:moamoa/features/auth/presentation/states/auth_ui_event.dart';
 import 'package:moamoa/features/auth/presentation/states/login_error_action.dart';
-import 'package:moamoa/features/auth/presentation/viewmodels/auth_ui_event_view_model.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/login_view_model.dart';
 
 /// 이메일 및 소셜 로그인을 제공하는 인증 메인 화면입니다.
@@ -62,25 +60,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
-  void _handleUiEvent(AuthUiEvent event) {
-    switch (event.type) {
-      case AuthUiEventType.showErrorToast:
-        if (mounted) {
-          context.showErrorToast(event.message);
-        }
-        return;
-      case AuthUiEventType.showLoginMethodDialog:
-        if (!mounted) return;
-        debugPrint('[LoginScreen] 에러로 AlertDialog 표시');
-        showLoginMethodAlert(
-          context,
-          provider: event.provider,
-          onNaverLogin: () => _retrySocialLogin(LoginProviderType.naver),
-          onGoogleLogin: () => _retrySocialLogin(LoginProviderType.google),
-          onKakaoLogin: () => _retrySocialLogin(LoginProviderType.kakao),
-        );
-        return;
-    }
+  void _showLoginMethodDialog(
+    BuildContext context,
+    LoginProviderType provider,
+    String message,
+  ) {
+    debugPrint('[LoginScreen] 에러로 AlertDialog 표시: $message');
+    showLoginMethodAlert(
+      context,
+      provider: provider,
+      onNaverLogin: () => _retrySocialLogin(LoginProviderType.naver),
+      onGoogleLogin: () => _retrySocialLogin(LoginProviderType.google),
+      onKakaoLogin: () => _retrySocialLogin(LoginProviderType.kakao),
+    );
   }
 
   Future<void> _retrySocialLogin(LoginProviderType provider) async {
@@ -95,143 +87,135 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     // 인증 상태 관리
     final authState = ref.watch(authViewModelProvider);
 
-    // 인증 UI 이벤트 감지
-    ref.listen(authUiEventViewModelProvider, (previous, next) {
-      if (next == null) return;
-
-      final isCurrent = ModalRoute.of(context)?.isCurrent ?? true;
-      if (!isCurrent) return;
-
-      _handleUiEvent(next);
-      ref.read(authUiEventViewModelProvider.notifier).consume();
-    });
-
     /// 화면 구성
-    return GestureDetector(
-      onTap: () =>
-          FocusScope.of(context).unfocus(), // 키보드 닫기!! (홈 화면에서 오버플로우 발생 방지)
-      child: Scaffold(
-        backgroundColor: colorScheme.surface,
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 24),
+    return AuthUiEventListener(
+      onLoginMethodDialog: _showLoginMethodDialog,
+      child: GestureDetector(
+        onTap: () =>
+            FocusScope.of(context).unfocus(), // 키보드 닫기!! (홈 화면에서 오버플로우 발생 방지)
+        child: Scaffold(
+          backgroundColor: colorScheme.surface,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 24),
 
-                // 타이틀
-                const LoginTitle(),
+                  // 타이틀
+                  const LoginTitle(),
 
-                const SizedBox(height: 40),
+                  const SizedBox(height: 40),
 
-                // 이메일 입력 필드
-                CustomTextField(
-                  controller: _emailController,
-                  hintText: '이메일',
-                  icon: Icons.edit_outlined,
-                  keyboardType: TextInputType.emailAddress,
-                ),
+                  // 이메일 입력 필드
+                  CustomTextField(
+                    controller: _emailController,
+                    hintText: '이메일',
+                    icon: Icons.edit_outlined,
+                    keyboardType: TextInputType.emailAddress,
+                  ),
 
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-                // 비밀번호 입력 필드
-                CustomTextField(
-                  controller: _passwordController,
-                  hintText: '비밀번호',
-                  isPassword: true,
-                  isPasswordVisible: _isPasswordVisible,
-                  onVisibilityToggle: () {
-                    setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
-                    });
-                  },
-                ),
+                  // 비밀번호 입력 필드
+                  CustomTextField(
+                    controller: _passwordController,
+                    hintText: '비밀번호',
+                    isPassword: true,
+                    isPasswordVisible: _isPasswordVisible,
+                    onVisibilityToggle: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                  ),
 
-                const SizedBox(height: 12),
+                  const SizedBox(height: 12),
 
-                // 비밀번호 찾기 링크
-                LinkFindPassword(
-                  onTap: () => context.push(RouteNames.findPassword),
-                ),
+                  // 비밀번호 찾기 링크
+                  LinkFindPassword(
+                    onTap: () => context.push(RouteNames.findPassword),
+                  ),
 
-                const SizedBox(height: 12),
+                  const SizedBox(height: 12),
 
-                // 로그인 버튼
-                LoginButton(
-                  onPressed: () async {
-                    FocusManager.instance.primaryFocus?.unfocus();
-                    await ref.read(loginViewModelProvider).loginWithEmail(
-                          email: _emailController.text,
-                          password: _passwordController.text,
-                        );
-                  },
-                  isLoading: authState.isLoading,
-                ),
+                  // 로그인 버튼
+                  LoginButton(
+                    onPressed: () async {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      await ref.read(loginViewModelProvider).loginWithEmail(
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                          );
+                    },
+                    isLoading: authState.isLoading,
+                  ),
 
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-                // 구분선 (or)
-                const LoginDivider(),
+                  // 구분선 (or)
+                  const LoginDivider(),
 
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-                // 마지막 로그인 방법 힌트
-                const LastLoginHint(),
+                  // 마지막 로그인 방법 힌트
+                  const LastLoginHint(),
 
-                // Google 로그인 버튼 (공식 브랜드 가이드라인 적용)
-                GoogleLoginButton(
-                  onPressed: authState.isLoading
-                      ? null
-                      : () async {
-                          FocusManager.instance.primaryFocus?.unfocus();
-                          await ref
-                              .read(loginViewModelProvider)
-                              .loginWithGoogle();
-                        },
-                  isLoading: authState.isLoading,
-                ),
+                  // Google 로그인 버튼 (공식 브랜드 가이드라인 적용)
+                  GoogleLoginButton(
+                    onPressed: authState.isLoading
+                        ? null
+                        : () async {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            await ref
+                                .read(loginViewModelProvider)
+                                .loginWithGoogle();
+                          },
+                    isLoading: authState.isLoading,
+                  ),
 
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-                // 카카오 로그인 버튼 (공식 디자인 가이드라인 적용)
-                KakaoLoginButton(
-                  onPressed: authState.isLoading
-                      ? null
-                      : () async {
-                          FocusManager.instance.primaryFocus?.unfocus();
-                          await ref
-                              .read(loginViewModelProvider)
-                              .loginWithKakao();
-                        },
-                  isLoading: authState.isLoading,
-                ),
+                  // 카카오 로그인 버튼 (공식 디자인 가이드라인 적용)
+                  KakaoLoginButton(
+                    onPressed: authState.isLoading
+                        ? null
+                        : () async {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            await ref
+                                .read(loginViewModelProvider)
+                                .loginWithKakao();
+                          },
+                    isLoading: authState.isLoading,
+                  ),
 
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-                // 네이버 로그인 버튼 (공식 디자인 가이드라인 적용)
-                NaverLoginButton(
-                  onPressed: authState.isLoading
-                      ? null
-                      : () async {
-                          FocusManager.instance.primaryFocus?.unfocus();
-                          await ref
-                              .read(loginViewModelProvider)
-                              .loginWithNaver();
-                        },
-                  isLoading: authState.isLoading,
-                ),
+                  // 네이버 로그인 버튼 (공식 디자인 가이드라인 적용)
+                  NaverLoginButton(
+                    onPressed: authState.isLoading
+                        ? null
+                        : () async {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            await ref
+                                .read(loginViewModelProvider)
+                                .loginWithNaver();
+                          },
+                    isLoading: authState.isLoading,
+                  ),
 
-                const SizedBox(height: 32),
+                  const SizedBox(height: 32),
 
-                // 회원가입 링크
-                // 회원가입 링크
-                LinkRegister(
-                  onTap: () => context.push(RouteNames.register),
-                ),
+                  // 회원가입 링크
+                  // 회원가입 링크
+                  LinkRegister(
+                    onTap: () => context.push(RouteNames.register),
+                  ),
 
-                const SizedBox(height: 40),
-              ],
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
           ),
         ),
