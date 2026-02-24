@@ -69,5 +69,3 @@ android/app/src/main/res/values/strings.xml
 
 # 프로젝트 개발 docs
 docs/*
-!docs/issue/
-!docs/issue/**
