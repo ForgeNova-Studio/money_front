@@ -25,20 +25,22 @@ class AuthUiEventListener extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(authUiEventViewModelProvider, (previous, next) {
-      if (next == null) return;
+      if (next.isEmpty) return;
 
       final isCurrent = ModalRoute.of(context)?.isCurrent ?? true;
       if (!isCurrent) return;
 
-      switch (next.type) {
+      final event = next.first;
+
+      switch (event.type) {
         case AuthUiEventType.showErrorToast:
-          context.showErrorToast(next.message);
+          context.showErrorToast(event.message);
           break;
         case AuthUiEventType.showLoginMethodDialog:
           if (onLoginMethodDialog != null) {
-            onLoginMethodDialog!(context, next.provider, next.message);
+            onLoginMethodDialog!(context, event.provider, event.message);
           } else {
-            context.showErrorToast(next.message);
+            context.showErrorToast(event.message);
           }
           break;
       }

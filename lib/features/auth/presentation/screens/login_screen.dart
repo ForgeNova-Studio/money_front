@@ -66,7 +66,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     LoginProviderType provider,
     String message,
   ) {
-    debugPrint('[LoginScreen] 에러로 AlertDialog 표시: $message');
     showLoginMethodAlert(
       context,
       provider: provider,

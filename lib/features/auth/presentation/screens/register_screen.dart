@@ -1,11 +1,8 @@
 // packages
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 // core
-
-import 'package:moamoa/router/route_names.dart';
 
 // widgets
 import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
@@ -205,15 +202,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final authState = ref.watch(authViewModelProvider);
     final formState = ref.watch(registerViewModelProvider);
     final isPasswordMismatch = formState.passwordError == '비밀번호가 일치하지 않습니다.';
-
-    // 인증 상태 변화 감지
-    ref.listen(authViewModelProvider, (previous, next) {
-      // 회원가입 성공 시
-      if (next.isAuthenticated && next.user != null) {
-        // 홈 화면으로 이동 (뒤로가기 불가)
-        context.go(RouteNames.home);
-      }
-    });
 
     return AuthUiEventListener(
       child: AuthScreenScaffold(
