@@ -225,7 +225,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               .read(authViewModelProvider.notifier)
                               .loginWithGoogle();
                         },
-                  isLoading: false,
+                  isLoading: authState.isLoading,
                 ),
 
                 const SizedBox(height: 16),
@@ -240,7 +240,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               .read(authViewModelProvider.notifier)
                               .loginWithKakao();
                         },
-                  isLoading: false,
+                  isLoading: authState.isLoading,
                 ),
 
                 const SizedBox(height: 16),
@@ -255,7 +255,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               .read(authViewModelProvider.notifier)
                               .loginWithNaver();
                         },
-                  isLoading: false,
+                  isLoading: authState.isLoading,
                 ),
 
                 const SizedBox(height: 32),
