@@ -125,6 +125,16 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
   }
 
   void _handleContinue() {
+    final formState = ref.read(findPasswordViewModelProvider);
+
+    if (!formState.isEmailVerified) {
+      context.showErrorToast(
+        '이메일 인증을 완료해주세요.',
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
     if (_verificationCodeController.text.isEmpty) {
       context.showErrorToast(
         '인증번호를 입력해주세요.',
