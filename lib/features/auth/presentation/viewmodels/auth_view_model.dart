@@ -136,11 +136,12 @@ class AuthViewModel extends _$AuthViewModel {
   }
 
   /// 회원가입 인증번호 전송
-  Future<void> sendSignupCode(String email) async {
-    await _handleAuthRequest(() async {
+  Future<bool> sendSignupCode(String email) async {
+    return _handleAuthRequest(() async {
       final useCase = ref.read(sendSignupCodeUseCaseProvider);
       await useCase(email);
       state = AuthState.initial(); // 성공 시 초기 상태로 복귀
+      return true;
     },
         loading: true,
         rethrowError: false,
@@ -219,7 +220,7 @@ class AuthViewModel extends _$AuthViewModel {
 
       forceUnauthenticated();
     } catch (e) {
-      state = _setErrorMessage('로그아웃 중 오류가 발생했습니다: $e');
+      state = _setLoading(false);
       _emitUiEvent(AuthUiEvent.showErrorToast('로그아웃 중 오류가 발생했습니다: $e'));
       rethrow;
     }
@@ -393,18 +394,16 @@ class AuthViewModel extends _$AuthViewModel {
     _emitUiEvent(errorEventBuilder(message));
   }
 
-  /// 에러 메시지 초기화
-  void clearError() {
-    state = _clearError();
-  }
-
   /// 강제로 unauthenticated 상태로 변경
   /// (401 에러 발생 시 Interceptor에서 호출)
   void forceUnauthenticated({String? errorMessage}) {
     // OneSignal External User ID 정리
     OneSignal.logout();
 
-    state = AuthState.unauthenticated(errorMessage: errorMessage);
+    state = AuthState.unauthenticated();
+    if (errorMessage != null && errorMessage.isNotEmpty) {
+      _emitUiEvent(AuthUiEvent.showErrorToast(errorMessage));
+    }
 
     // 강제 로그아웃(토큰 만료 등)에서도 사용자 캐시가 남지 않도록 동일 정리 수행
     _invalidateAllUserProviders();
@@ -447,32 +446,10 @@ class AuthViewModel extends _$AuthViewModel {
     return state.map(
       authenticated: (current) => current.copyWith(
         isLoading: isLoading,
-        errorMessage: null,
       ),
       unauthenticated: (current) => current.copyWith(
         isLoading: isLoading,
-        errorMessage: null,
       ),
-    );
-  }
-
-  AuthState _setErrorMessage(String message) {
-    return state.map(
-      authenticated: (current) => current.copyWith(
-        isLoading: false,
-        errorMessage: message,
-      ),
-      unauthenticated: (current) => current.copyWith(
-        isLoading: false,
-        errorMessage: message,
-      ),
-    );
-  }
-
-  AuthState _clearError() {
-    return state.map(
-      authenticated: (current) => current.copyWith(errorMessage: null),
-      unauthenticated: (current) => current.copyWith(errorMessage: null),
     );
   }
 
@@ -493,7 +470,7 @@ class AuthViewModel extends _$AuthViewModel {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] ValidationException: ${e.message}');
       }
-      state = _setErrorMessage(e.message);
+      state = _setLoading(false);
       _emitErrorUiEvent(errorEventBuilder, e.message);
       if (rethrowError) rethrow;
     } on UserCancelledException catch (e) {
@@ -505,21 +482,21 @@ class AuthViewModel extends _$AuthViewModel {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] UnauthorizedException: ${e.message}');
       }
-      state = _setErrorMessage(e.message);
+      state = _setLoading(false);
       _emitErrorUiEvent(errorEventBuilder, e.message);
       if (rethrowError) rethrow;
     } on NetworkException catch (e) {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] NetworkException: ${e.message}');
       }
-      state = _setErrorMessage(e.message);
+      state = _setLoading(false);
       _emitErrorUiEvent(errorEventBuilder, e.message);
       if (rethrowError) rethrow;
     } on ServerException catch (e) {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] ServerException: ${e.message}');
       }
-      state = _setErrorMessage(e.message);
+      state = _setLoading(false);
       _emitErrorUiEvent(errorEventBuilder, e.message);
       if (rethrowError) rethrow;
     } catch (e, stackTrace) {
@@ -527,7 +504,7 @@ class AuthViewModel extends _$AuthViewModel {
         debugPrint('[AuthViewModel] 알 수 없는 에러: $e');
         debugPrint('[AuthViewModel] StackTrace: $stackTrace');
       }
-      state = _setErrorMessage(defaultErrorMessage);
+      state = _setLoading(false);
       _emitErrorUiEvent(errorEventBuilder, defaultErrorMessage);
       if (rethrowError) rethrow;
     }
