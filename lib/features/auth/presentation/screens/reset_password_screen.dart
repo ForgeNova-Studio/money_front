@@ -11,8 +11,8 @@ import 'package:moamoa/router/route_names.dart';
 // widgets
 import 'package:moamoa/features/auth/presentation/widgets/reset_password/reset_password_title.dart';
 import 'package:moamoa/features/auth/presentation/widgets/reset_password/reset_password_form.dart';
-import 'package:moamoa/features/auth/presentation/widgets/auth_screen_scaffold.dart';
-import 'package:moamoa/features/auth/presentation/widgets/auth_ui_event_listener.dart';
+import 'package:moamoa/features/auth/presentation/layouts/auth_screen_scaffold.dart';
+import 'package:moamoa/features/auth/presentation/listeners/auth_ui_event_listener.dart';
 
 // viewmodels
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';

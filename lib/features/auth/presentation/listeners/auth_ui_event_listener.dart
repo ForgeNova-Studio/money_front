@@ -12,6 +12,9 @@ typedef LoginMethodDialogHandler = void Function(
   String message,
 );
 
+/// auth 공통으로 authUiEventViewModelProvider를 listen하여 이벤트를 처리하는 위젯
+/// 화면 자체 로직에서 showToast, showDialog를 직접 처리하지 않고,
+/// 이벤트 큐를 소비(consume)하는 전용 레이어
 class AuthUiEventListener extends ConsumerWidget {
   final Widget child;
   final LoginMethodDialogHandler? onLoginMethodDialog;

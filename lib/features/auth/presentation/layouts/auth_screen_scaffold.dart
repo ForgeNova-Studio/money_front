@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// 역할: auth 화면의 공통 레이아웃 뼈대(Scaffold + SafeArea + padding + scroll + 키보드 dismiss)를 제공
 class AuthScreenScaffold extends StatelessWidget {
   final Widget child;
   final PreferredSizeWidget? appBar;

@@ -10,8 +10,8 @@ import 'package:moamoa/core/utils/toast_utils.dart';
 
 // screens
 import 'package:moamoa/features/auth/presentation/screens/reset_password_screen.dart';
-import 'package:moamoa/features/auth/presentation/widgets/auth_screen_scaffold.dart';
-import 'package:moamoa/features/auth/presentation/widgets/auth_ui_event_listener.dart';
+import 'package:moamoa/features/auth/presentation/layouts/auth_screen_scaffold.dart';
+import 'package:moamoa/features/auth/presentation/listeners/auth_ui_event_listener.dart';
 import 'package:moamoa/features/auth/presentation/widgets/find_password/find_password_title.dart';
 import 'package:moamoa/features/auth/presentation/widgets/find_password/email_verification_form.dart';
 

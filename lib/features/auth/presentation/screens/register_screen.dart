@@ -13,8 +13,8 @@ import 'package:moamoa/features/auth/presentation/widgets/register/register_subm
 import 'package:moamoa/features/auth/presentation/widgets/register/register_title.dart';
 import 'package:moamoa/features/auth/presentation/widgets/register/terms_agreement_row.dart';
 import 'package:moamoa/features/auth/presentation/widgets/register/verification_code_section.dart';
-import 'package:moamoa/features/auth/presentation/widgets/auth_screen_scaffold.dart';
-import 'package:moamoa/features/auth/presentation/widgets/auth_ui_event_listener.dart';
+import 'package:moamoa/features/auth/presentation/layouts/auth_screen_scaffold.dart';
+import 'package:moamoa/features/auth/presentation/listeners/auth_ui_event_listener.dart';
 
 // viewmodels
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
