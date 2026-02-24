@@ -25,31 +25,41 @@ class AuthUiEventListener extends ConsumerWidget {
     this.onLoginMethodDialog,
   });
 
+  void _handleEvent(BuildContext context, AuthUiEvent event) {
+    switch (event.type) {
+      case AuthUiEventType.showErrorToast:
+        context.showErrorToast(event.message);
+        break;
+      case AuthUiEventType.showLoginMethodDialog:
+        if (onLoginMethodDialog != null) {
+          onLoginMethodDialog!(context, event.provider, event.message);
+        } else {
+          context.showErrorToast(event.message);
+        }
+        break;
+    }
+  }
+
+  void _consumeCurrentRouteEvent(BuildContext context, WidgetRef ref) {
+    final queue = ref.read(authUiEventViewModelProvider);
+    if (queue.isEmpty) return;
+
+    final isCurrent = ModalRoute.of(context)?.isCurrent ?? true;
+    if (!isCurrent) return;
+
+    _handleEvent(context, queue.first);
+    ref.read(authUiEventViewModelProvider.notifier).consume();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen(authUiEventViewModelProvider, (previous, next) {
-      if (next.isEmpty) return;
-
-      final isCurrent = ModalRoute.of(context)?.isCurrent ?? true;
-      if (!isCurrent) return;
-
-      final event = next.first;
-
-      switch (event.type) {
-        case AuthUiEventType.showErrorToast:
-          context.showErrorToast(event.message);
-          break;
-        case AuthUiEventType.showLoginMethodDialog:
-          if (onLoginMethodDialog != null) {
-            onLoginMethodDialog!(context, event.provider, event.message);
-          } else {
-            context.showErrorToast(event.message);
-          }
-          break;
-      }
-
-      ref.read(authUiEventViewModelProvider.notifier).consume();
-    });
+    final queue = ref.watch(authUiEventViewModelProvider);
+    if (queue.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!context.mounted) return;
+        _consumeCurrentRouteEvent(context, ref);
+      });
+    }
 
     return child;
   }
