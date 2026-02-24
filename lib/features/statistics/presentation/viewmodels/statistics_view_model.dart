@@ -29,6 +29,7 @@ class StatisticsViewModel extends _$StatisticsViewModel {
     final now = DateTime.now();
     final currentMonth = DateTime(now.year, now.month);
 
+    // 가계부가 변경되었을 때, 기존 캐시를 모두 초기화 하고, 현재 선택 월의 데이터를 강제로 다시 불러온다.
     ref.listen<AsyncValue<String?>>(
       selectedAccountBookViewModelProvider,
       (previous, next) {
@@ -43,6 +44,7 @@ class StatisticsViewModel extends _$StatisticsViewModel {
       },
     );
 
+    // 사용자가 새로운 지출 내역을 추가/수정/삭제 했을 때 변경 신호를 감지하고 실행
     ref.listen<ExpenseSyncSignal?>(expenseSyncProvider, (previous, next) {
       if (next == null) {
         return;
