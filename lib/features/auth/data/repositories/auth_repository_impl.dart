@@ -111,8 +111,13 @@ class AuthRepositoryImpl implements AuthRepository {
     // Refresh Token 읽기
     final tokenModel = await localDataSource.getToken();
 
-    // Remote Logout 호출
-    await remoteDataSource.logout(tokenModel?.refreshToken ?? '');
+    try {
+      // 서버 로그아웃 실패와 무관하게 로컬 세션 정리는 반드시 진행
+      await remoteDataSource.logout(tokenModel?.refreshToken ?? '');
+    } catch (error) {
+      // 서버 상태와 무관하게 클라이언트 세션을 확실히 종료한다.
+      if (error is! Exception) rethrow;
+    }
 
     // Local Storage 데이터 삭제
     await localDataSource.clearAll();
