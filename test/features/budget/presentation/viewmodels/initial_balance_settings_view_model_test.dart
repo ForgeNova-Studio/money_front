@@ -9,6 +9,7 @@ import 'package:moamoa/features/budget/presentation/states/initial_balance_setti
 import 'package:moamoa/features/budget/presentation/viewmodels/initial_balance_settings_view_model.dart';
 import 'package:moamoa/features/home/presentation/states/home_state.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/features/budget/domain/entities/asset_entity.dart';
 
 void main() {
   group('InitialBalanceSettingsViewModel', () {

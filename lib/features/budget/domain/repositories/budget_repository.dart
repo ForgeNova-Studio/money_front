@@ -1,4 +1,5 @@
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
+import 'package:moamoa/features/budget/domain/entities/asset_entity.dart';
 
 /// Budget Repository 인터페이스
 abstract class BudgetRepository {

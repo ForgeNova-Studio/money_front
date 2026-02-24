@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:moamoa/features/budget/domain/entities/asset_entity.dart';
 
 part 'home_state.freezed.dart';
 

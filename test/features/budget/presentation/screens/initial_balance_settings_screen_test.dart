@@ -11,6 +11,7 @@ import 'package:moamoa/features/budget/domain/repositories/budget_repository.dar
 import 'package:moamoa/features/budget/presentation/screens/initial_balance_settings_screen.dart';
 import 'package:moamoa/features/home/presentation/states/home_state.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/features/budget/domain/entities/asset_entity.dart';
 
 void main() {
   group('InitialBalanceSettingsScreen', () {

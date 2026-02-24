@@ -12,6 +12,7 @@ import 'package:moamoa/features/budget/presentation/utils/budget_amount_utils.da
 import 'package:moamoa/features/budget/presentation/viewmodels/budget_settings_view_model.dart';
 import 'package:moamoa/features/home/presentation/states/home_state.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/features/budget/domain/entities/asset_entity.dart';
 
 void main() {
   group('BudgetSettingsViewModel', () {
