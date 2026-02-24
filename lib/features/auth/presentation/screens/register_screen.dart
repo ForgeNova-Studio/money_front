@@ -16,6 +16,7 @@ import 'package:moamoa/features/auth/presentation/widgets/register/register_subm
 import 'package:moamoa/features/auth/presentation/widgets/register/register_title.dart';
 import 'package:moamoa/features/auth/presentation/widgets/register/terms_agreement_row.dart';
 import 'package:moamoa/features/auth/presentation/widgets/register/verification_code_section.dart';
+import 'package:moamoa/features/auth/presentation/widgets/auth_screen_scaffold.dart';
 import 'package:moamoa/features/auth/presentation/widgets/auth_ui_event_listener.dart';
 
 // viewmodels
@@ -215,143 +216,133 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     });
 
     return AuthUiEventListener(
-      child: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Scaffold(
+      child: AuthScreenScaffold(
+        appBar: AppBar(
           backgroundColor: colorScheme.surface,
-          appBar: AppBar(
-            backgroundColor: colorScheme.surface,
-            elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios, color: colorScheme.onSurface),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: colorScheme.onSurface),
+            onPressed: () => Navigator.of(context).pop(),
           ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
 
-                  // 타이틀
-                  const RegisterTitle(),
+            // 타이틀
+            const RegisterTitle(),
 
-                  const SizedBox(height: 40),
+            const SizedBox(height: 40),
 
-                  // 닉네임(Display Name) 입력 필드
-                  CustomTextField(
-                    controller: _displayNameController,
-                    hintText: '닉네임',
-                    icon: Icons.person_outline,
-                  ),
+            // 닉네임(Display Name) 입력 필드
+            CustomTextField(
+              controller: _displayNameController,
+              hintText: '닉네임',
+              icon: Icons.person_outline,
+            ),
 
-                  const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-                  // 성별 선택
-                  GenderSelectorRow(
-                    selectedGender: formState.selectedGender,
-                    onSelected: (gender) {
-                      ref
-                          .read(registerViewModelProvider.notifier)
-                          .selectGender(gender);
-                    },
-                  ),
+            // 성별 선택
+            GenderSelectorRow(
+              selectedGender: formState.selectedGender,
+              onSelected: (gender) {
+                ref
+                    .read(registerViewModelProvider.notifier)
+                    .selectGender(gender);
+              },
+            ),
 
-                  const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-                  // 이메일 입력 필드
-                  EmailVerificationRow(
-                    controller: _emailController,
-                    isEmailVerified: formState.isEmailVerified,
-                    onRequest: _handleSendVerificationCode,
-                  ),
+            // 이메일 입력 필드
+            EmailVerificationRow(
+              controller: _emailController,
+              isEmailVerified: formState.isEmailVerified,
+              onRequest: _handleSendVerificationCode,
+            ),
 
-                  if (formState.isVerificationCodeSent &&
-                      !formState.isEmailVerified) ...[
-                    const SizedBox(height: 12),
-                    VerificationCodeSection(
-                      controller: _verificationCodeController,
-                      focusNode: _verificationCodeFocusNode,
-                      onVerify: _handleVerifyCode,
-                      onEmailNotReceived: _handleEmailNotReceived,
-                    ),
-                  ],
-
-                  const SizedBox(height: 16),
-
-                  // 비밀번호 입력 필드
-                  CustomTextField(
-                    controller: _passwordController,
-                    focusNode: _passwordFocusNode,
-                    hintText: '비밀번호',
-                    isPassword: true,
-                    isPasswordVisible: formState.isPasswordVisible,
-                    onChanged: (value) {
-                      ref
-                          .read(registerViewModelProvider.notifier)
-                          .updatePassword(value);
-                    },
-                    onVisibilityToggle: () {
-                      ref
-                          .read(registerViewModelProvider.notifier)
-                          .togglePasswordVisibility();
-                    },
-                  ),
-
-                  const SizedBox(height: 8),
-                  PasswordRuleChecklist(
-                    password: _passwordController.text,
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // 비밀번호 확인 입력 필드
-                  CustomTextField(
-                    controller: _confirmPasswordController,
-                    hintText: '비밀번호 확인',
-                    isPassword: true,
-                    isPasswordVisible: formState.isConfirmPasswordVisible,
-                    errorText:
-                        isPasswordMismatch ? formState.passwordError : null,
-                    onChanged: (value) {
-                      ref
-                          .read(registerViewModelProvider.notifier)
-                          .updateConfirmPassword(value);
-                    },
-                    onVisibilityToggle: () {
-                      ref
-                          .read(registerViewModelProvider.notifier)
-                          .toggleConfirmPasswordVisibility();
-                    },
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // 약관 동의 체크박스
-                  TermsAgreementRow(
-                    isTermsAgreed: formState.isTermsAgreed,
-                    onToggle: () {
-                      ref
-                          .read(registerViewModelProvider.notifier)
-                          .toggleTermsAgreed();
-                    },
-                    onTermsTap: _handleTermsClick,
-                    onPrivacyTap: _handlePrivacyClick,
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // 회원가입 버튼
-                  RegisterSubmitButton(
-                    isLoading: authState.isLoading,
-                    onPressed: _handleSignUp,
-                  ),
-                ],
+            if (formState.isVerificationCodeSent &&
+                !formState.isEmailVerified) ...[
+              const SizedBox(height: 12),
+              VerificationCodeSection(
+                controller: _verificationCodeController,
+                focusNode: _verificationCodeFocusNode,
+                onVerify: _handleVerifyCode,
+                onEmailNotReceived: _handleEmailNotReceived,
               ),
+            ],
+
+            const SizedBox(height: 16),
+
+            // 비밀번호 입력 필드
+            CustomTextField(
+              controller: _passwordController,
+              focusNode: _passwordFocusNode,
+              hintText: '비밀번호',
+              isPassword: true,
+              isPasswordVisible: formState.isPasswordVisible,
+              onChanged: (value) {
+                ref
+                    .read(registerViewModelProvider.notifier)
+                    .updatePassword(value);
+              },
+              onVisibilityToggle: () {
+                ref
+                    .read(registerViewModelProvider.notifier)
+                    .togglePasswordVisibility();
+              },
             ),
-          ),
+
+            const SizedBox(height: 8),
+            PasswordRuleChecklist(
+              password: _passwordController.text,
+            ),
+
+            const SizedBox(height: 16),
+
+            // 비밀번호 확인 입력 필드
+            CustomTextField(
+              controller: _confirmPasswordController,
+              hintText: '비밀번호 확인',
+              isPassword: true,
+              isPasswordVisible: formState.isConfirmPasswordVisible,
+              errorText: isPasswordMismatch ? formState.passwordError : null,
+              onChanged: (value) {
+                ref
+                    .read(registerViewModelProvider.notifier)
+                    .updateConfirmPassword(value);
+              },
+              onVisibilityToggle: () {
+                ref
+                    .read(registerViewModelProvider.notifier)
+                    .toggleConfirmPasswordVisibility();
+              },
+            ),
+
+            const SizedBox(height: 24),
+
+            // 약관 동의 체크박스
+            TermsAgreementRow(
+              isTermsAgreed: formState.isTermsAgreed,
+              onToggle: () {
+                ref
+                    .read(registerViewModelProvider.notifier)
+                    .toggleTermsAgreed();
+              },
+              onTermsTap: _handleTermsClick,
+              onPrivacyTap: _handlePrivacyClick,
+            ),
+
+            const SizedBox(height: 24),
+
+            // 회원가입 버튼
+            RegisterSubmitButton(
+              isLoading: authState.isLoading,
+              onPressed: _handleSignUp,
+            ),
+          ],
         ),
       ),
     );

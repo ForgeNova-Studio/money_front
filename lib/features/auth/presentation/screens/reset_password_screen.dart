@@ -11,6 +11,7 @@ import 'package:moamoa/router/route_names.dart';
 // widgets
 import 'package:moamoa/features/auth/presentation/widgets/reset_password/reset_password_title.dart';
 import 'package:moamoa/features/auth/presentation/widgets/reset_password/reset_password_form.dart';
+import 'package:moamoa/features/auth/presentation/widgets/auth_screen_scaffold.dart';
 import 'package:moamoa/features/auth/presentation/widgets/auth_ui_event_listener.dart';
 
 // viewmodels
@@ -140,39 +141,30 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     return AuthUiEventListener(
       child: PopScope(
         canPop: false,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Scaffold(
+        child: AuthScreenScaffold(
+          appBar: AppBar(
             backgroundColor: colorScheme.surface,
-            appBar: AppBar(
-              backgroundColor: colorScheme.surface,
-              elevation: 0,
-              automaticallyImplyLeading: false,
-            ),
-            body: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 24),
-                    const ResetPasswordTitle(),
-                    const SizedBox(height: 40),
-                    ResetPasswordForm(
-                      passwordController: _passwordController,
-                      confirmPasswordController: _confirmPasswordController,
-                      password: _password,
-                      confirmPassword: _confirmPassword,
-                      confirmError: _confirmError,
-                      onPasswordChanged: _updatePassword,
-                      onConfirmPasswordChanged: _updateConfirmPassword,
-                      onSubmit: _handleResetPassword,
-                      isLoading: authState.isLoading,
-                    ),
-                  ],
-                ),
+            elevation: 0,
+            automaticallyImplyLeading: false,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 24),
+              const ResetPasswordTitle(),
+              const SizedBox(height: 40),
+              ResetPasswordForm(
+                passwordController: _passwordController,
+                confirmPasswordController: _confirmPasswordController,
+                password: _password,
+                confirmPassword: _confirmPassword,
+                confirmError: _confirmError,
+                onPasswordChanged: _updatePassword,
+                onConfirmPasswordChanged: _updateConfirmPassword,
+                onSubmit: _handleResetPassword,
+                isLoading: authState.isLoading,
               ),
-            ),
+            ],
           ),
         ),
       ),

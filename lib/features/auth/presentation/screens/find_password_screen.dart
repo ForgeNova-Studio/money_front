@@ -10,6 +10,7 @@ import 'package:moamoa/core/utils/toast_utils.dart';
 
 // screens
 import 'package:moamoa/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:moamoa/features/auth/presentation/widgets/auth_screen_scaffold.dart';
 import 'package:moamoa/features/auth/presentation/widgets/auth_ui_event_listener.dart';
 import 'package:moamoa/features/auth/presentation/widgets/find_password/find_password_title.dart';
 import 'package:moamoa/features/auth/presentation/widgets/find_password/email_verification_form.dart';
@@ -141,41 +142,33 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return AuthUiEventListener(
-      child: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Scaffold(
+      child: AuthScreenScaffold(
+        scrollable: false,
+        appBar: AppBar(
           backgroundColor: colorScheme.surface,
-          appBar: AppBar(
-            backgroundColor: colorScheme.surface,
-            elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+            onPressed: () => Navigator.of(context).pop(),
           ),
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 24),
-                  const FindPasswordTitle(),
-                  const SizedBox(height: 40),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            const FindPasswordTitle(),
+            const SizedBox(height: 40),
 
-                  // 이메일 입력 및 인증 폼
-                  EmailVerificationForm(
-                    emailController: _emailController,
-                    verificationCodeController: _verificationCodeController,
-                    verificationCodeFocusNode: _verificationCodeFocusNode,
-                    onSendVerificationCode: _handleSendVerificationCode,
-                    onVerifyCode: _handleVerifyCode,
-                    onContinue: _handleContinue,
-                  ),
-                ],
-              ),
+            // 이메일 입력 및 인증 폼
+            EmailVerificationForm(
+              emailController: _emailController,
+              verificationCodeController: _verificationCodeController,
+              verificationCodeFocusNode: _verificationCodeFocusNode,
+              onSendVerificationCode: _handleSendVerificationCode,
+              onVerifyCode: _handleVerifyCode,
+              onContinue: _handleContinue,
             ),
-          ),
+          ],
         ),
       ),
     );

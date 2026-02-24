@@ -19,6 +19,7 @@ import 'package:moamoa/features/auth/presentation/widgets/login/login_method_ale
 import 'package:moamoa/features/auth/presentation/widgets/login/link_find_password.dart';
 import 'package:moamoa/features/auth/presentation/widgets/login/link_register.dart';
 import 'package:moamoa/features/auth/presentation/widgets/login/login_button.dart';
+import 'package:moamoa/features/auth/presentation/widgets/auth_screen_scaffold.dart';
 import 'package:moamoa/features/auth/presentation/widgets/auth_ui_event_listener.dart';
 
 // viewmodels and providers
@@ -82,142 +83,124 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     // 인증 상태 관리
     final authState = ref.watch(authViewModelProvider);
 
     /// 화면 구성
     return AuthUiEventListener(
       onLoginMethodDialog: _showLoginMethodDialog,
-      child: GestureDetector(
-        onTap: () =>
-            FocusScope.of(context).unfocus(), // 키보드 닫기!! (홈 화면에서 오버플로우 발생 방지)
-        child: Scaffold(
-          backgroundColor: colorScheme.surface,
-          body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 24),
+      child: AuthScreenScaffold(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
 
-                  // 타이틀
-                  const LoginTitle(),
+            // 타이틀
+            const LoginTitle(),
 
-                  const SizedBox(height: 40),
+            const SizedBox(height: 40),
 
-                  // 이메일 입력 필드
-                  CustomTextField(
-                    controller: _emailController,
-                    hintText: '이메일',
-                    icon: Icons.edit_outlined,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // 비밀번호 입력 필드
-                  CustomTextField(
-                    controller: _passwordController,
-                    hintText: '비밀번호',
-                    isPassword: true,
-                    isPasswordVisible: _isPasswordVisible,
-                    onVisibilityToggle: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // 비밀번호 찾기 링크
-                  LinkFindPassword(
-                    onTap: () => context.push(RouteNames.findPassword),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // 로그인 버튼
-                  LoginButton(
-                    onPressed: () async {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      await ref.read(loginViewModelProvider).loginWithEmail(
-                            email: _emailController.text,
-                            password: _passwordController.text,
-                          );
-                    },
-                    isLoading: authState.isLoading,
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // 구분선 (or)
-                  const LoginDivider(),
-
-                  const SizedBox(height: 24),
-
-                  // 마지막 로그인 방법 힌트
-                  const LastLoginHint(),
-
-                  // Google 로그인 버튼 (공식 브랜드 가이드라인 적용)
-                  GoogleLoginButton(
-                    onPressed: authState.isLoading
-                        ? null
-                        : () async {
-                            FocusManager.instance.primaryFocus?.unfocus();
-                            await ref
-                                .read(loginViewModelProvider)
-                                .loginWithGoogle();
-                          },
-                    isLoading: authState.isLoading,
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // 카카오 로그인 버튼 (공식 디자인 가이드라인 적용)
-                  KakaoLoginButton(
-                    onPressed: authState.isLoading
-                        ? null
-                        : () async {
-                            FocusManager.instance.primaryFocus?.unfocus();
-                            await ref
-                                .read(loginViewModelProvider)
-                                .loginWithKakao();
-                          },
-                    isLoading: authState.isLoading,
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // 네이버 로그인 버튼 (공식 디자인 가이드라인 적용)
-                  NaverLoginButton(
-                    onPressed: authState.isLoading
-                        ? null
-                        : () async {
-                            FocusManager.instance.primaryFocus?.unfocus();
-                            await ref
-                                .read(loginViewModelProvider)
-                                .loginWithNaver();
-                          },
-                    isLoading: authState.isLoading,
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // 회원가입 링크
-                  // 회원가입 링크
-                  LinkRegister(
-                    onTap: () => context.push(RouteNames.register),
-                  ),
-
-                  const SizedBox(height: 40),
-                ],
-              ),
+            // 이메일 입력 필드
+            CustomTextField(
+              controller: _emailController,
+              hintText: '이메일',
+              icon: Icons.edit_outlined,
+              keyboardType: TextInputType.emailAddress,
             ),
-          ),
+
+            const SizedBox(height: 16),
+
+            // 비밀번호 입력 필드
+            CustomTextField(
+              controller: _passwordController,
+              hintText: '비밀번호',
+              isPassword: true,
+              isPasswordVisible: _isPasswordVisible,
+              onVisibilityToggle: () {
+                setState(() {
+                  _isPasswordVisible = !_isPasswordVisible;
+                });
+              },
+            ),
+
+            const SizedBox(height: 12),
+
+            // 비밀번호 찾기 링크
+            LinkFindPassword(
+              onTap: () => context.push(RouteNames.findPassword),
+            ),
+
+            const SizedBox(height: 12),
+
+            // 로그인 버튼
+            LoginButton(
+              onPressed: () async {
+                FocusManager.instance.primaryFocus?.unfocus();
+                await ref.read(loginViewModelProvider).loginWithEmail(
+                      email: _emailController.text,
+                      password: _passwordController.text,
+                    );
+              },
+              isLoading: authState.isLoading,
+            ),
+
+            const SizedBox(height: 24),
+
+            // 구분선 (or)
+            const LoginDivider(),
+
+            const SizedBox(height: 24),
+
+            // 마지막 로그인 방법 힌트
+            const LastLoginHint(),
+
+            // Google 로그인 버튼 (공식 브랜드 가이드라인 적용)
+            GoogleLoginButton(
+              onPressed: authState.isLoading
+                  ? null
+                  : () async {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      await ref.read(loginViewModelProvider).loginWithGoogle();
+                    },
+              isLoading: authState.isLoading,
+            ),
+
+            const SizedBox(height: 16),
+
+            // 카카오 로그인 버튼 (공식 디자인 가이드라인 적용)
+            KakaoLoginButton(
+              onPressed: authState.isLoading
+                  ? null
+                  : () async {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      await ref.read(loginViewModelProvider).loginWithKakao();
+                    },
+              isLoading: authState.isLoading,
+            ),
+
+            const SizedBox(height: 16),
+
+            // 네이버 로그인 버튼 (공식 디자인 가이드라인 적용)
+            NaverLoginButton(
+              onPressed: authState.isLoading
+                  ? null
+                  : () async {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      await ref.read(loginViewModelProvider).loginWithNaver();
+                    },
+              isLoading: authState.isLoading,
+            ),
+
+            const SizedBox(height: 32),
+
+            // 회원가입 링크
+            // 회원가입 링크
+            LinkRegister(
+              onTap: () => context.push(RouteNames.register),
+            ),
+
+            const SizedBox(height: 40),
+          ],
         ),
       ),
     );
