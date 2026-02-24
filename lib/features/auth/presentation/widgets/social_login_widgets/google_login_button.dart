@@ -53,45 +53,35 @@ class GoogleLoginButton extends StatelessWidget {
             ),
           ),
         ),
-        child: isLoading
-            ? SizedBox(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Google 'G' 로고 - 표준 색상, 흰색 배경
+            Container(
+              width: 24,
+              height: 24,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: SvgPicture.asset(
+                'assets/images/google_logo.svg',
                 width: 24,
                 height: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(Colors.grey.shade600),
-                ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Google 'G' 로고 - 표준 색상, 흰색 배경
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: SvgPicture.asset(
-                      'assets/images/google_logo.svg',
-                      width: 24,
-                      height: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Roboto Medium 폰트 사용 (공식 가이드라인)
-                  Text(
-                    'Google로 로그인',
-                    style: GoogleFonts.roboto(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFF1F1F1F),
-                    ),
-                  ),
-                ],
               ),
+            ),
+            const SizedBox(width: 12),
+            // Roboto Medium 폰트 사용 (공식 가이드라인)
+            Text(
+              'Google로 로그인',
+              style: GoogleFonts.roboto(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF1F1F1F),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -59,40 +59,31 @@ class KakaoLoginButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        child: isLoading
-            ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(kakaoLabel),
-                ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // 카카오 말풍선 심볼
-                  SvgPicture.asset(
-                    'assets/images/kakao_symbol.svg',
-                    width: 24,
-                    height: 24,
-                    colorFilter: const ColorFilter.mode(
-                      kakaoBlack,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // OS 기본 시스템 서체 사용 (공식 가이드라인)
-                  Text(
-                    useShortLabel ? '카카오 로그인' : '카카오로 로그인',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: kakaoLabel,
-                    ),
-                  ),
-                ],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // 카카오 말풍선 심볼
+            SvgPicture.asset(
+              'assets/images/kakao_symbol.svg',
+              width: 24,
+              height: 24,
+              colorFilter: const ColorFilter.mode(
+                kakaoBlack,
+                BlendMode.srcIn,
               ),
+            ),
+            const SizedBox(width: 8),
+            // OS 기본 시스템 서체 사용 (공식 가이드라인)
+            Text(
+              useShortLabel ? '카카오 로그인' : '카카오로 로그인',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: kakaoLabel,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
