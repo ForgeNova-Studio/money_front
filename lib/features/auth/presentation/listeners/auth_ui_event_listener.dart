@@ -6,15 +6,15 @@ import 'package:moamoa/features/auth/presentation/states/auth_ui_event.dart';
 import 'package:moamoa/features/auth/presentation/states/login_error_action.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_ui_event_view_model.dart';
 
+/// 다이얼로그 표시를 화면별로 커스터마이즈할 수 있게 콜백 시그니처를 정의
 typedef LoginMethodDialogHandler = void Function(
   BuildContext context,
   LoginProviderType provider,
   String message,
 );
 
-/// auth 공통으로 authUiEventViewModelProvider를 listen하여 이벤트를 처리하는 위젯
-/// 화면 자체 로직에서 showToast, showDialog를 직접 처리하지 않고,
-/// 이벤트 큐를 소비(consume)하는 전용 레이어
+/// auth 화면 공통으로 나타내는 UI 이벤트를 처리하는 위젯
+/// viewModel이 발생한 이벤트 큐를 소비(consume)하는 전용 레이어
 class AuthUiEventListener extends ConsumerWidget {
   final Widget child;
   final LoginMethodDialogHandler? onLoginMethodDialog;
@@ -25,6 +25,23 @@ class AuthUiEventListener extends ConsumerWidget {
     this.onLoginMethodDialog,
   });
 
+  /// 이벤트 타입에 따라 적절한 Toast를 표시
+  /// showErrorToast
+  /// - ScaffoldMessenger
+  /// 
+  /// onLoginMethodDialog
+  /// - 다이얼로그 표시
+  /// 
+  /// - Auth 화면에서 성공은 대개 라우팅으로 대체되기 때문에 에러만 처리
+  /// - 성공 토스트 예시
+  ///   - 회원가입 성공 -> 로그인 화면으로 이동
+  ///   case AuthUiEventType.showSuccessToast:
+  ///     context.showSuccessToast(event.message);
+  ///     break;
+  ///   - 비밀번호 재설정 성공 -> 로그인 화면으로 이동
+  ///   case AuthUiEventType.showSuccessToast:
+  ///     context.showSuccessToast(event.message);
+  ///     break;  
   void _handleEvent(BuildContext context, AuthUiEvent event) {
     switch (event.type) {
       case AuthUiEventType.showErrorToast:
@@ -40,6 +57,7 @@ class AuthUiEventListener extends ConsumerWidget {
     }
   }
 
+  /// 
   void _consumeCurrentRouteEvent(BuildContext context, WidgetRef ref) {
     final queue = ref.read(authUiEventViewModelProvider);
     if (queue.isEmpty) return;

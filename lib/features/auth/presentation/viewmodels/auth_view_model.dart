@@ -382,10 +382,12 @@ class AuthViewModel extends _$AuthViewModel {
     return AuthUiEvent.showErrorToast(message);
   }
 
+  /// UI 이벤트 발행
   void _emitUiEvent(AuthUiEvent event) {
     ref.read(authUiEventViewModelProvider.notifier).emit(event);
   }
 
+  /// UI 이벤트 발행
   void _emitErrorUiEvent(
     AuthUiEvent Function(String message)? errorEventBuilder,
     String message,
