@@ -139,7 +139,10 @@ class _AccountBookEditScreenState extends ConsumerState<AccountBookEditScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                ...BookType.values.where((t) => t != BookType.def).map(
+                // TODO(refactor): 여행(TRIP)은 추후 전용 기능 출시 시 다시 노출
+                ...BookType.values
+                    .where((t) => t != BookType.def && t != BookType.trip)
+                    .map(
                       (type) => AccountBookBottomSheetOption(
                         label: type.label,
                         isSelected: type == _selectedBookType,
