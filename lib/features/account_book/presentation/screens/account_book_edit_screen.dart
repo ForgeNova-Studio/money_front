@@ -307,23 +307,21 @@ class _AccountBookEditScreenState extends ConsumerState<AccountBookEditScreen> {
                       title: '추가 정보',
                       child: AccountBookAdditionalInfoSection(
                         memberCountController: _memberCountController,
-                        coupleIdController: TextEditingController(
-                            text: accountBook
-                                .coupleId), // 커플 ID는 수정 불가하지만 뷰용으로 전달
                         inputDecoration: _buildInputDecoration,
                         validateMemberCount: _validateMemberCount,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    AccountBookSectionCard(
-                      title: '기간 설정',
-                      child: AccountBookPeriodSection(
-                        startDate: _startDate,
-                        endDate: _endDate,
-                        onStartTap: () => _selectDate(isStart: true),
-                        onEndTap: () => _selectDate(isStart: false),
-                      ),
-                    ),
+                    // TODO: 기간 설정 기능 - 나중에 활성화
+                    // const SizedBox(height: 16),
+                    // AccountBookSectionCard(
+                    //   title: '기간 설정',
+                    //   child: AccountBookPeriodSection(
+                    //     startDate: _startDate,
+                    //     endDate: _endDate,
+                    //     onStartTap: () => _selectDate(isStart: true),
+                    //     onEndTap: () => _selectDate(isStart: false),
+                    //   ),
+                    // ),
                     const SizedBox(height: 24),
                     SizedBox(
                       height: 50,

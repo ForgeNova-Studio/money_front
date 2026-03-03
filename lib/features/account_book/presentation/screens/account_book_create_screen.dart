@@ -24,7 +24,6 @@ class _AccountBookCreateScreenState
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _memberCountController = TextEditingController();
-  final _coupleIdController = TextEditingController();
 
   BookType _selectedBookType = BookType.coupleLiving;
   DateTime? _startDate;
@@ -36,7 +35,6 @@ class _AccountBookCreateScreenState
     _nameController.dispose();
     _descriptionController.dispose();
     _memberCountController.dispose();
-    _coupleIdController.dispose();
     super.dispose();
   }
 
@@ -198,9 +196,6 @@ class _AccountBookCreateScreenState
     final memberCount = _memberCountController.text.trim().isEmpty
         ? null
         : int.tryParse(_memberCountController.text.trim());
-    final coupleId = _coupleIdController.text.trim().isEmpty
-        ? null
-        : _coupleIdController.text.trim();
 
     final accountBook = AccountBook(
       name: _nameController.text.trim(),
@@ -209,7 +204,6 @@ class _AccountBookCreateScreenState
           ? null
           : _descriptionController.text.trim(),
       memberCount: memberCount,
-      coupleId: coupleId,
       startDate: _startDate,
       endDate: _endDate,
     );
@@ -284,23 +278,23 @@ class _AccountBookCreateScreenState
                   title: '추가 정보',
                   child: AccountBookAdditionalInfoSection(
                     memberCountController: _memberCountController,
-                    coupleIdController: _coupleIdController,
                     inputDecoration: _buildInputDecoration,
                     validateMemberCount: _validateMemberCount,
                     isCoupleBook: isCoupleBook,
                   ),
                 ),
-                const SizedBox(height: 16),
-                AccountBookSectionCard(
-                  title: '기간 설정',
-                  child: AccountBookPeriodSection(
-                    startDate: _startDate,
-                    endDate: _endDate,
-                    onStartTap: () => _selectDate(isStart: true),
-                    onEndTap: () => _selectDate(isStart: false),
-                    isCoupleBook: isCoupleBook,
-                  ),
-                ),
+                // TODO: 기간 설정 기능 - 나중에 활성화
+                // const SizedBox(height: 16),
+                // AccountBookSectionCard(
+                //   title: '기간 설정',
+                //   child: AccountBookPeriodSection(
+                //     startDate: _startDate,
+                //     endDate: _endDate,
+                //     onStartTap: () => _selectDate(isStart: true),
+                //     onEndTap: () => _selectDate(isStart: false),
+                //     isCoupleBook: isCoupleBook,
+                //   ),
+                // ),
                 const SizedBox(height: 24),
                 SizedBox(
                   height: 50,

@@ -91,10 +91,9 @@ class AccountBookBasicInfoSection extends StatelessWidget {
   }
 }
 
-// 추가 정보 입력: 정산 인원, 커플 ID.
+// 추가 정보 입력: 정산 인원.
 class AccountBookAdditionalInfoSection extends StatelessWidget {
   final TextEditingController memberCountController;
-  final TextEditingController coupleIdController;
   final InputDecoration Function(String) inputDecoration;
   final String? Function(String?) validateMemberCount;
   final bool isCoupleBook;
@@ -102,7 +101,6 @@ class AccountBookAdditionalInfoSection extends StatelessWidget {
   const AccountBookAdditionalInfoSection({
     super.key,
     required this.memberCountController,
-    required this.coupleIdController,
     required this.inputDecoration,
     required this.validateMemberCount,
     this.isCoupleBook = false,
@@ -110,22 +108,13 @@ class AccountBookAdditionalInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextFormField(
-          controller: memberCountController,
-          decoration:
-              inputDecoration(isCoupleBook ? '정산 인원 (2명 고정)' : '정산 인원 (선택)'),
-          keyboardType: TextInputType.number,
-          validator: validateMemberCount,
-          enabled: !isCoupleBook, // 커플이면 비활성화
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: coupleIdController,
-          decoration: inputDecoration('커플 ID (선택)'),
-        ),
-      ],
+    return TextFormField(
+      controller: memberCountController,
+      decoration:
+          inputDecoration(isCoupleBook ? '정산 인원 (2명 고정)' : '정산 인원 (선택)'),
+      keyboardType: TextInputType.number,
+      validator: validateMemberCount,
+      enabled: !isCoupleBook, // 커플이면 비활성화
     );
   }
 }
