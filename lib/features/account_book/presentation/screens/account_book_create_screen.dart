@@ -101,11 +101,9 @@ class _AccountBookCreateScreenState
                   ),
                 ),
                 const SizedBox(height: 12),
-                // TODO(refactor): 여행(TRIP), 프로젝트(PROJECT)는 추후 전용 기능 출시 시 다시 노출
-                ...BookType.values.where((t) =>
-                    t != BookType.def &&
-                    t != BookType.trip &&
-                    t != BookType.project)
+                // TODO(refactor): 여행(TRIP)은 추후 전용 기능 출시 시 다시 노출
+                ...BookType.values
+                    .where((t) => t != BookType.def && t != BookType.trip)
                     .map(
                       (type) => AccountBookBottomSheetOption(
                         label: type.label,
