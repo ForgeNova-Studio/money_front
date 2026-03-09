@@ -12,32 +12,6 @@ class StepIntro extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 20),
-
-          // 메인 일러스트
-          Center(
-            child: Container(
-              width: 160,
-              height: 160,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    context.appColors.primary.withValues(alpha: 0.1),
-                    context.appColors.primary.withValues(alpha: 0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.auto_awesome,
-                size: 80,
-                color: context.appColors.primary,
-              ),
-            ),
-          ),
-
           const SizedBox(height: 40),
 
           // 제목
