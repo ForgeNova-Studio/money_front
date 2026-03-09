@@ -5,11 +5,20 @@ import 'package:moamoa/core/exceptions/exceptions.dart';
 import 'package:moamoa/features/notification/data/models/notification_model.dart';
 
 /// 알림 Remote DataSource
+///
+/// 서버의 알림 관련 API와 통신하여 데이터를 가져오거나 전송하는 역할을 합니다.
+///
+/// ## 주요 기능
+/// - 알림 목록 조회 (페이지네이션 지원)
+/// - 알림 읽음 처리
+/// - 읽지 않은 알림 개수 조회
+/// - 알림 생성 및 전체 공지 발송 (관리자 기능)
 abstract class NotificationRemoteDataSource {
   /// 알림 목록 조회
   Future<List<NotificationModel>> getNotifications({
     int page = 0,
     int size = 20,
+    int? days,
   });
 
   /// 알림 읽음 처리
@@ -30,6 +39,14 @@ abstract class NotificationRemoteDataSource {
   });
 }
 
+/// NotificationRemoteDataSource 구현체
+///
+/// Dio 클라이언트를 사용하여 실제 API 호출을 수행합니다.
+///
+/// ## 사용 예시
+/// ```dart
+/// final dataSource = NotificationRemoteDataSourceImpl(dio: dioInstance);
+/// ```
 class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   final Dio dio;
 
@@ -39,14 +56,20 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   Future<List<NotificationModel>> getNotifications({
     int page = 0,
     int size = 20,
+    int? days,
   }) async {
     try {
+      final queryParams = <String, dynamic>{
+        'page': page,
+        'size': size,
+      };
+      if (days != null) {
+        queryParams['days'] = days;
+      }
+
       final response = await dio.get(
         ApiConstants.notifications,
-        queryParameters: {
-          'page': page,
-          'size': size,
-        },
+        queryParameters: queryParams,
       );
 
       // Spring Page 응답에서 content 추출

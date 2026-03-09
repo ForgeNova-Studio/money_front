@@ -1,16 +1,46 @@
 import 'package:flutter/material.dart';
 
+/// 애플리케이션의 전역 설정 상수를 관리하는 클래스.
+///
+/// 앱 이름, 버전 등 앱 전반에 걸쳐 사용되는 정적인 값을 포함합니다.
+///
+/// **주요 기능:**
+/// - **앱 정보 관리**: 앱 이름(`appName`), 기본 로고, 버전 정보 등을 상수로 제공.
+///
+/// **사용 예시:**
+/// ```dart
+/// Text(AppConstants.appName);
+/// ```
 class AppConstants {
   static const String appName = '모아모아';
   static const String appSlogan = '';
   static const String appLogo = '';
-  static const String appVersion = '1.0.1';
+  static const String appVersion = '1.0.0';
 }
 
-/// MoneyFlow App Color Constants
-/// Palette only: avoid direct UI usage. Prefer Theme.of(context).colorScheme
-/// or AppThemeColors (context.appColors) for screen widgets.
 /// 브랜드 단색 (진한 톤) - #e88a9d → #f8bac8
+/// 앱의 색상 팔레트 및 테마 색상을 정의하는 클래스.
+///
+/// 이 클래스는 디자인 시스템에 정의된 모든 원천 색상(Primitive Colors)을 포함합니다.
+///
+/// **주의:**
+/// UI 위젯에서는 이 클래스의 정적 필드를 직접 사용하지 마십시오.
+/// 대신 `Theme.of(context).colorScheme` 또는 `context.appColors`(Extension)를 사용하여
+/// 현재 테마(라이트/다크)에 맞는 색상을 가져와야 합니다.
+///
+/// **주요 기능:**
+/// - **색상 팔레트 정의**: Primary(버터색), Secondary, Grayscale 등 모든 색상 상수 정의.
+/// - **그라데이션**: 앱에서 사용되는 주요 그라데이션 정의.
+/// - **Semantic Colors**: Success, Error 등 의미론적 색상 정의.
+///
+/// **사용 예시:**
+/// ```dart
+/// // 권장되는 사용법 (테마 사용)
+/// final primaryColor = context.appColors.primary;
+///
+/// // 사용을 지양해야 하는 방식 (직접 접근)
+/// final primaryColor = AppColors.primary;
+/// ```
 class AppColors {
   AppColors._();
 
@@ -128,6 +158,14 @@ class AppColors {
   static const Color transparent = Colors.transparent;
 }
 
+/// Flutter의 테마 시스템(`ThemeExtension`)을 확장하여 커스텀 색상을 관리하는 클래스.
+///
+/// `ThemeData`에 포함되지 않은 앱 고유의 시맨틱 색상(예: `primaryPale`, `budgetPositive`)을 정의합니다.
+/// 라이트 모드와 다크 모드에 각각 다른 색상 값을 할당할 수 있도록 설계되었습니다.
+///
+/// **주요 기능:**
+/// - **테마 확장**: `Theme.of(context).extension<AppThemeColors>()`로 접근 가능.
+/// - **Lerp 지원**: 테마 변경 시 색상이 부드럽게 전환되도록 `lerp` 메서드 구현.
 class AppThemeColors extends ThemeExtension<AppThemeColors> {
   const AppThemeColors(
       {required this.primary,
@@ -556,6 +594,14 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
   }
 }
 
+/// `BuildContext`에서 `AppThemeColors`에 쉽게 접근하기 위한 유틸리티 확장.
+///
+/// `Theme.of(context)...` 코드를 줄여서 `context.appColors`로 간편하게 사용할 수 있게 합니다.
+///
+/// **사용 예시:**
+/// ```dart
+/// final color = context.appColors.primary;
+/// ```
 extension AppThemeColorsX on BuildContext {
   AppThemeColors get appColors {
     return Theme.of(this).extension<AppThemeColors>() ?? AppThemeColors.light;

@@ -19,7 +19,7 @@ class SelectedAccountBookViewModel extends _$SelectedAccountBookViewModel {
   AsyncValue<String?> build() {
     _hasLoadedFromStorage = false;
     _pendingAvailableIds = null;
-    final userId = ref.watch(authViewModelProvider).user?.userId;
+    final userId = ref.read(authViewModelProvider).user?.userId;
     Future.microtask(() => _loadFromStorage(userId));
     ref.listen<AsyncValue<List<AccountBook>>>(
       accountBooksProvider,

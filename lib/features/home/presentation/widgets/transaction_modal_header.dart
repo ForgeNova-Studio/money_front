@@ -2,6 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/home/presentation/widgets/animated_amount_text.dart';
 
+/// 거래 내역 모달 시트의 헤더 위젯
+///
+/// 선택된 날짜, 전체 합계, 수입/지출 상세 금액을 표시합니다.
+/// 드래그 핸들과 함께 모달 상단에 위치합니다.
+///
+/// 주요 기능:
+/// - 드래그 핸들 표시
+/// - 날짜 및 요일 표시
+/// - 전체 합계 금액 (애니메이션)
+/// - 수입/지출 상세 금액 (있을 때만 표시)
+///
+/// 파라미터:
+/// - [selectedDate]: 선택된 날짜
+/// - [totalAmount]: 전체 합계 (수입 - 지출)
+/// - [totalIncome]: 총 수입
+/// - [totalExpense]: 총 지출
+/// - [onCameraTap]: 카메라 버튼 탭 콜백 (선택)
+///
+/// 사용 예시:
+/// ```dart
+/// TransactionModalHeader(
+///   selectedDate: DateTime.now(),
+///   totalAmount: 50000,
+///   totalIncome: 100000,
+///   totalExpense: 50000,
+/// )
+/// ```
 class TransactionModalHeader extends StatelessWidget {
   const TransactionModalHeader({
     super.key,
@@ -28,7 +55,7 @@ class TransactionModalHeader extends StatelessWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: AppColors.gray300,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -87,7 +114,7 @@ class TransactionModalHeader extends StatelessWidget {
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
                                     color: context.appColors.success
-                                        .withOpacity(0.1),
+                                        .withValues(alpha: 0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
@@ -124,8 +151,8 @@ class TransactionModalHeader extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                  color:
-                                      context.appColors.error.withOpacity(0.1),
+                                  color: context.appColors.error
+                                      .withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(

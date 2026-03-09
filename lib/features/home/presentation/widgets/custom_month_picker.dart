@@ -1,6 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 
+/// 커스텀 월 선택기 다이얼로그 (연도/월 선택 지원)
+///
+/// 연도와 월을 선택할 수 있는 2단계 피커를 제공합니다.
+/// 초기 상태는 월 선택 모드이며, 타이틀의 연도를 탭하여 연도 선택 모드로 전환할 수 있습니다.
+///
+/// 주요 기능:
+/// - 월 선택 모드: 1월~12월 그리드 표시, 화살표로 연도 이동
+/// - 연도 선택 모드: 2000~2050년 그리드 표시, 스크롤 가능
+/// - 초기 선택된 날짜([initialDate])로 자동 포커싱
+///
+/// 사용 예시:
+/// ```dart
+/// showDialog(
+///   context: context,
+///   builder: (context) => CustomMonthPicker(
+///     initialDate: DateTime.now(),
+///     onDateSelected: (selectedDate) {
+///       print('Selected: ${selectedDate.year}-${selectedDate.month}');
+///     },
+///   ),
+/// );
+/// ```
 class CustomMonthPicker extends StatefulWidget {
   final DateTime initialDate;
   final Function(DateTime) onDateSelected;

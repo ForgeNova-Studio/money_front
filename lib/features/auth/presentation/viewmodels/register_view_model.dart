@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // states
 import 'package:moamoa/features/auth/presentation/states/register_form_state.dart';
+import 'package:moamoa/features/auth/presentation/states/form_action_result.dart';
 
 // entities
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
@@ -15,9 +16,21 @@ import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dar
 
 part 'register_view_model.g.dart';
 
-/// 회원가입 폼 ViewModel
+/// 회원가입 ViewModel
 ///
-/// 폼 상태 관리 및 이메일 인증 로직 처리
+/// 회원가입 화면의 UI 상태 관리 및 데이터 처리를 담당합니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 입력 폼 상태 관리 (닉네임, 이메일, 비밀번호, 성별 등)
+/// - 유효성 검사 (`validateForSignup`)
+/// - 이메일 인증 (`sendVerificationCode`, `verifyCode`)
+/// - 약관 동의 및 비밀번호 가시성 토글
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// final errorMessage = ref.read(registerViewModelProvider.notifier)
+///     .validateForSignup(password: pw, confirmPassword: cp);
+/// ```
 @riverpod
 class RegisterViewModel extends _$RegisterViewModel {
   static const String _passwordMismatchMessage = '비밀번호가 일치하지 않습니다.';
@@ -76,13 +89,33 @@ class RegisterViewModel extends _$RegisterViewModel {
       state = state.copyWith(email: email);
 
       // AuthViewModel의 sendSignupCode 호출
-      await ref.read(authViewModelProvider.notifier).sendSignupCode(email);
+      final isSent =
+          await ref.read(authViewModelProvider.notifier).sendSignupCode(email);
+      if (!isSent) return;
 
       // 성공 시 인증번호 전송 상태 업데이트
       state = state.copyWith(isVerificationCodeSent: true);
     } catch (e) {
       // 에러 발생 시 예외를 다시 던져서 UI에서 처리하도록 함
       rethrow;
+    }
+  }
+
+  /// 회원가입 인증번호 요청 (입력 검증 + 요청 오케스트레이션)
+  Future<FormActionResult> requestVerificationCode(String email) async {
+    final emailError = InputValidator.getEmailErrorMessage(email);
+    if (emailError.isNotEmpty) {
+      return FormActionResult.failure(emailError);
+    }
+
+    try {
+      await sendVerificationCode(email);
+      if (!state.isVerificationCodeSent) {
+        return const FormActionResult.failure();
+      }
+      return const FormActionResult.success();
+    } catch (_) {
+      return const FormActionResult.failure();
     }
   }
 
@@ -108,11 +141,38 @@ class RegisterViewModel extends _$RegisterViewModel {
     return isVerified;
   }
 
+  /// 회원가입 인증번호 확인 (입력 검증 + 확인 오케스트레이션)
+  Future<FormActionResult> confirmVerificationCode({
+    required String email,
+    required String code,
+  }) async {
+    final codeError = InputValidator.getVerificationCodeErrorMessage(code);
+    if (codeError.isNotEmpty) {
+      return FormActionResult.failure(codeError);
+    }
+
+    try {
+      final isVerified = await verifyCode(email: email, code: code);
+      if (!isVerified) {
+        return const FormActionResult.failure('인증번호를 다시 확인해주세요.');
+      }
+      return const FormActionResult.success();
+    } catch (_) {
+      return const FormActionResult.failure();
+    }
+  }
+
   /// 회원가입 가능 여부 검증 및 에러 메시지 반환
   String? validateForSignup({
+    required String nickname,
     required String password,
     required String confirmPassword,
   }) {
+    final nicknameError = InputValidator.getNicknameErrorMessage(nickname);
+    if (nicknameError.isNotEmpty) {
+      return nicknameError;
+    }
+
     if (!state.isEmailVerified) {
       return '이메일 인증을 완료해주세요.';
     }
@@ -140,6 +200,37 @@ class RegisterViewModel extends _$RegisterViewModel {
     }
 
     return null; // 검증 통과
+  }
+
+  /// 회원가입 제출 (입력 검증 + 가입 요청 오케스트레이션)
+  Future<FormActionResult> submitSignup({
+    required String email,
+    required String nickname,
+    required String password,
+    required String confirmPassword,
+  }) async {
+    final errorMessage = validateForSignup(
+      nickname: nickname,
+      password: password,
+      confirmPassword: confirmPassword,
+    );
+
+    if (errorMessage != null) {
+      return FormActionResult.failure(errorMessage);
+    }
+
+    try {
+      await ref.read(authViewModelProvider.notifier).register(
+            email: email,
+            password: password,
+            confirmPassword: confirmPassword,
+            nickname: nickname,
+            gender: state.selectedGender!,
+          );
+      return const FormActionResult.success();
+    } catch (_) {
+      return const FormActionResult.failure();
+    }
   }
 
   String? _passwordMismatchError({

@@ -50,11 +50,7 @@ class AuthRepositoryImpl implements AuthRepository {
     );
 
     // profile Map을 UserModel로 변환
-    final profileData = Map<String, dynamic>.from(response.profile);
-    if (!profileData.containsKey('userId')) {
-      profileData['userId'] = response.userId;
-    }
-    final userModel = UserModel.fromJson(profileData);
+    final userModel = UserModel.fromJson(response.toNormalizedProfileJson());
 
     await localDataSource.saveToken(tokenModel);
     await localDataSource.saveUser(userModel);
@@ -111,8 +107,13 @@ class AuthRepositoryImpl implements AuthRepository {
     // Refresh Token 읽기
     final tokenModel = await localDataSource.getToken();
 
-    // Remote Logout 호출
-    await remoteDataSource.logout(tokenModel?.refreshToken ?? '');
+    try {
+      // 서버 로그아웃 실패와 무관하게 로컬 세션 정리는 반드시 진행
+      await remoteDataSource.logout(tokenModel?.refreshToken ?? '');
+    } catch (error) {
+      // 서버 상태와 무관하게 클라이언트 세션을 확실히 종료한다.
+      if (error is! Exception) rethrow;
+    }
 
     // Local Storage 데이터 삭제
     await localDataSource.clearAll();
@@ -201,18 +202,6 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<AuthResult> loginWithApple({
-    required String authorizationCode,
-    String? nickname,
-  }) async {
-    return await _socialLogin(
-      provider: 'APPLE',
-      idToken: authorizationCode, // Apple은 authorizationCode를 idToken으로 사용
-      nickname: nickname ?? 'Apple 사용자',
-    );
-  }
-
-  @override
   Future<AuthResult> loginWithNaver({
     required String accessToken,
     String? email,
@@ -235,6 +224,7 @@ class AuthRepositoryImpl implements AuthRepository {
       provider: 'KAKAO',
       idToken: accessToken, // Kakao는 accessToken을 idToken으로 사용
       nickname: nickname ?? 'Kakao 사용자',
+      email: email, // SDK에서 받은 이메일 전달
     );
   }
 
@@ -243,12 +233,14 @@ class AuthRepositoryImpl implements AuthRepository {
     required String provider,
     required String idToken,
     required String nickname,
+    String? email,
   }) async {
     // 1. Remote API 호출 (통합 엔드포인트)
     final response = await remoteDataSource.socialLogin(
       provider: provider,
       idToken: idToken,
       nickname: nickname,
+      email: email,
     );
 
     // 2. Local Storage에 저장
@@ -258,11 +250,7 @@ class AuthRepositoryImpl implements AuthRepository {
       expiresIn: response.expiresIn,
     );
 
-    final profileData = Map<String, dynamic>.from(response.profile);
-    if (!profileData.containsKey('userId')) {
-      profileData['userId'] = response.userId;
-    }
-    final userModel = UserModel.fromJson(profileData);
+    final userModel = UserModel.fromJson(response.toNormalizedProfileJson());
 
     await localDataSource.saveToken(tokenModel);
     await localDataSource.saveUser(userModel);

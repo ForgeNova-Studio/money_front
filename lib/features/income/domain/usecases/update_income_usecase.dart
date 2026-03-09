@@ -1,10 +1,10 @@
 import 'package:moamoa/features/income/domain/entities/income.dart';
 import 'package:moamoa/features/income/domain/repositories/income_repository.dart';
 
-class UpdateIncomeUsecase {
+class UpdateIncomeUseCase {
   final IncomeRepository _repository;
 
-  UpdateIncomeUsecase(this._repository);
+  UpdateIncomeUseCase(this._repository);
 
   /// 수입 수정
   ///

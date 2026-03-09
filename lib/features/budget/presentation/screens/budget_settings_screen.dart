@@ -1,48 +1,83 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import 'package:moamoa/core/constants/app_constants.dart';
-import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
-import 'package:moamoa/features/budget/presentation/providers/budget_providers.dart';
-import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/features/budget/presentation/states/budget_settings_state.dart';
+import 'package:moamoa/features/budget/presentation/utils/budget_amount_utils.dart';
+import 'package:moamoa/features/budget/presentation/viewmodels/budget_settings_view_model.dart';
+import 'package:moamoa/features/budget/presentation/widgets/budget_form_widgets.dart';
+import 'package:moamoa/features/budget/presentation/widgets/budget_month_selector.dart';
+import 'package:moamoa/features/budget/presentation/widgets/budget_settings_actions.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
-import 'package:moamoa/features/common/widgets/transaction_form/thousands_separator_input_formatter.dart';
 
 /// 예산 설정 화면
+///
+/// 사용자가 특정 월의 예산을 설정하거나 수정, 삭제할 수 있는 화면입니다.
+/// ViewModel을 통해 상태를 관리하며, 예산 금액 입력 및 빠른 금액 선택 기능을 제공합니다.
+///
+/// **Key Features:**
+/// *   월별 예산 조회 및 월 이동 (`BudgetMonthSelector`)
+/// *   예산 금액 직접 입력 및 콤마 포맷팅 (`BudgetAmountInputCard`)
+/// *   빠른 예산 금액 추천 버튼 제공 (`BudgetQuickAmountGrid`)
+/// *   선택된 월의 예산 저장 및 삭제 처리 (`BudgetSettingsActions`)
+///
+/// **Parameters:**
+/// *   [initialDate] - 화면 진입 시 초기 기준으로 설정될 날짜입니다. (선택 사항)
+///
+/// **Usage Example:**
+/// ```dart
+/// // 라우터를 통한 이동 예시 (GoRouter 사용 시)
+/// context.push(
+///   '/budget/settings?year=2026&month=02',
+/// );
+///
+/// // 직접 위젯 생성 예시
+/// BudgetSettingsScreen(
+///   initialDate: DateTime.now(),
+/// )
+/// ```
 class BudgetSettingsScreen extends ConsumerStatefulWidget {
-  const BudgetSettingsScreen({super.key});
+  const BudgetSettingsScreen({
+    super.key,
+    this.initialDate,
+  });
+
+  final DateTime? initialDate;
 
   @override
   ConsumerState<BudgetSettingsScreen> createState() =>
       _BudgetSettingsScreenState();
 }
 
+/// [BudgetSettingsScreen]의 상태 관리를 담당하는 State 클래스
+///
+/// 폼 검증([_formKey])
+/// 금액 텍스트 컨트롤러([_amountController])
+/// 금액 포커스([_amountFocusNode]) 등을 비롯한 로컬 UI 상태를 관리합니다.
+/// [budgetSettingsViewModelProvider]를 수신하여 상태를 동기화하고, 에러 메시지나 정상 처리 등의 이벤트 위임 알림(Toast, Pop 등)을 처리합니다.
 class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _amountFocusNode = FocusNode();
   final _numberFormat = NumberFormat('#,###');
 
-  // 월별 예산 캐시 (key: "yyyy-MM")
-  final Map<String, BudgetEntity?> _budgetCache = {};
-
-  bool _isInitialLoading = true;
-  bool _isSaving = false;
+  bool _didInitialize = false;
   bool _didAutoFocusAmount = false;
-  late DateTime _selectedMonth;
-  late DateTime _currentMonth;
 
   @override
   void initState() {
     super.initState();
-    final now = DateTime.now();
-    _currentMonth = DateTime(now.year, now.month);
-    _selectedMonth = _currentMonth;
-    _prefetchBudgets();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _didInitialize) return;
+      _didInitialize = true;
+      ref
+          .read(budgetSettingsViewModelProvider.notifier)
+          .initialize(widget.initialDate);
+    });
   }
 
   @override
@@ -52,217 +87,79 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
     super.dispose();
   }
 
-  String _monthKey(DateTime month) =>
-      '${month.year}-${month.month.toString().padLeft(2, '0')}';
-
-  bool get _isCurrentMonth =>
-      _selectedMonth.year == _currentMonth.year &&
-      _selectedMonth.month == _currentMonth.month;
-
-  /// 현재 월 기준 앞뒤 1개월 프리페치
-  Future<void> _prefetchBudgets() async {
-    final accountBookId =
-        ref.read(selectedAccountBookViewModelProvider).asData?.value;
-    if (accountBookId == null) {
-      if (mounted) setState(() => _isInitialLoading = false);
-      return;
-    }
-
-    // 현재 월 기준 -1 ~ +1 개월 (총 3개월)
-    final months = <DateTime>[];
-    for (int i = -1; i <= 1; i++) {
-      months.add(DateTime(_currentMonth.year, _currentMonth.month + i));
-    }
-
-    // 병렬로 모든 월 데이터 fetch
-    await Future.wait(months.map((month) async {
-      final key = _monthKey(month);
-      if (_budgetCache.containsKey(key)) return;
-
-      try {
-        final budget = await ref.read(getMonthlyBudgetUseCaseProvider)(
-          year: month.year,
-          month: month.month,
-          accountBookId: accountBookId,
-        );
-        _budgetCache[key] = budget;
-      } catch (e) {
-        _budgetCache[key] = null;
-      }
-    }));
-
-    // 현재 월 예산을 입력 필드에 설정
-    if (mounted) {
-      _updateAmountFromCache();
-      setState(() => _isInitialLoading = false);
-      _autoFocusAmountIfNeeded();
-    }
-  }
-
-  /// 예산이 설정되지 않은 경우 금액 필드 포커싱
-  void _autoFocusAmountIfNeeded() {
-    if (_didAutoFocusAmount) return;
-    if (_amountController.text.isNotEmpty) return;
-    _didAutoFocusAmount = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _amountFocusNode.requestFocus();
-    });
-  }
-
-  /// 캐시에서 현재 선택된 월의 예산을 가져와 입력 필드에 설정
-  void _updateAmountFromCache() {
-    final key = _monthKey(_selectedMonth);
-    final budget = _budgetCache[key];
-    if (budget != null) {
-      _amountController.text =
-          _numberFormat.format(budget.targetAmount.toInt());
-    } else {
+  /// 예산 금액 동기화
+  /// 예산이 null이면 금액 컨트롤러를 초기화한다.
+  /// 예산이 null이 아니면 예산 금액을 금액 컨트롤러에 설정한다.
+  void _syncAmountFromBudget(BudgetEntity? budget) {
+    if (budget == null) {
       _amountController.clear();
-    }
-  }
-
-  /// 캐시에 없는 월로 이동할 경우 개별 fetch
-  Future<void> _fetchAndCacheMonth(DateTime month,
-      {required int direction}) async {
-    final key = _monthKey(month);
-
-    // 이미 캐시에 있으면 값만 업데이트하고 프리페칭 시도
-    if (_budgetCache.containsKey(key)) {
-      _updateAmountFromCache();
-      if (mounted) _prefetchDirectional(month, direction);
       return;
     }
 
-    final accountBookId =
-        ref.read(selectedAccountBookViewModelProvider).asData?.value;
-    if (accountBookId == null) return;
-
-    try {
-      final budget = await ref.read(getMonthlyBudgetUseCaseProvider)(
-        year: month.year,
-        month: month.month,
-        accountBookId: accountBookId,
-      );
-      _budgetCache[key] = budget;
-
-      if (mounted) {
-        _updateAmountFromCache();
-        // 이동 방향으로 추가 프리페치
-        _prefetchDirectional(month, direction);
-      }
-    } catch (e) {
-      _budgetCache[key] = null;
-      if (mounted) _updateAmountFromCache();
-    }
+    _amountController.text = _numberFormat.format(budget.targetAmount.toInt());
   }
 
-  /// 이동한 방향으로 1개월 추가 프리페치
-  void _prefetchDirectional(DateTime currentMonth, int direction) {
-    if (direction == 0) return;
-
-    final accountBookId =
-        ref.read(selectedAccountBookViewModelProvider).asData?.value;
-    if (accountBookId == null) return;
-
-    // direction: -1 (이전 달로 이동) -> 더 이전 달(-1) 프리페치
-    // direction: 1 (다음 달로 이동) -> 더 다음 달(+1) 프리페치
-    final targetMonth =
-        DateTime(currentMonth.year, currentMonth.month + direction);
-    final key = _monthKey(targetMonth);
-
-    if (_budgetCache.containsKey(key)) return;
-
-    ref
-        .read(getMonthlyBudgetUseCaseProvider)(
-      year: targetMonth.year,
-      month: targetMonth.month,
-      accountBookId: accountBookId,
-    )
-        .then((budget) {
-      _budgetCache[key] = budget;
-    }).catchError((_) {
-      _budgetCache[key] = null;
-    });
-  }
-
-  Future<void> _saveBudget() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final accountBookId =
-        ref.read(selectedAccountBookViewModelProvider).asData?.value;
-    if (accountBookId == null) {
-      _showError('가계부를 선택해주세요.');
-      return;
-    }
-
-    final numericValue =
-        _amountController.text.replaceAll(RegExp(r'[^0-9]'), '');
-    final amount = double.tryParse(numericValue) ?? 0;
-
-    if (amount <= 0) {
-      _showError('예산 금액을 입력해주세요.');
-      return;
-    }
-
-    setState(() => _isSaving = true);
-
-    try {
-      await ref.read(createOrUpdateBudgetUseCaseProvider)(
-        accountBookId: accountBookId,
-        year: _selectedMonth.year,
-        month: _selectedMonth.month,
-        targetAmount: amount,
-      );
-
-      // 캐시 업데이트 - 저장 후 다음 방문 시 새로운 데이터 불러오도록 invalidate
-      final key = _monthKey(_selectedMonth);
-      _budgetCache.remove(key);
-
-      await ref.read(homeViewModelProvider.notifier).refresh();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('예산이 저장되었습니다.'),
-            backgroundColor: context.appColors.success,
-          ),
+  /// 이벤트 핸들러
+  /// [BudgetSettingsEvent]를 베이스로 하는 다양한 이벤트를 처리하여 UI를 업데이트한다.
+  /// - [BudgetSettingsShowError]
+  /// - [BudgetSettingsPopWithToast]
+  /// - [BudgetSettingsPop]
+  /// 처리 완료후에는 [BudgetSettingsViewModel.clearEvent]를 호출하여 이벤트를 비운다.
+  void _handleEvent(BudgetSettingsEvent event) {
+    switch (event) {
+      case BudgetSettingsShowError(:final message):
+        context.showErrorToast(
+          message,
+          duration: const Duration(seconds: 2),
         );
+      case BudgetSettingsPopWithToast(:final message):
+        context.showToast(message);
         context.pop();
-      }
-    } catch (e) {
-      _showError('예산 저장에 실패했습니다: $e');
-    } finally {
-      if (mounted) setState(() => _isSaving = false);
+      case BudgetSettingsPop():
+        context.pop();
     }
+
+    // 이벤트 비우기 위한 호출
+    ref.read(budgetSettingsViewModelProvider.notifier).clearEvent();
   }
 
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: context.appColors.error,
+  /// 예산 삭제
+  Future<void> _onDeletePressed(DateTime selectedMonth) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('예산 삭제'),
+        content: Text(
+          '${DateFormat('yyyy년 M월').format(selectedMonth)} 예산을 삭제하면\n해당 월은 "예산 미설정" 상태가 됩니다.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('취소'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: context.appColors.error,
+            ),
+            child: const Text('삭제'),
+          ),
+        ],
       ),
     );
+
+    if (confirmed != true) return;
+    ref.read(budgetSettingsViewModelProvider.notifier).deleteSelectedBudget();
   }
 
-  void _changeMonth(int delta) {
-    final newMonth =
-        DateTime(_selectedMonth.year, _selectedMonth.month + delta);
-    setState(() {
-      _selectedMonth = newMonth;
-    });
-    _fetchAndCacheMonth(newMonth, direction: delta);
+  /// 예산 저장
+  void _onSavePressed() {
+    if (!_formKey.currentState!.validate()) return;
+    final amount = parseFormattedAmount(_amountController.text);
+    ref.read(budgetSettingsViewModelProvider.notifier).saveBudget(amount);
   }
 
-  void _goToCurrentMonth() {
-    if (_isCurrentMonth) return;
-    setState(() {
-      _selectedMonth = _currentMonth;
-    });
-    _updateAmountFromCache();
-  }
-
+  /// 빠른 금액 선택
   void _setSuggestedAmount(int amount) {
     _amountController.text = _numberFormat.format(amount);
     setState(() {});
@@ -270,6 +167,35 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<BudgetSettingsState>(
+      budgetSettingsViewModelProvider,
+      (previous, next) {
+        final monthChanged = previous?.selectedMonth != next.selectedMonth;
+        final budgetChanged = previous?.selectedBudget != next.selectedBudget;
+
+        if (monthChanged || budgetChanged) {
+          _syncAmountFromBudget(next.selectedBudget);
+        }
+
+        if (!_didAutoFocusAmount &&
+            !next.isInitialLoading &&
+            _amountController.text.isEmpty) {
+          _didAutoFocusAmount = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            _amountFocusNode.requestFocus();
+          });
+        }
+
+        final event = next.event;
+        if (event != null) {
+          _handleEvent(event);
+        }
+      },
+    );
+
+    final state = ref.watch(budgetSettingsViewModelProvider);
+
     return DefaultLayout(
       title: '예산 설정',
       titleSpacing: 0,
@@ -278,7 +204,7 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
         icon: const Icon(Icons.close),
         onPressed: () => context.pop(),
       ),
-      child: _isInitialLoading
+      child: state.isInitialLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
@@ -290,7 +216,28 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildMonthSelector(),
+                          BudgetMonthSelector(
+                            selectedMonth: state.selectedMonth,
+                            isCurrentMonth: state.isCurrentMonth,
+                            onPrevious: () {
+                              ref
+                                  .read(
+                                      budgetSettingsViewModelProvider.notifier)
+                                  .changeMonth(-1);
+                            },
+                            onNext: () {
+                              ref
+                                  .read(
+                                      budgetSettingsViewModelProvider.notifier)
+                                  .changeMonth(1);
+                            },
+                            onGoToCurrentMonth: () {
+                              ref
+                                  .read(
+                                      budgetSettingsViewModelProvider.notifier)
+                                  .goToCurrentMonth();
+                            },
+                          ),
                           const SizedBox(height: 24),
                           _buildAmountInput(),
                           const SizedBox(height: 32),
@@ -300,336 +247,60 @@ class _BudgetSettingsScreenState extends ConsumerState<BudgetSettingsScreen> {
                     ),
                   ),
                 ),
-                _buildSaveButton(),
+                BudgetSettingsActions(
+                  hasBudget: state.selectedBudget != null,
+                  hasValue: _amountController.text.isNotEmpty,
+                  isSaving: state.isSaving,
+                  isDeleting: state.isDeleting,
+                  onSave: _onSavePressed,
+                  onDelete: () => _onDeletePressed(state.selectedMonth),
+                ),
               ],
             ),
     );
   }
 
-  Widget _buildMonthSelector() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          IconButton(
-            icon: Icon(
-              Icons.chevron_left_rounded,
-              color: context.appColors.gray600,
-              size: 28,
-            ),
-            onPressed: () => _changeMonth(-1),
-          ),
-          Expanded(
-            child: Center(
-              child: Text(
-                DateFormat('yyyy년 M월').format(_selectedMonth),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: context.appColors.textPrimary,
-                ),
-              ),
-            ),
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.chevron_right_rounded,
-              color: context.appColors.gray600,
-              size: 28,
-            ),
-            onPressed: () => _changeMonth(1),
-          ),
-          // 이번달 버튼
-          if (!_isCurrentMonth) ...[
-            Container(
-              height: 24,
-              width: 1,
-              color: context.appColors.gray200,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-            ),
-            TextButton(
-              onPressed: _goToCurrentMonth,
-              style: TextButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: Text(
-                '이번달',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: context.appColors.primary,
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
   Widget _buildAmountInput() {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => _amountFocusNode.requestFocus(),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Text(
-              '이번 달 예산',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: context.appColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Center(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    IntrinsicWidth(
-                      child: TextFormField(
-                        controller: _amountController,
-                        focusNode: _amountFocusNode,
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        onChanged: (_) => setState(() {}),
-                        style: TextStyle(
-                          fontSize: 42,
-                          fontWeight: FontWeight.bold,
-                          color: context.appColors.primary,
-                        ),
-                        decoration: InputDecoration(
-                          filled: false,
-                          hintText: '0',
-                          hintStyle: TextStyle(
-                            color: context.appColors.gray300,
-                            fontSize: 42,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          focusedErrorBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          errorStyle: const TextStyle(
-                            height: 0,
-                            color: Colors.transparent,
-                          ),
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          ThousandsSeparatorInputFormatter(maxDigits: 12),
-                        ],
-                        autofocus: false,
-                        showCursor: false,
-                        cursorColor: Colors.transparent,
-                        validator: (value) => (value == null || value.isEmpty)
-                            ? '예산 금액을 입력해주세요'
-                            : null,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '원',
-                      style: TextStyle(
-                        fontSize: 42,
-                        fontWeight: FontWeight.w600,
-                        color: context.appColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+    return BudgetAmountInputCard(
+      header: Text(
+        '이번 달 예산',
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: context.appColors.textSecondary,
         ),
       ),
+      controller: _amountController,
+      focusNode: _amountFocusNode,
+      onChanged: () => setState(() {}),
+      amountColor: context.appColors.primary,
+      validator: (value) =>
+          (value == null || value.isEmpty) ? '예산 금액을 입력해주세요' : null,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
+      headerBottomSpacing: 16,
     );
   }
 
   Widget _buildSuggestedAmounts() {
-    final suggestions = [
-      (500000, '50만'),
-      (1000000, '100만'),
-      (1500000, '150만'),
-      (2000000, '200만'),
-      (3000000, '300만'),
-      (5000000, '500만'),
+    const suggestions = [
+      BudgetAmountSuggestion(500000, '50만'),
+      BudgetAmountSuggestion(1000000, '100만'),
+      BudgetAmountSuggestion(1500000, '150만'),
+      BudgetAmountSuggestion(2000000, '200만'),
+      BudgetAmountSuggestion(3000000, '300만'),
+      BudgetAmountSuggestion(5000000, '500만'),
     ];
 
-    return Column(
-      children: [
-        // 헤더: 빠른 입력 + 초기화 버튼
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '빠른 입력',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: context.appColors.textSecondary,
-              ),
-            ),
-            if (_amountController.text.isNotEmpty) ...[
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: () {
-                  _amountController.clear();
-                  setState(() {});
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: context.appColors.gray100,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    '초기화',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: context.appColors.textTertiary,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-        const SizedBox(height: 16),
-        // 2x3 그리드
-        GridView.count(
-          crossAxisCount: 3,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
-          childAspectRatio: 2.2,
-          children: suggestions.map((item) {
-            final isSelected =
-                _amountController.text == _numberFormat.format(item.$1);
-            return GestureDetector(
-              onTap: () => _setSuggestedAmount(item.$1),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? context.appColors.primary.withValues(alpha: 0.1)
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isSelected
-                        ? context.appColors.primary
-                        : context.appColors.gray200,
-                    width: isSelected ? 1.5 : 1,
-                  ),
-                  boxShadow: isSelected
-                      ? null
-                      : [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.03),
-                            blurRadius: 4,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                ),
-                child: Text(
-                  item.$2,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected
-                        ? context.appColors.primary
-                        : context.appColors.textPrimary,
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSaveButton() {
-    final hasValue = _amountController.text.isNotEmpty;
-
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 16,
-        bottom: MediaQuery.of(context).padding.bottom + 16,
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        height: 54,
-        child: ElevatedButton(
-          onPressed: (_isSaving || !hasValue) ? null : _saveBudget,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: context.appColors.primary,
-            disabledBackgroundColor: context.appColors.gray200,
-            foregroundColor: Colors.white,
-            disabledForegroundColor: context.appColors.gray400,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
-          ),
-          child: _isSaving
-              ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-              : const Text(
-                  '저장하기',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-        ),
-      ),
+    return BudgetQuickAmountGrid(
+      showClear: _amountController.text.isNotEmpty,
+      onClear: () {
+        _amountController.clear();
+        setState(() {});
+      },
+      suggestions: suggestions,
+      isSelected: (amount) =>
+          _amountController.text == _numberFormat.format(amount),
+      onSelect: _setSuggestedAmount,
     );
   }
 }

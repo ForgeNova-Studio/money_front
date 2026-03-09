@@ -108,7 +108,7 @@ class _BarItemState extends State<_BarItem>
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: category.color.withOpacity(0.15),
+                  color: category.color.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -139,7 +139,7 @@ class _BarItemState extends State<_BarItem>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: category.color.withOpacity(0.1),
+                  color: category.color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -175,7 +175,7 @@ class _BarItemState extends State<_BarItem>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            category.color.withOpacity(0.7),
+                            category.color.withValues(alpha: 0.7),
                             category.color,
                           ],
                         ),

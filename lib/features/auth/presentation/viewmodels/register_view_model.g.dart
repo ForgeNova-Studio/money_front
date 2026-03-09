@@ -8,21 +8,57 @@ part of 'register_view_model.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// 회원가입 폼 ViewModel
+/// 회원가입 ViewModel
 ///
-/// 폼 상태 관리 및 이메일 인증 로직 처리
+/// 회원가입 화면의 UI 상태 관리 및 데이터 처리를 담당합니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 입력 폼 상태 관리 (닉네임, 이메일, 비밀번호, 성별 등)
+/// - 유효성 검사 (`validateForSignup`)
+/// - 이메일 인증 (`sendVerificationCode`, `verifyCode`)
+/// - 약관 동의 및 비밀번호 가시성 토글
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// final errorMessage = ref.read(registerViewModelProvider.notifier)
+///     .validateForSignup(password: pw, confirmPassword: cp);
+/// ```
 
 @ProviderFor(RegisterViewModel)
 const registerViewModelProvider = RegisterViewModelProvider._();
 
-/// 회원가입 폼 ViewModel
+/// 회원가입 ViewModel
 ///
-/// 폼 상태 관리 및 이메일 인증 로직 처리
+/// 회원가입 화면의 UI 상태 관리 및 데이터 처리를 담당합니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 입력 폼 상태 관리 (닉네임, 이메일, 비밀번호, 성별 등)
+/// - 유효성 검사 (`validateForSignup`)
+/// - 이메일 인증 (`sendVerificationCode`, `verifyCode`)
+/// - 약관 동의 및 비밀번호 가시성 토글
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// final errorMessage = ref.read(registerViewModelProvider.notifier)
+///     .validateForSignup(password: pw, confirmPassword: cp);
+/// ```
 final class RegisterViewModelProvider
     extends $NotifierProvider<RegisterViewModel, RegisterFormState> {
-  /// 회원가입 폼 ViewModel
+  /// 회원가입 ViewModel
   ///
-  /// 폼 상태 관리 및 이메일 인증 로직 처리
+  /// 회원가입 화면의 UI 상태 관리 및 데이터 처리를 담당합니다.
+  ///
+  /// **주요 기능 (Key Features):**
+  /// - 입력 폼 상태 관리 (닉네임, 이메일, 비밀번호, 성별 등)
+  /// - 유효성 검사 (`validateForSignup`)
+  /// - 이메일 인증 (`sendVerificationCode`, `verifyCode`)
+  /// - 약관 동의 및 비밀번호 가시성 토글
+  ///
+  /// **사용 예시 (Usage Example):**
+  /// ```dart
+  /// final errorMessage = ref.read(registerViewModelProvider.notifier)
+  ///     .validateForSignup(password: pw, confirmPassword: cp);
+  /// ```
   const RegisterViewModelProvider._()
       : super(
           from: null,
@@ -50,11 +86,23 @@ final class RegisterViewModelProvider
   }
 }
 
-String _$registerViewModelHash() => r'fa7e6fd49995a539aa3b308cb22f8efd1cb76977';
+String _$registerViewModelHash() => r'cfe8119b7ea5d4b6a48ef3d3d00b27e7787d7e01';
 
-/// 회원가입 폼 ViewModel
+/// 회원가입 ViewModel
 ///
-/// 폼 상태 관리 및 이메일 인증 로직 처리
+/// 회원가입 화면의 UI 상태 관리 및 데이터 처리를 담당합니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 입력 폼 상태 관리 (닉네임, 이메일, 비밀번호, 성별 등)
+/// - 유효성 검사 (`validateForSignup`)
+/// - 이메일 인증 (`sendVerificationCode`, `verifyCode`)
+/// - 약관 동의 및 비밀번호 가시성 토글
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// final errorMessage = ref.read(registerViewModelProvider.notifier)
+///     .validateForSignup(password: pw, confirmPassword: cp);
+/// ```
 
 abstract class _$RegisterViewModel extends $Notifier<RegisterFormState> {
   RegisterFormState build();

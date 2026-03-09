@@ -333,55 +333,6 @@ final class LogoutUseCaseProvider
 
 String _$logoutUseCaseHash() => r'bee26a2d877b87bf256e3c7673c413b59c66c100';
 
-/// Get Current User UseCase Provider
-
-@ProviderFor(getCurrentUserUseCase)
-const getCurrentUserUseCaseProvider = GetCurrentUserUseCaseProvider._();
-
-/// Get Current User UseCase Provider
-
-final class GetCurrentUserUseCaseProvider extends $FunctionalProvider<
-    GetCurrentUserUseCase,
-    GetCurrentUserUseCase,
-    GetCurrentUserUseCase> with $Provider<GetCurrentUserUseCase> {
-  /// Get Current User UseCase Provider
-  const GetCurrentUserUseCaseProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'getCurrentUserUseCaseProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
-
-  @override
-  String debugGetCreateSourceHash() => _$getCurrentUserUseCaseHash();
-
-  @$internal
-  @override
-  $ProviderElement<GetCurrentUserUseCase> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  GetCurrentUserUseCase create(Ref ref) {
-    return getCurrentUserUseCase(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(GetCurrentUserUseCase value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<GetCurrentUserUseCase>(value),
-    );
-  }
-}
-
-String _$getCurrentUserUseCaseHash() =>
-    r'667fda7b5ed39acf7727e08c35274ea553056d76';
-
 /// Google Login UseCase Provider
 
 @ProviderFor(googleLoginUseCase)
@@ -430,54 +381,6 @@ final class GoogleLoginUseCaseProvider extends $FunctionalProvider<
 
 String _$googleLoginUseCaseHash() =>
     r'bde24a8375b92dcc544a44057bc376f21c5af48f';
-
-/// Apple Login UseCase Provider
-
-@ProviderFor(appleLoginUseCase)
-const appleLoginUseCaseProvider = AppleLoginUseCaseProvider._();
-
-/// Apple Login UseCase Provider
-
-final class AppleLoginUseCaseProvider extends $FunctionalProvider<
-    AppleLoginUseCase,
-    AppleLoginUseCase,
-    AppleLoginUseCase> with $Provider<AppleLoginUseCase> {
-  /// Apple Login UseCase Provider
-  const AppleLoginUseCaseProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'appleLoginUseCaseProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
-
-  @override
-  String debugGetCreateSourceHash() => _$appleLoginUseCaseHash();
-
-  @$internal
-  @override
-  $ProviderElement<AppleLoginUseCase> $createElement(
-          $ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  AppleLoginUseCase create(Ref ref) {
-    return appleLoginUseCase(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(AppleLoginUseCase value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<AppleLoginUseCase>(value),
-    );
-  }
-}
-
-String _$appleLoginUseCaseHash() => r'931c3d354d781303dc43732114d9907121f37706';
 
 /// Naver Login UseCase Provider
 
@@ -732,10 +635,10 @@ const verifyFindPasswordCodeUseCaseProvider =
 /// Verify Password Code UseCase Provider
 
 final class VerifyFindPasswordCodeUseCaseProvider extends $FunctionalProvider<
-        VerifiyFindPasswordCodeUsecase,
-        VerifiyFindPasswordCodeUsecase,
-        VerifiyFindPasswordCodeUsecase>
-    with $Provider<VerifiyFindPasswordCodeUsecase> {
+        VerifyFindPasswordCodeUseCase,
+        VerifyFindPasswordCodeUseCase,
+        VerifyFindPasswordCodeUseCase>
+    with $Provider<VerifyFindPasswordCodeUseCase> {
   /// Verify Password Code UseCase Provider
   const VerifyFindPasswordCodeUseCaseProvider._()
       : super(
@@ -753,27 +656,27 @@ final class VerifyFindPasswordCodeUseCaseProvider extends $FunctionalProvider<
 
   @$internal
   @override
-  $ProviderElement<VerifiyFindPasswordCodeUsecase> $createElement(
+  $ProviderElement<VerifyFindPasswordCodeUseCase> $createElement(
           $ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  VerifiyFindPasswordCodeUsecase create(Ref ref) {
+  VerifyFindPasswordCodeUseCase create(Ref ref) {
     return verifyFindPasswordCodeUseCase(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(VerifiyFindPasswordCodeUsecase value) {
+  Override overrideWithValue(VerifyFindPasswordCodeUseCase value) {
     return $ProviderOverride(
       origin: this,
       providerOverride:
-          $SyncValueProvider<VerifiyFindPasswordCodeUsecase>(value),
+          $SyncValueProvider<VerifyFindPasswordCodeUseCase>(value),
     );
   }
 }
 
 String _$verifyFindPasswordCodeUseCaseHash() =>
-    r'065d066bb33944a267facf6a198ac04e21611014';
+    r'3cc7a28013f88b0ba1ea3046543689a1e345db37';
 
 /// Reset Password UseCase Provider
 

@@ -41,7 +41,7 @@ class AssetListItem extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: category.color.withOpacity(0.12),
+                    color: category.color.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Icon(
@@ -74,7 +74,7 @@ class AssetListItem extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: category.color.withOpacity(0.1),
+                              color: category.color.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(

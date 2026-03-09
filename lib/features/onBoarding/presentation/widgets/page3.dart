@@ -6,13 +6,8 @@ import 'package:intl/intl.dart';
 // core
 import 'package:moamoa/core/constants/app_constants.dart';
 
-// widgets
-import 'package:moamoa/features/onBoarding/presentation/widgets/onboarding_bottom_indicator.dart';
-
 class Page3 extends StatefulWidget {
-  const Page3({super.key, required this.currentPage});
-
-  final int currentPage;
+  const Page3({super.key});
 
   @override
   State<Page3> createState() => _Page3State();
@@ -134,16 +129,7 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
             ),
           ),
 
-          const SizedBox(height: 32),
-
-          // 페이지 인디케이터
-          // 페이지 인디케이터
-          OnboardingBottomIndicator(
-            currentPage: widget.currentPage,
-            totalPage: 5,
-          ),
-
-          Spacer(),
+          const Spacer(),
         ],
       ),
     );
@@ -225,8 +211,8 @@ class RingChartPainter extends CustomPainter {
           endAngle: 5 * math.pi / 2,
           tileMode: TileMode.clamp,
           colors: [
-            rightColor.withOpacity(fadeOpacity),
-            leftColor.withOpacity(fadeOpacity),
+            rightColor.withValues(alpha: fadeOpacity),
+            leftColor.withValues(alpha: fadeOpacity),
           ],
         );
 

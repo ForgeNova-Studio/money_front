@@ -4,8 +4,9 @@ import 'package:intl/intl.dart';
 
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+import 'package:moamoa/features/common/providers/expense_sync_provider.dart';
 
-import 'package:moamoa/features/budget/presentation/providers/budget_providers.dart';
+import 'package:moamoa/features/budget/domain/providers/budget_usecase_providers.dart';
 import 'package:moamoa/features/expense/presentation/providers/expense_providers.dart';
 import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
@@ -18,6 +19,35 @@ import 'package:table_calendar/table_calendar.dart';
 
 part 'home_view_model.g.dart';
 
+/// 홈 화면의 비즈니스 로직을 관리하는 ViewModel
+///
+/// 월간 거래 데이터, 예산/자산 정보, 캘린더 상태를 관리합니다.
+/// Riverpod을 사용하여 상태를 관리하고, 로컬 캐시와 서버 데이터를 동기화합니다.
+///
+/// 주요 기능:
+/// - 월간 거래 데이터 조회 및 캐싱 ([fetchMonthlyData])
+/// - 예산/자산 정보 조회 및 캐싱 ([_loadBudgetAndAsset])
+/// - 날짜 선택 및 캘린더 포맷 변경 ([selectDate], [setCalendarFormat])
+/// - 거래 내역 삭제 (Optimistic Update) ([deleteTransaction])
+/// - 거래 내역 추가/수정 (Optimistic Update) ([addTransactionOptimistically], [updateTransactionOptimistically])
+/// - 인접 월 데이터 프리패치 ([_prefetchAdjacentMonths])
+///
+/// 캐싱 전략:
+/// - 메모리 캐시: Budget/Asset 정보
+/// - 로컬 캐시: SQLite를 통한 월간 데이터 캐싱
+/// - TTL: 5분 (캐시 유효 시간)
+///
+/// 사용 예시:
+/// ```dart
+/// // Provider 구독
+/// final homeState = ref.watch(homeViewModelProvider);
+///
+/// // 데이터 새로고침
+/// ref.read(homeViewModelProvider.notifier).refresh();
+///
+/// // 날짜 선택
+/// ref.read(homeViewModelProvider.notifier).selectDate(DateTime.now());
+/// ```
 @riverpod
 class HomeViewModel extends _$HomeViewModel {
   static const Duration _cacheTtl = Duration(minutes: 5);
@@ -51,6 +81,20 @@ class HomeViewModel extends _$HomeViewModel {
       },
       fireImmediately: true,
     );
+
+    ref.listen<TransactionSyncSignal?>(transactionSyncProvider,
+        (previous, next) {
+      if (next == null) {
+        return;
+      }
+      final selectedAccountBookId =
+          ref.read(selectedAccountBookViewModelProvider).asData?.value;
+      if (next.accountBookId != null &&
+          next.accountBookId != selectedAccountBookId) {
+        return;
+      }
+      unawaited(fetchMonthlyData(next.date, forceRefresh: true));
+    });
 
     final now = DateTime.now();
     return HomeState(
@@ -274,7 +318,7 @@ class HomeViewModel extends _$HomeViewModel {
         await ref.read(deleteExpenseUseCaseProvider).call(transaction.id);
       } else {
         await ref
-            .read(deleteIncomeUsecaseProvider)
+            .read(deleteIncomeUseCaseProvider)
             .call(incomeId: transaction.id);
       }
     } catch (e) {
@@ -288,6 +332,12 @@ class HomeViewModel extends _$HomeViewModel {
     // 3. 캐시 무효화 (다음 새로고침 시 최신 데이터 보장)
     final userId = _resolveUserId();
     final accountBookId = _resolveAccountBookId();
+    if (transaction.type == TransactionType.expense) {
+      ref.read(expenseSyncProvider.notifier).emit(
+            date: transaction.date,
+            accountBookId: accountBookId,
+          );
+    }
     if (accountBookId != null && userId != null) {
       final targetMonth =
           DateTime(transaction.date.year, transaction.date.month, 1);
@@ -325,6 +375,48 @@ class HomeViewModel extends _$HomeViewModel {
 
     final updatedData = Map<String, DailyTransactionSummary>.from(currentData);
     updatedData[dateKey] = updatedSummary;
+
+    state = state.copyWith(
+      monthlyData: AsyncValue.data(updatedData),
+    );
+  }
+
+  /// 낙관적 트랜잭션 추가 롤백 (API 실패 시 호출)
+  ///
+  /// [addTransactionOptimistically]로 추가한 트랜잭션을 제거합니다.
+  /// id가 빈 문자열인 임시 트랜잭션을 찾아 제거합니다.
+  void removeTransactionOptimistically(TransactionEntity transaction) {
+    final dateKey = DateFormat('yyyy-MM-dd').format(transaction.date);
+    final currentData = state.monthlyData.asData?.value;
+    if (currentData == null || !currentData.containsKey(dateKey)) return;
+
+    final daySummary = currentData[dateKey]!;
+    final updatedTransactions = List<TransactionEntity>.from(
+      daySummary.transactions,
+    );
+
+    // 임시 트랜잭션(id='')을 찾아 하나만 제거
+    final index = updatedTransactions.indexWhere(
+      (tx) =>
+          tx.id == transaction.id &&
+          tx.amount == transaction.amount &&
+          tx.type == transaction.type,
+    );
+    if (index == -1) return;
+    updatedTransactions.removeAt(index);
+
+    final updatedIncome = daySummary.totalIncome -
+        (transaction.type == TransactionType.income ? transaction.amount : 0);
+    final updatedExpense = daySummary.totalExpense -
+        (transaction.type == TransactionType.expense ? transaction.amount : 0);
+
+    final updatedData = Map<String, DailyTransactionSummary>.from(currentData);
+    updatedData[dateKey] = DailyTransactionSummary(
+      date: daySummary.date,
+      transactions: updatedTransactions,
+      totalIncome: updatedIncome,
+      totalExpense: updatedExpense,
+    );
 
     state = state.copyWith(
       monthlyData: AsyncValue.data(updatedData),
@@ -478,7 +570,7 @@ class HomeViewModel extends _$HomeViewModel {
     if (accountBookId == null) return;
 
     await _fetchBudgetAndAssetInfo(
-      state.selectedDate,
+      state.focusedMonth,
       accountBookId,
       forceRefresh: true,
     );

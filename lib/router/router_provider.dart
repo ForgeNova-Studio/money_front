@@ -1,10 +1,17 @@
+// ==================== Flutter & Packages ====================
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+// ==================== Router ====================
 import 'package:moamoa/router/app_router.dart';
 import 'package:moamoa/router/route_names.dart';
+
+// ==================== Common ====================
 import 'package:moamoa/features/common/providers/app_init_provider.dart';
+
+// ==================== Auth ====================
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
 
@@ -81,13 +88,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Public 화면 확인
       final isGoingToAuth = RouteNames.isAuthRoute(currentLocation);
       final isOnboarding = currentLocation == RouteNames.onboarding;
-      final isRoot = currentLocation == '/';
 
       // 디버그 로그
       if (kDebugMode) {
         debugPrint('[GoRouter Redirect] location: $currentLocation, '
             'isLoading: $isLoading, isAuthenticated: $isAuthenticated, '
-            'hasUser: $hasUser, isGoingToAuth: $isGoingToAuth, isRoot: $isRoot');
+            'hasUser: $hasUser, isGoingToAuth: $isGoingToAuth');
       }
 
       // Priority 1: 로딩 중일 때는 redirect 하지 않음
@@ -99,9 +105,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         return null;
       }
 
-      final hasSeenOnboarding = appInitState.requireValue.sharedPreferences
-              .getBool('has_seen_onboarding') ??
-          false;
+      /// 온보딩 완료 여부 확인
+      final hasSeenOnboarding = _getHasSeenOnboarding(appInitState);
 
       // Priority 1-1: 온보딩 완료 전에는 온보딩 화면으로 이동
       if (!hasSeenOnboarding) {
@@ -122,34 +127,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         return RouteNames.login;
       }
 
-      // Priority 2: Root 경로(/) 처리
-      if (isRoot) {
-        if (isAuthenticated && hasUser) {
-          if (kDebugMode) {
-            debugPrint('[GoRouter Redirect] Root - 인증된 사용자 → /home');
-          }
-          return RouteNames.home;
-        } else {
-          if (kDebugMode) {
-            debugPrint('[GoRouter Redirect] Root - 미인증 사용자 → /login');
-          }
-          return RouteNames.login;
+      // Priority 2: Root/Splash 경로 처리
+      final isRootOrSplash =
+          currentLocation == '/' || currentLocation == RouteNames.splash;
+      if (isRootOrSplash) {
+        if (kDebugMode) {
+          debugPrint(
+              '[GoRouter Redirect] Root/Splash - ${isAuthenticated && hasUser ? "인증된 사용자 → /home" : "미인증 사용자 → /login"}');
         }
-      }
-
-      // Priority 2-1: Splash 경로 처리
-      if (currentLocation == RouteNames.splash) {
-        if (isAuthenticated && hasUser) {
-          if (kDebugMode) {
-            debugPrint('[GoRouter Redirect] Splash - 인증된 사용자 → /home');
-          }
-          return RouteNames.home;
-        } else {
-          if (kDebugMode) {
-            debugPrint('[GoRouter Redirect] Splash - 미인증 사용자 → /login');
-          }
-          return RouteNames.login;
-        }
+        return (isAuthenticated && hasUser)
+            ? RouteNames.home
+            : RouteNames.login;
       }
 
       // Priority 3: 인증된 사용자 → public 화면 접근 시 홈으로 리다이렉션
@@ -198,3 +186,21 @@ final routerProvider = Provider<GoRouter>((ref) {
     errorBuilder: AppRouter.errorBuilder,
   );
 });
+
+/// 온보딩 완료 여부를 안전하게 가져오는 헬퍼 함수
+/// 정상 - true, 로딩/에러 - false
+/// true가 아닌 false가 나오는 경우 온보딩 화면 이동
+/// (온보딩 화면을 보지 않은 것으로 간주)
+bool _getHasSeenOnboarding(AsyncValue<AppInitialization> appInitState) {
+  return appInitState.when(
+    data: (data) =>
+        data.sharedPreferences.getBool('has_seen_onboarding') ?? false,
+    loading: () => false,
+    error: (e, _) {
+      if (kDebugMode) {
+        debugPrint('[RouterProvider] 온보딩 상태 조회 실패: $e');
+      }
+      return false;
+    },
+  );
+}

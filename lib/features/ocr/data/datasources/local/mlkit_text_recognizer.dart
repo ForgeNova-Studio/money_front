@@ -11,7 +11,7 @@ import 'package:logger/logger.dart';
 class MlkitTextRecognizer {
   // TextRecognizer - ML Kit이 모든 언어를 자동 감지 (한글 포함)
   final _textRecognizer = TextRecognizer(script: TextRecognitionScript.korean);
-  final _logger = Logger(level: kDebugMode ? Level.debug : Level.nothing);
+  final _logger = Logger(level: kDebugMode ? Level.debug : Level.off);
 
   /// 이미지 파일에서 텍스트 인식
   ///

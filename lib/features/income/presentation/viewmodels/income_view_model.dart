@@ -1,12 +1,37 @@
+import 'package:moamoa/features/common/providers/expense_sync_provider.dart';
 import 'package:moamoa/features/income/domain/entities/income.dart';
 import 'package:moamoa/features/income/presentation/providers/income_providers.dart';
 import 'package:moamoa/features/income/presentation/states/income_state.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+import 'package:moamoa/features/common/utils/transaction_sync_utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'income_view_model.g.dart';
 
-@riverpod
+/// 수입 기능의 비즈니스 로직을 관리하는 ViewModel
+///
+/// 수입 목록 조회, 상세 조회, 등록/수정을 처리하며,
+/// 성공 시 [HomeViewModel] 데이터를 자동으로 갱신합니다.
+///
+/// **주요 기능:**
+/// - 월간 수입 목록 조회 및 정렬 ([loadIncome])
+/// - 수입 상세 조회 ([getIncomeDetail])
+/// - 수입 등록/수정 통합 처리 ([submitIncome])
+/// - 수입 생성 시 가계부 ID 자동 주입 ([createIncome])
+///
+/// **사용 예시:**
+/// ```dart
+/// // 목록 조회
+/// ref.read(incomeViewModelProvider.notifier).loadIncome();
+///
+/// // 등록
+/// ref.read(incomeViewModelProvider.notifier).submitIncome(
+///   amount: 3000000,
+///   date: DateTime.now(),
+///   source: 'SALARY',
+/// );
+/// ```
+@Riverpod(keepAlive: true)
 class IncomeViewModel extends _$IncomeViewModel {
   @override
   IncomeState build() {
@@ -18,19 +43,16 @@ class IncomeViewModel extends _$IncomeViewModel {
 
   /// 초기 데이터 로드 및 월 변경 시 호출
   Future<void> loadIncome() async {
-    final repository = ref.read(getIncomeListUsecaseProvider);
+    final repository = ref.read(getIncomeListUseCaseProvider);
     final focusedDay = state.focusedDay;
-
-    // 해당 월의 시작일과 종료일 계산
-    final startDate = DateTime(focusedDay.year, focusedDay.month, 1);
-    final endDate = DateTime(focusedDay.year, focusedDay.month + 1, 0);
+    final range = buildMonthDateRange(focusedDay);
 
     state = state.copyWith(incomes: const AsyncValue.loading());
 
     try {
       final incomes = await repository(
-        startDate: startDate,
-        endDate: endDate,
+        startDate: range.startDate,
+        endDate: range.endDate,
       );
 
       // 날짜 내림차순 정렬
@@ -38,11 +60,76 @@ class IncomeViewModel extends _$IncomeViewModel {
 
       state = state.copyWith(
         incomes: AsyncValue.data(incomes),
-        totalAmount: _calculateTotalAmount(incomes),
+        totalAmount: sumAmounts(incomes, (item) => item.amount),
       );
     } catch (e, stack) {
       state = state.copyWith(incomes: AsyncValue.error(e, stack));
     }
+  }
+
+  /// 수입 상세 조회
+  Future<Income> getIncomeDetail(String incomeId) async {
+    final useCase = ref.read(getIncomeDetailUseCaseProvider);
+    return await useCase(incomeId: incomeId);
+  }
+
+  /// 수입 등록/수정 통합 메서드
+  ///
+  /// [incomeId]가 있으면 수정, 없으면 신규 등록.
+  /// [existingIncome]이 없는 수정 케이스도 안전하게 update 경로로 처리합니다.
+  /// API 호출 성공 후 HomeViewModel 데이터를 갱신합니다.
+  Future<void> submitIncome({
+    required int amount,
+    required DateTime date,
+    required String source,
+    String? description,
+    String? incomeId,
+    Income? existingIncome,
+  }) async {
+    if (incomeId != null) {
+      // === 수정 ===
+      final baseIncome = existingIncome ??
+          Income(
+            incomeId: incomeId,
+            amount: amount,
+            date: date,
+            source: source,
+          );
+
+      final updated = baseIncome.copyWith(
+        incomeId: incomeId,
+        amount: amount,
+        date: date,
+        source: source,
+        description: description,
+      );
+
+      await updateIncome(income: updated);
+    } else {
+      // === 신규 등록 ===
+      final income = Income(
+        amount: amount,
+        date: date,
+        source: source,
+        description: description,
+      );
+
+      await createIncome(income);
+    }
+
+    final selectedAccountBookId =
+        ref.read(selectedAccountBookViewModelProvider).asData?.value;
+
+    // 성공 시 홈 데이터 갱신 신호 발행
+    ref.read(transactionSyncProvider.notifier).emit(
+          date: date,
+          accountBookId: selectedAccountBookId,
+        );
+    
+    // 추후 수입 변경 시 분석 데이터 동기화 신호 발행이 필요하면 추가해야함
+
+    // 현재 리스트 갱신 (Stale Data 방지)
+    await loadIncome();
   }
 
   /// 수입 생성
@@ -53,23 +140,17 @@ class IncomeViewModel extends _$IncomeViewModel {
     if (selectedAccountBookId == null) {
       throw StateError('Account book is not selected');
     }
-    final createUseCase = ref.read(createIncomeUsecaseProvider);
+    final createUseCase = ref.read(createIncomeUseCaseProvider);
     final request = income.copyWith(accountBookId: selectedAccountBookId);
 
-    // 낙관적 업데이트 또는 로딩 표시를 할 수 있지만,
-    // 여기서는 심플하게 API 호출 후 목록을 다시 로드하는 방식을 사용
     await createUseCase(income: request);
-    // await loadIncome();
   }
 
-  /// 수입 상세 조회
-
   /// 수입 수정
-
-  /// 수입 삭제
-
-  /// 총 금액 계산
-  int _calculateTotalAmount(List<Income> incomes) {
-    return incomes.fold(0, (sum, item) => sum + item.amount);
+  Future<void> updateIncome({
+    required Income income,
+  }) async {
+    final updateUseCase = ref.read(updateIncomeUseCaseProvider);
+    await updateUseCase(incomeId: income.incomeId!, income: income);
   }
 }

@@ -59,12 +59,23 @@ class RouteNames {
   /// 주간 통계 화면
   static const String weeklyStatistics = '/statistics/weekly';
 
+  // ==================== Report Routes ====================
+  /// 월간 리포트 화면
+  static const String monthlyReport = '/reports/monthly';
+
   // ==================== Budget Route ====================
   /// 예산 설정 화면
   static const String budget = '/budget';
 
   /// 예산 설정 화면 (월별)
   static const String budgetSettings = '/budget/settings';
+
+  /// 예산 설정 화면 + 월 쿼리 문자열
+  static String budgetSettingsWithMonth(DateTime month) {
+    final year = month.year;
+    final monthValue = month.month.toString().padLeft(2, '0');
+    return '$budgetSettings?year=$year&month=$monthValue';
+  }
 
   // ==================== Asset Route ====================
   /// 자산 화면
@@ -100,7 +111,7 @@ class RouteNames {
   // ==================== AccountBook Routes ====================
   /// 가계부 생성 화면
   static const String accountBookCreate = '/account-book-create';
-  static const String accountBookList = '/account-books';
+  static const String accountBookList = '/account-books-list';
   static const String accountBookDetail =
       'accountBookDetail'; // Name으로 사용하기 위해 경로가 아닌 이름으로 정의하거나, 경로라면 :id 포함해야 함. 보통 RouteNames에는 path 뿐만 아니라 name도 같이 관리하거나, path만 관리함. 여기서는 path로 관리하는 듯함.
   // 기존 패턴: static const String addExpense = '/add-expense';

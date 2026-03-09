@@ -10,31 +10,67 @@ part of 'auth_view_model.dart';
 // ignore_for_file: type=lint, type=warning
 /// Auth ViewModel
 ///
-/// 인증 관련 비즈니스 로직 처리
-/// - 로그인
-/// - 회원가입
-/// - 로그아웃
-/// - 현재 사용자 정보 조회
+/// 애플리케이션의 핵심 인증 로직을 처리하는 ViewModel입니다.
+/// 로그인, 회원가입, 로그아웃, 사용자 정보 관리 기능을 제공합니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 이메일/비밀번호 로그인 (`login`)
+/// - 소셜 로그인 (Google, Naver, Kakao)
+/// - 회원가입 및 이메일 인증 (`register`, `sendSignupCode`, `verifySignupCode`)
+/// - 비밀번호 재설정 (`sendPasswordResetCode`, `resetPassword`)
+/// - 자동 로그인 및 세션 관리 (`_checkCurrentUser`, `logout`)
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// await ref.read(authViewModelProvider.notifier).login(
+///   email: 'user@example.com',
+///   password: 'password123!',
+/// );
+/// ```
 
 @ProviderFor(AuthViewModel)
 const authViewModelProvider = AuthViewModelProvider._();
 
 /// Auth ViewModel
 ///
-/// 인증 관련 비즈니스 로직 처리
-/// - 로그인
-/// - 회원가입
-/// - 로그아웃
-/// - 현재 사용자 정보 조회
+/// 애플리케이션의 핵심 인증 로직을 처리하는 ViewModel입니다.
+/// 로그인, 회원가입, 로그아웃, 사용자 정보 관리 기능을 제공합니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 이메일/비밀번호 로그인 (`login`)
+/// - 소셜 로그인 (Google, Naver, Kakao)
+/// - 회원가입 및 이메일 인증 (`register`, `sendSignupCode`, `verifySignupCode`)
+/// - 비밀번호 재설정 (`sendPasswordResetCode`, `resetPassword`)
+/// - 자동 로그인 및 세션 관리 (`_checkCurrentUser`, `logout`)
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// await ref.read(authViewModelProvider.notifier).login(
+///   email: 'user@example.com',
+///   password: 'password123!',
+/// );
+/// ```
 final class AuthViewModelProvider
     extends $NotifierProvider<AuthViewModel, AuthState> {
   /// Auth ViewModel
   ///
-  /// 인증 관련 비즈니스 로직 처리
-  /// - 로그인
-  /// - 회원가입
-  /// - 로그아웃
-  /// - 현재 사용자 정보 조회
+  /// 애플리케이션의 핵심 인증 로직을 처리하는 ViewModel입니다.
+  /// 로그인, 회원가입, 로그아웃, 사용자 정보 관리 기능을 제공합니다.
+  ///
+  /// **주요 기능 (Key Features):**
+  /// - 이메일/비밀번호 로그인 (`login`)
+  /// - 소셜 로그인 (Google, Naver, Kakao)
+  /// - 회원가입 및 이메일 인증 (`register`, `sendSignupCode`, `verifySignupCode`)
+  /// - 비밀번호 재설정 (`sendPasswordResetCode`, `resetPassword`)
+  /// - 자동 로그인 및 세션 관리 (`_checkCurrentUser`, `logout`)
+  ///
+  /// **사용 예시 (Usage Example):**
+  /// ```dart
+  /// await ref.read(authViewModelProvider.notifier).login(
+  ///   email: 'user@example.com',
+  ///   password: 'password123!',
+  /// );
+  /// ```
   const AuthViewModelProvider._()
       : super(
           from: null,
@@ -62,15 +98,27 @@ final class AuthViewModelProvider
   }
 }
 
-String _$authViewModelHash() => r'e83e32ea69939ca10ee0d425ae5ab029ead0fed1';
+String _$authViewModelHash() => r'9785c78be5e63aec9a69038500a38c388c69f8e7';
 
 /// Auth ViewModel
 ///
-/// 인증 관련 비즈니스 로직 처리
-/// - 로그인
-/// - 회원가입
-/// - 로그아웃
-/// - 현재 사용자 정보 조회
+/// 애플리케이션의 핵심 인증 로직을 처리하는 ViewModel입니다.
+/// 로그인, 회원가입, 로그아웃, 사용자 정보 관리 기능을 제공합니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 이메일/비밀번호 로그인 (`login`)
+/// - 소셜 로그인 (Google, Naver, Kakao)
+/// - 회원가입 및 이메일 인증 (`register`, `sendSignupCode`, `verifySignupCode`)
+/// - 비밀번호 재설정 (`sendPasswordResetCode`, `resetPassword`)
+/// - 자동 로그인 및 세션 관리 (`_checkCurrentUser`, `logout`)
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// await ref.read(authViewModelProvider.notifier).login(
+///   email: 'user@example.com',
+///   password: 'password123!',
+/// );
+/// ```
 
 abstract class _$AuthViewModel extends $Notifier<AuthState> {
   AuthState build();

@@ -8,7 +8,10 @@ import 'package:moamoa/features/assets/presentation/viewmodels/asset_view_model.
 import 'package:moamoa/features/assets/presentation/widgets/asset_total_card.dart';
 import 'package:moamoa/features/assets/presentation/widgets/asset_bar_chart.dart';
 import 'package:moamoa/features/assets/presentation/widgets/asset_category_list.dart';
+import 'package:moamoa/features/common/widgets/custom_pull_to_refresh.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/features/common/widgets/error_state_widget.dart';
+import 'package:moamoa/features/monthly_report/presentation/widgets/monthly_report_banner.dart';
 import 'package:moamoa/router/route_names.dart';
 
 /// 자산 화면
@@ -24,17 +27,6 @@ class AssetScreen extends ConsumerWidget {
       title: '자산',
       centerTitle: false,
       automaticallyImplyLeading: false,
-      actions: [
-        IconButton(
-          icon: Icon(
-            Icons.settings_outlined,
-            color: colorScheme.onSurface,
-          ),
-          onPressed: () {
-            // TODO: Navigate to asset settings
-          },
-        ),
-      ],
       floatingActionButton: SizedBox(
         width: 80,
         height: 35,
@@ -55,10 +47,14 @@ class AssetScreen extends ConsumerWidget {
           child: const Icon(Icons.add),
         ),
       ),
-      child: state.isLoading
+      child: state.isLoading && state.assets.isEmpty
           ? _buildLoadingState(context)
           : state.error != null
-              ? _buildErrorState(context, state.error!, ref)
+              ? ErrorStateWidget(
+                  message: state.error,
+                  onRetry: () =>
+                      ref.read(assetViewModelProvider.notifier).refresh(),
+                )
               : state.assets.isEmpty
                   ? _buildEmptyState(context)
                   : _buildContent(context, state, ref),
@@ -125,52 +121,6 @@ class AssetScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, String error, WidgetRef ref) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: context.appColors.error.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.error_outline,
-                size: 32,
-                color: context.appColors.error,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              error,
-              style: TextStyle(
-                fontSize: 15,
-                color: context.appColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                ref.read(assetViewModelProvider.notifier).refresh();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: context.appColors.primary,
-                foregroundColor: context.appColors.textPrimary,
-              ),
-              child: const Text('다시 시도'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildContent(
     BuildContext context,
     dynamic state, // AssetState
@@ -178,7 +128,7 @@ class AssetScreen extends ConsumerWidget {
   ) {
     final summary = state.summary as AssetSummary?;
 
-    return RefreshIndicator(
+    return CustomPullToRefresh(
       onRefresh: () => ref.read(assetViewModelProvider.notifier).refresh(),
       color: context.appColors.primary,
       child: SingleChildScrollView(
@@ -187,6 +137,9 @@ class AssetScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // 월간 리포트 배너
+            const MonthlyReportBanner(),
+
             // 총 자산 카드
             if (summary != null) AssetTotalCard(summary: summary),
             const SizedBox(height: 24),
@@ -241,6 +194,9 @@ class AssetScreen extends ConsumerWidget {
                 await ref
                     .read(assetViewModelProvider.notifier)
                     .deleteAsset(assetId);
+
+                if (!context.mounted) return;
+
                 messenger.showSnackBar(
                   SnackBar(
                     content: const Text('자산이 삭제되었습니다'),
@@ -248,6 +204,8 @@ class AssetScreen extends ConsumerWidget {
                   ),
                 );
               } catch (e) {
+                if (!context.mounted) return;
+
                 final message = e is Exception
                     ? ExceptionHandler.getErrorMessage(e)
                     : '오류가 발생했습니다';

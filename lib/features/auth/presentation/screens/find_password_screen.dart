@@ -3,18 +3,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // core
-import 'package:moamoa/core/constants/app_constants.dart';
-
-// widgets
-import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
 
 // viewmodels
-import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/find_password_view_model.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 // screens
 import 'package:moamoa/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:moamoa/features/auth/presentation/layouts/auth_screen_scaffold.dart';
+import 'package:moamoa/features/auth/presentation/listeners/auth_ui_event_listener.dart';
+import 'package:moamoa/features/auth/presentation/widgets/find_password/find_password_title.dart';
+import 'package:moamoa/features/auth/presentation/widgets/find_password/email_verification_form.dart';
 
+/// 비밀번호 찾기(이메일 인증) 화면
+///
+/// 사용자가 비밀번호를 재설정하기 위해 이메일 인증을 수행하는 화면입니다.
+///
+/// **주요 기능 (Key Features):**
+/// - 이메일 입력 및 인증번호 전송 (`_handleSendVerificationCode`)
+/// - 인증번호 입력 및 검증 (`_handleVerifyCode`)
+/// - 인증 완료 후 비밀번호 재설정 화면(`ResetPasswordScreen`)으로 이동 (`_handleContinue`)
+/// - `FindPasswordViewModel`을 통한 비즈니스 로직 처리
+///
+/// **사용 예시 (Usage Example):**
+/// ```dart
+/// context.push(RouteNames.findPassword);
+/// // or
+/// const FindPasswordScreen();
+/// ```
 class FindPasswordScreen extends ConsumerStatefulWidget {
   const FindPasswordScreen({super.key});
 
@@ -22,6 +38,10 @@ class FindPasswordScreen extends ConsumerStatefulWidget {
   ConsumerState<FindPasswordScreen> createState() => _FindPasswordScreenState();
 }
 
+/// [FindPasswordScreen]의 상태 관리 클래스
+///
+/// 이메일 및 인증번호 입력 필드의 컨트롤러를 관리하고,
+/// ViewModel과 상호작용하여 인증 로직을 수행합니다.
 class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
   final _emailController = TextEditingController();
   final _verificationCodeController = TextEditingController();
@@ -32,9 +52,7 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
     super.initState();
     // 화면 진입 시 이전 화면의 SnackBar 제거
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      }
+      context.hideToast();
     });
   }
 
@@ -48,99 +66,67 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
 
   // 인증번호 전송
   Future<void> _handleSendVerificationCode() async {
-    if (_emailController.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text('이메일을 입력해주세요.'),
-            backgroundColor: context.appColors.warning,
-          ),
+    final result = await ref
+        .read(findPasswordViewModelProvider.notifier)
+        .requestVerificationCode(_emailController.text);
+
+    if (!mounted) return;
+    if (!result.success) {
+      if (result.message != null) {
+        context.showErrorToast(
+          result.message!,
+          duration: const Duration(seconds: 2),
         );
+      }
       return;
     }
 
-    try {
-      // FindPasswordViewModel의 sendVerificationCode 메서드 호출
-      await ref
-          .read(findPasswordViewModelProvider.notifier)
-          .sendVerificationCode(_emailController.text);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text('인증번호가 전송되었습니다.')),
+      );
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        // ScaffoldMessenger.of(context)
-        //   ..hideCurrentSnackBar()
-        //   ..showSnackBar(
-        //     SnackBar(content: Text('인증번호가 전송되었습니다.')),
-        //   );
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('인증번호 안내'),
-            content: const Text(
-              '이메일 발송 서비스 준비 중입니다.\n\n인증번호: 000000\n\n위 인증번호를 입력해주세요.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('확인'),
-              ),
-            ],
-          ),
-        );
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            FocusScope.of(context).requestFocus(_verificationCodeFocusNode);
-          }
-        });
+        FocusScope.of(context).requestFocus(_verificationCodeFocusNode);
       }
-    } catch (e) {
-      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
-      // try-catch는 UnhandledException 방지용
-    }
+    });
   }
 
   // 인증번호 검증
-  void _handleVerifyCode() async {
-    if (_verificationCodeController.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(
-          content: Text('인증번호를 입력해주세요.'),
-          backgroundColor: context.appColors.warning,
-        ));
+  Future<void> _handleVerifyCode() async {
+    final result = await ref
+        .read(findPasswordViewModelProvider.notifier)
+        .confirmVerificationCode(_verificationCodeController.text);
 
+    if (!mounted) return;
+    if (!result.success) {
+      if (result.message != null) {
+        context.showErrorToast(
+          result.message!,
+          duration: const Duration(seconds: 2),
+        );
+      }
       return;
     }
 
-    // FindPasswordViewModel의 verifyCode 메서드 호출
-    try {
-      final isVerified = await ref
-          .read(findPasswordViewModelProvider.notifier)
-          .verifyCode(code: _verificationCodeController.text);
-
-      if (mounted && isVerified) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(content: Text('인증번호가 확인되었습니다.')),
-          );
-      }
-    } catch (e) {
-      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
-      // try-catch는 UnhandledException 방지용
-    }
+    context.showToast('인증번호가 확인되었습니다.');
   }
 
   void _handleContinue() {
-    if (_verificationCodeController.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text('인증번호를 입력해주세요.'),
-            backgroundColor: context.appColors.warning,
-          ),
+    final result = ref
+        .read(findPasswordViewModelProvider.notifier)
+        .validateContinue(_verificationCodeController.text);
+
+    if (!result.success) {
+      if (result.message != null) {
+        context.showErrorToast(
+          result.message!,
+          duration: const Duration(seconds: 2),
         );
+      }
       return;
     }
 
@@ -155,35 +141,9 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    // ViewModel 상태 구독
-    final authState = ref.watch(authViewModelProvider);
-    final formState = ref.watch(findPasswordViewModelProvider);
-
-    // ViewModel 상태 변화 감지
-    ref.listen(authViewModelProvider, (previous, next) {
-      // 에러 발생 시
-      if (next.errorMessage != null && !next.isLoading) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(
-              content: Text(next.errorMessage!),
-              backgroundColor: Colors.red,
-            ),
-          );
-        // 에러 메시지 표시 후 초기화
-        Future.delayed(Duration(milliseconds: 100), () {
-          if (mounted) {
-            ref.read(authViewModelProvider.notifier).clearError();
-          }
-        });
-      }
-    });
-
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        backgroundColor: colorScheme.surface,
+    return AuthUiEventListener(
+      child: AuthScreenScaffold(
+        scrollable: false,
         appBar: AppBar(
           backgroundColor: colorScheme.surface,
           elevation: 0,
@@ -192,175 +152,25 @@ class _FindPasswordScreenState extends ConsumerState<FindPasswordScreen> {
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 24),
-                _buildTitle(context),
-                const SizedBox(height: 40),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            const FindPasswordTitle(),
+            const SizedBox(height: 40),
 
-                // 이메일 입력 필드
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: CustomTextField(
-                        controller: _emailController,
-                        hintText: '이메일',
-                        keyboardType: TextInputType.emailAddress,
-                        enabled: !formState.isVerificationCodeSent,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    SizedBox(
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: formState.isVerificationCodeSent ||
-                                authState.isLoading
-                            ? null
-                            : _handleSendVerificationCode,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: colorScheme.primary,
-                          foregroundColor: colorScheme.onPrimary,
-                          disabledBackgroundColor: colorScheme.surfaceVariant,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                        ),
-                        child: Text(
-                          formState.isVerificationCodeSent ? '전송완료' : '인증요청',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                if (formState.isVerificationCodeSent) ...[
-                  const SizedBox(height: 12),
-                  // 인증번호 입력 필드
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: CustomTextField(
-                          controller: _verificationCodeController,
-                          focusNode: _verificationCodeFocusNode,
-                          hintText: '인증번호',
-                          icon: Icons.lock_outline,
-                          keyboardType: TextInputType.number,
-                          enabled: !formState.isEmailVerified,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      SizedBox(
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed:
-                              formState.isEmailVerified || authState.isLoading
-                                  ? null
-                                  : _handleVerifyCode,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colorScheme.inverseSurface,
-                            foregroundColor: colorScheme.onInverseSurface,
-                            disabledBackgroundColor: colorScheme.surfaceVariant,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                          ),
-                          child: Text(
-                            formState.isEmailVerified ? '인증완료' : '인증확인',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  // 인증번호 유효 시간 안내
-                  Padding(
-                    padding: EdgeInsets.only(left: 4),
-                    child: Text(
-                      '※ 인증번호는 10분간 유효합니다.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: context.appColors.textSecondary,
-                        height: 1.4,
-                      ),
-                    ),
-                  ),
-                ],
-
-                SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: formState.canContinue && !authState.isLoading
-                        ? _handleContinue
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
-                      disabledBackgroundColor: colorScheme.primaryContainer,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      '계속하기',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            // 이메일 입력 및 인증 폼
+            EmailVerificationForm(
+              emailController: _emailController,
+              verificationCodeController: _verificationCodeController,
+              verificationCodeFocusNode: _verificationCodeFocusNode,
+              onSendVerificationCode: _handleSendVerificationCode,
+              onVerifyCode: _handleVerifyCode,
+              onContinue: _handleContinue,
             ),
-          ),
+          ],
         ),
       ),
     );
   }
-}
-
-Widget _buildTitle(BuildContext context) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        '계정을 찾아볼까요?',
-        style: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: context.appColors.textPrimary,
-          height: 1.3,
-        ),
-      ),
-      SizedBox(height: 12),
-      Text(
-        '가입하신 이메일을 입력하고\n인증번호를 확인해주세요.',
-        style: TextStyle(
-          fontSize: 16,
-          color: context.appColors.textSecondary,
-          height: 1.5,
-        ),
-      ),
-    ],
-  );
 }

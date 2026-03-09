@@ -6,6 +6,33 @@ import 'package:moamoa/features/budget/data/datasources/remote/budget_remote_dat
 import 'package:moamoa/features/budget/data/models/budget_models.dart';
 
 /// Budget Remote Data Source 구현체
+///
+/// 애플리케이션의 예산 및 자산 관련 데이터 통신을 담당하는 원격 데이터 소스 클래스입니다.
+/// [Dio] HTTP 클라이언트를 사용하여 백엔드 API와 통신하고, 응답 데이터를 모델 객체로 변환하거나
+/// 발생하는 예외를 시스템 예외로 변환하여 던집니다.
+///
+/// **Key Features:**
+/// *   새로운 예산 생성 및 기존 예산 수정 (`createOrUpdateBudget`)
+/// *   특정 월의 예산 정보 조회 (`getMonthlyBudget`)
+/// *   예산 삭제 처리 (`deleteBudget`)
+/// *   가계부의 총 자산 및 초기 잔액 정보 등의 통계 조회 (`getTotalAssets`)
+/// *   가계부의 초기 잔액(자산 시작값) 변경 (`updateInitialBalance`)
+///
+/// **Parameters:**
+/// *   [dio] - 통신에 사용할 설정이 완료된 Dio 인스턴스입니다.
+///
+/// **Usage Example:**
+/// ```dart
+/// final dio = Dio(BaseOptions(baseUrl: 'https://api.example.com'));
+/// final budgetRemoteDataSource = BudgetRemoteDataSourceImpl(dio: dio);
+///
+/// // 특정 월의 예산 조회 예시
+/// final monthlyBudget = await budgetRemoteDataSource.getMonthlyBudget(
+///   year: 2026,
+///   month: 2,
+///   accountBookId: 'account-123',
+/// );
+/// ```
 class BudgetRemoteDataSourceImpl implements BudgetRemoteDataSource {
   final Dio dio;
 
@@ -29,7 +56,8 @@ class BudgetRemoteDataSourceImpl implements BudgetRemoteDataSource {
         },
       );
 
-      return BudgetResponseModel.fromJson(response.data as Map<String, dynamic>);
+      return BudgetResponseModel.fromJson(
+          response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e, stackTrace) {
@@ -66,16 +94,36 @@ class BudgetRemoteDataSourceImpl implements BudgetRemoteDataSource {
         return null;
       }
 
-      if (response.data == null || response.data == '' || response.data is! Map<String, dynamic>) {
+      if (response.data == null ||
+          response.data == '' ||
+          response.data is! Map<String, dynamic>) {
         return null;
       }
 
-      return BudgetResponseModel.fromJson(response.data as Map<String, dynamic>);
+      return BudgetResponseModel.fromJson(
+          response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e, stackTrace) {
       if (kDebugMode) {
         debugPrint('[BudgetRemoteDataSource] getMonthlyBudget error: $e');
+        debugPrint('[BudgetRemoteDataSource] Stack trace: $stackTrace');
+      }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteBudget({
+    required String budgetId,
+  }) async {
+    try {
+      await dio.delete(ApiConstants.budgetById(budgetId));
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e, stackTrace) {
+      if (kDebugMode) {
+        debugPrint('[BudgetRemoteDataSource] deleteBudget error: $e');
         debugPrint('[BudgetRemoteDataSource] Stack trace: $stackTrace');
       }
       rethrow;

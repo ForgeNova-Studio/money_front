@@ -1,4 +1,5 @@
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
+import 'package:moamoa/features/budget/domain/entities/asset_entity.dart';
 
 /// Budget Repository 인터페이스
 abstract class BudgetRepository {
@@ -15,6 +16,11 @@ abstract class BudgetRepository {
     required int year,
     required int month,
     String? accountBookId,
+  });
+
+  /// 예산 삭제
+  Future<void> deleteBudget({
+    required String budgetId,
   });
 
   /// 총 자산 조회

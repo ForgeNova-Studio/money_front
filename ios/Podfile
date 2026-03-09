@@ -49,6 +49,11 @@ post_install do |installer|
     target.build_configurations.each do |config|
       # 최소 iOS 버전 설정 (ML Kit 요구사항)
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'
+
+      # 네이버 로그인 SDK dSYM 생성 방지 (Xcode Archive 오류 해결)
+      if target.name.include?('flutter_naver_login') || target.name.include?('NidThirdPartyLogin')
+        config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf'
+      end
     end
   end
 end

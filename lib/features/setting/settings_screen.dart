@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/core/config/admin_config.dart';
 import 'package:moamoa/router/route_names.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
-import 'package:moamoa/features/notification/presentation/viewmodels/notification_view_model.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -18,20 +19,10 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final authState = ref.watch(authViewModelProvider);
-    final notificationState = ref.watch(notificationViewModelProvider);
-    final unreadCount = notificationState.unreadCount;
 
     return DefaultLayout(
       title: '더보기',
       automaticallyImplyLeading: false,
-      actions: [
-        // 공지사항 리스트 버튼
-        _NotificationIconButton(
-          unreadCount: unreadCount,
-          onTap: () => context.push(RouteNames.notifications),
-        ),
-        const SizedBox(width: 16),
-      ],
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,25 +42,12 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () => context.push(RouteNames.accountBookList),
                 ),
                 _MenuItem(
-                  icon: Icons.calculate_outlined,
-                  iconColor: Colors.orange,
-                  label: 'N빵 정산',
-                  onTap: () {
-                    // TODO: 정산 화면으로 이동
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('정산 기능 준비 중입니다.')),
-                    );
-                  },
-                ),
-                _MenuItem(
                   icon: Icons.calendar_month_outlined,
                   iconColor: Colors.green,
                   label: '고정비 관리',
                   onTap: () {
                     // TODO: 고정비 관리 화면으로 이동
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('고정비 관리 기능 준비 중입니다.')),
-                    );
+                    context.showToast('고정비 관리 기능 준비 중입니다.');
                   },
                 ),
                 _MenuItem(
@@ -77,6 +55,23 @@ class SettingsScreen extends ConsumerWidget {
                   iconColor: Colors.purple,
                   label: '통계',
                   onTap: () => context.push(RouteNames.statistics),
+                ),
+                _MenuItem(
+                  icon: Icons.auto_awesome,
+                  iconColor: Colors.amber,
+                  label: '월간 리포트',
+                  onTap: () {
+                    final now = DateTime.now();
+                    // 이번 달 1일 이전이면 전월 리포트, 아니면 이번 달 리포트
+                    final reportMonth = now.day <= 7
+                        ? (now.month == 1 ? 12 : now.month - 1)
+                        : now.month;
+                    final reportYear = now.day <= 7 && now.month == 1
+                        ? now.year - 1
+                        : now.year;
+                    context.push(
+                        '${RouteNames.monthlyReport}?year=$reportYear&month=$reportMonth');
+                  },
                 ),
               ],
             ),
@@ -124,9 +119,7 @@ class SettingsScreen extends ConsumerWidget {
                   icon: Icons.notifications_outlined,
                   iconColor: colorScheme.onSurface,
                   label: '알림 설정',
-                  onTap: () {
-                    // TODO: 알림 설정 화면으로 이동
-                  },
+                  onTap: () => _handleNotificationSettings(context),
                 ),
                 _MenuItem(
                   icon: Icons.logout,
@@ -151,12 +144,6 @@ class SettingsScreen extends ConsumerWidget {
                         label: '공지 작성',
                         onTap: () => context.push(RouteNames.adminNotification),
                       ),
-                      _MenuItem(
-                        icon: Icons.bug_report,
-                        iconColor: Colors.orange,
-                        label: 'Sentry 테스트',
-                        onTap: () => _testSentry(context),
-                      ),
                     ],
                   ),
                 ],
@@ -170,12 +157,12 @@ class SettingsScreen extends ConsumerWidget {
                 builder: (context, snapshot) {
                   final info = snapshot.data;
                   final label = info == null
-                      ? '${AppConstants.appName}'
-                      : '${info.appName} v${info.version}';
+                      ? AppConstants.appName
+                      : '${info.appName} v${info.version} (${info.buildNumber})';
                   return Text(
                     label,
                     style: TextStyle(
-                      color: colorScheme.onSurface.withOpacity(0.4),
+                      color: colorScheme.onSurface.withValues(alpha: 0.4),
                       fontSize: 12,
                     ),
                   );
@@ -217,45 +204,81 @@ class SettingsScreen extends ConsumerWidget {
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('로그아웃 실패: $e')),
-          );
+          context.showToast('로그아웃 실패: $e');
         }
       }
     }
   }
 
-  /// Sentry 테스트 에러 발생
-  void _testSentry(BuildContext context) {
+  /// 알림 설정 처리
+  Future<void> _handleNotificationSettings(BuildContext context) async {
+    // OneSignal 권한 상태 확인
+    final permission = OneSignal.Notifications.permission;
+
+    if (!context.mounted) return;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Sentry 테스트'),
-        content: const Text('테스트 에러를 Sentry에 전송합니다.\n\n(Release 모드에서만 전송됨)'),
+        title: const Text('알림 설정'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  permission
+                      ? Icons.notifications_active
+                      : Icons.notifications_off,
+                  color: permission ? Colors.green : Colors.grey,
+                  size: 32,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    permission ? '푸시 알림이 활성화되어 있습니다.' : '푸시 알림이 비활성화되어 있습니다.',
+                    style: TextStyle(
+                      color: permission ? Colors.green : Colors.grey,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              '알림 설정을 변경하려면 기기 설정에서 변경해주세요.',
+              style: TextStyle(fontSize: 14),
+            ),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('취소'),
+            child: const Text('닫기'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(context).pop();
-              try {
-                throw Exception('Sentry 테스트 에러 - Flutter 앱에서 발생!');
-              } catch (e, stackTrace) {
-                // Sentry에 에러 전송
-                Sentry.captureException(e, stackTrace: stackTrace);
-                
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('테스트 에러가 Sentry에 전송되었습니다!'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
+
+              // 권한이 없는 경우(Never Prompted 포함) 먼저 권한 요청을 시도
+              // Never Prompted 상태라면 시스템 팝업이 표시됨 -> OS에 앱 등록
+              if (!permission) {
+                debugPrint('권한이 없습니다.');
+                // fallbackToSettings: false로 설정하여 OneSignal 기본 다이얼로그(영어) 비활성화
+                // 거부 시 아래 openAppSettings()로 우리가 직접 제어
+                final result =
+                    await OneSignal.Notifications.requestPermission(false);
+                // 팝업에서 '허용'을 눌렀다면 굳이 설정 화면으로 보낼 필요 없음
+                if (result) return;
               }
+
+              // '거부'했거나 이미 거부된 상태라면 OS 설정 화면으로 이동
+              await openAppSettings();
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.orange),
-            child: const Text('에러 전송'),
+            child: const Text('설정 열기'),
           ),
         ],
       ),
@@ -278,7 +301,7 @@ class _ProfileCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -288,7 +311,7 @@ class _ProfileCard extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: colorScheme.primary.withOpacity(0.2),
+              color: colorScheme.primary.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -316,7 +339,7 @@ class _ProfileCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.2),
+                    color: Colors.orange.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Text(
@@ -334,7 +357,7 @@ class _ProfileCard extends StatelessWidget {
           // Arrow
           Icon(
             Icons.chevron_right,
-            color: colorScheme.onSurface.withOpacity(0.5),
+            color: colorScheme.onSurface.withValues(alpha: 0.5),
           ),
         ],
       ),
@@ -361,23 +384,13 @@ class _MenuSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  color: colorScheme.onSurface,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: colorScheme.onSurface.withOpacity(0.4),
-                size: 20,
-              ),
-            ],
+          child: Text(
+            title,
+            style: TextStyle(
+              color: colorScheme.onSurface,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         const SizedBox(height: 12),
@@ -385,7 +398,7 @@ class _MenuSection extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -433,7 +446,7 @@ class _MenuItemTile extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: item.iconColor.withOpacity(0.15),
+                color: item.iconColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -453,65 +466,11 @@ class _MenuItemTile extends StatelessWidget {
             const Spacer(),
             Icon(
               Icons.chevron_right,
-              color: colorScheme.onSurface.withOpacity(0.3),
+              color: colorScheme.onSurface.withValues(alpha: 0.3),
               size: 20,
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// 알림 아이콘 버튼 (읽지 않은 알림 뱃지 포함)
-class _NotificationIconButton extends StatelessWidget {
-  final int unreadCount;
-  final VoidCallback onTap;
-
-  const _NotificationIconButton({
-    required this.unreadCount,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return IconButton(
-      onPressed: onTap,
-      icon: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Icon(
-            Icons.notifications_outlined,
-            color: colorScheme.onSurface,
-          ),
-          if (unreadCount > 0)
-            Positioned(
-              right: -4,
-              top: -4,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(
-                  color: Colors.red,
-                  shape: BoxShape.circle,
-                ),
-                constraints: const BoxConstraints(
-                  minWidth: 16,
-                  minHeight: 16,
-                ),
-                child: Text(
-                  unreadCount > 99 ? '99+' : '$unreadCount',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-        ],
       ),
     );
   }

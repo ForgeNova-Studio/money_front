@@ -6,8 +6,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:moamoa/features/common/providers/core_providers.dart';
 
 // dataSource
-import 'package:moamoa/features/home/data/datasources/home_local_data_source.dart';
-import 'package:moamoa/features/home/data/datasources/home_remote_data_source.dart';
+import 'package:moamoa/features/home/data/datasources/local/home_local_data_source.dart';
+import 'package:moamoa/features/home/data/datasources/local/home_local_data_source_impl.dart';
+import 'package:moamoa/features/home/data/datasources/remote/home_remote_data_source.dart';
+import 'package:moamoa/features/home/data/datasources/remote/home_remote_data_source_impl.dart';
 
 // repository
 import 'package:moamoa/features/home/data/repositories/home_repository_impl.dart';
@@ -62,4 +64,19 @@ HomeRepository homeRepository(Ref ref) {
 @riverpod
 GetHomeMonthlyDataUseCase getHomeMonthlyDataUseCase(Ref ref) {
   return GetHomeMonthlyDataUseCase(ref.read(homeRepositoryProvider));
+}
+
+// ============================================================================
+// UI State Providers (FAB)
+// ============================================================================
+final isHomeFabExpandedProvider =
+    flutter_riverpod.NotifierProvider<IsHomeFabExpandedNotifier, bool>(
+        IsHomeFabExpandedNotifier.new);
+
+class IsHomeFabExpandedNotifier extends flutter_riverpod.Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void set(bool value) => state = value;
+  void toggle() => state = !state;
 }

@@ -4,13 +4,8 @@ import 'package:flutter/material.dart';
 // core
 import 'package:moamoa/core/constants/app_constants.dart';
 
-// widgets
-import 'package:moamoa/features/onBoarding/presentation/widgets/onboarding_bottom_indicator.dart';
-
 class Page4 extends StatefulWidget {
-  const Page4({super.key, required this.currentPage});
-
-  final int currentPage;
+  const Page4({super.key});
 
   @override
   State<Page4> createState() => _Page4State();
@@ -75,7 +70,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 10,
                               spreadRadius: 2,
                             ),
@@ -105,7 +100,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 10,
                               spreadRadius: 2,
                             ),
@@ -131,7 +126,8 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: context.appColors.primary.withOpacity(0.4),
+                              color: context.appColors.primary
+                                  .withValues(alpha: 0.4),
                               blurRadius: 10,
                               spreadRadius: 2,
                             ),
@@ -176,14 +172,6 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
               color: context.appColors.textSecondary,
               height: 1.5,
             ),
-          ),
-
-          const SizedBox(height: 32),
-
-          // 페이지 인디케이터
-          OnboardingBottomIndicator(
-            currentPage: widget.currentPage,
-            totalPage: 5,
           ),
 
           const Spacer(),

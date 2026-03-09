@@ -1,7 +1,7 @@
 name: moamoa
 description: 스마트 가계부 앱
 publish_to: 'none'
-version: 1.0.0+11
+version: 1.0.0+17
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -40,7 +40,6 @@ dependencies:
 
   # ==================== 인증 ====================
   google_sign_in: ^7.2.0             # Google OAuth 로그인
-  sign_in_with_apple: ^7.0.1         # Apple 소셜 로그인
   flutter_naver_login: ^2.1.1        # Naver 소셜 로그인
   kakao_flutter_sdk: ^1.10.0         # Kakao 소셜 로그인
 
@@ -88,6 +87,8 @@ dependencies:
 
   # ==================== 에러 모니터링 ====================
   sentry_flutter: ^8.0.0
+  flutter_hooks: ^0.21.3+1
+  hooks_riverpod: ^3.0.3
 
 
 dev_dependencies:
@@ -150,6 +151,8 @@ flutter:
     - assets/animation/
     - assets/data/brands.json
     - assets/images/
+    - assets/images/income/
+    - assets/images/automation_guide/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

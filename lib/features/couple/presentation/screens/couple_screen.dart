@@ -7,6 +7,7 @@ import 'package:moamoa/features/account_book/presentation/providers/account_book
 import 'package:moamoa/features/couple/presentation/viewmodels/couple_view_model.dart';
 import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 class CoupleScreen extends ConsumerWidget {
   const CoupleScreen({super.key});
@@ -218,14 +219,10 @@ class _LinkedCoupleView extends ConsumerWidget {
           // 홈 화면 데이터 새로고침
           ref.read(homeViewModelProvider.notifier).refresh();
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('커플 연동이 해제되었습니다.')),
-          );
+          context.showToast('커플 연동이 해제되었습니다.');
         } else {
           final error = ref.read(coupleViewModelProvider).errorMessage;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error ?? '오류가 발생했습니다.')),
-          );
+          context.showToast(error ?? '오류가 발생했습니다.');
         }
       }
     }

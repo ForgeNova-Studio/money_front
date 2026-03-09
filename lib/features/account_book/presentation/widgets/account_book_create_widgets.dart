@@ -35,7 +35,7 @@ class AccountBookSectionCard extends StatelessWidget {
             color: context.appColors.backgroundWhite,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: context.appColors.border.withOpacity(0.6),
+              color: context.appColors.border.withValues(alpha: 0.6),
               width: 1,
             ),
           ),
@@ -191,7 +191,7 @@ class AccountBookDatePickerField extends StatelessWidget {
     final isDisabled = onTap == null;
     final textStyle = TextStyle(
       color: isDisabled
-          ? context.appColors.textTertiary.withOpacity(0.5)
+          ? context.appColors.textTertiary.withValues(alpha: 0.5)
           : (date == null
               ? context.appColors.textTertiary
               : context.appColors.textPrimary),
@@ -205,12 +205,12 @@ class AccountBookDatePickerField extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
           color: isDisabled
-              ? context.appColors.background.withOpacity(0.5)
+              ? context.appColors.background.withValues(alpha: 0.5)
               : context.appColors.background,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
               color: isDisabled
-                  ? context.appColors.border.withOpacity(0.5)
+                  ? context.appColors.border.withValues(alpha: 0.5)
                   : context.appColors.border),
         ),
         child: Column(
@@ -221,7 +221,7 @@ class AccountBookDatePickerField extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 color: isDisabled
-                    ? context.appColors.textSecondary.withOpacity(0.5)
+                    ? context.appColors.textSecondary.withValues(alpha: 0.5)
                     : context.appColors.textSecondary,
               ),
             ),
@@ -324,13 +324,13 @@ class AccountBookBottomSheetOption extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? colorScheme.primary.withOpacity(0.08)
+              ? colorScheme.primary.withValues(alpha: 0.08)
               : colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
-                ? colorScheme.primary.withOpacity(0.2)
-                : colorScheme.outlineVariant.withOpacity(0.6),
+                ? colorScheme.primary.withValues(alpha: 0.2)
+                : colorScheme.outlineVariant.withValues(alpha: 0.6),
           ),
         ),
         child: Row(

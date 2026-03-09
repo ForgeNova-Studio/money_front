@@ -5,6 +5,15 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'notification_view_model.g.dart';
 
 /// 알림 화면 상태
+///
+/// 사용자 알림 목록 화면의 UI 상태를 관리합니다.
+///
+/// ## 주요 상태
+/// - [notifications]: 알림 목록 데이터
+/// - [unreadCount]: 읽지 않은 알림 개수
+/// - [isLoading]: 초기 로딩 상태
+/// - [isLoadingMore]: 추가 로딩 상태 (무한 스크롤)
+/// - [hasMore]: 더 불러올 데이터가 있는지 여부
 class NotificationState {
   final List<NotificationEntity> notifications;
   final int unreadCount;
@@ -45,6 +54,15 @@ class NotificationState {
   }
 }
 
+/// 알림 ViewModel
+///
+/// 사용자의 알림 목록을 조회하고 읽음 처리를 담당합니다.
+///
+/// ## 주요 기능
+/// - 초기 알림 목록 및 읽지 않은 개수 로드
+/// - 무한 스크롤을 위한 추가 데이터 로드
+/// - 알림 읽음 처리 및 로컬 상태 업데이트
+/// - 푸시 알림 수신 시 실시간 목록 업데이트
 @riverpod
 class NotificationViewModel extends _$NotificationViewModel {
   @override
@@ -57,13 +75,20 @@ class NotificationViewModel extends _$NotificationViewModel {
     return const NotificationState(isLoading: true);
   }
 
+  /// 알림 조회 시 최근 N일 (서버에서 필터링)
+  static const int _defaultDays = 30;
+
   /// 알림 목록 조회
   Future<void> loadNotifications() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
       final repository = ref.read(notificationRepositoryProvider);
-      final notifications = await repository.getNotifications(page: 0);
+      final notifications = await repository.getNotifications(
+        page: 0,
+        days: _defaultDays,
+      );
+
       state = state.copyWith(
         notifications: notifications,
         isLoading: false,
@@ -87,8 +112,11 @@ class NotificationViewModel extends _$NotificationViewModel {
     try {
       final repository = ref.read(notificationRepositoryProvider);
       final nextPage = state.currentPage + 1;
-      final moreNotifications =
-          await repository.getNotifications(page: nextPage);
+      final moreNotifications = await repository.getNotifications(
+        page: nextPage,
+        days: _defaultDays,
+      );
+
       state = state.copyWith(
         notifications: [...state.notifications, ...moreNotifications],
         isLoadingMore: false,
@@ -128,6 +156,32 @@ class NotificationViewModel extends _$NotificationViewModel {
         unreadCount: (state.unreadCount - 1).clamp(0, 9999),
       );
     } catch (_) {}
+  }
+
+  /// 푸시 알림 수신 시 로컬 상태에 알림 추가
+  void addNotificationFromPush({
+    required String id,
+    required String title,
+    required String message,
+    String type = 'NOTICE',
+  }) {
+    final newNotification = NotificationEntity(
+      id: id,
+      title: title,
+      message: message,
+      type: type,
+      isRead: false,
+      createdAt: DateTime.now(),
+    );
+
+    // 중복 체크 후 맨 앞에 추가
+    final exists = state.notifications.any((n) => n.id == id);
+    if (!exists) {
+      state = state.copyWith(
+        notifications: [newNotification, ...state.notifications],
+        unreadCount: state.unreadCount + 1,
+      );
+    }
   }
 
   /// 새로고침

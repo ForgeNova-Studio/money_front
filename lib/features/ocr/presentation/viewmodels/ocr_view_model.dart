@@ -56,7 +56,7 @@ class OcrState {
 /// ```
 class OcrViewModel extends Notifier<OcrState> {
   late final OcrRepository _repository;
-  final _logger = Logger(level: kDebugMode ? Level.debug : Level.nothing);
+  final _logger = Logger(level: kDebugMode ? Level.debug : Level.off);
 
   @override
   OcrState build() {

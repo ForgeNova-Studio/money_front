@@ -1,0 +1,232 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'budget_usecase_providers.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(createOrUpdateBudgetUseCase)
+const createOrUpdateBudgetUseCaseProvider =
+    CreateOrUpdateBudgetUseCaseProvider._();
+
+final class CreateOrUpdateBudgetUseCaseProvider extends $FunctionalProvider<
+    CreateOrUpdateBudgetUseCase,
+    CreateOrUpdateBudgetUseCase,
+    CreateOrUpdateBudgetUseCase> with $Provider<CreateOrUpdateBudgetUseCase> {
+  const CreateOrUpdateBudgetUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'createOrUpdateBudgetUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$createOrUpdateBudgetUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<CreateOrUpdateBudgetUseCase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  CreateOrUpdateBudgetUseCase create(Ref ref) {
+    return createOrUpdateBudgetUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CreateOrUpdateBudgetUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CreateOrUpdateBudgetUseCase>(value),
+    );
+  }
+}
+
+String _$createOrUpdateBudgetUseCaseHash() =>
+    r'45b8e0e38d13396cc10d9269342b9af47f2e255c';
+
+@ProviderFor(getMonthlyBudgetUseCase)
+const getMonthlyBudgetUseCaseProvider = GetMonthlyBudgetUseCaseProvider._();
+
+final class GetMonthlyBudgetUseCaseProvider extends $FunctionalProvider<
+    GetMonthlyBudgetUseCase,
+    GetMonthlyBudgetUseCase,
+    GetMonthlyBudgetUseCase> with $Provider<GetMonthlyBudgetUseCase> {
+  const GetMonthlyBudgetUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'getMonthlyBudgetUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$getMonthlyBudgetUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<GetMonthlyBudgetUseCase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  GetMonthlyBudgetUseCase create(Ref ref) {
+    return getMonthlyBudgetUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GetMonthlyBudgetUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GetMonthlyBudgetUseCase>(value),
+    );
+  }
+}
+
+String _$getMonthlyBudgetUseCaseHash() =>
+    r'28be8a7a161af4385e5169d4c92c6629f0545258';
+
+@ProviderFor(getTotalAssetsUseCase)
+const getTotalAssetsUseCaseProvider = GetTotalAssetsUseCaseProvider._();
+
+final class GetTotalAssetsUseCaseProvider extends $FunctionalProvider<
+    GetTotalAssetsUseCase,
+    GetTotalAssetsUseCase,
+    GetTotalAssetsUseCase> with $Provider<GetTotalAssetsUseCase> {
+  const GetTotalAssetsUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'getTotalAssetsUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$getTotalAssetsUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<GetTotalAssetsUseCase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  GetTotalAssetsUseCase create(Ref ref) {
+    return getTotalAssetsUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GetTotalAssetsUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GetTotalAssetsUseCase>(value),
+    );
+  }
+}
+
+String _$getTotalAssetsUseCaseHash() =>
+    r'f6e56c9769dbd276b365e4e1301500a2edce52a5';
+
+@ProviderFor(updateInitialBalanceUseCase)
+const updateInitialBalanceUseCaseProvider =
+    UpdateInitialBalanceUseCaseProvider._();
+
+final class UpdateInitialBalanceUseCaseProvider extends $FunctionalProvider<
+    UpdateInitialBalanceUseCase,
+    UpdateInitialBalanceUseCase,
+    UpdateInitialBalanceUseCase> with $Provider<UpdateInitialBalanceUseCase> {
+  const UpdateInitialBalanceUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'updateInitialBalanceUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$updateInitialBalanceUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<UpdateInitialBalanceUseCase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  UpdateInitialBalanceUseCase create(Ref ref) {
+    return updateInitialBalanceUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(UpdateInitialBalanceUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<UpdateInitialBalanceUseCase>(value),
+    );
+  }
+}
+
+String _$updateInitialBalanceUseCaseHash() =>
+    r'47b14ce7681a885ca05fce2d186330fe35312f65';
+
+@ProviderFor(deleteBudgetUseCase)
+const deleteBudgetUseCaseProvider = DeleteBudgetUseCaseProvider._();
+
+final class DeleteBudgetUseCaseProvider extends $FunctionalProvider<
+    DeleteBudgetUseCase,
+    DeleteBudgetUseCase,
+    DeleteBudgetUseCase> with $Provider<DeleteBudgetUseCase> {
+  const DeleteBudgetUseCaseProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'deleteBudgetUseCaseProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$deleteBudgetUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<DeleteBudgetUseCase> $createElement(
+          $ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  DeleteBudgetUseCase create(Ref ref) {
+    return deleteBudgetUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DeleteBudgetUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DeleteBudgetUseCase>(value),
+    );
+  }
+}
+
+String _$deleteBudgetUseCaseHash() =>
+    r'8f2ac21745791c839e220d11a5b8d02d9966df56';

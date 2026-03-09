@@ -1,4 +1,29 @@
+import 'package:moamoa/core/constants/income_categories.dart';
+
+/// 수입 엔티티
+///
+/// 가계부의 수입 내역을 나타내는 핵심 엔티티입니다.
+///
+/// **주요 속성:**
+/// - [incomeId]: 수입 고유 ID
+/// - [amount]: 수입 금액
+/// - [date]: 수입 날짜
+/// - [source]: 수입 출처 코드 ([IncomeCategoryCode] 상수 사용, 필수)
+/// - [description]: 수입 설명 (선택)설명
+/// - [incomeId], [userId], [accountBookId]: 식별자 정보
+///
+/// **사용 예시:**
+/// ```dart
+/// final income = Income(
+///   amount: 3000000,
+///   date: DateTime.now(),
+///   source: IncomeCategoryCode.salary,
+///   description: '3월 월급',
+/// );
+/// ```
 class Income {
+  static const Object _unset = Object();
+
   final String? incomeId;
   final String? userId;
   final String? accountBookId;
@@ -7,7 +32,7 @@ class Income {
   /// Amount in KRW (won). Keep this as int to avoid floating point rounding.
   final int amount;
   final DateTime date;
-  final String source; // 급여, 부수입, 용돈, 상여금, 기타
+  final String source;
   final String? description;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -26,28 +51,39 @@ class Income {
   });
 
   Income copyWith({
-    String? incomeId,
-    String? userId,
-    String? accountBookId,
-    String? fundingSource,
+    Object? incomeId = _unset,
+    Object? userId = _unset,
+    Object? accountBookId = _unset,
+    Object? fundingSource = _unset,
     int? amount,
     DateTime? date,
     String? source,
-    String? description,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    Object? description = _unset,
+    Object? createdAt = _unset,
+    Object? updatedAt = _unset,
   }) {
     return Income(
-      incomeId: incomeId ?? this.incomeId,
-      userId: userId ?? this.userId,
-      accountBookId: accountBookId ?? this.accountBookId,
-      fundingSource: fundingSource ?? this.fundingSource,
+      incomeId:
+          identical(incomeId, _unset) ? this.incomeId : incomeId as String?,
+      userId: identical(userId, _unset) ? this.userId : userId as String?,
+      accountBookId: identical(accountBookId, _unset)
+          ? this.accountBookId
+          : accountBookId as String?,
+      fundingSource: identical(fundingSource, _unset)
+          ? this.fundingSource
+          : fundingSource as String?,
       amount: amount ?? this.amount,
       date: date ?? this.date,
       source: source ?? this.source,
-      description: description ?? this.description,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
+      description: identical(description, _unset)
+          ? this.description
+          : description as String?,
+      createdAt: identical(createdAt, _unset)
+          ? this.createdAt
+          : createdAt as DateTime?,
+      updatedAt: identical(updatedAt, _unset)
+          ? this.updatedAt
+          : updatedAt as DateTime?,
     );
   }
 
@@ -79,23 +115,4 @@ class Income {
       description.hashCode ^
       createdAt.hashCode ^
       updatedAt.hashCode;
-}
-
-/// 수입 출처 상수
-class IncomeSource {
-  static const String salary = 'SALARY';
-  static const String sideIncome = 'SIDE_INCOME';
-  static const String allowance = 'ALLOWANCE';
-  static const String bonus = 'BONUS';
-  static const String investment = 'INVESTMENT';
-  static const String other = 'OTHER';
-
-  static const List<String> all = [
-    salary,
-    sideIncome,
-    allowance,
-    bonus,
-    investment,
-    other,
-  ];
 }

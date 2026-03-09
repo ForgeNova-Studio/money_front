@@ -6,7 +6,31 @@ import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 import 'package:moamoa/features/home/presentation/widgets/swipe_to_reveal.dart';
 import 'package:moamoa/features/income/presentation/utils/income_category_utils.dart';
 
-class TransactionListItem extends StatelessWidget {
+/// 수입/지출 거래 내역을 표시하는 리스트 아이템 위젯
+///
+/// [SwipeToReveal]을 사용하여 스와이프 삭제 기능을 제공하며,
+/// 거래 타입(수입/지출)에 따라 색상과 아이콘이 다르게 표시됩니다.
+///
+/// 주요 기능:
+/// - 카테고리 아이콘, 제목, 메모, 금액 표시
+/// - 스와이프하여 삭제 버튼 표시
+/// - 삭제 취소 시 스와이프 자동 원복
+///
+/// 파라미터:
+/// - [transaction]: 표시할 거래 엔티티
+/// - [onTap]: 아이템 탭 콜백 (수정 화면 이동 등)
+/// - [onDelete]: 삭제 콜백 (true 반환 시 삭제, false 시 스와이프 원복)
+/// - [onRevealActiveChanged]: 스와이프 상태 변경 콜백
+///
+/// 사용 예시:
+/// ```dart
+/// TransactionListItem(
+///   transaction: transaction,
+///   onTap: () => navigateToEdit(transaction),
+///   onDelete: () async => await showDeleteConfirm(),
+/// )
+/// ```
+class TransactionListItem extends StatefulWidget {
   const TransactionListItem({
     super.key,
     required this.transaction,
@@ -17,11 +41,28 @@ class TransactionListItem extends StatelessWidget {
 
   final TransactionEntity transaction;
   final VoidCallback? onTap;
-  final Future<void> Function()? onDelete;
+
+  /// 삭제 확인 콜백. true 반환 시 삭제 진행, false 반환 시 스와이프 원복
+  final Future<bool> Function()? onDelete;
   final ValueChanged<bool>? onRevealActiveChanged;
 
   @override
+  State<TransactionListItem> createState() => _TransactionListItemState();
+}
+
+class _TransactionListItemState extends State<TransactionListItem> {
+  final _swipeKey = GlobalKey<SwipeToRevealState>();
+
+  Future<void> _handleDelete() async {
+    final confirmed = await widget.onDelete?.call() ?? false;
+    if (!confirmed) {
+      _swipeKey.currentState?.reset();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final transaction = widget.transaction;
     final isExpense = transaction.type == TransactionType.expense;
     final color =
         isExpense ? context.appColors.error : context.appColors.success;
@@ -29,12 +70,13 @@ class TransactionListItem extends StatelessWidget {
     final amountStr = NumberFormat('#,###').format(transaction.amount);
     final categoryLabel = _resolveCategoryLabel(isExpense);
     final categoryIcon = _resolveCategoryIcon(isExpense);
+    final categoryImage =
+        isExpense ? null : resolveIncomeCategoryImage(transaction.category);
     final memo = transaction.memo;
 
     // title: 설명이 있으면 사용자 입력, 없으면 카테고리 한글 라벨
-    final displayTitle = transaction.hasDescription
-        ? transaction.title
-        : categoryLabel;
+    final displayTitle =
+        transaction.hasDescription ? transaction.title : categoryLabel;
 
     // subtitle: 카테고리 + memo 조합 (시간 제거, 중복 방지)
     String? subtitle;
@@ -47,14 +89,16 @@ class TransactionListItem extends StatelessWidget {
     }
 
     return SwipeToReveal(
-      enabled: onDelete != null,
-      onRevealActiveChanged: onRevealActiveChanged,
+      key: _swipeKey,
+      enabled: widget.onDelete != null,
+      onRevealActiveChanged: widget.onRevealActiveChanged,
       actionButton: _DeleteButton(
-        onTap: () => onDelete?.call(),
+        onTap: _handleDelete,
       ),
       child: _TransactionCard(
-        onTap: onTap,
+        onTap: widget.onTap,
         categoryIcon: categoryIcon,
+        categoryImage: categoryImage,
         isExpense: isExpense,
         title: displayTitle,
         subtitle: subtitle,
@@ -65,6 +109,7 @@ class TransactionListItem extends StatelessWidget {
   }
 
   String _resolveCategoryLabel(bool isExpense) {
+    final transaction = widget.transaction;
     if (isExpense) {
       return resolveExpenseCategoryLabel(transaction.category);
     }
@@ -72,6 +117,7 @@ class TransactionListItem extends StatelessWidget {
   }
 
   IconData _resolveCategoryIcon(bool isExpense) {
+    final transaction = widget.transaction;
     if (isExpense) {
       return resolveExpenseCategoryIcon(transaction.category);
     }
@@ -79,6 +125,9 @@ class TransactionListItem extends StatelessWidget {
   }
 }
 
+/// 스와이프 시 나타나는 원형 삭제 버튼 위젯
+///
+/// 빨간색 원형 배경에 휴지통 아이콘을 표시합니다.
 class _DeleteButton extends StatelessWidget {
   const _DeleteButton({required this.onTap});
 
@@ -96,7 +145,7 @@ class _DeleteButton extends StatelessWidget {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: context.appColors.error.withOpacity(0.3),
+              color: context.appColors.error.withValues(alpha: 0.3),
               blurRadius: 8,
               spreadRadius: 1,
             ),
@@ -112,10 +161,14 @@ class _DeleteButton extends StatelessWidget {
   }
 }
 
+/// 거래 내역 카드 UI를 구성하는 위젯
+///
+/// 카테고리 아이콘, 제목, 부제목, 금액을 한 행에 표시합니다.
 class _TransactionCard extends StatelessWidget {
   const _TransactionCard({
     required this.onTap,
     required this.categoryIcon,
+    this.categoryImage,
     required this.isExpense,
     required this.title,
     required this.subtitle,
@@ -125,6 +178,7 @@ class _TransactionCard extends StatelessWidget {
 
   final VoidCallback? onTap;
   final IconData categoryIcon;
+  final String? categoryImage;
   final bool isExpense;
   final String title;
   final String? subtitle;
@@ -152,13 +206,21 @@ class _TransactionCard extends StatelessWidget {
                   color: context.appColors.gray50,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  categoryIcon,
-                  color: isExpense
-                      ? context.appColors.textSecondary
-                      : context.appColors.success,
-                  size: 22,
-                ),
+                child: categoryImage != null
+                    ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.asset(
+                          categoryImage!,
+                          fit: BoxFit.contain,
+                        ),
+                      )
+                    : Icon(
+                        categoryIcon,
+                        color: isExpense
+                            ? context.appColors.textSecondary
+                            : context.appColors.success,
+                        size: 22,
+                      ),
               ),
               const SizedBox(width: 14),
               Expanded(

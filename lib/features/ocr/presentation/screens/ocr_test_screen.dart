@@ -137,10 +137,10 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
                         const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: context.appColors.error.withOpacity(0.08),
+                      color: context.appColors.error.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: context.appColors.error.withOpacity(0.3),
+                        color: context.appColors.error.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(
@@ -185,7 +185,7 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
           // [Layer 2] 로딩 오버레이
           if (state.isLoading)
             Container(
-              color: Colors.black.withOpacity(0.4),
+              color: Colors.black.withValues(alpha: 0.4),
               child: Center(
                 child: Container(
                   padding:
@@ -195,7 +195,7 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: context.appColors.shadow.withOpacity(0.12),
+                        color: context.appColors.shadow.withValues(alpha: 0.12),
                         blurRadius: 16,
                         offset: const Offset(0, 8),
                       ),
@@ -236,7 +236,7 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: context.appColors.shadow.withOpacity(0.12),
+                color: context.appColors.shadow.withValues(alpha: 0.12),
                 blurRadius: 12,
                 offset: const Offset(0, 6),
               ),
@@ -287,7 +287,7 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
           borderRadius: BorderRadius.circular(22),
           boxShadow: [
             BoxShadow(
-              color: context.appColors.shadow.withOpacity(0.08),
+              color: context.appColors.shadow.withValues(alpha: 0.08),
               blurRadius: 18,
               offset: const Offset(0, 10),
             ),
@@ -345,7 +345,7 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
               isPrimary ? null : Border.all(color: context.appColors.border),
           boxShadow: [
             BoxShadow(
-              color: context.appColors.shadow.withOpacity(0.08),
+              color: context.appColors.shadow.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),
@@ -436,7 +436,7 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: context.appColors.shadow.withOpacity(0.08),
+            color: context.appColors.shadow.withValues(alpha: 0.08),
             blurRadius: 14,
             offset: const Offset(0, 8),
           ),
@@ -542,7 +542,7 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
             width: 140,
             height: 140,
             decoration: BoxDecoration(
-              color: context.appColors.primaryLight.withOpacity(0.45),
+              color: context.appColors.primaryLight.withValues(alpha: 0.45),
               shape: BoxShape.circle,
             ),
           ),
@@ -554,7 +554,7 @@ class _OcrTestScreenState extends ConsumerState<OcrTestScreen> {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: context.appColors.primaryPale.withOpacity(0.6),
+              color: context.appColors.primaryPale.withValues(alpha: 0.6),
               shape: BoxShape.circle,
             ),
           ),

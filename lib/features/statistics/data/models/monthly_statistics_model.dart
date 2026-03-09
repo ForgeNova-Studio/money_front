@@ -28,7 +28,7 @@ sealed class CategoryBreakdownModel with _$CategoryBreakdownModel {
     return CategoryBreakdown(
       category: category,
       amount: amount.toInt(),
-      percentage: percentage.toInt(),
+      percentage: percentage.toDouble(),
     );
   }
 }

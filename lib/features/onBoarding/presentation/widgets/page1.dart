@@ -4,13 +4,8 @@ import 'package:flutter/material.dart';
 // core
 import 'package:moamoa/core/constants/app_constants.dart';
 
-// widgets
-import 'package:moamoa/features/onBoarding/presentation/widgets/onboarding_bottom_indicator.dart';
-
 class Page1 extends StatefulWidget {
-  const Page1({super.key, required this.currentPage});
-
-  final int currentPage;
+  const Page1({super.key});
 
   @override
   State<Page1> createState() => _Page1State();
@@ -144,14 +139,6 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
               color: context.appColors.textSecondary,
               height: 1.5,
             ),
-          ),
-
-          const SizedBox(height: 32),
-
-          // 페이지 인디케이터
-          OnboardingBottomIndicator(
-            currentPage: widget.currentPage,
-            totalPage: 5,
           ),
 
           const Spacer(),

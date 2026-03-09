@@ -130,4 +130,51 @@ class ExceptionHandler {
     }
     return '오류가 발생했습니다';
   }
+
+  /// 모든 에러 타입을 사용자 친화적인 메시지로 변환
+  /// Exception이 아닌 일반 Object 에러도 처리 가능
+  static String getUserFriendlyMessage(Object error) {
+    // 이미 정의된 Exception 타입이면 해당 메시지 사용
+    if (error is Exception) {
+      return getErrorMessage(error);
+    }
+
+    // 문자열 에러 분석
+    final message = error.toString().toLowerCase();
+
+    // 타임아웃 관련
+    if (message.contains('timeout') || message.contains('timed out')) {
+      return '서버 응답이 지연되고 있어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    // 네트워크 관련
+    if (message.contains('socketexception') ||
+        message.contains('connection refused') ||
+        message.contains('connection reset') ||
+        message.contains('network') ||
+        message.contains('no internet') ||
+        message.contains('failed host lookup')) {
+      return '네트워크 연결을 확인해주세요.';
+    }
+
+    // 서버 에러
+    if (message.contains('500') ||
+        message.contains('502') ||
+        message.contains('503') ||
+        message.contains('504') ||
+        message.contains('internal server')) {
+      return '서버에 문제가 발생했어요.\n잠시 후 다시 시도해주세요.';
+    }
+
+    // 인증 에러
+    if (message.contains('401') ||
+        message.contains('403') ||
+        message.contains('unauthorized') ||
+        message.contains('forbidden')) {
+      return '인증이 필요합니다.\n다시 로그인해주세요.';
+    }
+
+    // 기본 메시지
+    return '일시적인 오류가 발생했어요.\n잠시 후 다시 시도해주세요.';
+  }
 }

@@ -1,6 +1,5 @@
 // packages
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 // core
+import 'package:moamoa/core/exceptions/exception_handler.dart';
 import 'package:moamoa/features/common/providers/app_init_provider.dart';
 import 'package:moamoa/core/theme/theme.dart';
 import 'package:moamoa/router/router_provider.dart';
@@ -18,7 +18,11 @@ import 'package:go_router/go_router.dart';
 
 // features
 import 'package:moamoa/features/common/screens/splash_screen.dart';
+import 'package:moamoa/features/notification/presentation/viewmodels/notification_view_model.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+
+/// 전역 ProviderContainer (푸시 알림 등 외부에서 Provider 접근 시 사용)
+late ProviderContainer globalContainer;
 
 void main() async {
   /// Native Splash Screen 유지 (Flutter 엔진 초기화 중 표시)
@@ -34,11 +38,10 @@ void main() async {
   // 카카오 네이티브 앱키
   KakaoSdk.init(nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY']);
 
-  // Sentry 초기화 (임시: Debug 모드에서도 테스트 가능)
-  // TODO: 테스트 후 kReleaseMode 체크 원복!
+  // Sentry 초기화 (릴리즈 모드에서만 활성화)
   final sentryDsn = dotenv.env['SENTRY_DSN'] ?? '';
-  
-  if (sentryDsn.isNotEmpty) {  // 원래: sentryDsn.isNotEmpty && kReleaseMode
+
+  if (sentryDsn.isNotEmpty && kReleaseMode) {
     await SentryFlutter.init(
       (options) {
         options.dsn = sentryDsn;
@@ -49,14 +52,14 @@ void main() async {
         options.sampleRate = 1.0; // 에러는 100% 캡쳐
         options.attachScreenshot = false; // 스크린샷 비활성화
         options.sendDefaultPii = false; // 민감 정보 전송 안함
-        
+
         // 불필요한 에러 필터링
         options.beforeSend = (event, hint) {
           final exception = event.throwable;
           if (exception == null) return event;
-          
+
           final message = exception.toString().toLowerCase();
-          
+
           // 네트워크 에러 무시
           if (message.contains('socketexception') ||
               message.contains('connection refused') ||
@@ -67,7 +70,7 @@ void main() async {
               message.contains('failed host lookup')) {
             return null;
           }
-          
+
           // 인증 에러 무시 (401, 403)
           if (message.contains('401') ||
               message.contains('403') ||
@@ -76,14 +79,14 @@ void main() async {
               message.contains('token') && message.contains('expired')) {
             return null;
           }
-          
+
           // 사용자가 취소한 작업 무시
           if (message.contains('cancelled') ||
               message.contains('canceled') ||
               message.contains('user denied')) {
             return null;
           }
-          
+
           return event;
         };
       },
@@ -95,9 +98,13 @@ void main() async {
 }
 
 void _initializeApp() {
+  // 전역 ProviderContainer 생성
+  globalContainer = ProviderContainer();
+
   runApp(
-    const ProviderScope(
-      child: AppBootstrap(),
+    UncontrolledProviderScope(
+      container: globalContainer,
+      child: const AppBootstrap(),
     ),
   );
 
@@ -116,20 +123,51 @@ void _initializeApp() {
   }
   OneSignal.initialize(oneSignalAppId);
 
-  // Use this method to prompt for push notifications.
-  // We recommend removing this method after testing and instead use In-App Messages to prompt for notification permission.
-  OneSignal.Notifications.requestPermission(false);
+  // 알림 권한 요청은 온보딩에서 처리 (main.dart에서 자동 요청 제거)
 
-  // 푸시 알림 클릭 시 알림 리스트 화면으로 이동
+  // 푸시 알림 클릭 시 분기 처리
   OneSignal.Notifications.addClickListener((event) {
     debugPrint('[OneSignal] Notification clicked: ${event.notification.title}');
+
+    final additionalData = event.notification.additionalData;
+    final type = additionalData?['type']?.toString();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final context = navigatorKey.currentContext;
       if (context != null) {
-        GoRouter.of(context).push(RouteNames.notifications);
+        if (type == 'NOTICE') {
+          // 앱에서 보낸 공지 → 공지 화면으로 이동
+          GoRouter.of(context).push(RouteNames.notifications);
+        } else {
+          // OneSignal 대시보드 등 기타 푸시 → 홈 화면으로 이동
+          GoRouter.of(context).go(RouteNames.home);
+        }
       }
     });
+  });
+
+  // 푸시 알림 수신 시 (Foreground) 로컬 상태에 알림 추가
+  OneSignal.Notifications.addForegroundWillDisplayListener((event) {
+    debugPrint(
+        '[OneSignal] Foreground notification: ${event.notification.title}');
+
+    final notification = event.notification;
+    final additionalData = notification.additionalData;
+
+    // 서버에서 보낸 notificationId가 있으면 사용, 없으면 OneSignal ID 사용
+    final notificationId = additionalData?['notificationId']?.toString() ??
+        notification.notificationId;
+
+    globalContainer
+        .read(notificationViewModelProvider.notifier)
+        .addNotificationFromPush(
+          id: notificationId,
+          title: notification.title ?? '알림',
+          message: notification.body ?? '',
+          type: additionalData?['type']?.toString() ?? 'NOTICE',
+        );
+
+    // 알림은 그대로 표시 (event.preventDefault()를 호출하지 않음)
   });
 
   // Flutter 스플래시가 표시되도록 네이티브 스플래시 제거
@@ -177,16 +215,7 @@ class AppBootstrap extends ConsumerWidget {
   static bool _firstFrameLogged = false;
 
   String _resolveInitErrorMessage(Object error) {
-    if (error is TimeoutException) {
-      return '네트워크가 지연되고 있습니다. 다시 시도해주세요.';
-    }
-    if (error is SocketException) {
-      return '네트워크 연결을 확인해주세요.';
-    }
-    if (kDebugMode) {
-      return error.toString();
-    }
-    return '잠시 후 다시 시도해주세요.';
+    return ExceptionHandler.getUserFriendlyMessage(error);
   }
 
   @override
@@ -204,7 +233,7 @@ class AppBootstrap extends ConsumerWidget {
         debugShowCheckedModeBanner: false,
         theme: theme,
         home: Scaffold(
-          backgroundColor: theme.colorScheme.background,
+          backgroundColor: theme.colorScheme.surface,
           body: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,

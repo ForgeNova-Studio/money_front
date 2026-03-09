@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
 class ImagePreprocessor {
-  final _logger = Logger(level: kDebugMode ? Level.debug : Level.nothing);
+  final _logger = Logger(level: kDebugMode ? Level.debug : Level.off);
 
   /// OCR용 이미지 전처리 (비동기 + 격리 스레드 실행)
   ///
@@ -18,7 +18,8 @@ class ImagePreprocessor {
 
       // ⚠️ 핵심 변경 1: 메인 스레드 차단 방지를 위해 `compute` 사용
       // 무거운 이미지 연산 작업을 백그라운드로 보냄
-      final String? processedPath = await compute(_processInIsolate, imageFile.path);
+      final String? processedPath =
+          await compute(_processInIsolate, imageFile.path);
 
       if (processedPath == null) {
         throw Exception('전처리 과정에서 오류 발생 (null 반환)');
@@ -29,9 +30,9 @@ class ImagePreprocessor {
       _logger.i('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
       return resultFile;
-
     } catch (e, stackTrace) {
-      _logger.e('이미지 전처리 실패 - 원본을 그대로 반환합니다.', error: e, stackTrace: stackTrace);
+      _logger.e('이미지 전처리 실패 - 원본을 그대로 반환합니다.',
+          error: e, stackTrace: stackTrace);
       return imageFile; // 실패 시 안전하게 원본 반환
     }
   }
@@ -51,7 +52,7 @@ class ImagePreprocessor {
       // 무조건 2배 확대는 위험함 (세로 10,000px 넘어가면 메모리 터짐)
       // ---------------------------------------------------------
 
-      const int targetWidth = 1440;       // OCR이 인식하기 좋은 가로 폭
+      const int targetWidth = 1440; // OCR이 인식하기 좋은 가로 폭
       const int maxTotalPixels = 1440 * 6000; // 메모리 보호를 위한 픽셀 총량 제한 (약 8.6 MP)
 
       double scale = 1.0;
@@ -118,7 +119,6 @@ class ImagePreprocessor {
       await File(newPath).writeAsBytes(img.encodeJpg(image, quality: 90));
 
       return newPath;
-
     } catch (e) {
       // Isolate 내부 에러는 콘솔에만 찍고 null 반환
       debugPrint('Isolate Processing Error: $e');

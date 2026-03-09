@@ -1,9 +1,17 @@
 // entities
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
-/// 순수 비즈니스 모델 (사용자)
-/// - 앱에서 인증된 사용자 정보를 표현
-/// - 비밀번호는 포함하지 않음
+/// 사용자 엔티티
+///
+/// 앱 내에서 인증된 사용자의 핵심 정보를 담고 있는 순수 비즈니스 모델입니다.
+/// 보안을 위해 비밀번호와 같은 민감한 정보는 포함하지 않습니다.
+///
+/// **주요 속성 (Properties):**
+/// - [userId]: 사용자 고유 식별자
+/// - [email]: 이메일 주소
+/// - [nickname]: 표시 이름 (닉네임)
+/// - [gender]: 성별 ([Gender])
+/// - [lastLoginAt]: 마지막 로그인 시각
 class User {
   final String userId;
   final String email;

@@ -5,14 +5,29 @@ import 'package:intl/intl.dart';
 import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:moamoa/features/home/domain/entities/monthly_home_cache.dart';
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
+import 'package:moamoa/features/budget/domain/entities/asset_entity.dart';
 
 // repository
 import 'package:moamoa/features/home/domain/repositories/home_repository.dart';
 
 // dataSource
-import 'package:moamoa/features/home/data/datasources/home_local_data_source.dart';
-import 'package:moamoa/features/home/data/datasources/home_remote_data_source.dart';
+import 'package:moamoa/features/home/data/datasources/local/home_local_data_source.dart';
+import 'package:moamoa/features/home/data/datasources/remote/home_remote_data_source.dart';
 
+/// 홈 화면 데이터 접근을 위한 Repository 구현체
+///
+/// [HomeRepository] 인터페이스를 구현하며,
+/// 원격 데이터 소스([HomeRemoteDataSource])와 로컬 데이터 소스([HomeLocalDataSource])를
+/// 조합하여 데이터를 제공합니다.
+///
+/// 주요 기능:
+/// - 월간 홈 데이터 조회: 먼저 서버에서 데이터를 가져오고, 성공 시 로컬 DB에 캐싱합니다.
+/// - 캐시된 데이터 조회: 로컬 DB에서 캐시된 데이터를 조회합니다.
+/// - 예산/자산 캐시 관리: 예산 및 자산 정보를 로컬 DB에 저장하고 조회합니다.
+///
+/// 데이터 흐름:
+/// 1. `getMonthlyHomeData`: Remote -> Local Save -> Entity Return
+/// 2. `getCachedMonthlyHomeData`: Local -> Entity Return
 class HomeRepositoryImpl implements HomeRepository {
   final HomeRemoteDataSource _homeRemoteDataSource;
   final HomeLocalDataSource _homeLocalDataSource;

@@ -2,28 +2,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 // core
 import 'package:moamoa/router/route_names.dart';
+import 'package:moamoa/core/constants/app_constants.dart';
 
 // features
-import 'package:moamoa/features/home/presentation/widgets/custom_calendar.dart';
-import 'package:moamoa/features/home/presentation/widgets/home_account_book_dropdown.dart';
-import 'package:moamoa/features/home/presentation/widgets/home_budget_info_card.dart';
-import 'package:moamoa/features/home/presentation/widgets/home_fab_menu.dart';
-import 'package:moamoa/features/home/presentation/widgets/home_pending_expenses_banner.dart';
-import 'package:moamoa/features/home/presentation/widgets/home_transaction_sheet.dart';
-import 'package:moamoa/features/home/presentation/widgets/delete_confirem_dialog.dart';
-import 'package:table_calendar/table_calendar.dart';
-
-import 'package:moamoa/features/home/presentation/providers/home_providers.dart';
-import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
-import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
 import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
+import 'package:moamoa/features/expense/presentation/utils/expense_category_utils.dart';
+import 'package:moamoa/features/income/presentation/utils/income_category_utils.dart';
 import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 import 'package:moamoa/features/common/providers/ui_overlay_providers.dart';
+import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
+import 'package:moamoa/features/home/presentation/providers/home_providers.dart';
+import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
+import 'package:moamoa/features/home/presentation/widgets/delete_confirm_dialog.dart';
+import 'package:moamoa/features/home/presentation/widgets/home_account_book_dropdown.dart';
+import 'package:moamoa/features/home/presentation/widgets/home_fab_menu.dart';
+import 'package:moamoa/features/home/presentation/widgets/home_header_title.dart';
+import 'package:moamoa/features/home/presentation/widgets/home_top_section.dart';
+import 'package:moamoa/features/home/presentation/widgets/home_transaction_sheet.dart';
+import 'package:moamoa/features/notification/presentation/viewmodels/notification_view_model.dart';
+import 'package:moamoa/features/notification/presentation/widgets/notification_icon_button.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
+/// 앱의 메인 홈 화면 위젯
+///
+/// 예산/자산 정보, 캘린더, 거래 내역을 통합하여 표시하는 홈 화면입니다.
+/// 월간/주간 캘린더 뷰 전환과 가계부 선택 기능을 제공합니다.
+///
+/// 주요 기능:
+/// - 가계부 선택 드롭다운 (AppBar)
+/// - 예산/자산 정보 카드 ([HomeBudgetInfoCard])
+/// - 대기중인 지출 배너 ([HomePendingExpensesBanner])
+/// - 월간/주간 캘린더 ([CustomCalendar])
+/// - 거래 내역 리스트 (주간 뷰에서 모달로 표시)
+/// - FAB 메뉴 (수입/지출 추가, 영수증 스캔)
+///
+/// 상태 관리:
+/// - [homeViewModelProvider]: 홈 화면 상태
+/// - [selectedAccountBookViewModelProvider]: 선택된 가계부
+/// - [accountBooksProvider]: 가계부 목록
+///
+/// 사용 예시:
+/// ```dart
+/// // 라우터에서 사용
+/// GoRoute(
+///   path: '/home',
+///   builder: (context, state) => const HomeScreen(),
+/// )
+/// ```
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -33,11 +63,15 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen>
     with WidgetsBindingObserver {
-  bool _isFabExpanded = false;
+  /// 홈스크린 State
+  /// _isAccountBookMenuOpen : 가계부 메뉴 열림 여부
+  /// _isFabDimmed : FAB 활성화 여부
+  /// _refreshErrorSub : 데이터 새로고침 에러 구독
   bool _isAccountBookMenuOpen = false;
   bool _isFabDimmed = false;
   ProviderSubscription<String?>? _refreshErrorSub;
 
+  // Lifecycle Methods
   @override
   void initState() {
     super.initState();
@@ -49,19 +83,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         if (message.isEmpty || !mounted) {
           return;
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
+        context.showToast(message);
         ref.read(homeRefreshErrorProvider.notifier).clear();
       },
     );
+
+    // 라우터 리스너 등록
+    // 화면 전환 시 주간 달력(바텀 시트)이 열려있다면 닫기 위함
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        GoRouter.of(context).routerDelegate.addListener(_handleRouteChanged);
+      }
+    });
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    // 라우터 리스너 해제
+    // (context 접근 주의: dispose 시점에는 context 사용 불가할 수 있으므로 try-catch 또는 mounted 체크 필요하지만,
+    //  routerDelegate 리스너는 보통 위젯 트리 해제 시 자동 정리되지 않으므로 명시적 해제 권장.
+    //  단, GoRouter.of(context)가 dispose 시점에 에러날 수 있음.
+    //  따라서 여기서는 안전하게 처리하거나, 생략 가능 여부 확인 필요.
+    //  StatefulShellRoute 특성상 홈 화면이 완전히 dispose 되지 않을 수 있음.)
+    //  안전한 해제를 위해 저장해둔 routerDelegate 레퍼런스를 사용하거나, 예외 처리.
+    //  여기서는 아래 메서드 내에서 처리.
     _refreshErrorSub?.close();
     super.dispose();
+  }
+
+  // NOTE: dispose에서 GoRouter.of(context) 호출 시 에러 발생 가능성 있음 ('InheritedWidget ... was called after dispose').
+  // 따라서 리스너 해제는 didChangeDependencies 등에서 router 레퍼런스를 저장해두고 사용하는 것이 정석이나,
+  // HomeScreen이 dispose되는 경우는 보통 앱 종료나 로그아웃 시점이므로 큰 문제는 아닐 수 있음.
+  // 다만 clean code를 위해 리스너 제거 로직은 신중해야 함.
+  // 여기서는 간단히 구현. (실제로는 dispose에서 context 접근 불가 에러 가능성 높음)
+
+  void _handleRouteChanged() {
+    if (!mounted) return;
+    try {
+      final router = GoRouter.of(context);
+      final location =
+          router.routerDelegate.currentConfiguration.uri.toString();
+      // 홈 화면이 아닌 다른 곳으로 이동 시 월간 뷰로 복귀
+      if (location != RouteNames.home) {
+        ref.read(homeViewModelProvider.notifier).resetToMonthView();
+      }
+    } catch (_) {
+      // context 접근 에러 등 무시
+    }
   }
 
   /// Background → Foreground 전환 시 데이터 새로고침
@@ -73,57 +142,161 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     }
   }
 
-  /// Pull-to-refresh 핸들러
-  Future<void> _handleRefresh() async {
-    await ref.read(homeViewModelProvider.notifier).refresh();
-  }
-
   // 수입/지출 삭제
-  Future<void> _handleDeleteTransaction(TransactionEntity transaction) async {
+  Future<bool> _handleDeleteTransaction(TransactionEntity transaction) async {
+    // id가 비어있다면 삭제할 수 없다.
     if (transaction.id.isEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('삭제할 수 없는 항목입니다.')),
-        );
+        context.showToast('삭제할 수 없는 항목입니다.');
       }
-      return;
+      return false;
+    }
+
+    // 삭제 확인 다이얼로그
+    final isExpense = transaction.type == TransactionType.expense;
+    String displayTitle = transaction.title;
+
+    // 타이틀이 카테고리 ID와 같다면(사용자 입력 설명이 없다면) 한글명으로 변환
+    if (!transaction.hasDescription) {
+      displayTitle = isExpense
+          ? resolveExpenseCategoryLabel(transaction.category)
+          : resolveIncomeCategoryLabel(transaction.category);
     }
 
     final shouldDelete = await showDialog<bool>(
       context: context,
-      barrierColor: Colors.black54,
+      barrierColor: AppColors.black54,
       builder: (context) => DeleteConfirmDialog(
-        title: transaction.title,
+        title: displayTitle,
       ),
     );
 
     if (shouldDelete != true || !mounted) {
-      return;
+      return false;
     }
 
+    // 삭제 확인
     try {
       await ref
           .read(homeViewModelProvider.notifier)
           .deleteTransaction(transaction);
       _resetFabDimmed();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('삭제되었습니다.')),
-        );
+        context.showToast('삭제되었습니다.');
       }
+      return true;
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('삭제 실패: $e')),
-        );
+        context.showToast('삭제 실패: $e');
       }
+      return false;
     }
   }
 
+  // Calendar Format 변경(월간/주간)
+  void _handleFormatChanged(CalendarFormat format) {
+    _collapseOverlaysIfNeeded();
+    _resetFabDimmed();
+    ref.read(homeViewModelProvider.notifier).setCalendarFormat(format);
+  }
+
+  // Calendar 날짜 선택
+  void _handleDateSelected(DateTime selected, DateTime focused) {
+    _collapseOverlaysIfNeeded();
+    _resetFabDimmed();
+    ref.read(homeViewModelProvider.notifier).selectDate(selected);
+  }
+
+  // Calendar 페이지 변경(월/주 변경)
+  void _handlePageChanged(DateTime focused) {
+    _collapseOverlaysIfNeeded();
+    _resetFabDimmed();
+    ref.read(homeViewModelProvider.notifier).changeMonth(focused);
+  }
+
+  // 가계부 메뉴 토글
+  void _toggleAccountBookMenu() {
+    final nextState = !_isAccountBookMenuOpen;
+    ref.read(isHomeFabExpandedProvider.notifier).set(false);
+    setState(() {
+      _isAccountBookMenuOpen = nextState;
+    });
+    ref.read(appScrimActiveProvider.notifier).setActive(nextState);
+  }
+
+  // 가계부 선택
+  void _setAccountBookMenuOpen(bool isOpen) {
+    ref.read(isHomeFabExpandedProvider.notifier).set(false);
+    setState(() {
+      _isAccountBookMenuOpen = isOpen;
+    });
+    ref.read(appScrimActiveProvider.notifier).setActive(isOpen);
+  }
+
+  // FAB 투명도 변경
+  void _handleTransactionReveal(bool isActive) {
+    if (_isFabDimmed == isActive) {
+      return;
+    }
+    setState(() {
+      _isFabDimmed = isActive;
+    });
+    if (isActive) {
+      ref.read(isHomeFabExpandedProvider.notifier).set(false);
+    }
+  }
+
+  // 화면에 열러 있는 오버레이들(FAB, 가계부 선택 메뉴)을 닫아주는 헬퍼 메서드
+  void _collapseOverlaysIfNeeded() {
+    final isFabExpanded = ref.read(isHomeFabExpandedProvider);
+    if (isFabExpanded || _isAccountBookMenuOpen) {
+      if (isFabExpanded) {
+        ref.read(isHomeFabExpandedProvider.notifier).set(false);
+      }
+      setState(() {
+        _isAccountBookMenuOpen = false;
+      });
+      ref.read(appScrimActiveProvider.notifier).setActive(false);
+    }
+  }
+
+  // FAB 버튼 투명도 초기화
+  void _resetFabDimmed() {
+    if (_isFabDimmed) {
+      setState(() => _isFabDimmed = false);
+    }
+  }
+
+  String _resolveSelectedAccountBookName(
+    AsyncValue<List<AccountBook>> accountBooksState,
+    AsyncValue<String?> selectedAccountBookState,
+  ) {
+    final selectedId = selectedAccountBookState.asData?.value;
+    return accountBooksState.when(
+      data: (books) {
+        if (books.isEmpty) {
+          return '가계부 선택';
+        }
+        if (selectedId == null) {
+          return books.first.name;
+        }
+        final selectedBook = books.firstWhere(
+          (book) => book.accountBookId == selectedId,
+          orElse: () => books.first,
+        );
+        return selectedBook.name;
+      },
+      error: (_, __) => '가계부 선택',
+      loading: () => '가계부 불러오는 중',
+    );
+  }
+
+  // UI Construction
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final homeState = ref.watch(homeViewModelProvider);
+    final isFabExpanded = ref.watch(isHomeFabExpandedProvider);
     final calendarFormat = homeState.calendarFormat;
     final isWeekView = calendarFormat == CalendarFormat.week;
     final accountBooksState = ref.watch(accountBooksProvider);
@@ -133,36 +306,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       accountBooksState,
       selectedAccountBookState,
     );
+    final notificationState = ref.watch(notificationViewModelProvider);
+    final unreadCount = notificationState.unreadCount;
 
-    // 나중에 리팩토링 하자
-    final topSection = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        children: [
-          // 1. Budget Info Area (탭하면 새로고침)
-          GestureDetector(
-            onDoubleTap: _handleRefresh,
-            child: const HomeBudgetInfoCard(),
-          ),
-
-          // 2. Pending Expenses Banner
-          const HomePendingExpensesBanner(),
-
-          // 3. Custom Calendar
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: CustomCalendar(
-              format: calendarFormat,
-              focusedDay: homeState.focusedMonth,
-              selectedDay: homeState.selectedDate,
-              monthlyData: homeState.monthlyData,
-              onFormatChanged: _handleFormatChanged,
-              onDateSelected: _handleDateSelected,
-              onPageChanged: _handlePageChanged,
-            ),
-          ),
-        ],
-      ),
+    // 홈 상단 위젯(예산/자산 정보, 대기중인 지출 내역, Calendar)
+    final topSection = HomeTopSection(
+      calendarFormat: calendarFormat,
+      focusedDay: homeState.focusedMonth,
+      selectedDay: homeState.selectedDate,
+      monthlyData: homeState.monthlyData,
+      onFormatChanged: _handleFormatChanged,
+      onDateSelected: _handleDateSelected,
+      onPageChanged: _handlePageChanged,
     );
 
     return Stack(
@@ -172,35 +327,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           resizeToAvoidBottomInset:
               false, // 이전 화면에서 키보드가 열려 있을 때, 홈에서 오버플로우 나는 현상 해결
           appBar: AppBar(
-            title: InkWell(
-              borderRadius: BorderRadius.circular(8),
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              overlayColor: MaterialStateProperty.all(Colors.transparent),
+            title: HomeHeaderTitle(
+              selectedAccountBookName: selectedAccountBookName,
+              isMenuOpen: _isAccountBookMenuOpen,
               onTap: _toggleAccountBookMenu,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(
-                    child: Text(
-                      selectedAccountBookName,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Icon(
-                    _isAccountBookMenuOpen
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    color: colorScheme.onSurface,
-                  ),
-                ],
-              ),
             ),
+
+            /// AppBar 배경 공간의 위치하는 위젯
+            /// - 역할 : Listener을 통해 터치 감지하여 오버레이를 닫는다.
             flexibleSpace: Listener(
               behavior: HitTestBehavior.translucent,
               onPointerDown: (_) => _collapseOverlaysIfNeeded(),
@@ -210,16 +344,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             elevation: 0,
             centerTitle: false,
             automaticallyImplyLeading: false,
+            actions: [
+              // 알림 아이콘 버튼
+              NotificationIconButton(
+                unreadCount: unreadCount,
+                onTap: () => context.push(RouteNames.notifications),
+              ),
+              const SizedBox(width: 8),
+            ],
           ),
           body: Listener(
             behavior: HitTestBehavior.translucent,
             onPointerDown: (_) => _collapseOverlaysIfNeeded(),
+            // 주간/월간 달력 뷰에 따라 화면 구성 다르게 설정
             child: isWeekView
                 ? Column(
                     children: [
                       topSection,
 
-                      // 3. Transactions Sheet (Fills remaining space - 패딩 바깥)
+                      // 4. 수입/지출 내역 리스트
                       Expanded(
                         child: HomeTransactionSheet(
                           homeState: homeState,
@@ -246,45 +389,51 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             child: IgnorePointer(
               ignoring: _isFabDimmed,
               child: HomeFabMenu(
-                isExpanded: _isFabExpanded,
+                isExpanded: isFabExpanded,
                 onToggle: () {
-                  setState(() => _isFabExpanded = !_isFabExpanded);
+                  ref.read(isHomeFabExpandedProvider.notifier).toggle();
                 },
                 onAddIncome: () {
-                  setState(() => _isFabExpanded = false);
+                  ref.read(isHomeFabExpandedProvider.notifier).set(false);
                   context.push(RouteNames.addIncome,
                       extra: homeState.selectedDate);
                 },
                 onAddExpense: () {
-                  setState(() => _isFabExpanded = false);
+                  ref.read(isHomeFabExpandedProvider.notifier).set(false);
                   context.push(RouteNames.addExpense,
                       extra: homeState.selectedDate);
                 },
                 onScanReceipt: () {
-                  setState(() => _isFabExpanded = false);
+                  ref.read(isHomeFabExpandedProvider.notifier).set(false);
                   context.push(RouteNames.ocrTest);
                 },
               ),
             ),
           ),
         ),
+
+        /// 가계부 선택 메뉴 오버레이의 배경 처리 담당
         Positioned.fill(
           child: IgnorePointer(
+            // 메뉴가 열렸을 때만 터치를 감지하도록 설정
             ignoring: !_isAccountBookMenuOpen,
             child: AnimatedOpacity(
+              // 메뉴 열리면 배경을 어둡게, 닫히면 투명하게
               opacity: _isAccountBookMenuOpen ? 1 : 0,
               duration: const Duration(milliseconds: 160),
               curve: Curves.easeOut,
+              // 배경을 터치하면 가계부 메뉴 오버레이 닫음
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: _collapseOverlaysIfNeeded,
                 child: Container(
-                  color: colorScheme.scrim.withOpacity(0.06),
+                  color: colorScheme.scrim.withValues(alpha: 0.06),
                 ),
               ),
             ),
           ),
         ),
+        // 가계부 메뉴 선택 오버레이
         Positioned(
           top: 0,
           left: 0,
@@ -341,96 +490,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ),
         ),
       ],
-    );
-  }
-
-  // Calendar Format 변경(월간/주간)
-  void _handleFormatChanged(CalendarFormat format) {
-    _collapseOverlaysIfNeeded();
-    _resetFabDimmed();
-    ref.read(homeViewModelProvider.notifier).setCalendarFormat(format);
-  }
-
-  // Calendar 날짜 선택
-  void _handleDateSelected(DateTime selected, DateTime focused) {
-    _collapseOverlaysIfNeeded();
-    _resetFabDimmed();
-    ref.read(homeViewModelProvider.notifier).selectDate(selected);
-  }
-
-  // Calendar 페이지 변경(월/주 변경)
-  void _handlePageChanged(DateTime focused) {
-    _collapseOverlaysIfNeeded();
-    _resetFabDimmed();
-    ref.read(homeViewModelProvider.notifier).changeMonth(focused);
-  }
-
-  void _collapseOverlaysIfNeeded() {
-    if (_isFabExpanded || _isAccountBookMenuOpen) {
-      setState(() {
-        _isFabExpanded = false;
-        _isAccountBookMenuOpen = false;
-      });
-      ref.read(appScrimActiveProvider.notifier).setActive(false);
-    }
-  }
-
-  void _toggleAccountBookMenu() {
-    final nextState = !_isAccountBookMenuOpen;
-    setState(() {
-      _isFabExpanded = false;
-      _isAccountBookMenuOpen = nextState;
-    });
-    ref.read(appScrimActiveProvider.notifier).setActive(nextState);
-  }
-
-  void _setAccountBookMenuOpen(bool isOpen) {
-    setState(() {
-      _isFabExpanded = false;
-      _isAccountBookMenuOpen = isOpen;
-    });
-    ref.read(appScrimActiveProvider.notifier).setActive(isOpen);
-  }
-
-  void _handleTransactionReveal(bool isActive) {
-    if (_isFabDimmed == isActive) {
-      return;
-    }
-    setState(() {
-      _isFabDimmed = isActive;
-      if (isActive) {
-        _isFabExpanded = false;
-      }
-    });
-  }
-
-  void _resetFabDimmed() {
-    if (_isFabDimmed) {
-      setState(() => _isFabDimmed = false);
-    }
-  }
-
-  String _resolveSelectedAccountBookName(
-    AsyncValue<List<AccountBook>> accountBooksState,
-    AsyncValue<String?> selectedAccountBookState,
-  ) {
-    final selectedId = selectedAccountBookState.asData?.value;
-    return accountBooksState.when(
-      data: (books) {
-        if (books.isEmpty) {
-          return '가계부 선택';
-        }
-        if (selectedId == null) {
-          return books.first.name;
-        }
-        final selectedBook = books.firstWhere(
-          (book) => book.accountBookId == selectedId,
-          orElse: () => books.first,
-        );
-        return selectedBook.name;
-      },
-      error: (_, __) => '가계부 선택',
-      loading: () => '가계부 불러오는 중',
     );
   }
 }

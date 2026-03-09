@@ -6,6 +6,23 @@ import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/features/sms_import/presentation/viewmodels/pending_expenses_view_model.dart';
 import 'package:moamoa/router/route_names.dart';
 
+/// 대기중인 지출 내역이 있을 때 표시되는 배너 위젯
+///
+/// SMS 문자 분석을 통해 생성된 대기중인 지출 내역의 개수를 표시하며,
+/// 탭하면 SMS 가져오기 화면으로 이동합니다.
+///
+/// 주요 기능:
+/// - 대기중인 지출 건수가 0보다 클 때만 표시 (애니메이션 적용)
+/// - 탭 시 SMS 가져오기 화면(`RouteNames.smsImport`)으로 이동
+/// - 경고(warning) 색상 테마로 시각적 강조
+///
+/// 상태 관리:
+/// - [pendingExpensesViewModelProvider]를 통해 대기중인 건수 조회
+///
+/// 사용 예시:
+/// ```dart
+/// const HomePendingExpensesBanner()
+/// ```
 class HomePendingExpensesBanner extends ConsumerWidget {
   const HomePendingExpensesBanner({super.key});
 

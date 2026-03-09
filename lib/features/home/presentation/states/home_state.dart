@@ -3,29 +3,39 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:moamoa/features/budget/domain/entities/asset_entity.dart';
 
 part 'home_state.freezed.dart';
 
+/// 홈 화면의 UI 상태를 담는 불변(Immutable) 상태 클래스
+///
+/// Freezed를 사용하여 불변 객체로 구현되며,
+/// [HomeViewModel]에서 관리됩니다.
+///
+/// 주요 속성:
+/// - [monthlyData]: 월간 일별 거래 요약 데이터 (AsyncValue)
+/// - [focusedMonth]: 캘린더에서 현재 보고 있는 월
+/// - [selectedDate]: 사용자가 선택한 날짜
+/// - [calendarFormat]: 캘린더 표시 형식 (월간/주간)
+/// - [budgetInfo]: 이번 달 예산 정보 (null이면 미설정)
+/// - [assetInfo]: 총 자산 정보
+///
+/// 사용 예시:
+/// ```dart
+/// final state = HomeState(
+///   focusedMonth: DateTime.now(),
+///   selectedDate: DateTime.now(),
+/// );
+/// ```
 @freezed
 sealed class HomeState with _$HomeState {
   const factory HomeState({
-    /// 월별 데이터 (날짜 문자열 Key: "yyyy-MM-dd")
     @Default(AsyncValue.loading())
     AsyncValue<Map<String, DailyTransactionSummary>> monthlyData,
-
-    /// 현재 달력에서 보고 있는 달의 기준 날짜
     required DateTime focusedMonth,
-
-    /// 사용자가 선택한 구체적인 날짜
     required DateTime selectedDate,
-
-    /// 달력 표시 형식
     @Default(CalendarFormat.month) CalendarFormat calendarFormat,
-
-    /// 이번 달 예산 정보 (null이면 예산 미설정)
     BudgetEntity? budgetInfo,
-
-    /// 총 자산 정보
     AssetEntity? assetInfo,
   }) = _HomeState;
 }

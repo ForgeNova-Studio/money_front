@@ -8,12 +8,39 @@ part of 'notification_view_model.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// 알림 ViewModel
+///
+/// 사용자의 알림 목록을 조회하고 읽음 처리를 담당합니다.
+///
+/// ## 주요 기능
+/// - 초기 알림 목록 및 읽지 않은 개수 로드
+/// - 무한 스크롤을 위한 추가 데이터 로드
+/// - 알림 읽음 처리 및 로컬 상태 업데이트
+/// - 푸시 알림 수신 시 실시간 목록 업데이트
 
 @ProviderFor(NotificationViewModel)
 const notificationViewModelProvider = NotificationViewModelProvider._();
 
+/// 알림 ViewModel
+///
+/// 사용자의 알림 목록을 조회하고 읽음 처리를 담당합니다.
+///
+/// ## 주요 기능
+/// - 초기 알림 목록 및 읽지 않은 개수 로드
+/// - 무한 스크롤을 위한 추가 데이터 로드
+/// - 알림 읽음 처리 및 로컬 상태 업데이트
+/// - 푸시 알림 수신 시 실시간 목록 업데이트
 final class NotificationViewModelProvider
     extends $NotifierProvider<NotificationViewModel, NotificationState> {
+  /// 알림 ViewModel
+  ///
+  /// 사용자의 알림 목록을 조회하고 읽음 처리를 담당합니다.
+  ///
+  /// ## 주요 기능
+  /// - 초기 알림 목록 및 읽지 않은 개수 로드
+  /// - 무한 스크롤을 위한 추가 데이터 로드
+  /// - 알림 읽음 처리 및 로컬 상태 업데이트
+  /// - 푸시 알림 수신 시 실시간 목록 업데이트
   const NotificationViewModelProvider._()
       : super(
           from: null,
@@ -42,7 +69,17 @@ final class NotificationViewModelProvider
 }
 
 String _$notificationViewModelHash() =>
-    r'8707a83adc0e65c5c75d67c8be48ef3314ca8910';
+    r'd245ed295a2eb1a303902140cd5590afe9073f83';
+
+/// 알림 ViewModel
+///
+/// 사용자의 알림 목록을 조회하고 읽음 처리를 담당합니다.
+///
+/// ## 주요 기능
+/// - 초기 알림 목록 및 읽지 않은 개수 로드
+/// - 무한 스크롤을 위한 추가 데이터 로드
+/// - 알림 읽음 처리 및 로컬 상태 업데이트
+/// - 푸시 알림 수신 시 실시간 목록 업데이트
 
 abstract class _$NotificationViewModel extends $Notifier<NotificationState> {
   NotificationState build();
