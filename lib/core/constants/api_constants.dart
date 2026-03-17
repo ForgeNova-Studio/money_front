@@ -48,6 +48,11 @@ class ApiConstants {
   // ========== User endpoints ==========
   static const String usersMe = '/api/users/me';
 
+  // ========== Terms endpoints ==========
+  static const String termsActive = '/api/terms/active';
+  static const String userAgreements = '/api/users/me/agreements';
+  static const String marketingConsent = '/api/users/me/marketing-consent';
+
   // ========== Home endpoints ==========
   static const String homeMonthlyData = '/api/home/monthly-data';
 

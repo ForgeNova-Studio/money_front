@@ -8,6 +8,7 @@ import 'package:moamoa/core/exceptions/exceptions.dart';
 // models
 import 'package:moamoa/features/auth/data/models/models.dart';
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
+import 'package:moamoa/features/terms/data/models/models.dart';
 
 // dataSources
 import 'package:moamoa/features/auth/data/datasources/remote/auth_remote_datasource.dart';
@@ -46,6 +47,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String password,
     required String nickname,
     required Gender gender,
+    required List<AgreementRequestModel> agreements,
   }) async {
     try {
       final response = await dio.post(
@@ -55,6 +57,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'password': password,
           'nickname': nickname,
           'gender': gender.toServerString(),
+          'agreements': agreements.map((a) => a.toJson()).toList(),
         },
       );
 

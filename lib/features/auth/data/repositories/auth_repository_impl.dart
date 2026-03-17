@@ -15,6 +15,9 @@ import 'package:moamoa/features/auth/domain/entities/auth_token.dart';
 import 'package:moamoa/features/auth/domain/entities/user.dart';
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
+// terms
+import 'package:moamoa/features/terms/data/models/models.dart';
+
 // repositories
 import 'package:moamoa/features/auth/domain/repositories/auth_repository.dart';
 
@@ -70,6 +73,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     required String nickname,
     required Gender gender,
+    required List<AgreementRequestModel> agreements,
   }) async {
     // 1. Remote API 호출 (토큰만 받음)
     final response = await remoteDataSource.register(
@@ -77,6 +81,7 @@ class AuthRepositoryImpl implements AuthRepository {
       password: password,
       nickname: nickname,
       gender: gender,
+      agreements: agreements,
     );
 
     // 2. Local Storage에 저장

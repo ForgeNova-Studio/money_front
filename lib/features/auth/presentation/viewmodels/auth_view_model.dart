@@ -16,6 +16,9 @@ import 'package:moamoa/features/account_book/presentation/viewmodels/selected_ac
 // entities
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
+// terms
+import 'package:moamoa/features/terms/data/models/models.dart';
+
 part 'auth_view_model.g.dart';
 
 /// Auth ViewModel
@@ -177,6 +180,7 @@ class AuthViewModel extends _$AuthViewModel {
     required String confirmPassword,
     required String nickname,
     required Gender gender,
+    required List<AgreementRequestModel> agreements,
   }) async {
     await _handleAuthRequest(() async {
       final useCase = ref.read(registerUseCaseProvider);
@@ -186,6 +190,7 @@ class AuthViewModel extends _$AuthViewModel {
         confirmPassword: confirmPassword,
         nickname: nickname,
         gender: gender,
+        agreements: agreements,
       );
       state = AuthState.authenticated(user: result.user);
 

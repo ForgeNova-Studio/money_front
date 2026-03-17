@@ -4,6 +4,9 @@ import 'package:moamoa/features/auth/domain/entities/auth_token.dart';
 import 'package:moamoa/features/auth/domain/entities/user.dart';
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
+// terms
+import 'package:moamoa/features/terms/data/models/models.dart';
+
 /// 인증 레포지토리 인터페이스
 ///
 /// 애플리케이션의 인증 관련 데이터 조작을 위한 추상화 계층입니다.
@@ -44,6 +47,7 @@ abstract class AuthRepository {
   /// [password] 사용자 비밀번호
   /// [nickname] 사용자 닉네임
   /// [gender] 사용자 성별
+  /// [agreements] 약관 동의 목록
   ///
   /// Returns: [AuthResult] (User + AuthToken)
   ///
@@ -56,6 +60,7 @@ abstract class AuthRepository {
     required String password,
     required String nickname,
     required Gender gender,
+    required List<AgreementRequestModel> agreements,
   });
 
   /// 로그아웃

@@ -6,12 +6,17 @@ import 'package:moamoa/features/auth/presentation/states/register_form_state.dar
 
 // entities
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
+import 'package:moamoa/features/terms/domain/entities/document_type.dart';
 
 // core
 import 'package:moamoa/core/validators/input_validator.dart';
 
 // viewmodels
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
+
+// terms
+import 'package:moamoa/features/terms/data/models/models.dart';
+import 'package:moamoa/features/terms/presentation/providers/terms_provider.dart';
 
 part 'register_view_model.g.dart';
 
@@ -24,6 +29,7 @@ part 'register_view_model.g.dart';
 /// - 유효성 검사 (`validateForSignup`)
 /// - 이메일 인증 (`sendVerificationCode`, `verifyCode`)
 /// - 약관 동의 및 비밀번호 가시성 토글
+/// - 약관 조회 (`loadTerms`)
 ///
 /// **사용 예시 (Usage Example):**
 /// ```dart
@@ -39,14 +45,55 @@ class RegisterViewModel extends _$RegisterViewModel {
     return RegisterFormState.initial();
   }
 
+  /// 약관 목록 조회
+  Future<void> loadTerms() async {
+    state = state.copyWith(isTermsLoading: true);
+    try {
+      final terms = await ref.read(getActiveTermsProvider.future);
+      state = state.copyWith(
+        termsDocuments: terms,
+        isTermsLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(isTermsLoading: false);
+      rethrow;
+    }
+  }
+
   /// 성별 선택
   void selectGender(Gender gender) {
     state = state.copyWith(selectedGender: gender);
   }
 
-  /// 약관 동의 토글
-  void toggleTermsAgreed() {
-    state = state.copyWith(isTermsAgreed: !state.isTermsAgreed);
+  /// 특정 약관 동의 토글
+  void toggleAgreement(DocumentType type) {
+    switch (type) {
+      case DocumentType.serviceTerms:
+        state = state.copyWith(
+          serviceTermsAgreed: !state.serviceTermsAgreed,
+        );
+        break;
+      case DocumentType.privacyCollection:
+        state = state.copyWith(
+          privacyCollectionAgreed: !state.privacyCollectionAgreed,
+        );
+        break;
+      case DocumentType.marketing:
+        state = state.copyWith(
+          marketingAgreed: !state.marketingAgreed,
+        );
+        break;
+    }
+  }
+
+  /// 전체 동의 토글
+  void toggleAllAgreements() {
+    final newValue = !state.isAllTermsAgreed;
+    state = state.copyWith(
+      serviceTermsAgreed: newValue,
+      privacyCollectionAgreed: newValue,
+      marketingAgreed: newValue,
+    );
   }
 
   /// 비밀번호 가시성 토글
@@ -153,11 +200,16 @@ class RegisterViewModel extends _$RegisterViewModel {
       return _passwordMismatchMessage;
     }
 
-    if (!state.isTermsAgreed) {
-      return '약관 및 개인정보 이용동의에 체크해주세요.';
+    if (!state.isRequiredTermsAgreed) {
+      return '서비스 이용약관과 개인정보 수집·이용 동의는 필수입니다.';
     }
 
     return null; // 검증 통과
+  }
+
+  /// 회원가입 요청용 약관 동의 목록 반환
+  List<AgreementRequestModel> getAgreementRequests() {
+    return state.toAgreementRequests();
   }
 
   String? _passwordMismatchError({

@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 // core
-
 import 'package:moamoa/router/route_names.dart';
+import 'package:moamoa/core/utils/toast_utils.dart';
 
 // widgets
 import 'package:moamoa/features/auth/presentation/widgets/custom_text_field.dart';
@@ -20,7 +20,9 @@ import 'package:moamoa/features/auth/presentation/widgets/register/verification_
 // viewmodels
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/register_view_model.dart';
-import 'package:moamoa/core/utils/toast_utils.dart';
+
+// terms
+import 'package:moamoa/features/terms/domain/entities/document_type.dart';
 
 /// 회원가입 화면
 ///
@@ -63,6 +65,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     // 화면 진입 시 이전 화면의 SnackBar 제거
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.hideToast();
+      // 약관 목록 로드
+      ref.read(registerViewModelProvider.notifier).loadTerms();
     });
   }
 
@@ -91,6 +95,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
+    // 약관 동의 목록 생성
+    final agreements =
+        ref.read(registerViewModelProvider.notifier).getAgreementRequests();
+
     // AuthViewModel의 register 메서드 호출
     try {
       await ref.read(authViewModelProvider.notifier).register(
@@ -99,6 +107,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             confirmPassword: _confirmPasswordController.text,
             nickname: _displayNameController.text,
             gender: ref.read(registerViewModelProvider).selectedGender!,
+            agreements: agreements,
           );
     } catch (e) {
       // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
@@ -110,14 +119,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     // (ref.listen에서 처리됨)
   }
 
-  void _handleTermsClick() {
-    // TODO: 이용약관 페이지 이동
-    context.showToast('이용약관 상세 페이지로 이동 구현 예정');
-  }
+  void _handleViewTermsDetail(DocumentType type) {
+    final formState = ref.read(registerViewModelProvider);
+    final document = formState.getDocument(type);
 
-  void _handlePrivacyClick() {
-    // TODO: 개인정보 이용동의 페이지 이동
-    context.showToast('개인정보 이용동의 상세 페이지로 이동 구현 예정');
+    // 약관 상세 페이지로 이동
+    context.push(
+      '/terms/${type.toServerString()}',
+      extra: document,
+    );
   }
 
   Future<void> _handleSendVerificationCode() async {
@@ -370,14 +380,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                 // 약관 동의 체크박스
                 TermsAgreementRow(
-                  isTermsAgreed: formState.isTermsAgreed,
-                  onToggle: () {
+                  serviceTermsAgreed: formState.serviceTermsAgreed,
+                  privacyCollectionAgreed: formState.privacyCollectionAgreed,
+                  marketingAgreed: formState.marketingAgreed,
+                  isAllAgreed: formState.isAllTermsAgreed,
+                  onToggleAll: () {
                     ref
                         .read(registerViewModelProvider.notifier)
-                        .toggleTermsAgreed();
+                        .toggleAllAgreements();
                   },
-                  onTermsTap: _handleTermsClick,
-                  onPrivacyTap: _handlePrivacyClick,
+                  onToggleAgreement: (type) {
+                    ref
+                        .read(registerViewModelProvider.notifier)
+                        .toggleAgreement(type);
+                  },
+                  onViewDetail: _handleViewTermsDetail,
                 ),
 
                 const SizedBox(height: 24),

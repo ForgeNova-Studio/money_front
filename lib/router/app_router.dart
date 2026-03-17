@@ -63,6 +63,11 @@ import 'package:moamoa/features/sms_import/presentation/screens/pending_expenses
 // ==================== Shortcuts Guide ====================
 import 'package:moamoa/features/shortcuts_guide/presentation/screens/shortcuts_guide_screen.dart';
 
+// ==================== Terms ====================
+import 'package:moamoa/features/terms/presentation/screens/terms_detail_screen.dart';
+import 'package:moamoa/features/terms/domain/entities/document_type.dart';
+import 'package:moamoa/features/terms/data/models/models.dart';
+
 // ==================== Settings ====================
 import 'package:moamoa/features/setting/settings_screen.dart';
 
@@ -339,6 +344,21 @@ class AppRouter {
           path: RouteNames.shortcutsGuide,
           name: 'shortcutsGuide',
           builder: (context, state) => const ShortcutsGuideScreen(),
+        ),
+
+        // ==================== Terms Routes ====================
+        GoRoute(
+          path: RouteNames.termsDetail,
+          name: 'termsDetail',
+          builder: (context, state) {
+            final typeString = state.pathParameters['type']!;
+            final type = DocumentType.fromServerString(typeString);
+            final document = state.extra as TermsDocumentModel?;
+            return TermsDetailScreen(
+              type: type,
+              document: document,
+            );
+          },
         ),
 
         // ==================== Notification Routes ====================

@@ -22,11 +22,15 @@ mixin _$RegisterFormState {
   Gender? get selectedGender;
   bool get isPasswordVisible;
   bool get isConfirmPasswordVisible;
-  bool get isTermsAgreed;
   bool get isVerificationCodeSent;
   bool get isEmailVerified;
   String? get emailError;
-  String? get passwordError;
+  String? get passwordError; // 약관 동의 상태 (항목별)
+  bool get serviceTermsAgreed;
+  bool get privacyCollectionAgreed;
+  bool get marketingAgreed; // 약관 데이터 (서버에서 조회)
+  List<TermsDocumentModel> get termsDocuments;
+  bool get isTermsLoading;
 
   /// Create a copy of RegisterFormState
   /// with the given fields replaced by the non-null parameter values.
@@ -57,8 +61,6 @@ mixin _$RegisterFormState {
             (identical(
                     other.isConfirmPasswordVisible, isConfirmPasswordVisible) ||
                 other.isConfirmPasswordVisible == isConfirmPasswordVisible) &&
-            (identical(other.isTermsAgreed, isTermsAgreed) ||
-                other.isTermsAgreed == isTermsAgreed) &&
             (identical(other.isVerificationCodeSent, isVerificationCodeSent) ||
                 other.isVerificationCodeSent == isVerificationCodeSent) &&
             (identical(other.isEmailVerified, isEmailVerified) ||
@@ -66,7 +68,18 @@ mixin _$RegisterFormState {
             (identical(other.emailError, emailError) ||
                 other.emailError == emailError) &&
             (identical(other.passwordError, passwordError) ||
-                other.passwordError == passwordError));
+                other.passwordError == passwordError) &&
+            (identical(other.serviceTermsAgreed, serviceTermsAgreed) ||
+                other.serviceTermsAgreed == serviceTermsAgreed) &&
+            (identical(
+                    other.privacyCollectionAgreed, privacyCollectionAgreed) ||
+                other.privacyCollectionAgreed == privacyCollectionAgreed) &&
+            (identical(other.marketingAgreed, marketingAgreed) ||
+                other.marketingAgreed == marketingAgreed) &&
+            const DeepCollectionEquality()
+                .equals(other.termsDocuments, termsDocuments) &&
+            (identical(other.isTermsLoading, isTermsLoading) ||
+                other.isTermsLoading == isTermsLoading));
   }
 
   @override
@@ -80,15 +93,19 @@ mixin _$RegisterFormState {
       selectedGender,
       isPasswordVisible,
       isConfirmPasswordVisible,
-      isTermsAgreed,
       isVerificationCodeSent,
       isEmailVerified,
       emailError,
-      passwordError);
+      passwordError,
+      serviceTermsAgreed,
+      privacyCollectionAgreed,
+      marketingAgreed,
+      const DeepCollectionEquality().hash(termsDocuments),
+      isTermsLoading);
 
   @override
   String toString() {
-    return 'RegisterFormState(displayName: $displayName, email: $email, password: $password, confirmPassword: $confirmPassword, verificationCode: $verificationCode, selectedGender: $selectedGender, isPasswordVisible: $isPasswordVisible, isConfirmPasswordVisible: $isConfirmPasswordVisible, isTermsAgreed: $isTermsAgreed, isVerificationCodeSent: $isVerificationCodeSent, isEmailVerified: $isEmailVerified, emailError: $emailError, passwordError: $passwordError)';
+    return 'RegisterFormState(displayName: $displayName, email: $email, password: $password, confirmPassword: $confirmPassword, verificationCode: $verificationCode, selectedGender: $selectedGender, isPasswordVisible: $isPasswordVisible, isConfirmPasswordVisible: $isConfirmPasswordVisible, isVerificationCodeSent: $isVerificationCodeSent, isEmailVerified: $isEmailVerified, emailError: $emailError, passwordError: $passwordError, serviceTermsAgreed: $serviceTermsAgreed, privacyCollectionAgreed: $privacyCollectionAgreed, marketingAgreed: $marketingAgreed, termsDocuments: $termsDocuments, isTermsLoading: $isTermsLoading)';
   }
 }
 
@@ -107,11 +124,15 @@ abstract mixin class $RegisterFormStateCopyWith<$Res> {
       Gender? selectedGender,
       bool isPasswordVisible,
       bool isConfirmPasswordVisible,
-      bool isTermsAgreed,
       bool isVerificationCodeSent,
       bool isEmailVerified,
       String? emailError,
-      String? passwordError});
+      String? passwordError,
+      bool serviceTermsAgreed,
+      bool privacyCollectionAgreed,
+      bool marketingAgreed,
+      List<TermsDocumentModel> termsDocuments,
+      bool isTermsLoading});
 }
 
 /// @nodoc
@@ -135,11 +156,15 @@ class _$RegisterFormStateCopyWithImpl<$Res>
     Object? selectedGender = freezed,
     Object? isPasswordVisible = null,
     Object? isConfirmPasswordVisible = null,
-    Object? isTermsAgreed = null,
     Object? isVerificationCodeSent = null,
     Object? isEmailVerified = null,
     Object? emailError = freezed,
     Object? passwordError = freezed,
+    Object? serviceTermsAgreed = null,
+    Object? privacyCollectionAgreed = null,
+    Object? marketingAgreed = null,
+    Object? termsDocuments = null,
+    Object? isTermsLoading = null,
   }) {
     return _then(_self.copyWith(
       displayName: null == displayName
@@ -174,10 +199,6 @@ class _$RegisterFormStateCopyWithImpl<$Res>
           ? _self.isConfirmPasswordVisible
           : isConfirmPasswordVisible // ignore: cast_nullable_to_non_nullable
               as bool,
-      isTermsAgreed: null == isTermsAgreed
-          ? _self.isTermsAgreed
-          : isTermsAgreed // ignore: cast_nullable_to_non_nullable
-              as bool,
       isVerificationCodeSent: null == isVerificationCodeSent
           ? _self.isVerificationCodeSent
           : isVerificationCodeSent // ignore: cast_nullable_to_non_nullable
@@ -194,6 +215,26 @@ class _$RegisterFormStateCopyWithImpl<$Res>
           ? _self.passwordError
           : passwordError // ignore: cast_nullable_to_non_nullable
               as String?,
+      serviceTermsAgreed: null == serviceTermsAgreed
+          ? _self.serviceTermsAgreed
+          : serviceTermsAgreed // ignore: cast_nullable_to_non_nullable
+              as bool,
+      privacyCollectionAgreed: null == privacyCollectionAgreed
+          ? _self.privacyCollectionAgreed
+          : privacyCollectionAgreed // ignore: cast_nullable_to_non_nullable
+              as bool,
+      marketingAgreed: null == marketingAgreed
+          ? _self.marketingAgreed
+          : marketingAgreed // ignore: cast_nullable_to_non_nullable
+              as bool,
+      termsDocuments: null == termsDocuments
+          ? _self.termsDocuments
+          : termsDocuments // ignore: cast_nullable_to_non_nullable
+              as List<TermsDocumentModel>,
+      isTermsLoading: null == isTermsLoading
+          ? _self.isTermsLoading
+          : isTermsLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -298,11 +339,15 @@ extension RegisterFormStatePatterns on RegisterFormState {
             Gender? selectedGender,
             bool isPasswordVisible,
             bool isConfirmPasswordVisible,
-            bool isTermsAgreed,
             bool isVerificationCodeSent,
             bool isEmailVerified,
             String? emailError,
-            String? passwordError)?
+            String? passwordError,
+            bool serviceTermsAgreed,
+            bool privacyCollectionAgreed,
+            bool marketingAgreed,
+            List<TermsDocumentModel> termsDocuments,
+            bool isTermsLoading)?
         $default, {
     required TResult orElse(),
   }) {
@@ -318,11 +363,15 @@ extension RegisterFormStatePatterns on RegisterFormState {
             _that.selectedGender,
             _that.isPasswordVisible,
             _that.isConfirmPasswordVisible,
-            _that.isTermsAgreed,
             _that.isVerificationCodeSent,
             _that.isEmailVerified,
             _that.emailError,
-            _that.passwordError);
+            _that.passwordError,
+            _that.serviceTermsAgreed,
+            _that.privacyCollectionAgreed,
+            _that.marketingAgreed,
+            _that.termsDocuments,
+            _that.isTermsLoading);
       case _:
         return orElse();
     }
@@ -352,11 +401,15 @@ extension RegisterFormStatePatterns on RegisterFormState {
             Gender? selectedGender,
             bool isPasswordVisible,
             bool isConfirmPasswordVisible,
-            bool isTermsAgreed,
             bool isVerificationCodeSent,
             bool isEmailVerified,
             String? emailError,
-            String? passwordError)
+            String? passwordError,
+            bool serviceTermsAgreed,
+            bool privacyCollectionAgreed,
+            bool marketingAgreed,
+            List<TermsDocumentModel> termsDocuments,
+            bool isTermsLoading)
         $default,
   ) {
     final _that = this;
@@ -371,11 +424,15 @@ extension RegisterFormStatePatterns on RegisterFormState {
             _that.selectedGender,
             _that.isPasswordVisible,
             _that.isConfirmPasswordVisible,
-            _that.isTermsAgreed,
             _that.isVerificationCodeSent,
             _that.isEmailVerified,
             _that.emailError,
-            _that.passwordError);
+            _that.passwordError,
+            _that.serviceTermsAgreed,
+            _that.privacyCollectionAgreed,
+            _that.marketingAgreed,
+            _that.termsDocuments,
+            _that.isTermsLoading);
     }
   }
 
@@ -402,11 +459,15 @@ extension RegisterFormStatePatterns on RegisterFormState {
             Gender? selectedGender,
             bool isPasswordVisible,
             bool isConfirmPasswordVisible,
-            bool isTermsAgreed,
             bool isVerificationCodeSent,
             bool isEmailVerified,
             String? emailError,
-            String? passwordError)?
+            String? passwordError,
+            bool serviceTermsAgreed,
+            bool privacyCollectionAgreed,
+            bool marketingAgreed,
+            List<TermsDocumentModel> termsDocuments,
+            bool isTermsLoading)?
         $default,
   ) {
     final _that = this;
@@ -421,11 +482,15 @@ extension RegisterFormStatePatterns on RegisterFormState {
             _that.selectedGender,
             _that.isPasswordVisible,
             _that.isConfirmPasswordVisible,
-            _that.isTermsAgreed,
             _that.isVerificationCodeSent,
             _that.isEmailVerified,
             _that.emailError,
-            _that.passwordError);
+            _that.passwordError,
+            _that.serviceTermsAgreed,
+            _that.privacyCollectionAgreed,
+            _that.marketingAgreed,
+            _that.termsDocuments,
+            _that.isTermsLoading);
       case _:
         return null;
     }
@@ -444,12 +509,17 @@ class _RegisterFormState extends RegisterFormState {
       this.selectedGender,
       this.isPasswordVisible = false,
       this.isConfirmPasswordVisible = false,
-      this.isTermsAgreed = false,
       this.isVerificationCodeSent = false,
       this.isEmailVerified = false,
       this.emailError,
-      this.passwordError})
-      : super._();
+      this.passwordError,
+      this.serviceTermsAgreed = false,
+      this.privacyCollectionAgreed = false,
+      this.marketingAgreed = false,
+      final List<TermsDocumentModel> termsDocuments = const [],
+      this.isTermsLoading = false})
+      : _termsDocuments = termsDocuments,
+        super._();
 
   @override
   @JsonKey()
@@ -476,9 +546,6 @@ class _RegisterFormState extends RegisterFormState {
   final bool isConfirmPasswordVisible;
   @override
   @JsonKey()
-  final bool isTermsAgreed;
-  @override
-  @JsonKey()
   final bool isVerificationCodeSent;
   @override
   @JsonKey()
@@ -487,6 +554,30 @@ class _RegisterFormState extends RegisterFormState {
   final String? emailError;
   @override
   final String? passwordError;
+// 약관 동의 상태 (항목별)
+  @override
+  @JsonKey()
+  final bool serviceTermsAgreed;
+  @override
+  @JsonKey()
+  final bool privacyCollectionAgreed;
+  @override
+  @JsonKey()
+  final bool marketingAgreed;
+// 약관 데이터 (서버에서 조회)
+  final List<TermsDocumentModel> _termsDocuments;
+// 약관 데이터 (서버에서 조회)
+  @override
+  @JsonKey()
+  List<TermsDocumentModel> get termsDocuments {
+    if (_termsDocuments is EqualUnmodifiableListView) return _termsDocuments;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_termsDocuments);
+  }
+
+  @override
+  @JsonKey()
+  final bool isTermsLoading;
 
   /// Create a copy of RegisterFormState
   /// with the given fields replaced by the non-null parameter values.
@@ -517,8 +608,6 @@ class _RegisterFormState extends RegisterFormState {
             (identical(
                     other.isConfirmPasswordVisible, isConfirmPasswordVisible) ||
                 other.isConfirmPasswordVisible == isConfirmPasswordVisible) &&
-            (identical(other.isTermsAgreed, isTermsAgreed) ||
-                other.isTermsAgreed == isTermsAgreed) &&
             (identical(other.isVerificationCodeSent, isVerificationCodeSent) ||
                 other.isVerificationCodeSent == isVerificationCodeSent) &&
             (identical(other.isEmailVerified, isEmailVerified) ||
@@ -526,7 +615,18 @@ class _RegisterFormState extends RegisterFormState {
             (identical(other.emailError, emailError) ||
                 other.emailError == emailError) &&
             (identical(other.passwordError, passwordError) ||
-                other.passwordError == passwordError));
+                other.passwordError == passwordError) &&
+            (identical(other.serviceTermsAgreed, serviceTermsAgreed) ||
+                other.serviceTermsAgreed == serviceTermsAgreed) &&
+            (identical(
+                    other.privacyCollectionAgreed, privacyCollectionAgreed) ||
+                other.privacyCollectionAgreed == privacyCollectionAgreed) &&
+            (identical(other.marketingAgreed, marketingAgreed) ||
+                other.marketingAgreed == marketingAgreed) &&
+            const DeepCollectionEquality()
+                .equals(other._termsDocuments, _termsDocuments) &&
+            (identical(other.isTermsLoading, isTermsLoading) ||
+                other.isTermsLoading == isTermsLoading));
   }
 
   @override
@@ -540,15 +640,19 @@ class _RegisterFormState extends RegisterFormState {
       selectedGender,
       isPasswordVisible,
       isConfirmPasswordVisible,
-      isTermsAgreed,
       isVerificationCodeSent,
       isEmailVerified,
       emailError,
-      passwordError);
+      passwordError,
+      serviceTermsAgreed,
+      privacyCollectionAgreed,
+      marketingAgreed,
+      const DeepCollectionEquality().hash(_termsDocuments),
+      isTermsLoading);
 
   @override
   String toString() {
-    return 'RegisterFormState(displayName: $displayName, email: $email, password: $password, confirmPassword: $confirmPassword, verificationCode: $verificationCode, selectedGender: $selectedGender, isPasswordVisible: $isPasswordVisible, isConfirmPasswordVisible: $isConfirmPasswordVisible, isTermsAgreed: $isTermsAgreed, isVerificationCodeSent: $isVerificationCodeSent, isEmailVerified: $isEmailVerified, emailError: $emailError, passwordError: $passwordError)';
+    return 'RegisterFormState(displayName: $displayName, email: $email, password: $password, confirmPassword: $confirmPassword, verificationCode: $verificationCode, selectedGender: $selectedGender, isPasswordVisible: $isPasswordVisible, isConfirmPasswordVisible: $isConfirmPasswordVisible, isVerificationCodeSent: $isVerificationCodeSent, isEmailVerified: $isEmailVerified, emailError: $emailError, passwordError: $passwordError, serviceTermsAgreed: $serviceTermsAgreed, privacyCollectionAgreed: $privacyCollectionAgreed, marketingAgreed: $marketingAgreed, termsDocuments: $termsDocuments, isTermsLoading: $isTermsLoading)';
   }
 }
 
@@ -569,11 +673,15 @@ abstract mixin class _$RegisterFormStateCopyWith<$Res>
       Gender? selectedGender,
       bool isPasswordVisible,
       bool isConfirmPasswordVisible,
-      bool isTermsAgreed,
       bool isVerificationCodeSent,
       bool isEmailVerified,
       String? emailError,
-      String? passwordError});
+      String? passwordError,
+      bool serviceTermsAgreed,
+      bool privacyCollectionAgreed,
+      bool marketingAgreed,
+      List<TermsDocumentModel> termsDocuments,
+      bool isTermsLoading});
 }
 
 /// @nodoc
@@ -597,11 +705,15 @@ class __$RegisterFormStateCopyWithImpl<$Res>
     Object? selectedGender = freezed,
     Object? isPasswordVisible = null,
     Object? isConfirmPasswordVisible = null,
-    Object? isTermsAgreed = null,
     Object? isVerificationCodeSent = null,
     Object? isEmailVerified = null,
     Object? emailError = freezed,
     Object? passwordError = freezed,
+    Object? serviceTermsAgreed = null,
+    Object? privacyCollectionAgreed = null,
+    Object? marketingAgreed = null,
+    Object? termsDocuments = null,
+    Object? isTermsLoading = null,
   }) {
     return _then(_RegisterFormState(
       displayName: null == displayName
@@ -636,10 +748,6 @@ class __$RegisterFormStateCopyWithImpl<$Res>
           ? _self.isConfirmPasswordVisible
           : isConfirmPasswordVisible // ignore: cast_nullable_to_non_nullable
               as bool,
-      isTermsAgreed: null == isTermsAgreed
-          ? _self.isTermsAgreed
-          : isTermsAgreed // ignore: cast_nullable_to_non_nullable
-              as bool,
       isVerificationCodeSent: null == isVerificationCodeSent
           ? _self.isVerificationCodeSent
           : isVerificationCodeSent // ignore: cast_nullable_to_non_nullable
@@ -656,6 +764,26 @@ class __$RegisterFormStateCopyWithImpl<$Res>
           ? _self.passwordError
           : passwordError // ignore: cast_nullable_to_non_nullable
               as String?,
+      serviceTermsAgreed: null == serviceTermsAgreed
+          ? _self.serviceTermsAgreed
+          : serviceTermsAgreed // ignore: cast_nullable_to_non_nullable
+              as bool,
+      privacyCollectionAgreed: null == privacyCollectionAgreed
+          ? _self.privacyCollectionAgreed
+          : privacyCollectionAgreed // ignore: cast_nullable_to_non_nullable
+              as bool,
+      marketingAgreed: null == marketingAgreed
+          ? _self.marketingAgreed
+          : marketingAgreed // ignore: cast_nullable_to_non_nullable
+              as bool,
+      termsDocuments: null == termsDocuments
+          ? _self._termsDocuments
+          : termsDocuments // ignore: cast_nullable_to_non_nullable
+              as List<TermsDocumentModel>,
+      isTermsLoading: null == isTermsLoading
+          ? _self.isTermsLoading
+          : isTermsLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }

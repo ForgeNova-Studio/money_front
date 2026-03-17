@@ -1,6 +1,7 @@
 // models
 import 'package:moamoa/features/auth/data/models/models.dart';
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
+import 'package:moamoa/features/terms/data/models/models.dart';
 
 /// Auth Remote Data Source 인터페이스
 ///
@@ -30,6 +31,8 @@ abstract class AuthRemoteDataSource {
   /// [email] 사용자 이메일
   /// [password] 사용자 비밀번호
   /// [nickname] 사용자 닉네임
+  /// [gender] 성별
+  /// [agreements] 약관 동의 목록
   ///
   /// Returns: [RegisterResponseModel] 회원가입 API 응답 모델 (토큰만 포함)
   ///
@@ -42,6 +45,7 @@ abstract class AuthRemoteDataSource {
     required String password,
     required String nickname,
     required Gender gender,
+    required List<AgreementRequestModel> agreements,
   });
 
   /// 현재 사용자 정보 조회

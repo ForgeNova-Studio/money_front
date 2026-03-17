@@ -132,6 +132,10 @@ class RouteNames {
   /// iOS 단축어 설정 가이드 화면
   static const String shortcutsGuide = '/shortcuts-guide';
 
+  // ==================== Terms Routes ====================
+  /// 약관 상세 화면
+  static const String termsDetail = '/terms/:type';
+
   // ==================== Helper Methods ====================
   /// 인증 화면 여부 확인
   static bool isAuthRoute(String location) {

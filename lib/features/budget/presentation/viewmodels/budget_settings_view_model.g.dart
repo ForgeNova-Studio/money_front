@@ -42,7 +42,7 @@ final class BudgetSettingsViewModelProvider
 }
 
 String _$budgetSettingsViewModelHash() =>
-    r'b60b238efc803f5616f86d2c2f26cb6c14f4ddf0';
+    r'd7b96e586f0ba2e542255af36ca5dc7e135f1189';
 
 abstract class _$BudgetSettingsViewModel
     extends $Notifier<BudgetSettingsState> {
