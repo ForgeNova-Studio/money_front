@@ -18,6 +18,7 @@ import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
 // terms
 import 'package:moamoa/features/terms/data/models/models.dart';
+import 'package:moamoa/features/terms/presentation/providers/terms_reconsent_provider.dart';
 
 part 'auth_view_model.g.dart';
 
@@ -231,6 +232,10 @@ class AuthViewModel extends _$AuthViewModel {
     // 가계부 관련
     ref.invalidate(accountBooksProvider);
     ref.invalidate(selectedAccountBookViewModelProvider);
+
+    // 약관 재동의 관련 - 다른 계정 로그인 시 이전 상태가 남지 않도록
+    ref.invalidate(termsReconsentRequiredProvider);
+    ref.invalidate(termsReconsentViewModelProvider);
 
     // 주석 처리한 이유는 이미 잘 처리되고 있어 명시적으로 할 필요 없기 때문
     // 추후 필요시 명시적으로 제거 가능

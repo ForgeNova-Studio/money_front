@@ -139,6 +139,9 @@ class RouteNames {
   /// 약관 상세 화면
   static const String termsDetail = '/terms/:type';
 
+  /// 약관 재동의 화면
+  static const String termsReconsent = '/terms-reconsent';
+
   // ==================== Helper Methods ====================
   /// 인증 화면 여부 확인
   static bool isAuthRoute(String location) {

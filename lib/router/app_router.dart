@@ -66,6 +66,7 @@ import 'package:moamoa/features/shortcuts_guide/presentation/screens/shortcuts_g
 // ==================== Terms ====================
 import 'package:moamoa/features/terms/presentation/screens/terms_detail_screen.dart';
 import 'package:moamoa/features/terms/presentation/screens/terms_policy_screen.dart';
+import 'package:moamoa/features/terms/presentation/screens/terms_reconsent_screen.dart';
 import 'package:moamoa/features/terms/domain/entities/document_type.dart';
 import 'package:moamoa/features/terms/data/models/models.dart';
 
@@ -365,6 +366,11 @@ class AppRouter {
               document: document,
             );
           },
+        ),
+        GoRoute(
+          path: RouteNames.termsReconsent,
+          name: 'termsReconsent',
+          builder: (context, state) => const TermsReconsentScreen(),
         ),
 
         // ==================== Notification Routes ====================
