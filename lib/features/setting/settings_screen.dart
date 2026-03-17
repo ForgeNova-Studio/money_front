@@ -122,6 +122,12 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () => _handleNotificationSettings(context),
                 ),
                 _MenuItem(
+                  icon: Icons.description_outlined,
+                  iconColor: colorScheme.onSurface,
+                  label: '약관 및 정책',
+                  onTap: () => context.push(RouteNames.termsPolicy),
+                ),
+                _MenuItem(
                   icon: Icons.logout,
                   iconColor: Colors.red,
                   label: '로그아웃',

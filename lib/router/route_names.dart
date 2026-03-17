@@ -133,6 +133,9 @@ class RouteNames {
   static const String shortcutsGuide = '/shortcuts-guide';
 
   // ==================== Terms Routes ====================
+  /// 약관 및 정책 화면
+  static const String termsPolicy = '/terms-policy';
+
   /// 약관 상세 화면
   static const String termsDetail = '/terms/:type';
 

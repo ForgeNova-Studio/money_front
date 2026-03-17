@@ -65,6 +65,7 @@ import 'package:moamoa/features/shortcuts_guide/presentation/screens/shortcuts_g
 
 // ==================== Terms ====================
 import 'package:moamoa/features/terms/presentation/screens/terms_detail_screen.dart';
+import 'package:moamoa/features/terms/presentation/screens/terms_policy_screen.dart';
 import 'package:moamoa/features/terms/domain/entities/document_type.dart';
 import 'package:moamoa/features/terms/data/models/models.dart';
 
@@ -347,6 +348,11 @@ class AppRouter {
         ),
 
         // ==================== Terms Routes ====================
+        GoRoute(
+          path: RouteNames.termsPolicy,
+          name: 'termsPolicy',
+          builder: (context, state) => const TermsPolicyScreen(),
+        ),
         GoRoute(
           path: RouteNames.termsDetail,
           name: 'termsDetail',
