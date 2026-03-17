@@ -88,6 +88,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Public 화면 확인
       final isGoingToAuth = RouteNames.isAuthRoute(currentLocation);
       final isOnboarding = currentLocation == RouteNames.onboarding;
+      final isTermsDetail = currentLocation.startsWith('/terms/');
 
       // 디버그 로그
       if (kDebugMode) {
@@ -158,8 +159,8 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Priority 4: 미인증 사용자 → protected 화면 접근 시 로그인으로 리다이렉션
       if (!isAuthenticated) {
-        // 이미 public 화면(로그인/회원가입 등)에 있으면 그대로 유지
-        if (isGoingToAuth) {
+        // 이미 public 화면(로그인/회원가입/약관 상세 등)에 있으면 그대로 유지
+        if (isGoingToAuth || isTermsDetail) {
           if (kDebugMode) {
             debugPrint('[GoRouter Redirect] 미인증 사용자 - public 화면 유지');
           }
