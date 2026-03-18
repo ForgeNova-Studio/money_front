@@ -100,6 +100,7 @@ class RouteNames {
   // ==================== Settings Route ====================
   /// 설정 화면
   static const String settings = '/settings';
+  static const String profileEdit = '/profile-edit';
 
   // ==================== Notification Routes ====================
   /// 알림 목록 화면

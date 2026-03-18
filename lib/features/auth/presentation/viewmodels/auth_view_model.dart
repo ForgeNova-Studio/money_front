@@ -6,6 +6,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 // core
 import 'package:moamoa/core/exceptions/exceptions.dart';
+import 'package:moamoa/core/validators/input_validator.dart';
 
 // providers/states
 import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
@@ -56,7 +57,7 @@ class AuthViewModel extends _$AuthViewModel {
   /// 현재 사용자 정보 확인 (로컬 토큰 기반)
   ///
   /// 앱 시작 시 로컬 저장소의 토큰과 사용자 정보를 확인하여
-  /// 빠른 초기화를 제공합니다.
+  /// 빠른 초기화를 제공한 뒤, 백그라운드에서 최신 사용자 정보를 동기화합니다.
   /// - 토큰이 있으면: authenticated 상태로 변경
   /// - 토큰이 없으면: unauthenticated 상태로 변경
   Future<void> _checkCurrentUser() async {
@@ -84,6 +85,9 @@ class AuthViewModel extends _$AuthViewModel {
         if (user != null) {
           final userEntity = user.toEntity();
           state = AuthState.authenticated(user: userEntity);
+
+          // JWT claim 대신 최신 사용자 정보를 기준으로 UI를 유지한다.
+          unawaited(refreshCurrentUser());
 
           // OneSignal에 External User ID 등록 (개인 푸시 알림용)
           await _loginToOneSignal(userEntity.email);
@@ -310,6 +314,71 @@ class AuthViewModel extends _$AuthViewModel {
   /// 에러 메시지 초기화
   void clearError() {
     state = _clearError();
+  }
+
+  /// 서버의 최신 사용자 정보로 인증 상태를 동기화
+  Future<void> refreshCurrentUser({bool showLoading = false}) async {
+    if (!state.isAuthenticated) return;
+
+    if (showLoading) {
+      state = _setLoading(true);
+    }
+
+    try {
+      final authRepository = ref.read(authRepositoryProvider);
+      final user = await authRepository.getCurrentUser();
+
+      if (!ref.mounted) return;
+
+      if (user == null) {
+        state = AuthState.unauthenticated();
+        _invalidateAllUserProviders();
+        return;
+      }
+
+      state = AuthState.authenticated(user: user);
+    } catch (e) {
+      if (!ref.mounted) return;
+
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] 사용자 정보 동기화 실패: $e');
+      }
+
+      if (showLoading) {
+        state = state.maybeMap(
+          authenticated: (current) => current.copyWith(isLoading: false),
+          orElse: () => state,
+        );
+      }
+    }
+  }
+
+  /// 닉네임 수정
+  Future<void> updateNickname(String nickname) async {
+    final trimmedNickname = nickname.trim();
+    final nicknameError =
+        InputValidator.getNicknameErrorMessage(trimmedNickname);
+
+    if (nicknameError.isNotEmpty) {
+      state = _setErrorMessage(nicknameError);
+      throw ValidationException(nicknameError);
+    }
+
+    if (state.user?.nickname == trimmedNickname) {
+      return;
+    }
+
+    await _handleAuthRequest(() async {
+      final authRepository = ref.read(authRepositoryProvider);
+      final updatedUser = await authRepository.updateNickname(trimmedNickname);
+
+      if (!ref.mounted) return;
+
+      state = AuthState.authenticated(user: updatedUser);
+    },
+        loading: true,
+        rethrowError: true,
+        defaultErrorMessage: '닉네임 변경 중 오류가 발생했습니다');
   }
 
   /// 강제로 unauthenticated 상태로 변경

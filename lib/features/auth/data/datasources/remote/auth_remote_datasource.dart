@@ -58,6 +58,20 @@ abstract class AuthRemoteDataSource {
   /// - [ServerException] 서버 오류
   Future<UserModel> getCurrentUser();
 
+  /// 현재 사용자 닉네임 수정
+  ///
+  /// [nickname] 새 닉네임
+  ///
+  /// Returns: [UserModel] 수정된 사용자 정보 모델
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [ValidationException] 닉네임 검증 오류
+  /// - [ServerException] 서버 오류
+  Future<UserModel> updateNickname({
+    required String nickname,
+  });
+
   /// 토큰 갱신
   ///
   /// [refreshToken] Refresh Token

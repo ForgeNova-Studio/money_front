@@ -70,7 +70,25 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<UserModel> getCurrentUser() async {
     try {
-      final response = await dio.get(ApiConstants.currentUser);
+      final response = await dio.get(ApiConstants.usersMe);
+
+      return UserModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
+  }
+
+  @override
+  Future<UserModel> updateNickname({
+    required String nickname,
+  }) async {
+    try {
+      final response = await dio.patch(
+        ApiConstants.updateNickname,
+        data: {
+          'nickname': nickname,
+        },
+      );
 
       return UserModel.fromJson(response.data);
     } on DioException catch (e) {

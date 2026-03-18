@@ -74,6 +74,7 @@ import 'package:moamoa/features/terms/data/models/models.dart';
 import 'package:moamoa/features/auth/presentation/screens/withdrawal_screen.dart';
 
 // ==================== Settings ====================
+import 'package:moamoa/features/setting/profile_edit_screen.dart';
 import 'package:moamoa/features/setting/settings_screen.dart';
 
 // Monthly Report Screens
@@ -255,6 +256,11 @@ class AppRouter {
           builder: (context, state) => const CoupleScreen(),
         ),
         GoRoute(
+          path: RouteNames.profileEdit,
+          name: 'profileEdit',
+          builder: (context, state) => const ProfileEditScreen(),
+        ),
+        GoRoute(
           path: RouteNames.coupleInvite,
           name: 'coupleInvite',
           builder: (context, state) => const CoupleInviteScreen(),
@@ -319,12 +325,10 @@ class AppRouter {
             final month =
                 int.tryParse(state.uri.queryParameters['month'] ?? '');
 
-            final initialDate = (year != null &&
-                    month != null &&
-                    month >= 1 &&
-                    month <= 12)
-                ? DateTime(year, month)
-                : null;
+            final initialDate =
+                (year != null && month != null && month >= 1 && month <= 12)
+                    ? DateTime(year, month)
+                    : null;
 
             return BudgetSettingsScreen(
               initialDate: initialDate,

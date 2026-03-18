@@ -172,6 +172,13 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<User> updateNickname(String nickname) async {
+    final userModel = await remoteDataSource.updateNickname(nickname: nickname);
+    await localDataSource.saveUser(userModel);
+    return userModel.toEntity();
+  }
+
+  @override
   Future<AuthToken?> getStoredToken() async {
     final tokenModel = await localDataSource.getToken();
     return tokenModel?.toEntity();

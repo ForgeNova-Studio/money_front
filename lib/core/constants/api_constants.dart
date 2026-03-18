@@ -27,7 +27,7 @@ class ApiConstants {
   // ========== Auth endpoints ==========
   static const String register = '/api/auth/register';
   static const String login = '/api/auth/login';
-  static const String currentUser = '/api/auth/me';
+  static const String currentUser = '/api/users/me';
   static const String refreshToken = '/api/auth/refresh';
   static const String socialLogin = '/api/auth/social-login';
   static const String mockSocialLogin = '/api/auth/social-login/mock';
@@ -46,8 +46,9 @@ class ApiConstants {
   static const String logout = '/api/auth/logout';
 
   // ========== User endpoints ==========
-  static const String usersMe = '/api/users/me';
-  static const String withdrawUser = '/api/users/me';
+  static const String usersMe = currentUser;
+  static const String withdrawUser = usersMe;
+  static const String updateNickname = '/api/users/me/nickname';
 
   // ========== Terms endpoints ==========
   static const String termsActive = '/api/terms/active';

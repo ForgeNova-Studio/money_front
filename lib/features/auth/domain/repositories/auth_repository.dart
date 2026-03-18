@@ -91,6 +91,18 @@ abstract class AuthRepository {
   /// - [ServerException] 서버 오류
   Future<User?> getCurrentUser();
 
+  /// 현재 로그인한 사용자의 닉네임 수정
+  ///
+  /// [nickname] 새 닉네임
+  ///
+  /// Returns: [User] 수정된 최신 사용자 정보
+  ///
+  /// Throws:
+  /// - [ValidationException] 닉네임 검증 오류
+  /// - [NetworkException] 네트워크 오류
+  /// - [ServerException] 서버 오류
+  Future<User> updateNickname(String nickname);
+
   /// 로컬에 저장된 토큰 조회
   ///
   /// Returns: [AuthToken] 또는 null (저장된 토큰이 없는 경우)
