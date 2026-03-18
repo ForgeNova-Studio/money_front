@@ -17,7 +17,7 @@ import 'package:moamoa/features/terms/presentation/states/terms_reconsent_state.
 part 'terms_reconsent_provider.g.dart';
 
 /// 약관 재동의 ViewModel Provider
-@riverpod
+@Riverpod(keepAlive: true)
 class TermsReconsentViewModel extends _$TermsReconsentViewModel {
   @override
   TermsReconsentState build() {
@@ -42,6 +42,12 @@ class TermsReconsentViewModel extends _$TermsReconsentViewModel {
       final activeTerms = results[0] as List<TermsDocumentModel>;
       final userAgreements = results[1] as List<UserAgreementModel>;
 
+      if (!ref.mounted) {
+        return TermsReconsentCheckResult.error(
+          StateError('TermsReconsentViewModel disposed'),
+        );
+      }
+
       // 재동의가 필요한 약관 필터링
       final itemsNeedingReconsent = _filterTermsNeedingReconsent(
         activeTerms,
@@ -61,8 +67,7 @@ class TermsReconsentViewModel extends _$TermsReconsentViewModel {
       }
 
       if (kDebugMode) {
-        debugPrint(
-            '[TermsReconsent] 재동의 필요: ${itemsNeedingReconsent.length}건');
+        debugPrint('[TermsReconsent] 재동의 필요: ${itemsNeedingReconsent.length}건');
         for (final item in itemsNeedingReconsent) {
           debugPrint(
               '  - ${item.document.type.displayName} v${item.document.version}');
@@ -76,6 +81,10 @@ class TermsReconsentViewModel extends _$TermsReconsentViewModel {
         debugPrint(st.toString());
       }
       logStartupDebug('terms_reconsent_check_failed: $e');
+
+      if (!ref.mounted) {
+        return TermsReconsentCheckResult.error(e);
+      }
 
       state = state.copyWith(
         isLoading: false,
@@ -104,8 +113,7 @@ class TermsReconsentViewModel extends _$TermsReconsentViewModel {
 
       // 해당 약관 타입에 동의한 이력이 있는지 확인 (버전 무관)
       final hasAnyAgreement = userAgreements.any(
-        (agreement) =>
-            agreement.documentType == term.type && agreement.agreed,
+        (agreement) => agreement.documentType == term.type && agreement.agreed,
       );
 
       // Case 1: 동의 이력이 전혀 없음 → 신규 사용자 (SNS 로그인 등)
@@ -227,7 +235,7 @@ class TermsReconsentViewModel extends _$TermsReconsentViewModel {
 ///
 /// AppInitialization에서 설정된 값을 참조
 /// 재동의 완료 시 false로 변경
-@riverpod
+@Riverpod(keepAlive: true)
 class TermsReconsentRequired extends _$TermsReconsentRequired {
   @override
   bool build() {

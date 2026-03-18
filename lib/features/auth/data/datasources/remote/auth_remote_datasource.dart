@@ -156,4 +156,18 @@ abstract class AuthRemoteDataSource {
   /// - [TokenExpiredException] 토큰 만료
   /// - [ServerException] 서버 오류
   Future<void> logout(String refreshToken);
+
+  /// 회원 탈퇴
+  ///
+  /// [password] 비밀번호 (이메일 회원만 필수)
+  /// [reason] 탈퇴 사유 (선택)
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [ValidationException] 비밀번호 불일치
+  /// - [ServerException] 서버 오류
+  Future<void> withdrawUser({
+    String? password,
+    String? reason,
+  });
 }

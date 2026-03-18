@@ -70,6 +70,9 @@ import 'package:moamoa/features/terms/presentation/screens/terms_reconsent_scree
 import 'package:moamoa/features/terms/domain/entities/document_type.dart';
 import 'package:moamoa/features/terms/data/models/models.dart';
 
+// ==================== Withdrawal ====================
+import 'package:moamoa/features/auth/presentation/screens/withdrawal_screen.dart';
+
 // ==================== Settings ====================
 import 'package:moamoa/features/setting/settings_screen.dart';
 
@@ -371,6 +374,13 @@ class AppRouter {
           path: RouteNames.termsReconsent,
           name: 'termsReconsent',
           builder: (context, state) => const TermsReconsentScreen(),
+        ),
+
+        // ==================== Withdrawal Route ====================
+        GoRoute(
+          path: RouteNames.withdrawal,
+          name: 'withdrawal',
+          builder: (context, state) => const WithdrawalScreen(),
         ),
 
         // ==================== Notification Routes ====================

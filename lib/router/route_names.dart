@@ -142,6 +142,9 @@ class RouteNames {
   /// 약관 재동의 화면
   static const String termsReconsent = '/terms-reconsent';
 
+  /// 회원 탈퇴 화면
+  static const String withdrawal = '/withdrawal';
+
   // ==================== Helper Methods ====================
   /// 인증 화면 여부 확인
   static bool isAuthRoute(String location) {

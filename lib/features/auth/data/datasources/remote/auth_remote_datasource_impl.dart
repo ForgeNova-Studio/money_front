@@ -217,4 +217,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw ExceptionHandler.handleDioException(e);
     }
   }
+
+  @override
+  Future<void> withdrawUser({
+    String? password,
+    String? reason,
+  }) async {
+    try {
+      await dio.delete(
+        ApiConstants.withdrawUser,
+        data: {
+          if (password != null) 'password': password,
+          if (reason != null) 'reason': reason,
+        },
+      );
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
+  }
 }

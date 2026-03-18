@@ -23,7 +23,7 @@ final class TermsReconsentViewModelProvider
           argument: null,
           retry: null,
           name: r'termsReconsentViewModelProvider',
-          isAutoDispose: true,
+          isAutoDispose: false,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
@@ -90,7 +90,7 @@ final class TermsReconsentRequiredProvider
           argument: null,
           retry: null,
           name: r'termsReconsentRequiredProvider',
-          isAutoDispose: true,
+          isAutoDispose: false,
           dependencies: null,
           $allTransitiveDependencies: null,
         );

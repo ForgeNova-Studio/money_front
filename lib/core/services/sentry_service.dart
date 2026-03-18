@@ -124,7 +124,7 @@ class SentryService {
         'url': url,
         'method': method ?? 'UNKNOWN',
         'statusCode': statusCode,
-        'responseBody': responseBody?.substring(0, 500), // 500자로 제한
+        'responseBody': _truncate(responseBody, 500),
       },
     );
   }
@@ -153,9 +153,15 @@ class SentryService {
   /// 에러 fingerprint 생성
   String _generateFingerprint(dynamic exception) {
     final type = exception.runtimeType.toString();
-    final message = exception
-        .toString()
-        .substring(0, 100.clamp(0, exception.toString().length));
+    final message = _truncate(exception.toString(), 100) ?? '';
     return '$type:$message';
+  }
+
+  String? _truncate(String? value, int maxLength) {
+    if (value == null || value.length <= maxLength) {
+      return value;
+    }
+
+    return value.substring(0, maxLength);
   }
 }

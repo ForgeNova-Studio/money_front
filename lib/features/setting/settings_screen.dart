@@ -133,6 +133,12 @@ class SettingsScreen extends ConsumerWidget {
                   label: '로그아웃',
                   onTap: () => _handleLogout(context, ref),
                 ),
+                _MenuItem(
+                  icon: Icons.person_off_outlined,
+                  iconColor: Colors.grey,
+                  label: '회원 탈퇴',
+                  onTap: () => context.push(RouteNames.withdrawal),
+                ),
               ],
             ),
 

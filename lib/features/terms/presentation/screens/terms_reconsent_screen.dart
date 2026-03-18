@@ -43,6 +43,11 @@ class _TermsReconsentScreenState extends ConsumerState<TermsReconsentScreen> {
   }
 
   Future<void> _loadReconsentItems() async {
+    final currentState = ref.read(termsReconsentViewModelProvider);
+    if (currentState.isLoading || currentState.hasItemsToConsent) {
+      return;
+    }
+
     await ref
         .read(termsReconsentViewModelProvider.notifier)
         .checkReconsentRequired();
@@ -95,9 +100,8 @@ class _TermsReconsentScreenState extends ConsumerState<TermsReconsentScreen> {
         body: state.isLoading
             ? const Center(child: CircularProgressIndicator())
             : _buildContent(context, state),
-        bottomNavigationBar: state.isLoading
-            ? null
-            : _buildBottomBar(context, state),
+        bottomNavigationBar:
+            state.isLoading ? null : _buildBottomBar(context, state),
       ),
     );
   }
@@ -299,7 +303,7 @@ class _TermsReconsentScreenState extends ConsumerState<TermsReconsentScreen> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              _handleLogout(context);
+              _handleLogout();
             },
             child: Text(
               '로그아웃',
@@ -332,7 +336,7 @@ class _TermsReconsentScreenState extends ConsumerState<TermsReconsentScreen> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              _handleLogout(context);
+              _handleLogout();
             },
             child: Text(
               '로그아웃',
@@ -344,11 +348,8 @@ class _TermsReconsentScreenState extends ConsumerState<TermsReconsentScreen> {
     );
   }
 
-  Future<void> _handleLogout(BuildContext context) async {
+  Future<void> _handleLogout() async {
     await ref.read(authViewModelProvider.notifier).logout();
-
-    if (!mounted) return;
-    context.go(RouteNames.login);
   }
 }
 

@@ -47,6 +47,7 @@ class ApiConstants {
 
   // ========== User endpoints ==========
   static const String usersMe = '/api/users/me';
+  static const String withdrawUser = '/api/users/me';
 
   // ========== Terms endpoints ==========
   static const String termsActive = '/api/terms/active';

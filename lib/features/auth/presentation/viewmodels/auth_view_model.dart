@@ -14,11 +14,13 @@ import 'package:moamoa/features/account_book/presentation/providers/account_book
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 
 // entities
+import 'package:moamoa/features/auth/domain/entities/auth_result.dart';
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
 // terms
 import 'package:moamoa/features/terms/data/models/models.dart';
 import 'package:moamoa/features/terms/presentation/providers/terms_reconsent_provider.dart';
+import 'package:moamoa/features/terms/presentation/states/terms_reconsent_state.dart';
 
 part 'auth_view_model.g.dart';
 
@@ -84,7 +86,7 @@ class AuthViewModel extends _$AuthViewModel {
           state = AuthState.authenticated(user: userEntity);
 
           // OneSignal에 External User ID 등록 (개인 푸시 알림용)
-          OneSignal.login(userEntity.email);
+          await _loginToOneSignal(userEntity.email);
           if (kDebugMode) {
             debugPrint('[AuthViewModel] OneSignal 로그인: ${userEntity.email}');
             debugPrint('[AuthViewModel] 인증된 상태로 변경됨');
@@ -122,11 +124,7 @@ class AuthViewModel extends _$AuthViewModel {
     await _handleAuthRequest(() async {
       final useCase = ref.read(loginUseCaseProvider);
       final result = await useCase(email: email, password: password);
-      state = AuthState.authenticated(user: result.user);
-
-      // OneSignal에 External User ID 등록
-      OneSignal.login(result.user.email);
-      ref.invalidate(selectedAccountBookViewModelProvider);
+      await _handleLoginSuccess(result);
     }, loading: true, defaultErrorMessage: '로그인 중 오류가 발생했습니다');
   }
 
@@ -193,11 +191,7 @@ class AuthViewModel extends _$AuthViewModel {
         gender: gender,
         agreements: agreements,
       );
-      state = AuthState.authenticated(user: result.user);
-
-      // OneSignal에 External User ID 등록
-      OneSignal.login(result.user.email);
-      ref.invalidate(selectedAccountBookViewModelProvider);
+      await _handleLoginSuccess(result, checkTermsRequired: false);
     },
         loading: true,
         rethrowError: false,
@@ -211,7 +205,7 @@ class AuthViewModel extends _$AuthViewModel {
       await useCase();
 
       // OneSignal 로그아웃 (External User ID 해제)
-      OneSignal.logout();
+      await _logoutFromOneSignal();
 
       // 먼저 인증 상태를 변경하여 화면 전환(→ 로그인)을 유도하고,
       // 기존 화면의 Provider watcher를 제거한 후 invalidate 실행.
@@ -257,9 +251,7 @@ class AuthViewModel extends _$AuthViewModel {
     await _handleAuthRequest(() async {
       final useCase = ref.read(googleLoginUseCaseProvider);
       final result = await useCase();
-      state = AuthState.authenticated(user: result.user);
-      OneSignal.login(result.user.email);
-      ref.invalidate(selectedAccountBookViewModelProvider);
+      await _handleLoginSuccess(result);
     },
         loading: true,
         rethrowError: false,
@@ -280,9 +272,7 @@ class AuthViewModel extends _$AuthViewModel {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] 네이버 로그인 성공: ${result.user.email}');
       }
-      state = AuthState.authenticated(user: result.user);
-      OneSignal.login(result.user.email);
-      ref.invalidate(selectedAccountBookViewModelProvider);
+      await _handleLoginSuccess(result);
     },
         loading: true,
         rethrowError: false,
@@ -310,9 +300,7 @@ class AuthViewModel extends _$AuthViewModel {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] 카카오 로그인 성공: ${result.user.email}');
       }
-      state = AuthState.authenticated(user: result.user);
-      OneSignal.login(result.user.email);
-      ref.invalidate(selectedAccountBookViewModelProvider);
+      await _handleLoginSuccess(result);
     },
         loading: true,
         rethrowError: false,
@@ -359,6 +347,100 @@ class AuthViewModel extends _$AuthViewModel {
         loading: true,
         rethrowError: false,
         defaultErrorMessage: '비밀번호 재설정 중 오류가 발생했습니다');
+  }
+
+  /// 회원 탈퇴
+  ///
+  /// [password] 비밀번호 (이메일 회원만 필수)
+  /// [reason] 탈퇴 사유 (선택)
+  Future<void> withdrawUser({
+    String? password,
+    String? reason,
+  }) async {
+    await _handleAuthRequest(() async {
+      final remoteDataSource = ref.read(authRemoteDataSourceProvider);
+      await remoteDataSource.withdrawUser(
+        password: password,
+        reason: reason,
+      );
+
+      // 로컬 데이터 정리
+      final localDataSource = ref.read(authLocalDataSourceProvider);
+      await localDataSource.clearAll();
+
+      // OneSignal 로그아웃
+      await _logoutFromOneSignal();
+
+      // 상태 초기화
+      state = AuthState.unauthenticated();
+
+      // 모든 사용자 관련 Provider 무효화
+      _invalidateAllUserProviders();
+
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] 회원 탈퇴 완료');
+      }
+    },
+        loading: true,
+        rethrowError: true,
+        defaultErrorMessage: '회원 탈퇴 중 오류가 발생했습니다');
+  }
+
+  /// 로그인 성공 후 공통 후처리
+  Future<void> _handleLoginSuccess(
+    AuthResult result, {
+    bool checkTermsRequired = true,
+  }) async {
+    final requiresTermsReconsent =
+        checkTermsRequired ? await _checkTermsReconsentAfterLogin() : false;
+
+    if (!ref.mounted) return;
+
+    ref
+        .read(termsReconsentRequiredProvider.notifier)
+        .setRequired(requiresTermsReconsent);
+
+    state = AuthState.authenticated(user: result.user);
+
+    // OneSignal에 External User ID 등록
+    await _loginToOneSignal(result.user.email);
+    ref.invalidate(selectedAccountBookViewModelProvider);
+  }
+
+  /// 로그인 직후 약관 재동의 필요 여부 확인
+  Future<bool> _checkTermsReconsentAfterLogin() async {
+    ref.invalidate(termsReconsentViewModelProvider);
+    ref.read(termsReconsentRequiredProvider.notifier).setRequired(false);
+
+    final result = await ref
+        .read(termsReconsentViewModelProvider.notifier)
+        .checkReconsentRequired();
+
+    return result.when(
+      required: (_) => true,
+      notRequired: () => false,
+      error: (_) => false, // 체크 실패 시 앱 진행 허용
+    );
+  }
+
+  Future<void> _loginToOneSignal(String email) async {
+    try {
+      await OneSignal.login(email);
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] OneSignal 로그인 실패(무시): $e');
+      }
+    }
+  }
+
+  Future<void> _logoutFromOneSignal() async {
+    try {
+      await OneSignal.logout();
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] OneSignal 로그아웃 실패(무시): $e');
+      }
+    }
   }
 
   AuthState _setLoading(bool isLoading) {
