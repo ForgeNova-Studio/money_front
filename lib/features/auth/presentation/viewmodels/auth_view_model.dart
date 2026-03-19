@@ -20,6 +20,7 @@ import 'package:moamoa/features/auth/domain/entities/gender.dart';
 
 // terms
 import 'package:moamoa/features/terms/data/models/models.dart';
+import 'package:moamoa/features/terms/presentation/providers/terms_provider.dart';
 import 'package:moamoa/features/terms/presentation/providers/terms_reconsent_provider.dart';
 import 'package:moamoa/features/terms/presentation/states/terms_reconsent_state.dart';
 
@@ -195,6 +196,9 @@ class AuthViewModel extends _$AuthViewModel {
         gender: gender,
         agreements: agreements,
       );
+      await ref
+          .read(termsAgreementLocalDataSourceProvider)
+          .saveAcceptedAgreements(result.user.userId, agreements);
       await _handleLoginSuccess(result, checkTermsRequired: false);
     },
         loading: true,

@@ -1,17 +1,27 @@
 // packages
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // core
 import 'package:moamoa/features/common/providers/dio_provider.dart';
+import 'package:moamoa/features/common/providers/storage_providers.dart';
 
 // models
 import 'package:moamoa/features/terms/data/models/models.dart';
 
 // datasources
+import 'package:moamoa/features/terms/data/datasources/local/terms_agreement_local_datasource.dart';
 import 'package:moamoa/features/terms/data/datasources/remote/terms_remote_datasource.dart';
 import 'package:moamoa/features/terms/data/datasources/remote/terms_remote_datasource_impl.dart';
 
 part 'terms_provider.g.dart';
+
+final termsAgreementLocalDataSourceProvider =
+    Provider<TermsAgreementLocalDataSource>((ref) {
+  return TermsAgreementLocalDataSourceImpl(
+    secureStorage: ref.read(flutterSecureStorageProvider),
+  );
+});
 
 /// Terms Remote Data Source Provider
 @riverpod

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // core
+import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
 import 'package:moamoa/features/common/providers/app_init_provider.dart';
 
 // models
@@ -32,15 +33,35 @@ class TermsReconsentViewModel extends _$TermsReconsentViewModel {
       state = state.copyWith(isLoading: true, errorMessage: null);
 
       final dataSource = ref.read(termsRemoteDataSourceProvider);
+      final authLocalDataSource = ref.read(authLocalDataSourceProvider);
+      final localAgreementDataSource =
+          ref.read(termsAgreementLocalDataSourceProvider);
 
-      // 활성 약관과 사용자 동의 이력 병렬 조회
-      final results = await Future.wait([
-        dataSource.getActiveTerms(),
-        dataSource.getMyAgreements(),
-      ]);
+      final activeTermsFuture = dataSource.getActiveTerms();
+      final userAgreementsFuture = dataSource.getMyAgreements();
+      final currentUserFuture = authLocalDataSource.getUser();
 
-      final activeTerms = results[0] as List<TermsDocumentModel>;
-      final userAgreements = results[1] as List<UserAgreementModel>;
+      final activeTerms = await activeTermsFuture;
+      final userAgreements = await userAgreementsFuture;
+      final currentUser = await currentUserFuture;
+
+      var mergedAgreements = userAgreements;
+
+      if (currentUser != null && currentUser.userId.isNotEmpty) {
+        await localAgreementDataSource.saveUserAgreements(
+          currentUser.userId,
+          userAgreements,
+        );
+
+        final cachedAgreements = await localAgreementDataSource.getAgreements(
+          currentUser.userId,
+        );
+
+        mergedAgreements = _mergeAgreementHistories(
+          userAgreements,
+          cachedAgreements,
+        );
+      }
 
       if (!ref.mounted) {
         return TermsReconsentCheckResult.error(
@@ -51,7 +72,7 @@ class TermsReconsentViewModel extends _$TermsReconsentViewModel {
       // 재동의가 필요한 약관 필터링
       final itemsNeedingReconsent = _filterTermsNeedingReconsent(
         activeTerms,
-        userAgreements,
+        mergedAgreements,
       );
 
       state = state.copyWith(
@@ -149,6 +170,31 @@ class TermsReconsentViewModel extends _$TermsReconsentViewModel {
     return items;
   }
 
+  List<UserAgreementModel> _mergeAgreementHistories(
+    List<UserAgreementModel> primary,
+    List<UserAgreementModel> fallback,
+  ) {
+    final merged = <String, UserAgreementModel>{};
+
+    for (final agreement in fallback.where((item) => item.agreed)) {
+      merged[_agreementKey(
+        agreement.documentType.toServerString(),
+        agreement.documentVersion,
+      )] = agreement;
+    }
+
+    for (final agreement in primary.where((item) => item.agreed)) {
+      merged[_agreementKey(
+        agreement.documentType.toServerString(),
+        agreement.documentVersion,
+      )] = agreement;
+    }
+
+    return merged.values.toList(growable: false);
+  }
+
+  String _agreementKey(String type, String version) => '$type::$version';
+
   /// 개별 약관 동의 토글
   void toggleAgreement(int index) {
     if (index < 0 || index >= state.items.length) return;
@@ -200,6 +246,13 @@ class TermsReconsentViewModel extends _$TermsReconsentViewModel {
           .toList();
 
       await dataSource.consentAgreements(agreements);
+
+      final currentUser = await ref.read(authLocalDataSourceProvider).getUser();
+      if (currentUser != null && currentUser.userId.isNotEmpty) {
+        await ref
+            .read(termsAgreementLocalDataSourceProvider)
+            .saveAcceptedAgreements(currentUser.userId, agreements);
+      }
 
       state = state.copyWith(
         isSubmitting: false,
