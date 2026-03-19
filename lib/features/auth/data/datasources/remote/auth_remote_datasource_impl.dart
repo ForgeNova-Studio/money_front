@@ -8,6 +8,7 @@ import 'package:moamoa/core/exceptions/exceptions.dart';
 // models
 import 'package:moamoa/features/auth/data/models/models.dart';
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
+import 'package:moamoa/features/terms/data/models/models.dart';
 
 // dataSources
 import 'package:moamoa/features/auth/data/datasources/remote/auth_remote_datasource.dart';
@@ -46,6 +47,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String password,
     required String nickname,
     required Gender gender,
+    required List<AgreementRequestModel> agreements,
   }) async {
     try {
       final response = await dio.post(
@@ -55,6 +57,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'password': password,
           'nickname': nickname,
           'gender': gender.toServerString(),
+          'agreements': agreements.map((a) => a.toJson()).toList(),
         },
       );
 
@@ -67,7 +70,25 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<UserModel> getCurrentUser() async {
     try {
-      final response = await dio.get(ApiConstants.currentUser);
+      final response = await dio.get(ApiConstants.usersMe);
+
+      return UserModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
+  }
+
+  @override
+  Future<UserModel> updateNickname({
+    required String nickname,
+  }) async {
+    try {
+      final response = await dio.patch(
+        ApiConstants.updateNickname,
+        data: {
+          'nickname': nickname,
+        },
+      );
 
       return UserModel.fromJson(response.data);
     } on DioException catch (e) {
@@ -210,6 +231,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<void> logout(String refreshToken) async {
     try {
       await dio.post(ApiConstants.logout, data: {'refreshToken': refreshToken});
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
+  }
+
+  @override
+  Future<void> withdrawUser({
+    String? password,
+    String? reason,
+  }) async {
+    try {
+      await dio.delete(
+        ApiConstants.withdrawUser,
+        data: {
+          if (password != null) 'password': password,
+          if (reason != null) 'reason': reason,
+        },
+      );
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     }

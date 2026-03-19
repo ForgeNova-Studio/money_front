@@ -15,6 +15,9 @@ import 'package:moamoa/features/common/providers/app_init_provider.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
 
+// ==================== Terms ====================
+import 'package:moamoa/features/terms/presentation/providers/terms_reconsent_provider.dart';
+
 /// 글로벌 NavigatorKey (푸시 알림 등 외부에서 라우팅 시 사용)
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -88,6 +91,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Public 화면 확인
       final isGoingToAuth = RouteNames.isAuthRoute(currentLocation);
       final isOnboarding = currentLocation == RouteNames.onboarding;
+      final isTermsDetail = currentLocation.startsWith('/terms/');
 
       // 디버그 로그
       if (kDebugMode) {
@@ -140,6 +144,41 @@ final routerProvider = Provider<GoRouter>((ref) {
             : RouteNames.login;
       }
 
+      // Priority 2.5: 약관 재동의 체크 (인증된 사용자만)
+      if (isAuthenticated && hasUser) {
+        final termsReconsentRequired =
+            ref.read(termsReconsentRequiredProvider);
+        final appInitValue = appInitState.value;
+        final requiresReconsent = termsReconsentRequired ||
+            (appInitValue?.termsReconsentRequired ?? false);
+
+        if (requiresReconsent) {
+          // 이미 재동의 화면에 있으면 유지
+          if (currentLocation == RouteNames.termsReconsent) {
+            if (kDebugMode) {
+              debugPrint(
+                  '[GoRouter Redirect] 약관 재동의 화면 유지');
+            }
+            return null;
+          }
+
+          // 약관 상세 화면은 허용 (재동의 화면에서 약관 내용 확인 가능)
+          if (currentLocation.startsWith('/terms/')) {
+            if (kDebugMode) {
+              debugPrint(
+                  '[GoRouter Redirect] 약관 상세 화면 허용');
+            }
+            return null;
+          }
+
+          if (kDebugMode) {
+            debugPrint(
+                '[GoRouter Redirect] 약관 재동의 필요 → /terms-reconsent');
+          }
+          return RouteNames.termsReconsent;
+        }
+      }
+
       // Priority 3: 인증된 사용자 → public 화면 접근 시 홈으로 리다이렉션
       if (isAuthenticated && hasUser) {
         // 인증된 사용자가 로그인/회원가입 등의 화면에 접근하려는 경우
@@ -158,8 +197,8 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Priority 4: 미인증 사용자 → protected 화면 접근 시 로그인으로 리다이렉션
       if (!isAuthenticated) {
-        // 이미 public 화면(로그인/회원가입 등)에 있으면 그대로 유지
-        if (isGoingToAuth) {
+        // 이미 public 화면(로그인/회원가입/약관 상세 등)에 있으면 그대로 유지
+        if (isGoingToAuth || isTermsDetail) {
           if (kDebugMode) {
             debugPrint('[GoRouter Redirect] 미인증 사용자 - public 화면 유지');
           }

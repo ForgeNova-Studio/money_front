@@ -9,6 +9,9 @@ import 'package:moamoa/features/auth/domain/entities/gender.dart';
 // repository
 import 'package:moamoa/features/auth/domain/repositories/auth_repository.dart';
 
+// terms
+import 'package:moamoa/features/terms/data/models/models.dart';
+
 /// 회원가입 UseCase
 ///
 /// 사용자 회원가입 비즈니스 로직 처리
@@ -28,6 +31,8 @@ class RegisterUseCase {
   /// [password] 사용자 비밀번호
   /// [confirmPassword] 비밀번호 확인
   /// [nickname] 사용자 닉네임
+  /// [gender] 성별
+  /// [agreements] 약관 동의 목록
   ///
   /// Returns: [AuthResult] (User + AuthToken)
   ///
@@ -41,6 +46,7 @@ class RegisterUseCase {
     required String confirmPassword,
     required String nickname,
     required Gender gender,
+    required List<AgreementRequestModel> agreements,
   }) async {
     // 입력값 검증
     _validateInput(
@@ -56,6 +62,7 @@ class RegisterUseCase {
       password: password,
       nickname: nickname,
       gender: gender,
+      agreements: agreements,
     );
   }
 

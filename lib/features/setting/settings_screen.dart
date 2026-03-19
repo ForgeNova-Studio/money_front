@@ -28,7 +28,10 @@ class SettingsScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 1. Profile Section
-            _ProfileCard(authState: authState),
+            _ProfileCard(
+              authState: authState,
+              onTap: () => context.push(RouteNames.profileEdit),
+            ),
             const SizedBox(height: 16),
 
             // 2. 가계부 서비스 Section
@@ -111,9 +114,7 @@ class SettingsScreen extends ConsumerWidget {
                   icon: Icons.person_outline,
                   iconColor: colorScheme.onSurface,
                   label: '프로필 수정',
-                  onTap: () {
-                    // TODO: 프로필 수정 화면으로 이동
-                  },
+                  onTap: () => context.push(RouteNames.profileEdit),
                 ),
                 _MenuItem(
                   icon: Icons.notifications_outlined,
@@ -122,10 +123,22 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () => _handleNotificationSettings(context),
                 ),
                 _MenuItem(
+                  icon: Icons.description_outlined,
+                  iconColor: colorScheme.onSurface,
+                  label: '약관 및 정책',
+                  onTap: () => context.push(RouteNames.termsPolicy),
+                ),
+                _MenuItem(
                   icon: Icons.logout,
                   iconColor: Colors.red,
                   label: '로그아웃',
                   onTap: () => _handleLogout(context, ref),
+                ),
+                _MenuItem(
+                  icon: Icons.person_off_outlined,
+                  iconColor: Colors.grey,
+                  label: '회원 탈퇴',
+                  onTap: () => context.push(RouteNames.withdrawal),
                 ),
               ],
             ),
@@ -289,45 +302,52 @@ class SettingsScreen extends ConsumerWidget {
 /// 프로필 카드 위젯
 class _ProfileCard extends StatelessWidget {
   final AuthState authState;
+  final VoidCallback onTap;
 
-  const _ProfileCard({required this.authState});
+  const _ProfileCard({
+    required this.authState,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final user = authState.user;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          // Profile Avatar
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: colorScheme.primary.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            // Profile Avatar
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: colorScheme.primary.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.person,
+                size: 32,
+                color: colorScheme.primary,
+              ),
             ),
-            child: Icon(
-              Icons.person,
-              size: 32,
-              color: colorScheme.primary,
-            ),
-          ),
-          const SizedBox(width: 16),
-          // Profile Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+            const SizedBox(width: 16),
+            // Profile Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                 Text(
-                  user?.email ?? '사용자',
+                  user?.nickname ?? '사용자',
                   style: TextStyle(
                     color: colorScheme.onSurface,
                     fontSize: 16,
@@ -335,31 +355,23 @@ class _ProfileCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text(
-                    '프리미엄',
-                    style: TextStyle(
-                      color: Colors.orange,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                    ),
+                Text(
+                  user?.email ?? '',
+                  style: TextStyle(
+                    color: colorScheme.onSurface.withValues(alpha: 0.65),
+                    fontSize: 13,
                   ),
                 ),
               ],
             ),
           ),
-          // Arrow
-          Icon(
-            Icons.chevron_right,
-            color: colorScheme.onSurface.withValues(alpha: 0.5),
-          ),
-        ],
+            // Arrow
+            Icon(
+              Icons.chevron_right,
+              color: colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -63,7 +63,18 @@ import 'package:moamoa/features/sms_import/presentation/screens/pending_expenses
 // ==================== Shortcuts Guide ====================
 import 'package:moamoa/features/shortcuts_guide/presentation/screens/shortcuts_guide_screen.dart';
 
+// ==================== Terms ====================
+import 'package:moamoa/features/terms/presentation/screens/terms_detail_screen.dart';
+import 'package:moamoa/features/terms/presentation/screens/terms_policy_screen.dart';
+import 'package:moamoa/features/terms/presentation/screens/terms_reconsent_screen.dart';
+import 'package:moamoa/features/terms/domain/entities/document_type.dart';
+import 'package:moamoa/features/terms/data/models/models.dart';
+
+// ==================== Withdrawal ====================
+import 'package:moamoa/features/auth/presentation/screens/withdrawal_screen.dart';
+
 // ==================== Settings ====================
+import 'package:moamoa/features/setting/profile_edit_screen.dart';
 import 'package:moamoa/features/setting/settings_screen.dart';
 
 // Monthly Report Screens
@@ -245,6 +256,11 @@ class AppRouter {
           builder: (context, state) => const CoupleScreen(),
         ),
         GoRoute(
+          path: RouteNames.profileEdit,
+          name: 'profileEdit',
+          builder: (context, state) => const ProfileEditScreen(),
+        ),
+        GoRoute(
           path: RouteNames.coupleInvite,
           name: 'coupleInvite',
           builder: (context, state) => const CoupleInviteScreen(),
@@ -309,12 +325,10 @@ class AppRouter {
             final month =
                 int.tryParse(state.uri.queryParameters['month'] ?? '');
 
-            final initialDate = (year != null &&
-                    month != null &&
-                    month >= 1 &&
-                    month <= 12)
-                ? DateTime(year, month)
-                : null;
+            final initialDate =
+                (year != null && month != null && month >= 1 && month <= 12)
+                    ? DateTime(year, month)
+                    : null;
 
             return BudgetSettingsScreen(
               initialDate: initialDate,
@@ -339,6 +353,38 @@ class AppRouter {
           path: RouteNames.shortcutsGuide,
           name: 'shortcutsGuide',
           builder: (context, state) => const ShortcutsGuideScreen(),
+        ),
+
+        // ==================== Terms Routes ====================
+        GoRoute(
+          path: RouteNames.termsPolicy,
+          name: 'termsPolicy',
+          builder: (context, state) => const TermsPolicyScreen(),
+        ),
+        GoRoute(
+          path: RouteNames.termsDetail,
+          name: 'termsDetail',
+          builder: (context, state) {
+            final typeString = state.pathParameters['type']!;
+            final type = DocumentType.fromServerString(typeString);
+            final document = state.extra as TermsDocumentModel?;
+            return TermsDetailScreen(
+              type: type,
+              document: document,
+            );
+          },
+        ),
+        GoRoute(
+          path: RouteNames.termsReconsent,
+          name: 'termsReconsent',
+          builder: (context, state) => const TermsReconsentScreen(),
+        ),
+
+        // ==================== Withdrawal Route ====================
+        GoRoute(
+          path: RouteNames.withdrawal,
+          name: 'withdrawal',
+          builder: (context, state) => const WithdrawalScreen(),
         ),
 
         // ==================== Notification Routes ====================

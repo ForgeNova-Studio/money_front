@@ -100,6 +100,7 @@ class RouteNames {
   // ==================== Settings Route ====================
   /// 설정 화면
   static const String settings = '/settings';
+  static const String profileEdit = '/profile-edit';
 
   // ==================== Notification Routes ====================
   /// 알림 목록 화면
@@ -131,6 +132,19 @@ class RouteNames {
   // ==================== Shortcuts Guide Route ====================
   /// iOS 단축어 설정 가이드 화면
   static const String shortcutsGuide = '/shortcuts-guide';
+
+  // ==================== Terms Routes ====================
+  /// 약관 및 정책 화면
+  static const String termsPolicy = '/terms-policy';
+
+  /// 약관 상세 화면
+  static const String termsDetail = '/terms/:type';
+
+  /// 약관 재동의 화면
+  static const String termsReconsent = '/terms-reconsent';
+
+  /// 회원 탈퇴 화면
+  static const String withdrawal = '/withdrawal';
 
   // ==================== Helper Methods ====================
   /// 인증 화면 여부 확인

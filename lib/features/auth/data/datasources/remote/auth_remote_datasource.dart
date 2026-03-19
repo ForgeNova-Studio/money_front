@@ -1,6 +1,7 @@
 // models
 import 'package:moamoa/features/auth/data/models/models.dart';
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
+import 'package:moamoa/features/terms/data/models/models.dart';
 
 /// Auth Remote Data Source 인터페이스
 ///
@@ -30,6 +31,8 @@ abstract class AuthRemoteDataSource {
   /// [email] 사용자 이메일
   /// [password] 사용자 비밀번호
   /// [nickname] 사용자 닉네임
+  /// [gender] 성별
+  /// [agreements] 약관 동의 목록
   ///
   /// Returns: [RegisterResponseModel] 회원가입 API 응답 모델 (토큰만 포함)
   ///
@@ -42,6 +45,7 @@ abstract class AuthRemoteDataSource {
     required String password,
     required String nickname,
     required Gender gender,
+    required List<AgreementRequestModel> agreements,
   });
 
   /// 현재 사용자 정보 조회
@@ -53,6 +57,20 @@ abstract class AuthRemoteDataSource {
   /// - [TokenExpiredException] 토큰 만료
   /// - [ServerException] 서버 오류
   Future<UserModel> getCurrentUser();
+
+  /// 현재 사용자 닉네임 수정
+  ///
+  /// [nickname] 새 닉네임
+  ///
+  /// Returns: [UserModel] 수정된 사용자 정보 모델
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [ValidationException] 닉네임 검증 오류
+  /// - [ServerException] 서버 오류
+  Future<UserModel> updateNickname({
+    required String nickname,
+  });
 
   /// 토큰 갱신
   ///
@@ -152,4 +170,18 @@ abstract class AuthRemoteDataSource {
   /// - [TokenExpiredException] 토큰 만료
   /// - [ServerException] 서버 오류
   Future<void> logout(String refreshToken);
+
+  /// 회원 탈퇴
+  ///
+  /// [password] 비밀번호 (이메일 회원만 필수)
+  /// [reason] 탈퇴 사유 (선택)
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [ValidationException] 비밀번호 불일치
+  /// - [ServerException] 서버 오류
+  Future<void> withdrawUser({
+    String? password,
+    String? reason,
+  });
 }
