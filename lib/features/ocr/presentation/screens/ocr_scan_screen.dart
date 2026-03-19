@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
 import 'package:moamoa/core/models/card_company.dart';
 import 'package:moamoa/core/services/recent_card_service.dart';
-import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/router/route_names.dart';
 import '../states/ocr_scan_state.dart';
 import '../viewmodels/ocr_scan_view_model.dart';
@@ -70,8 +69,7 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
     _isPickerOpen = true;
 
     try {
-      final XFile? image =
-          await _picker.pickImage(source: ImageSource.gallery);
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
 
       if (image != null) {
         final viewModel = ref.read(ocrScanViewModelProvider.notifier);
@@ -459,14 +457,6 @@ class _OcrScanScreenState extends ConsumerState<OcrScanScreen> {
                             await viewModel.saveAllPendingReceipts();
 
                         if (success && context.mounted) {
-                          // 저장 후 홈 데이터 갱신
-                          ref
-                              .read(homeViewModelProvider.notifier)
-                              .fetchMonthlyData(
-                                DateTime.now(),
-                                forceRefresh: true,
-                              );
-
                           context.showToast('${state.count}건의 지출이 저장되었습니다');
                           context.go(RouteNames.home);
                         }

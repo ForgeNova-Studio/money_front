@@ -50,11 +50,7 @@ class AuthRepositoryImpl implements AuthRepository {
     );
 
     // profile Map을 UserModel로 변환
-    final profileData = Map<String, dynamic>.from(response.profile);
-    if (!profileData.containsKey('userId')) {
-      profileData['userId'] = response.userId;
-    }
-    final userModel = UserModel.fromJson(profileData);
+    final userModel = UserModel.fromJson(response.toNormalizedProfileJson());
 
     await localDataSource.saveToken(tokenModel);
     await localDataSource.saveUser(userModel);
@@ -111,8 +107,13 @@ class AuthRepositoryImpl implements AuthRepository {
     // Refresh Token 읽기
     final tokenModel = await localDataSource.getToken();
 
-    // Remote Logout 호출
-    await remoteDataSource.logout(tokenModel?.refreshToken ?? '');
+    try {
+      // 서버 로그아웃 실패와 무관하게 로컬 세션 정리는 반드시 진행
+      await remoteDataSource.logout(tokenModel?.refreshToken ?? '');
+    } catch (error) {
+      // 서버 상태와 무관하게 클라이언트 세션을 확실히 종료한다.
+      if (error is! Exception) rethrow;
+    }
 
     // Local Storage 데이터 삭제
     await localDataSource.clearAll();
@@ -249,11 +250,7 @@ class AuthRepositoryImpl implements AuthRepository {
       expiresIn: response.expiresIn,
     );
 
-    final profileData = Map<String, dynamic>.from(response.profile);
-    if (!profileData.containsKey('userId')) {
-      profileData['userId'] = response.userId;
-    }
-    final userModel = UserModel.fromJson(profileData);
+    final userModel = UserModel.fromJson(response.toNormalizedProfileJson());
 
     await localDataSource.saveToken(tokenModel);
     await localDataSource.saveUser(userModel);

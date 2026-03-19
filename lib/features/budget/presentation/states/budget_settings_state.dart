@@ -1,6 +1,13 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 import 'package:moamoa/features/budget/presentation/utils/budget_amount_utils.dart';
 
+part 'budget_settings_state.freezed.dart';
+
+/// 예산 설정 화면 이벤트를 반환하는 클래스
+/// - [BudgetSettingsShowError]: 에러 메시지를 표시한다.
+/// - [BudgetSettingsPop]: 화면을 종료한다.
+/// - [BudgetSettingsPopWithToast]: 화면을 종료하고 토스트 메시지를 표시한다.
 sealed class BudgetSettingsEvent {
   const BudgetSettingsEvent();
 }
@@ -21,38 +28,29 @@ class BudgetSettingsPopWithToast extends BudgetSettingsEvent {
   final String message;
 }
 
-class BudgetSettingsState {
-  const BudgetSettingsState({
-    required this.currentMonth,
-    required this.selectedMonth,
-    required this.budgetCache,
-    required this.isInitialLoading,
-    required this.isSaving,
-    required this.isDeleting,
-    this.event,
-  });
+/// 예산 설정 화면의 상태를 반환하는 클래스
+@freezed
+sealed class BudgetSettingsState with _$BudgetSettingsState {
+  const BudgetSettingsState._();
+
+  const factory BudgetSettingsState({
+    required DateTime currentMonth,
+    required DateTime selectedMonth,
+    @Default(<String, BudgetEntity?>{}) Map<String, BudgetEntity?> budgetCache,
+    @Default(true) bool isInitialLoading,
+    @Default(false) bool isSaving,
+    @Default(false) bool isDeleting,
+    BudgetSettingsEvent? event,
+  }) = _BudgetSettingsState;
 
   factory BudgetSettingsState.initial({
     required DateTime currentMonth,
     required DateTime selectedMonth,
-  }) {
-    return BudgetSettingsState(
+  }) =>
+      BudgetSettingsState(
       currentMonth: currentMonth,
       selectedMonth: selectedMonth,
-      budgetCache: const {},
-      isInitialLoading: true,
-      isSaving: false,
-      isDeleting: false,
     );
-  }
-
-  final DateTime currentMonth;
-  final DateTime selectedMonth;
-  final Map<String, BudgetEntity?> budgetCache;
-  final bool isInitialLoading;
-  final bool isSaving;
-  final bool isDeleting;
-  final BudgetSettingsEvent? event;
 
   bool get isCurrentMonth =>
       selectedMonth.year == currentMonth.year &&
@@ -60,26 +58,4 @@ class BudgetSettingsState {
 
   BudgetEntity? get selectedBudget =>
       budgetCache[buildBudgetMonthKey(selectedMonth)];
-
-  static const _unset = Object();
-
-  BudgetSettingsState copyWith({
-    DateTime? currentMonth,
-    DateTime? selectedMonth,
-    Map<String, BudgetEntity?>? budgetCache,
-    bool? isInitialLoading,
-    bool? isSaving,
-    bool? isDeleting,
-    Object? event = _unset,
-  }) {
-    return BudgetSettingsState(
-      currentMonth: currentMonth ?? this.currentMonth,
-      selectedMonth: selectedMonth ?? this.selectedMonth,
-      budgetCache: budgetCache ?? this.budgetCache,
-      isInitialLoading: isInitialLoading ?? this.isInitialLoading,
-      isSaving: isSaving ?? this.isSaving,
-      isDeleting: isDeleting ?? this.isDeleting,
-      event: event == _unset ? this.event : event as BudgetSettingsEvent?,
-    );
-  }
 }

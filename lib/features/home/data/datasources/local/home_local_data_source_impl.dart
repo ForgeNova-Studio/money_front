@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:moamoa/features/home/data/datasources/local/home_local_data_source.dart';
 import 'package:moamoa/features/home/data/models/home_monthly_response_model.dart';
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
+import 'package:moamoa/features/budget/domain/entities/asset_entity.dart';
 
 /// 로컬 데이터 소스 구현체
 ///

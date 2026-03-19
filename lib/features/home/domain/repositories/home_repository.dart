@@ -1,6 +1,7 @@
 import 'package:moamoa/features/budget/domain/entities/budget_entity.dart';
 import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:moamoa/features/home/domain/entities/monthly_home_cache.dart';
+import 'package:moamoa/features/budget/domain/entities/asset_entity.dart';
 
 /// 홈 화면 데이터 접근을 위한 Repository 인터페이스
 ///

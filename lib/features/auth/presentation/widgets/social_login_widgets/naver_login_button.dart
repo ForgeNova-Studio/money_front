@@ -57,40 +57,31 @@ class NaverLoginButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        child: isLoading
-            ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(naverWhite),
-                ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // 네이버 N 로고
-                  SvgPicture.asset(
-                    'assets/images/naver_logo.svg',
-                    width: 20,
-                    height: 20,
-                    colorFilter: const ColorFilter.mode(
-                      naverWhite,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  // 시스템 기본 서체 사용
-                  Text(
-                    useShortLabel ? '네이버 로그인' : '네이버로 로그인',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: naverWhite,
-                    ),
-                  ),
-                ],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // 네이버 N 로고
+            SvgPicture.asset(
+              'assets/images/naver_logo.svg',
+              width: 20,
+              height: 20,
+              colorFilter: const ColorFilter.mode(
+                naverWhite,
+                BlendMode.srcIn,
               ),
+            ),
+            const SizedBox(width: 10),
+            // 시스템 기본 서체 사용
+            Text(
+              useShortLabel ? '네이버 로그인' : '네이버로 로그인',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: naverWhite,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

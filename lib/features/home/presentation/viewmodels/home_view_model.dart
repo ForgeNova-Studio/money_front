@@ -4,8 +4,9 @@ import 'package:intl/intl.dart';
 
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+import 'package:moamoa/features/common/providers/expense_sync_provider.dart';
 
-import 'package:moamoa/features/budget/presentation/providers/budget_providers.dart';
+import 'package:moamoa/features/budget/domain/providers/budget_usecase_providers.dart';
 import 'package:moamoa/features/expense/presentation/providers/expense_providers.dart';
 import 'package:moamoa/features/home/domain/entities/daily_transaction_summary.dart';
 import 'package:moamoa/features/home/domain/entities/transaction_entity.dart';
@@ -80,6 +81,20 @@ class HomeViewModel extends _$HomeViewModel {
       },
       fireImmediately: true,
     );
+
+    ref.listen<TransactionSyncSignal?>(transactionSyncProvider,
+        (previous, next) {
+      if (next == null) {
+        return;
+      }
+      final selectedAccountBookId =
+          ref.read(selectedAccountBookViewModelProvider).asData?.value;
+      if (next.accountBookId != null &&
+          next.accountBookId != selectedAccountBookId) {
+        return;
+      }
+      unawaited(fetchMonthlyData(next.date, forceRefresh: true));
+    });
 
     final now = DateTime.now();
     return HomeState(
@@ -317,6 +332,12 @@ class HomeViewModel extends _$HomeViewModel {
     // 3. 캐시 무효화 (다음 새로고침 시 최신 데이터 보장)
     final userId = _resolveUserId();
     final accountBookId = _resolveAccountBookId();
+    if (transaction.type == TransactionType.expense) {
+      ref.read(expenseSyncProvider.notifier).emit(
+            date: transaction.date,
+            accountBookId: accountBookId,
+          );
+    }
     if (accountBookId != null && userId != null) {
       final targetMonth =
           DateTime(transaction.date.year, transaction.date.month, 1);

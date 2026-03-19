@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:moamoa/core/constants/app_constants.dart';
-import 'package:moamoa/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:moamoa/features/sms_import/presentation/viewmodels/pending_expenses_view_model.dart';
 import 'package:moamoa/features/sms_import/presentation/widgets/pending_expense_list_item.dart';
 import 'package:moamoa/router/route_names.dart';
@@ -254,12 +253,6 @@ class PendingExpensesReviewScreen extends ConsumerWidget {
                     await viewModel.saveAllPendingExpenses();
 
                     if (context.mounted) {
-                      // 저장 후 홈 데이터 갱신
-                      ref.read(homeViewModelProvider.notifier).fetchMonthlyData(
-                            DateTime.now(),
-                            forceRefresh: true,
-                          );
-
                       context.showToast(
                         '$count건의 지출이 저장되었습니다',
                         duration: const Duration(seconds: 2),

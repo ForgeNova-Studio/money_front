@@ -3,6 +3,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:moamoa/features/sms_import/domain/entities/parsed_expense.dart';
 import 'package:moamoa/features/sms_import/domain/entities/pending_expense.dart';
 import 'package:moamoa/features/sms_import/presentation/states/pending_expenses_state.dart';
+import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
+import 'package:moamoa/features/common/providers/expense_sync_provider.dart';
 import 'package:moamoa/features/expense/domain/entities/expense.dart';
 import 'package:moamoa/features/expense/presentation/viewmodels/expense_view_model.dart';
 
@@ -26,7 +28,8 @@ class PendingExpensesViewModel extends _$PendingExpensesViewModel {
     );
 
     if (kDebugMode) {
-      debugPrint('[PendingExpenses] Added: ${pendingExpense.merchant} - ${pendingExpense.amount}원');
+      debugPrint(
+          '[PendingExpenses] Added: ${pendingExpense.merchant} - ${pendingExpense.amount}원');
       debugPrint('[PendingExpenses] Total pending: ${state.count}');
     }
   }
@@ -54,9 +57,8 @@ class PendingExpensesViewModel extends _$PendingExpensesViewModel {
 
   /// 개별 항목 삭제
   void removePendingExpense(String id) {
-    final updatedList = state.pendingExpenses
-        .where((item) => item.id != id)
-        .toList();
+    final updatedList =
+        state.pendingExpenses.where((item) => item.id != id).toList();
 
     state = state.copyWith(pendingExpenses: updatedList);
 
@@ -74,6 +76,9 @@ class PendingExpensesViewModel extends _$PendingExpensesViewModel {
 
     try {
       final expenseViewModel = ref.read(expenseViewModelProvider.notifier);
+      final selectedAccountBookId =
+          ref.read(selectedAccountBookViewModelProvider).asData?.value;
+      final changedMonths = <int, DateTime>{};
 
       for (final pending in state.pendingExpenses) {
         final expense = Expense(
@@ -86,6 +91,19 @@ class PendingExpensesViewModel extends _$PendingExpensesViewModel {
         );
 
         await expenseViewModel.createExpense(expense);
+        final month = DateTime(pending.date.year, pending.date.month);
+        changedMonths[month.year * 100 + month.month] = month;
+      }
+
+      for (final month in changedMonths.values) {
+        ref.read(transactionSyncProvider.notifier).emit(
+              date: month,
+              accountBookId: selectedAccountBookId,
+            );
+        ref.read(expenseSyncProvider.notifier).emit(
+              date: month,
+              accountBookId: selectedAccountBookId,
+            );
       }
 
       // 저장 완료 후 목록 비우기

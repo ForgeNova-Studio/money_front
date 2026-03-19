@@ -1,3 +1,4 @@
+import 'package:moamoa/features/common/providers/expense_sync_provider.dart';
 import 'package:moamoa/features/expense/domain/entities/expense.dart';
 import 'package:moamoa/features/expense/presentation/providers/expense_providers.dart';
 import 'package:moamoa/features/expense/presentation/states/expense_state.dart';
@@ -126,8 +127,20 @@ class ExpenseViewModel extends _$ExpenseViewModel {
       await createExpense(expense);
     }
 
-    // 성공 시 홈 데이터 갱신
-    syncHomeAfterTransaction(ref: ref, date: date);
+    final selectedAccountBookId =
+        ref.read(selectedAccountBookViewModelProvider).asData?.value;
+
+    // 성공 시 홈 데이터 갱신 신호 발행
+    ref.read(transactionSyncProvider.notifier).emit(
+          date: date,
+          accountBookId: selectedAccountBookId,
+        );
+
+    // 지출 변경 시 분석 데이터 동기화 신호 발행
+    ref.read(expenseSyncProvider.notifier).emit(
+          date: date,
+          accountBookId: selectedAccountBookId,
+        );
 
     // 현재 리스트 갱신 (Stale Data 방지)
     await loadExpenses();

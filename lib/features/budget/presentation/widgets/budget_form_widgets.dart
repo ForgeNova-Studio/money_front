@@ -92,7 +92,9 @@ class BudgetAmountInputCard extends StatelessWidget {
                           filled: false,
                           hintText: '0',
                           hintStyle: TextStyle(
-                            color: context.appColors.gray300,
+                            color: showNegativeSign
+                                ? amountColor
+                                : context.appColors.gray300,
                             fontSize: 42,
                             fontWeight: FontWeight.bold,
                           ),

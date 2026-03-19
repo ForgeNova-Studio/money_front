@@ -17,7 +17,6 @@ part 'auth_state.freezed.dart';
 ///
 /// **주요 속성 (Properties):**
 /// - `isLoading`: 인증 요청(로그인, 회원가입 등) 진행 중 여부
-/// - `errorMessage`: 인증 실패 시 반환된 에러 메시지
 ///
 /// **사용 예시 (Usage Example):**
 /// ```dart
@@ -32,14 +31,12 @@ sealed class AuthState with _$AuthState {
   /// 비로그인 상태
   const factory AuthState.unauthenticated({
     @Default(false) bool isLoading,
-    String? errorMessage,
   }) = AuthUnauthenticated;
 
   /// 로그인 상태 (user 필수)
   const factory AuthState.authenticated({
     required User user,
     @Default(false) bool isLoading,
-    String? errorMessage,
   }) = AuthAuthenticated;
 
   const AuthState._();
@@ -58,11 +55,5 @@ sealed class AuthState with _$AuthState {
   bool get isLoading => map(
         authenticated: (state) => state.isLoading,
         unauthenticated: (state) => state.isLoading,
-      );
-
-  @override
-  String? get errorMessage => map(
-        authenticated: (state) => state.errorMessage,
-        unauthenticated: (state) => state.errorMessage,
       );
 }
