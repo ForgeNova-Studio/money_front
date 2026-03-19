@@ -54,9 +54,7 @@ class TermsRemoteDataSourceImpl implements TermsRemoteDataSource {
     try {
       await dio.post(
         ApiConstants.userAgreements,
-        data: {
-          'agreements': agreements.map((a) => a.toJson()).toList(),
-        },
+        data: agreements.map((a) => a.toJson()).toList(),
       );
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
