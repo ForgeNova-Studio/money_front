@@ -217,7 +217,7 @@ class TermsPolicyScreen extends ConsumerWidget {
     List terms,
   ) {
     final document = terms
-        .where((t) => t.documentType == type)
+        .where((t) => t.type == type)
         .firstOrNull;
 
     context.push(
