@@ -28,26 +28,6 @@ sealed class AuthResponseModel with _$AuthResponseModel {
   factory AuthResponseModel.fromJson(Map<String, dynamic> json) =>
       _$AuthResponseModelFromJson(json);
 
-  /// 로그인 응답의 프로필 스키마를 앱 내부 표준으로 정규화
-  /// - `profile.userId` 누락 시 응답 루트의 `userId`를 주입
-  /// - 레거시 키 `profileImage`를 `profileImageUrl`로 매핑
-  Map<String, dynamic> toNormalizedProfileJson() {
-    final normalized = Map<String, dynamic>.from(profile);
-
-    if (!normalized.containsKey('userId')) {
-      normalized['userId'] = userId;
-    }
-
-    final legacyProfileImage = normalized['profileImage'];
-    if (!normalized.containsKey('profileImageUrl') &&
-        legacyProfileImage is String &&
-        legacyProfileImage.isNotEmpty) {
-      normalized['profileImageUrl'] = legacyProfileImage;
-    }
-
-    return normalized;
-  }
-
   /// Domain AuthResult로 변환
   AuthResult toEntity() {
     // Token Model 생성 후 Entity로 변환
@@ -58,7 +38,11 @@ sealed class AuthResponseModel with _$AuthResponseModel {
     );
 
     // User Model 생성 후 Entity로 변환
-    final profileWithUserId = toNormalizedProfileJson();
+    // profile에 userId가 없을 수 있으므로 추가
+    final profileWithUserId = Map<String, dynamic>.from(profile);
+    if (!profileWithUserId.containsKey('userId')) {
+      profileWithUserId['userId'] = userId;
+    }
 
     final userModel = UserModel.fromJson(profileWithUserId);
 

@@ -1,6 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:moamoa/features/auth/presentation/states/login_error_action.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 
 part 'login_view_model.g.dart';
@@ -34,10 +33,6 @@ class LoginViewModel {
 
   Future<void> loginWithKakao() async {
     await _ref.read(authViewModelProvider.notifier).loginWithKakao();
-  }
-
-  Future<void> loginWithProvider(LoginProviderType provider) async {
-    await _ref.read(authViewModelProvider.notifier).loginWithProvider(provider);
   }
 }
 

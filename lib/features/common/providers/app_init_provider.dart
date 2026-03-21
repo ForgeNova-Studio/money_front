@@ -15,7 +15,9 @@ import 'package:moamoa/features/ocr/data/datasources/memory/global_brand_source.
 import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moamoa/features/account_book/domain/entities/account_book.dart';
 import 'package:moamoa/features/home/presentation/providers/home_providers.dart';
-import 'package:moamoa/features/budget/domain/providers/budget_usecase_providers.dart';
+import 'package:moamoa/features/budget/presentation/providers/budget_providers.dart';
+import 'package:moamoa/features/terms/presentation/providers/terms_reconsent_provider.dart';
+import 'package:moamoa/features/terms/presentation/states/terms_reconsent_state.dart';
 
 const bool kForceAppInitFailure = false;
 // Keep splash visible for at least this duration to avoid flicker on fast init.
@@ -45,12 +47,14 @@ class AppInitialization {
   final GlobalBrandSource globalBrandSource;
   final UserBrandSource userBrandSource;
   final bool homeDataPrefetched;
+  final bool termsReconsentRequired;
 
   AppInitialization({
     required this.sharedPreferences,
     required this.globalBrandSource,
     required this.userBrandSource,
     this.homeDataPrefetched = false,
+    this.termsReconsentRequired = false,
   });
 }
 
@@ -148,12 +152,13 @@ Future<AppInitialization> _initializeApp(Ref ref) async {
   }
 
   // ============================================================================
-  // Prefetch: 인증된 사용자의 홈 화면 데이터 미리 로드
+  // Prefetch: 인증된 사용자의 홈 화면 데이터 및 약관 재동의 체크
   // ============================================================================
   stepStopwatch
     ..reset()
     ..start();
   bool homeDataPrefetched = false;
+  bool termsReconsentRequired = false;
 
   try {
     const secureStorage = FlutterSecureStorage();
@@ -175,11 +180,13 @@ Future<AppInitialization> _initializeApp(Ref ref) async {
         );
 
         if (selectedAccountBookId != null) {
-          // 3. 월별 데이터, 예산, 자산 정보 병렬로 prefetch
+          // 3. 월별 데이터, 예산, 자산 정보 + 약관 체크 병렬 실행
           stepStopwatch
             ..reset()
             ..start();
           final now = DateTime.now();
+
+          TermsReconsentCheckResult? termsCheckResult;
 
           await Future.wait([
             // 월별 거래 내역
@@ -188,11 +195,31 @@ Future<AppInitialization> _initializeApp(Ref ref) async {
             _prefetchBudget(ref, now, selectedAccountBookId),
             // 총 자산 정보
             _prefetchAsset(ref, selectedAccountBookId),
+            // 약관 재동의 필요 여부 체크
+            _checkTermsReconsent(ref).then((result) {
+              termsCheckResult = result;
+            }),
           ]);
+
+          // 약관 재동의 필요 여부 확인
+          termsReconsentRequired = termsCheckResult?.when(
+            required: (_) => true,
+            notRequired: () => false,
+            error: (_) => false, // 에러 시 앱 진행 허용
+          ) ?? false;
+
+          // termsReconsentRequired 상태를 Provider에 설정
+          if (termsReconsentRequired) {
+            ref
+                .read(termsReconsentRequiredProvider.notifier)
+                .setRequired(true);
+          }
 
           homeDataPrefetched = true;
           logStartupDebug(
               'prefetch_home_data_ms=${stepStopwatch.elapsedMilliseconds}');
+          logStartupDebug(
+              'terms_reconsent_required=$termsReconsentRequired');
         }
       }
     } else {
@@ -218,6 +245,7 @@ Future<AppInitialization> _initializeApp(Ref ref) async {
     globalBrandSource: globalBrandSource,
     userBrandSource: userBrandSource,
     homeDataPrefetched: homeDataPrefetched,
+    termsReconsentRequired: termsReconsentRequired,
   );
 }
 
@@ -336,5 +364,16 @@ Future<void> _prefetchAsset(
     logStartupDebug('prefetch_asset_success');
   } catch (e) {
     logStartupDebug('prefetch_asset_failed: $e');
+  }
+}
+
+/// 약관 재동의 필요 여부 체크
+Future<TermsReconsentCheckResult> _checkTermsReconsent(Ref ref) async {
+  try {
+    final viewModel = ref.read(termsReconsentViewModelProvider.notifier);
+    return await viewModel.checkReconsentRequired();
+  } catch (e) {
+    logStartupDebug('terms_reconsent_check_failed: $e');
+    return TermsReconsentCheckResult.error(e);
   }
 }

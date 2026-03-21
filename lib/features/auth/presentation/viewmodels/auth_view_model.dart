@@ -6,18 +6,23 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 // core
 import 'package:moamoa/core/exceptions/exceptions.dart';
+import 'package:moamoa/core/validators/input_validator.dart';
 
 // providers/states
 import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
-import 'package:moamoa/features/auth/presentation/states/auth_ui_event.dart';
-import 'package:moamoa/features/auth/presentation/states/login_error_action.dart';
-import 'package:moamoa/features/auth/presentation/viewmodels/auth_ui_event_view_model.dart';
 import 'package:moamoa/features/account_book/presentation/providers/account_book_providers.dart';
 import 'package:moamoa/features/account_book/presentation/viewmodels/selected_account_book_view_model.dart';
 
 // entities
+import 'package:moamoa/features/auth/domain/entities/auth_result.dart';
 import 'package:moamoa/features/auth/domain/entities/gender.dart';
+
+// terms
+import 'package:moamoa/features/terms/data/models/models.dart';
+import 'package:moamoa/features/terms/presentation/providers/terms_provider.dart';
+import 'package:moamoa/features/terms/presentation/providers/terms_reconsent_provider.dart';
+import 'package:moamoa/features/terms/presentation/states/terms_reconsent_state.dart';
 
 part 'auth_view_model.g.dart';
 
@@ -42,9 +47,6 @@ part 'auth_view_model.g.dart';
 /// ```
 @Riverpod(keepAlive: true)
 class AuthViewModel extends _$AuthViewModel {
-  static const String _alreadyRegisteredWithOtherMethodMessage =
-      '로그인으로 가입되어 있습니다';
-
   @override
   AuthState build() {
     // 초기화 시 로딩 상태로 시작
@@ -56,7 +58,7 @@ class AuthViewModel extends _$AuthViewModel {
   /// 현재 사용자 정보 확인 (로컬 토큰 기반)
   ///
   /// 앱 시작 시 로컬 저장소의 토큰과 사용자 정보를 확인하여
-  /// 빠른 초기화를 제공합니다.
+  /// 빠른 초기화를 제공한 뒤, 백그라운드에서 최신 사용자 정보를 동기화합니다.
   /// - 토큰이 있으면: authenticated 상태로 변경
   /// - 토큰이 없으면: unauthenticated 상태로 변경
   Future<void> _checkCurrentUser() async {
@@ -85,8 +87,11 @@ class AuthViewModel extends _$AuthViewModel {
           final userEntity = user.toEntity();
           state = AuthState.authenticated(user: userEntity);
 
+          // JWT claim 대신 최신 사용자 정보를 기준으로 UI를 유지한다.
+          unawaited(refreshCurrentUser());
+
           // OneSignal에 External User ID 등록 (개인 푸시 알림용)
-          OneSignal.login(userEntity.email);
+          await _loginToOneSignal(userEntity.email);
           if (kDebugMode) {
             debugPrint('[AuthViewModel] OneSignal 로그인: ${userEntity.email}');
             debugPrint('[AuthViewModel] 인증된 상태로 변경됨');
@@ -124,29 +129,20 @@ class AuthViewModel extends _$AuthViewModel {
     await _handleAuthRequest(() async {
       final useCase = ref.read(loginUseCaseProvider);
       final result = await useCase(email: email, password: password);
-      state = AuthState.authenticated(user: result.user);
-
-      // OneSignal에 External User ID 등록
-      OneSignal.login(result.user.email);
-      ref.invalidate(selectedAccountBookViewModelProvider);
-    },
-        loading: true,
-        defaultErrorMessage: '로그인 중 오류가 발생했습니다',
-        errorEventBuilder: _buildLoginErrorUiEvent);
+      await _handleLoginSuccess(result);
+    }, loading: true, defaultErrorMessage: '로그인 중 오류가 발생했습니다');
   }
 
   /// 회원가입 인증번호 전송
-  Future<bool> sendSignupCode(String email) async {
-    return _handleAuthRequest(() async {
+  Future<void> sendSignupCode(String email) async {
+    await _handleAuthRequest(() async {
       final useCase = ref.read(sendSignupCodeUseCaseProvider);
       await useCase(email);
       state = AuthState.initial(); // 성공 시 초기 상태로 복귀
-      return true;
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다',
-        errorEventBuilder: _buildErrorToastUiEvent);
+        defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다');
   }
 
   /// 회원가입 인증번호 검증
@@ -162,8 +158,7 @@ class AuthViewModel extends _$AuthViewModel {
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다',
-        errorEventBuilder: _buildErrorToastUiEvent);
+        defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다');
   }
 
   /// 비밀번호 찾기 인증번호 검증
@@ -179,8 +174,7 @@ class AuthViewModel extends _$AuthViewModel {
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다',
-        errorEventBuilder: _buildErrorToastUiEvent);
+        defaultErrorMessage: '인증번호 확인 중 오류가 발생했습니다');
   }
 
   /// 회원가입
@@ -190,6 +184,7 @@ class AuthViewModel extends _$AuthViewModel {
     required String confirmPassword,
     required String nickname,
     required Gender gender,
+    required List<AgreementRequestModel> agreements,
   }) async {
     await _handleAuthRequest(() async {
       final useCase = ref.read(registerUseCaseProvider);
@@ -199,17 +194,16 @@ class AuthViewModel extends _$AuthViewModel {
         confirmPassword: confirmPassword,
         nickname: nickname,
         gender: gender,
+        agreements: agreements,
       );
-      state = AuthState.authenticated(user: result.user);
-
-      // OneSignal에 External User ID 등록
-      OneSignal.login(result.user.email);
-      ref.invalidate(selectedAccountBookViewModelProvider);
+      await ref
+          .read(termsAgreementLocalDataSourceProvider)
+          .saveAcceptedAgreements(result.user.userId, agreements);
+      await _handleLoginSuccess(result, checkTermsRequired: false);
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: '회원가입 중 오류가 발생했습니다',
-        errorEventBuilder: _buildErrorToastUiEvent);
+        defaultErrorMessage: '회원가입 중 오류가 발생했습니다');
   }
 
   /// 로그아웃
@@ -218,10 +212,19 @@ class AuthViewModel extends _$AuthViewModel {
       final useCase = ref.read(logoutUseCaseProvider);
       await useCase();
 
-      forceUnauthenticated();
+      // OneSignal 로그아웃 (External User ID 해제)
+      await _logoutFromOneSignal();
+
+      // 먼저 인증 상태를 변경하여 화면 전환(→ 로그인)을 유도하고,
+      // 기존 화면의 Provider watcher를 제거한 후 invalidate 실행.
+      // (순서가 반대면 invalidate 시 watcher가 남아있어 불필요한 API 재요청 발생)
+      state = AuthState.unauthenticated();
+
+      // 🔴 중요: 모든 사용자 관련 Provider들을 무효화하여 이전 계정 데이터 완전 초기화
+      // 로그아웃 후 다른 계정 로그인 시 이전 데이터가 남지 않도록 함
+      _invalidateAllUserProviders();
     } catch (e) {
-      state = _setLoading(false);
-      _emitUiEvent(AuthUiEvent.showErrorToast('로그아웃 중 오류가 발생했습니다: $e'));
+      state = _setErrorMessage('로그아웃 중 오류가 발생했습니다: $e');
       rethrow;
     }
   }
@@ -231,6 +234,10 @@ class AuthViewModel extends _$AuthViewModel {
     // 가계부 관련
     ref.invalidate(accountBooksProvider);
     ref.invalidate(selectedAccountBookViewModelProvider);
+
+    // 약관 재동의 관련 - 다른 계정 로그인 시 이전 상태가 남지 않도록
+    ref.invalidate(termsReconsentRequiredProvider);
+    ref.invalidate(termsReconsentViewModelProvider);
 
     // 주석 처리한 이유는 이미 잘 처리되고 있어 명시적으로 할 필요 없기 때문
     // 추후 필요시 명시적으로 제거 가능
@@ -252,14 +259,11 @@ class AuthViewModel extends _$AuthViewModel {
     await _handleAuthRequest(() async {
       final useCase = ref.read(googleLoginUseCaseProvider);
       final result = await useCase();
-      state = AuthState.authenticated(user: result.user);
-      OneSignal.login(result.user.email);
-      ref.invalidate(selectedAccountBookViewModelProvider);
+      await _handleLoginSuccess(result);
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: 'Google 로그인 중 오류가 발생했습니다',
-        errorEventBuilder: _buildLoginErrorUiEvent);
+        defaultErrorMessage: 'Google 로그인 중 오류가 발생했습니다');
   }
 
   /// Naver 로그인
@@ -276,14 +280,11 @@ class AuthViewModel extends _$AuthViewModel {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] 네이버 로그인 성공: ${result.user.email}');
       }
-      state = AuthState.authenticated(user: result.user);
-      OneSignal.login(result.user.email);
-      ref.invalidate(selectedAccountBookViewModelProvider);
+      await _handleLoginSuccess(result);
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: 'Naver 로그인 중 오류가 발생했습니다',
-        errorEventBuilder: _buildLoginErrorUiEvent);
+        defaultErrorMessage: 'Naver 로그인 중 오류가 발생했습니다');
   }
 
   /// Kakao 로그인
@@ -307,108 +308,87 @@ class AuthViewModel extends _$AuthViewModel {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] 카카오 로그인 성공: ${result.user.email}');
       }
-      state = AuthState.authenticated(user: result.user);
-      OneSignal.login(result.user.email);
-      ref.invalidate(selectedAccountBookViewModelProvider);
+      await _handleLoginSuccess(result);
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: 'Kakao 로그인 중 오류가 발생했습니다',
-        errorEventBuilder: _buildLoginErrorUiEvent);
+        defaultErrorMessage: 'Kakao 로그인 중 오류가 발생했습니다');
   }
 
-  LoginErrorAction resolveLoginErrorAction(String message) {
-    if (!message.contains(_alreadyRegisteredWithOtherMethodMessage)) {
-      return LoginErrorAction.showToast(message);
-    }
-
-    final provider = _extractLoginProvider(message);
-    if (provider == LoginProviderType.unknown) {
-      return LoginErrorAction.showToast(message);
-    }
-
-    return LoginErrorAction.showLoginMethodDialog(
-      message: message,
-      provider: provider,
-    );
+  /// 에러 메시지 초기화
+  void clearError() {
+    state = _clearError();
   }
 
-  Future<void> loginWithProvider(LoginProviderType provider) async {
-    switch (provider) {
-      case LoginProviderType.naver:
-        await loginWithNaver();
+  /// 서버의 최신 사용자 정보로 인증 상태를 동기화
+  Future<void> refreshCurrentUser({bool showLoading = false}) async {
+    if (!state.isAuthenticated) return;
+
+    if (showLoading) {
+      state = _setLoading(true);
+    }
+
+    try {
+      final authRepository = ref.read(authRepositoryProvider);
+      final user = await authRepository.getCurrentUser();
+
+      if (!ref.mounted) return;
+
+      if (user == null) {
+        state = AuthState.unauthenticated();
+        _invalidateAllUserProviders();
         return;
-      case LoginProviderType.google:
-        await loginWithGoogle();
-        return;
-      case LoginProviderType.kakao:
-        await loginWithKakao();
-        return;
-      case LoginProviderType.email:
-      case LoginProviderType.unknown:
-        return;
+      }
+
+      state = AuthState.authenticated(user: user);
+    } catch (e) {
+      if (!ref.mounted) return;
+
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] 사용자 정보 동기화 실패: $e');
+      }
+
+      if (showLoading) {
+        state = state.maybeMap(
+          authenticated: (current) => current.copyWith(isLoading: false),
+          orElse: () => state,
+        );
+      }
     }
   }
 
-  LoginProviderType _extractLoginProvider(String message) {
-    if (message.contains('NAVER')) {
-      return LoginProviderType.naver;
-    }
-    if (message.contains('GOOGLE')) {
-      return LoginProviderType.google;
-    }
-    if (message.contains('KAKAO')) {
-      return LoginProviderType.kakao;
-    }
-    if (message.contains('EMAIL')) {
-      return LoginProviderType.email;
-    }
-    return LoginProviderType.unknown;
-  }
+  /// 닉네임 수정
+  Future<void> updateNickname(String nickname) async {
+    final trimmedNickname = nickname.trim();
+    final nicknameError =
+        InputValidator.getNicknameErrorMessage(trimmedNickname);
 
-  AuthUiEvent _buildLoginErrorUiEvent(String message) {
-    final action = resolveLoginErrorAction(message);
-    if (action.shouldShowDialog) {
-      return AuthUiEvent.showLoginMethodDialog(
-        message: action.message,
-        provider: action.provider,
-      );
+    if (nicknameError.isNotEmpty) {
+      state = _setErrorMessage(nicknameError);
+      throw ValidationException(nicknameError);
     }
 
-    return AuthUiEvent.showErrorToast(action.message);
-  }
+    if (state.user?.nickname == trimmedNickname) {
+      return;
+    }
 
-  AuthUiEvent _buildErrorToastUiEvent(String message) {
-    return AuthUiEvent.showErrorToast(message);
-  }
+    await _handleAuthRequest(() async {
+      final authRepository = ref.read(authRepositoryProvider);
+      final updatedUser = await authRepository.updateNickname(trimmedNickname);
 
-  /// UI 이벤트 발행
-  void _emitUiEvent(AuthUiEvent event) {
-    ref.read(authUiEventViewModelProvider.notifier).emit(event);
-  }
+      if (!ref.mounted) return;
 
-  /// UI 이벤트 발행
-  void _emitErrorUiEvent(
-    AuthUiEvent Function(String message)? errorEventBuilder,
-    String message,
-  ) {
-    if (errorEventBuilder == null) return;
-    _emitUiEvent(errorEventBuilder(message));
+      state = AuthState.authenticated(user: updatedUser);
+    },
+        loading: true,
+        rethrowError: true,
+        defaultErrorMessage: '닉네임 변경 중 오류가 발생했습니다');
   }
 
   /// 강제로 unauthenticated 상태로 변경
   /// (401 에러 발생 시 Interceptor에서 호출)
   void forceUnauthenticated({String? errorMessage}) {
-    // OneSignal External User ID 정리
-    OneSignal.logout();
-
-    state = AuthState.unauthenticated();
-    if (errorMessage != null && errorMessage.isNotEmpty) {
-      _emitUiEvent(AuthUiEvent.showErrorToast(errorMessage));
-    }
-
-    // 강제 로그아웃(토큰 만료 등)에서도 사용자 캐시가 남지 않도록 동일 정리 수행
-    _invalidateAllUserProviders();
+    state = AuthState.unauthenticated(errorMessage: errorMessage);
   }
 
   /// 비밀번호 재설정 인증번호 전송
@@ -420,8 +400,7 @@ class AuthViewModel extends _$AuthViewModel {
     },
         loading: true,
         rethrowError: true,
-        defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다',
-        errorEventBuilder: _buildErrorToastUiEvent);
+        defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다');
   }
 
   /// 비밀번호 재설정
@@ -440,18 +419,133 @@ class AuthViewModel extends _$AuthViewModel {
     },
         loading: true,
         rethrowError: false,
-        defaultErrorMessage: '비밀번호 재설정 중 오류가 발생했습니다',
-        errorEventBuilder: _buildErrorToastUiEvent);
+        defaultErrorMessage: '비밀번호 재설정 중 오류가 발생했습니다');
+  }
+
+  /// 회원 탈퇴
+  ///
+  /// [password] 비밀번호 (이메일 회원만 필수)
+  /// [reason] 탈퇴 사유 (선택)
+  Future<void> withdrawUser({
+    String? password,
+    String? reason,
+  }) async {
+    await _handleAuthRequest(() async {
+      final remoteDataSource = ref.read(authRemoteDataSourceProvider);
+      await remoteDataSource.withdrawUser(
+        password: password,
+        reason: reason,
+      );
+
+      // 로컬 데이터 정리
+      final localDataSource = ref.read(authLocalDataSourceProvider);
+      await localDataSource.clearAll();
+
+      // OneSignal 로그아웃
+      await _logoutFromOneSignal();
+
+      // 상태 초기화
+      state = AuthState.unauthenticated();
+
+      // 모든 사용자 관련 Provider 무효화
+      _invalidateAllUserProviders();
+
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] 회원 탈퇴 완료');
+      }
+    },
+        loading: true,
+        rethrowError: true,
+        defaultErrorMessage: '회원 탈퇴 중 오류가 발생했습니다');
+  }
+
+  /// 로그인 성공 후 공통 후처리
+  Future<void> _handleLoginSuccess(
+    AuthResult result, {
+    bool checkTermsRequired = true,
+  }) async {
+    final requiresTermsReconsent =
+        checkTermsRequired ? await _checkTermsReconsentAfterLogin() : false;
+
+    if (!ref.mounted) return;
+
+    ref
+        .read(termsReconsentRequiredProvider.notifier)
+        .setRequired(requiresTermsReconsent);
+
+    state = AuthState.authenticated(user: result.user);
+
+    // OneSignal에 External User ID 등록
+    await _loginToOneSignal(result.user.email);
+    ref.invalidate(selectedAccountBookViewModelProvider);
+  }
+
+  /// 로그인 직후 약관 재동의 필요 여부 확인
+  Future<bool> _checkTermsReconsentAfterLogin() async {
+    ref.invalidate(termsReconsentViewModelProvider);
+    ref.read(termsReconsentRequiredProvider.notifier).setRequired(false);
+
+    final result = await ref
+        .read(termsReconsentViewModelProvider.notifier)
+        .checkReconsentRequired();
+
+    return result.when(
+      required: (_) => true,
+      notRequired: () => false,
+      error: (_) => false, // 체크 실패 시 앱 진행 허용
+    );
+  }
+
+  Future<void> _loginToOneSignal(String email) async {
+    try {
+      await OneSignal.login(email);
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] OneSignal 로그인 실패(무시): $e');
+      }
+    }
+  }
+
+  Future<void> _logoutFromOneSignal() async {
+    try {
+      await OneSignal.logout();
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[AuthViewModel] OneSignal 로그아웃 실패(무시): $e');
+      }
+    }
   }
 
   AuthState _setLoading(bool isLoading) {
     return state.map(
       authenticated: (current) => current.copyWith(
         isLoading: isLoading,
+        errorMessage: null,
       ),
       unauthenticated: (current) => current.copyWith(
         isLoading: isLoading,
+        errorMessage: null,
       ),
+    );
+  }
+
+  AuthState _setErrorMessage(String message) {
+    return state.map(
+      authenticated: (current) => current.copyWith(
+        isLoading: false,
+        errorMessage: message,
+      ),
+      unauthenticated: (current) => current.copyWith(
+        isLoading: false,
+        errorMessage: message,
+      ),
+    );
+  }
+
+  AuthState _clearError() {
+    return state.map(
+      authenticated: (current) => current.copyWith(errorMessage: null),
+      unauthenticated: (current) => current.copyWith(errorMessage: null),
     );
   }
 
@@ -461,7 +555,6 @@ class AuthViewModel extends _$AuthViewModel {
     bool loading = false,
     bool rethrowError = false,
     String defaultErrorMessage = '오류가 발생했습니다',
-    AuthUiEvent Function(String message)? errorEventBuilder,
   }) async {
     if (loading) {
       state = _setLoading(true);
@@ -472,8 +565,7 @@ class AuthViewModel extends _$AuthViewModel {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] ValidationException: ${e.message}');
       }
-      state = _setLoading(false);
-      _emitErrorUiEvent(errorEventBuilder, e.message);
+      state = _setErrorMessage(e.message);
       if (rethrowError) rethrow;
     } on UserCancelledException catch (e) {
       if (kDebugMode) {
@@ -484,43 +576,36 @@ class AuthViewModel extends _$AuthViewModel {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] UnauthorizedException: ${e.message}');
       }
-      state = _setLoading(false);
-      _emitErrorUiEvent(errorEventBuilder, e.message);
+      state = _setErrorMessage(e.message);
       if (rethrowError) rethrow;
     } on NetworkException catch (e) {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] NetworkException: ${e.message}');
       }
-      state = _setLoading(false);
-      _emitErrorUiEvent(errorEventBuilder, e.message);
+      state = _setErrorMessage(e.message);
       if (rethrowError) rethrow;
     } on ServerException catch (e) {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] ServerException: ${e.message}');
       }
-      state = _setLoading(false);
-      _emitErrorUiEvent(errorEventBuilder, e.message);
+      state = _setErrorMessage(e.message);
       if (rethrowError) rethrow;
     } catch (e, stackTrace) {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] 알 수 없는 에러: $e');
         debugPrint('[AuthViewModel] StackTrace: $stackTrace');
       }
-      state = _setLoading(false);
-      _emitErrorUiEvent(errorEventBuilder, defaultErrorMessage);
+      state = _setErrorMessage(defaultErrorMessage);
       if (rethrowError) rethrow;
     }
-    // rethrowError=false인 경우의 안전한 fallback 처리
-    if (T == bool) {
-      return false as T;
-    }
-    if (null is T) {
-      return null as T;
-    }
-
-    throw StateError(
-      '_handleAuthRequest<$T> failed without fallback. '
-      'Use rethrowError=true or a nullable/bool return type.',
-    );
+    // rethrowError가 false이고 에러가 발생한 경우,
+    // Future<T>의 타입에 맞는 기본값을 반환해야 합니다.
+    // T가 bool이면 false, void면 아무것도 반환하지 않습니다.
+    // 여기서는 호출하는 쪽에서 rethrowError=true를 사용하거나 Future<void>이므로,
+    // 이 라인에 도달하는 경우는 Future<void>의 에러 케이스입니다.
+    // 따라서 예외를 던지는 대신 조용히 종료합니다.
+    // 만약 bool을 반환하는데 rethrowError=false라면 `return false as T;`와 같은 처리가 필요합니다.
+    return null
+        as T; // Future<void>의 경우 null을 반환해도 문제가 없으며, bool의 경우 컴파일 에러를 유발하여 실수를 방지합니다.
   }
 }

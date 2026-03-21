@@ -17,6 +17,7 @@ part of 'register_view_model.dart';
 /// - 유효성 검사 (`validateForSignup`)
 /// - 이메일 인증 (`sendVerificationCode`, `verifyCode`)
 /// - 약관 동의 및 비밀번호 가시성 토글
+/// - 약관 조회 (`loadTerms`)
 ///
 /// **사용 예시 (Usage Example):**
 /// ```dart
@@ -36,6 +37,7 @@ const registerViewModelProvider = RegisterViewModelProvider._();
 /// - 유효성 검사 (`validateForSignup`)
 /// - 이메일 인증 (`sendVerificationCode`, `verifyCode`)
 /// - 약관 동의 및 비밀번호 가시성 토글
+/// - 약관 조회 (`loadTerms`)
 ///
 /// **사용 예시 (Usage Example):**
 /// ```dart
@@ -53,6 +55,7 @@ final class RegisterViewModelProvider
   /// - 유효성 검사 (`validateForSignup`)
   /// - 이메일 인증 (`sendVerificationCode`, `verifyCode`)
   /// - 약관 동의 및 비밀번호 가시성 토글
+  /// - 약관 조회 (`loadTerms`)
   ///
   /// **사용 예시 (Usage Example):**
   /// ```dart
@@ -86,7 +89,7 @@ final class RegisterViewModelProvider
   }
 }
 
-String _$registerViewModelHash() => r'cfe8119b7ea5d4b6a48ef3d3d00b27e7787d7e01';
+String _$registerViewModelHash() => r'c7ff65cff15342d3227b0348c76d98bf9b75efee';
 
 /// 회원가입 ViewModel
 ///
@@ -97,6 +100,7 @@ String _$registerViewModelHash() => r'cfe8119b7ea5d4b6a48ef3d3d00b27e7787d7e01';
 /// - 유효성 검사 (`validateForSignup`)
 /// - 이메일 인증 (`sendVerificationCode`, `verifyCode`)
 /// - 약관 동의 및 비밀번호 가시성 토글
+/// - 약관 조회 (`loadTerms`)
 ///
 /// **사용 예시 (Usage Example):**
 /// ```dart
