@@ -345,6 +345,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             centerTitle: false,
             automaticallyImplyLeading: false,
             actions: [
+              // 검색 아이콘 버튼
+              IconButton(
+                icon: const Icon(Icons.search_rounded),
+                onPressed: () => context.push(RouteNames.search),
+              ),
               // 알림 아이콘 버튼
               NotificationIconButton(
                 unreadCount: unreadCount,

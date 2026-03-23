@@ -102,6 +102,10 @@ class RouteNames {
   static const String settings = '/settings';
   static const String profileEdit = '/profile-edit';
 
+  // ==================== Search Route ====================
+  /// 거래 내역 검색 화면
+  static const String search = '/search';
+
   // ==================== Notification Routes ====================
   /// 알림 목록 화면
   static const String notifications = '/notifications';

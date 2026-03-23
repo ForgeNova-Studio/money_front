@@ -57,6 +57,7 @@ class ApiConstants {
 
   // ========== Home endpoints ==========
   static const String homeMonthlyData = '/api/home/monthly-data';
+  static const String homeSearch = '/api/home/search';
 
   // ========== Expense endpoints ==========
   static const String expenses = '/api/expenses';

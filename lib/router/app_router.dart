@@ -53,6 +53,9 @@ import 'package:moamoa/features/ocr/presentation/screens/ocr_scan_screen.dart';
 import 'package:moamoa/features/budget/presentation/screens/budget_settings_screen.dart';
 import 'package:moamoa/features/budget/presentation/screens/initial_balance_settings_screen.dart';
 
+// ==================== Search ====================
+import 'package:moamoa/features/search/presentation/screens/search_screen.dart';
+
 // ==================== Notification ====================
 import 'package:moamoa/features/notification/presentation/screens/notification_list_screen.dart';
 import 'package:moamoa/features/notification/presentation/screens/admin_notification_screen.dart';
@@ -248,6 +251,13 @@ class AppRouter {
         //     return EditIncomeScreen(income: income);
         //   },
         // ),
+
+        // ==================== Search Route ====================
+        GoRoute(
+          path: RouteNames.search,
+          name: 'search',
+          builder: (context, state) => const SearchScreen(),
+        ),
 
         // ==================== Couple Routes ====================
         GoRoute(
