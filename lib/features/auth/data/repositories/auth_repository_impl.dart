@@ -102,6 +102,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
     await localDataSource.saveToken(tokenModel);
     await localDataSource.saveUser(userModel);
+    await localDataSource.saveLastLoginProvider('EMAIL');
 
     // 3. Entity 변환 및 반환 (email, nickname, gender 전달)
     return response.toEntity(

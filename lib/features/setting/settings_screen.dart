@@ -9,6 +9,7 @@ import 'package:moamoa/core/config/admin_config.dart';
 import 'package:moamoa/router/route_names.dart';
 import 'package:moamoa/features/auth/presentation/viewmodels/auth_view_model.dart';
 import 'package:moamoa/features/auth/presentation/states/auth_state.dart';
+import 'package:moamoa/features/auth/presentation/providers/auth_providers.dart';
 import 'package:moamoa/features/common/widgets/default_layout.dart';
 import 'package:moamoa/core/utils/toast_utils.dart';
 
@@ -19,6 +20,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final authState = ref.watch(authViewModelProvider);
+    final lastProvider = ref.watch(lastLoginProviderProvider).asData?.value;
 
     return DefaultLayout(
       title: '더보기',
@@ -116,12 +118,13 @@ class SettingsScreen extends ConsumerWidget {
                   label: '프로필 수정',
                   onTap: () => context.push(RouteNames.profileEdit),
                 ),
-                _MenuItem(
-                  icon: Icons.lock_outline,
-                  iconColor: colorScheme.onSurface,
-                  label: '비밀번호 변경',
-                  onTap: () => context.push(RouteNames.changePassword),
-                ),
+                if (lastProvider == 'EMAIL')
+                  _MenuItem(
+                    icon: Icons.lock_outline,
+                    iconColor: colorScheme.onSurface,
+                    label: '비밀번호 변경',
+                    onTap: () => context.push(RouteNames.changePassword),
+                  ),
                 _MenuItem(
                   icon: Icons.notifications_outlined,
                   iconColor: colorScheme.onSurface,

@@ -492,6 +492,9 @@ class AuthViewModel extends _$AuthViewModel {
 
     state = AuthState.authenticated(user: result.user);
 
+    // lastLoginProviderProvider 캐시 초기화 (로그인/회원가입 시 최신 값 반영)
+    ref.invalidate(lastLoginProviderProvider);
+
     // OneSignal에 External User ID 등록
     await _loginToOneSignal(result.user.email);
     ref.invalidate(selectedAccountBookViewModelProvider);

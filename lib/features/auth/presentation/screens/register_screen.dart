@@ -110,13 +110,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             agreements: agreements,
           );
     } catch (e) {
-      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
-      // 174행에서 ref.listen으로 에러를 감지하여 처리
       // try-catch는 UnhandledException 방지용
     }
 
-    // 회원가입 성공 시 홈 화면으로 이동
-    // (ref.listen에서 처리됨)
+    if (!mounted) return;
+
+    // 에러 확인 후 직접 표시 (ref.listen 타이밍 이슈 방지)
+    final authState = ref.read(authViewModelProvider);
+    if (authState.errorMessage != null) {
+      context.showErrorToast(authState.errorMessage!);
+      ref.read(authViewModelProvider.notifier).clearError();
+      return;
+    }
+
+    // 회원가입 성공 시 홈 화면으로 이동 (ref.listen에서 처리됨)
   }
 
   void _handleViewTermsDetail(DocumentType type) {
@@ -145,9 +152,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           .read(registerViewModelProvider.notifier)
           .sendVerificationCode(_emailController.text);
 
-      // 성공 여부 확인 (에러가 있으면 isVerificationCodeSent가 false)
+      if (!mounted) return;
+
+      // 에러 확인 후 직접 표시 (ref.listen 타이밍 이슈 방지)
+      final authState = ref.read(authViewModelProvider);
+      if (authState.errorMessage != null) {
+        context.showErrorToast(authState.errorMessage!);
+        ref.read(authViewModelProvider.notifier).clearError();
+        return;
+      }
+
+      // 성공 여부 확인
       final formState = ref.read(registerViewModelProvider);
-      if (mounted && formState.isVerificationCodeSent) {
+      if (formState.isVerificationCodeSent) {
         context.showToast('인증번호가 이메일로 전송되었습니다.');
         // 인증번호 전송 후 포커싱 처리
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -156,10 +173,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           }
         });
       }
-      // 에러가 있으면 ref.listen에서 에러 메시지가 표시됨
     } catch (e) {
-      // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
-      // ref.listen(authViewModelProvider)에서 에러를 감지하여 처리
       // try-catch는 UnhandledException 방지용
     }
   }
@@ -244,23 +258,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final formState = ref.watch(registerViewModelProvider);
     final isPasswordMismatch = formState.passwordError == '비밀번호가 일치하지 않습니다.';
 
-    // ViewModel 상태 변화 감지
+    // ViewModel 상태 변화 감지 (회원가입 성공 시 홈 화면 이동)
     ref.listen(authViewModelProvider, (previous, next) {
-      // 회원가입 성공 시
       if (next.isAuthenticated && next.user != null) {
-        // 홈 화면으로 이동 (뒤로가기 불가)
         context.go(RouteNames.home);
-      }
-
-      // 에러 발생 시
-      if (next.errorMessage != null && !next.isLoading) {
-        context.showErrorToast(next.errorMessage!);
-        // 에러 메시지 표시 후 초기화
-        Future.delayed(Duration(milliseconds: 100), () {
-          if (mounted) {
-            ref.read(authViewModelProvider.notifier).clearError();
-          }
-        });
       }
     });
 
