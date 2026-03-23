@@ -117,6 +117,12 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () => context.push(RouteNames.profileEdit),
                 ),
                 _MenuItem(
+                  icon: Icons.lock_outline,
+                  iconColor: colorScheme.onSurface,
+                  label: '비밀번호 변경',
+                  onTap: () => context.push(RouteNames.changePassword),
+                ),
+                _MenuItem(
                   icon: Icons.notifications_outlined,
                   iconColor: colorScheme.onSurface,
                   label: '알림 설정',

@@ -49,6 +49,7 @@ class ApiConstants {
   static const String usersMe = currentUser;
   static const String withdrawUser = usersMe;
   static const String updateNickname = '/api/users/me/nickname';
+  static const String changePassword = '/api/users/me/password';
 
   // ========== Terms endpoints ==========
   static const String termsActive = '/api/terms/active';

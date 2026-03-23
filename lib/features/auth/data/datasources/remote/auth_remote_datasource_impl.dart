@@ -253,4 +253,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw ExceptionHandler.handleDioException(e);
     }
   }
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      await dio.patch(
+        ApiConstants.changePassword,
+        data: {
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        },
+      );
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    }
+  }
 }

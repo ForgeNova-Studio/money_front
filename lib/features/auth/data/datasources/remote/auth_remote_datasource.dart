@@ -184,4 +184,18 @@ abstract class AuthRemoteDataSource {
     String? password,
     String? reason,
   });
+
+  /// 비밀번호 변경 (로그인 상태)
+  ///
+  /// [currentPassword] 현재 비밀번호
+  /// [newPassword] 새 비밀번호
+  ///
+  /// Throws:
+  /// - [NetworkException] 네트워크 오류
+  /// - [ValidationException] 현재 비밀번호 불일치 또는 소셜 로그인 사용자
+  /// - [ServerException] 서버 오류
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  });
 }

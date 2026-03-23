@@ -403,6 +403,23 @@ class AuthViewModel extends _$AuthViewModel {
         defaultErrorMessage: '인증번호 전송 중 오류가 발생했습니다');
   }
 
+  /// 비밀번호 변경 (로그인 상태)
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    await _handleAuthRequest(() async {
+      final remoteDataSource = ref.read(authRemoteDataSourceProvider);
+      await remoteDataSource.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+    },
+        loading: true,
+        rethrowError: true,
+        defaultErrorMessage: '비밀번호 변경 중 오류가 발생했습니다');
+  }
+
   /// 비밀번호 재설정
   Future<void> resetPassword({
     required String email,
