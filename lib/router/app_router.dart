@@ -73,6 +73,9 @@ import 'package:moamoa/features/terms/data/models/models.dart';
 // ==================== Withdrawal ====================
 import 'package:moamoa/features/auth/presentation/screens/withdrawal_screen.dart';
 
+// ==================== Export ====================
+import 'package:moamoa/features/export/presentation/screens/export_screen.dart';
+
 // ==================== Settings ====================
 import 'package:moamoa/features/setting/profile_edit_screen.dart';
 import 'package:moamoa/features/setting/settings_screen.dart';
@@ -259,6 +262,11 @@ class AppRouter {
           path: RouteNames.profileEdit,
           name: 'profileEdit',
           builder: (context, state) => const ProfileEditScreen(),
+        ),
+        GoRoute(
+          path: RouteNames.export,
+          name: 'export',
+          builder: (context, state) => const ExportScreen(),
         ),
         GoRoute(
           path: RouteNames.coupleInvite,

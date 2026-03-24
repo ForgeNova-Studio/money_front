@@ -102,6 +102,10 @@ class RouteNames {
   static const String settings = '/settings';
   static const String profileEdit = '/profile-edit';
 
+  // ==================== Export Route ====================
+  /// 데이터 내보내기 화면
+  static const String export = '/export';
+
   // ==================== Notification Routes ====================
   /// 알림 목록 화면
   static const String notifications = '/notifications';

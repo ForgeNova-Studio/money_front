@@ -60,6 +60,12 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () => context.push(RouteNames.statistics),
                 ),
                 _MenuItem(
+                  icon: Icons.download_outlined,
+                  iconColor: Colors.cyan,
+                  label: '데이터 내보내기',
+                  onTap: () => context.push(RouteNames.export),
+                ),
+                _MenuItem(
                   icon: Icons.auto_awesome,
                   iconColor: Colors.amber,
                   label: '월간 리포트',
