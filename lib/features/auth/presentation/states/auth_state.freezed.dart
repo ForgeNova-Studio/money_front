@@ -16,6 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$AuthState {
   bool get isLoading;
   String? get errorMessage;
+  String? get errorCode;
 
   /// Create a copy of AuthState
   /// with the given fields replaced by the non-null parameter values.
@@ -32,15 +33,18 @@ mixin _$AuthState {
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
             (identical(other.errorMessage, errorMessage) ||
-                other.errorMessage == errorMessage));
+                other.errorMessage == errorMessage) &&
+            (identical(other.errorCode, errorCode) ||
+                other.errorCode == errorCode));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, isLoading, errorMessage);
+  int get hashCode =>
+      Object.hash(runtimeType, isLoading, errorMessage, errorCode);
 
   @override
   String toString() {
-    return 'AuthState(isLoading: $isLoading, errorMessage: $errorMessage)';
+    return 'AuthState(isLoading: $isLoading, errorMessage: $errorMessage, errorCode: $errorCode)';
   }
 }
 
@@ -49,7 +53,7 @@ abstract mixin class $AuthStateCopyWith<$Res> {
   factory $AuthStateCopyWith(AuthState value, $Res Function(AuthState) _then) =
       _$AuthStateCopyWithImpl;
   @useResult
-  $Res call({bool isLoading, String? errorMessage});
+  $Res call({bool isLoading, String? errorMessage, String? errorCode});
 }
 
 /// @nodoc
@@ -66,6 +70,7 @@ class _$AuthStateCopyWithImpl<$Res> implements $AuthStateCopyWith<$Res> {
   $Res call({
     Object? isLoading = null,
     Object? errorMessage = freezed,
+    Object? errorCode = freezed,
   }) {
     return _then(_self.copyWith(
       isLoading: null == isLoading
@@ -75,6 +80,10 @@ class _$AuthStateCopyWithImpl<$Res> implements $AuthStateCopyWith<$Res> {
       errorMessage: freezed == errorMessage
           ? _self.errorMessage
           : errorMessage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      errorCode: freezed == errorCode
+          ? _self.errorCode
+          : errorCode // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
@@ -180,17 +189,21 @@ extension AuthStatePatterns on AuthState {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool isLoading, String? errorMessage)? unauthenticated,
-    TResult Function(User user, bool isLoading, String? errorMessage)?
+    TResult Function(bool isLoading, String? errorMessage, String? errorCode)?
+        unauthenticated,
+    TResult Function(
+            User user, bool isLoading, String? errorMessage, String? errorCode)?
         authenticated,
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case AuthUnauthenticated() when unauthenticated != null:
-        return unauthenticated(_that.isLoading, _that.errorMessage);
+        return unauthenticated(
+            _that.isLoading, _that.errorMessage, _that.errorCode);
       case AuthAuthenticated() when authenticated != null:
-        return authenticated(_that.user, _that.isLoading, _that.errorMessage);
+        return authenticated(
+            _that.user, _that.isLoading, _that.errorMessage, _that.errorCode);
       case _:
         return orElse();
     }
@@ -211,17 +224,21 @@ extension AuthStatePatterns on AuthState {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(bool isLoading, String? errorMessage)
+    required TResult Function(
+            bool isLoading, String? errorMessage, String? errorCode)
         unauthenticated,
-    required TResult Function(User user, bool isLoading, String? errorMessage)
+    required TResult Function(
+            User user, bool isLoading, String? errorMessage, String? errorCode)
         authenticated,
   }) {
     final _that = this;
     switch (_that) {
       case AuthUnauthenticated():
-        return unauthenticated(_that.isLoading, _that.errorMessage);
+        return unauthenticated(
+            _that.isLoading, _that.errorMessage, _that.errorCode);
       case AuthAuthenticated():
-        return authenticated(_that.user, _that.isLoading, _that.errorMessage);
+        return authenticated(
+            _that.user, _that.isLoading, _that.errorMessage, _that.errorCode);
     }
   }
 
@@ -239,16 +256,20 @@ extension AuthStatePatterns on AuthState {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool isLoading, String? errorMessage)? unauthenticated,
-    TResult? Function(User user, bool isLoading, String? errorMessage)?
+    TResult? Function(bool isLoading, String? errorMessage, String? errorCode)?
+        unauthenticated,
+    TResult? Function(
+            User user, bool isLoading, String? errorMessage, String? errorCode)?
         authenticated,
   }) {
     final _that = this;
     switch (_that) {
       case AuthUnauthenticated() when unauthenticated != null:
-        return unauthenticated(_that.isLoading, _that.errorMessage);
+        return unauthenticated(
+            _that.isLoading, _that.errorMessage, _that.errorCode);
       case AuthAuthenticated() when authenticated != null:
-        return authenticated(_that.user, _that.isLoading, _that.errorMessage);
+        return authenticated(
+            _that.user, _that.isLoading, _that.errorMessage, _that.errorCode);
       case _:
         return null;
     }
@@ -258,7 +279,8 @@ extension AuthStatePatterns on AuthState {
 /// @nodoc
 
 class AuthUnauthenticated extends AuthState {
-  const AuthUnauthenticated({this.isLoading = false, this.errorMessage})
+  const AuthUnauthenticated(
+      {this.isLoading = false, this.errorMessage, this.errorCode})
       : super._();
 
   @override
@@ -266,6 +288,8 @@ class AuthUnauthenticated extends AuthState {
   final bool isLoading;
   @override
   final String? errorMessage;
+  @override
+  final String? errorCode;
 
   /// Create a copy of AuthState
   /// with the given fields replaced by the non-null parameter values.
@@ -283,15 +307,18 @@ class AuthUnauthenticated extends AuthState {
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
             (identical(other.errorMessage, errorMessage) ||
-                other.errorMessage == errorMessage));
+                other.errorMessage == errorMessage) &&
+            (identical(other.errorCode, errorCode) ||
+                other.errorCode == errorCode));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, isLoading, errorMessage);
+  int get hashCode =>
+      Object.hash(runtimeType, isLoading, errorMessage, errorCode);
 
   @override
   String toString() {
-    return 'AuthState.unauthenticated(isLoading: $isLoading, errorMessage: $errorMessage)';
+    return 'AuthState.unauthenticated(isLoading: $isLoading, errorMessage: $errorMessage, errorCode: $errorCode)';
   }
 }
 
@@ -303,7 +330,7 @@ abstract mixin class $AuthUnauthenticatedCopyWith<$Res>
       _$AuthUnauthenticatedCopyWithImpl;
   @override
   @useResult
-  $Res call({bool isLoading, String? errorMessage});
+  $Res call({bool isLoading, String? errorMessage, String? errorCode});
 }
 
 /// @nodoc
@@ -321,6 +348,7 @@ class _$AuthUnauthenticatedCopyWithImpl<$Res>
   $Res call({
     Object? isLoading = null,
     Object? errorMessage = freezed,
+    Object? errorCode = freezed,
   }) {
     return _then(AuthUnauthenticated(
       isLoading: null == isLoading
@@ -331,6 +359,10 @@ class _$AuthUnauthenticatedCopyWithImpl<$Res>
           ? _self.errorMessage
           : errorMessage // ignore: cast_nullable_to_non_nullable
               as String?,
+      errorCode: freezed == errorCode
+          ? _self.errorCode
+          : errorCode // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -339,7 +371,10 @@ class _$AuthUnauthenticatedCopyWithImpl<$Res>
 
 class AuthAuthenticated extends AuthState {
   const AuthAuthenticated(
-      {required this.user, this.isLoading = false, this.errorMessage})
+      {required this.user,
+      this.isLoading = false,
+      this.errorMessage,
+      this.errorCode})
       : super._();
 
   final User user;
@@ -348,6 +383,8 @@ class AuthAuthenticated extends AuthState {
   final bool isLoading;
   @override
   final String? errorMessage;
+  @override
+  final String? errorCode;
 
   /// Create a copy of AuthState
   /// with the given fields replaced by the non-null parameter values.
@@ -366,15 +403,18 @@ class AuthAuthenticated extends AuthState {
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
             (identical(other.errorMessage, errorMessage) ||
-                other.errorMessage == errorMessage));
+                other.errorMessage == errorMessage) &&
+            (identical(other.errorCode, errorCode) ||
+                other.errorCode == errorCode));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, user, isLoading, errorMessage);
+  int get hashCode =>
+      Object.hash(runtimeType, user, isLoading, errorMessage, errorCode);
 
   @override
   String toString() {
-    return 'AuthState.authenticated(user: $user, isLoading: $isLoading, errorMessage: $errorMessage)';
+    return 'AuthState.authenticated(user: $user, isLoading: $isLoading, errorMessage: $errorMessage, errorCode: $errorCode)';
   }
 }
 
@@ -386,7 +426,8 @@ abstract mixin class $AuthAuthenticatedCopyWith<$Res>
       _$AuthAuthenticatedCopyWithImpl;
   @override
   @useResult
-  $Res call({User user, bool isLoading, String? errorMessage});
+  $Res call(
+      {User user, bool isLoading, String? errorMessage, String? errorCode});
 }
 
 /// @nodoc
@@ -405,6 +446,7 @@ class _$AuthAuthenticatedCopyWithImpl<$Res>
     Object? user = null,
     Object? isLoading = null,
     Object? errorMessage = freezed,
+    Object? errorCode = freezed,
   }) {
     return _then(AuthAuthenticated(
       user: null == user
@@ -418,6 +460,10 @@ class _$AuthAuthenticatedCopyWithImpl<$Res>
       errorMessage: freezed == errorMessage
           ? _self.errorMessage
           : errorMessage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      errorCode: freezed == errorCode
+          ? _self.errorCode
+          : errorCode // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }

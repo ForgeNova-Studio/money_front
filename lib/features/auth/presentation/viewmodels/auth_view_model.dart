@@ -202,7 +202,7 @@ class AuthViewModel extends _$AuthViewModel {
       await _handleLoginSuccess(result, checkTermsRequired: false);
     },
         loading: true,
-        rethrowError: false,
+        rethrowError: true,
         defaultErrorMessage: '회원가입 중 오류가 발생했습니다');
   }
 
@@ -521,31 +521,41 @@ class AuthViewModel extends _$AuthViewModel {
       authenticated: (current) => current.copyWith(
         isLoading: isLoading,
         errorMessage: null,
+        errorCode: null,
       ),
       unauthenticated: (current) => current.copyWith(
         isLoading: isLoading,
         errorMessage: null,
+        errorCode: null,
       ),
     );
   }
 
-  AuthState _setErrorMessage(String message) {
+  AuthState _setErrorMessage(String message, {String? code}) {
     return state.map(
       authenticated: (current) => current.copyWith(
         isLoading: false,
         errorMessage: message,
+        errorCode: code,
       ),
       unauthenticated: (current) => current.copyWith(
         isLoading: false,
         errorMessage: message,
+        errorCode: code,
       ),
     );
   }
 
   AuthState _clearError() {
     return state.map(
-      authenticated: (current) => current.copyWith(errorMessage: null),
-      unauthenticated: (current) => current.copyWith(errorMessage: null),
+      authenticated: (current) => current.copyWith(
+        errorMessage: null,
+        errorCode: null,
+      ),
+      unauthenticated: (current) => current.copyWith(
+        errorMessage: null,
+        errorCode: null,
+      ),
     );
   }
 
@@ -565,7 +575,7 @@ class AuthViewModel extends _$AuthViewModel {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] ValidationException: ${e.message}');
       }
-      state = _setErrorMessage(e.message);
+      state = _setErrorMessage(e.message, code: e.code);
       if (rethrowError) rethrow;
     } on UserCancelledException catch (e) {
       if (kDebugMode) {
@@ -576,7 +586,7 @@ class AuthViewModel extends _$AuthViewModel {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] UnauthorizedException: ${e.message}');
       }
-      state = _setErrorMessage(e.message);
+      state = _setErrorMessage(e.message, code: e.code);
       if (rethrowError) rethrow;
     } on NetworkException catch (e) {
       if (kDebugMode) {
@@ -588,7 +598,7 @@ class AuthViewModel extends _$AuthViewModel {
       if (kDebugMode) {
         debugPrint('[AuthViewModel] ServerException: ${e.message}');
       }
-      state = _setErrorMessage(e.message);
+      state = _setErrorMessage(e.message, code: e.code);
       if (rethrowError) rethrow;
     } catch (e, stackTrace) {
       if (kDebugMode) {

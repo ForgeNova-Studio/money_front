@@ -44,8 +44,10 @@ class ExceptionHandler {
 
     // 서버에서 보낸 메시지 추출
     String? message;
+    String? code;
     if (data is Map<String, dynamic>) {
       message = data['message'] as String?;
+      code = data['code'] as String?;
     }
 
     switch (statusCode) {
@@ -58,18 +60,21 @@ class ExceptionHandler {
         return ValidationException(
           message ?? '입력값을 확인해주세요',
           errors: fieldErrors,
+          code: code,
         );
 
       case 401:
         // Unauthorized - 인증 실패
         return UnauthorizedException(
           message ?? '이메일 또는 비밀번호가 올바르지 않습니다',
+          code,
         );
 
       case 403:
         // Forbidden - 권한 없음
         return UnauthorizedException(
           message ?? '접근 권한이 없습니다',
+          code,
         );
 
       case 404:
@@ -77,18 +82,21 @@ class ExceptionHandler {
         return ServerException(
           message: message ?? '요청한 정보를 찾을 수 없습니다',
           statusCode: 404,
+          code: code,
         );
 
       case 409:
         // Conflict - 중복 등
         return ValidationException(
           message ?? '이미 존재하는 정보입니다',
+          code: code,
         );
 
       case 422:
         // Unprocessable Entity - 입력값 검증 오류
         return ValidationException(
           message ?? '입력값을 확인해주세요',
+          code: code,
         );
 
       case 500:
@@ -99,6 +107,7 @@ class ExceptionHandler {
         return ServerException(
           message: message ?? '서버 오류가 발생했습니다',
           statusCode: statusCode,
+          code: code,
         );
 
       default:

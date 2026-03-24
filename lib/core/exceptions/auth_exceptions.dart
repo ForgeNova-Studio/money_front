@@ -17,11 +17,15 @@ class NetworkException implements Exception {
 /// 잘못된 이메일/비밀번호, 권한 없음 등 인증 관련 오류
 class UnauthorizedException implements Exception {
   final String message;
+  final String? code;
 
-  UnauthorizedException([this.message = '이메일 또는 비밀번호가 올바르지 않습니다']);
+  UnauthorizedException([
+    this.message = '이메일 또는 비밀번호가 올바르지 않습니다',
+    this.code,
+  ]);
 
   @override
-  String toString() => 'UnauthorizedException: $message';
+  String toString() => 'UnauthorizedException: $message (code: $code)';
 }
 
 /// 사용자 취소
@@ -42,11 +46,12 @@ class UserCancelledException implements Exception {
 class ValidationException implements Exception {
   final String message;
   final Map<String, String>? errors; // 필드별 에러 메시지
+  final String? code;
 
-  ValidationException(this.message, {this.errors});
+  ValidationException(this.message, {this.errors, this.code});
 
   @override
-  String toString() => 'ValidationException: $message';
+  String toString() => 'ValidationException: $message (code: $code)';
 }
 
 /// 서버 오류
@@ -55,11 +60,17 @@ class ValidationException implements Exception {
 class ServerException implements Exception {
   final String message;
   final int? statusCode;
+  final String? code;
 
-  ServerException({this.message = '서버 오류가 발생했습니다', this.statusCode});
+  ServerException({
+    this.message = '서버 오류가 발생했습니다',
+    this.statusCode,
+    this.code,
+  });
 
   @override
-  String toString() => 'ServerException: $message (statusCode: $statusCode)';
+  String toString() =>
+      'ServerException: $message (statusCode: $statusCode, code: $code)';
 }
 
 /// 토큰 만료

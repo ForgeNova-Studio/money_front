@@ -33,6 +33,7 @@ sealed class AuthState with _$AuthState {
   const factory AuthState.unauthenticated({
     @Default(false) bool isLoading,
     String? errorMessage,
+    String? errorCode,
   }) = AuthUnauthenticated;
 
   /// 로그인 상태 (user 필수)
@@ -40,6 +41,7 @@ sealed class AuthState with _$AuthState {
     required User user,
     @Default(false) bool isLoading,
     String? errorMessage,
+    String? errorCode,
   }) = AuthAuthenticated;
 
   const AuthState._();
@@ -64,5 +66,10 @@ sealed class AuthState with _$AuthState {
   String? get errorMessage => map(
         authenticated: (state) => state.errorMessage,
         unauthenticated: (state) => state.errorMessage,
+      );
+
+  String? get errorCode => map(
+        authenticated: (state) => state.errorCode,
+        unauthenticated: (state) => state.errorCode,
       );
 }

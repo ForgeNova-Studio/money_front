@@ -236,4 +236,15 @@ class RegisterViewModel extends _$RegisterViewModel {
   void reset() {
     state = RegisterFormState.initial();
   }
+
+  /// 이메일 인증 단계만 초기화
+  void resetVerificationFlow({String? email}) {
+    state = state.copyWith(
+      email: email ?? state.email,
+      verificationCode: '',
+      isVerificationCodeSent: false,
+      isEmailVerified: false,
+      emailError: null,
+    );
+  }
 }

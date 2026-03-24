@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 // core
+import 'package:moamoa/core/exceptions/exceptions.dart';
 import 'package:moamoa/router/route_names.dart';
 import 'package:moamoa/core/utils/toast_utils.dart';
 
@@ -51,6 +52,8 @@ class RegisterScreen extends ConsumerStatefulWidget {
 ///
 /// 입력 필드 컨트롤러, 포커스 노드, 그리고 회원가입 관련 비즈니스 로직을 연결합니다.
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
+  static const String _verificationSessionExpiredCode = 'A012';
+
   final _displayNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -109,6 +112,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             gender: ref.read(registerViewModelProvider).selectedGender!,
             agreements: agreements,
           );
+    } on ValidationException catch (e) {
+      if (e.code == _verificationSessionExpiredCode) {
+        _verificationCodeController.clear();
+        ref.read(registerViewModelProvider.notifier).resetVerificationFlow(
+              email: _emailController.text,
+            );
+      }
     } catch (e) {
       // 에러는 ref.listen에서 처리되므로 여기서는 따로 처리하지않음
       // 174행에서 ref.listen으로 에러를 감지하여 처리
